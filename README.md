@@ -45,8 +45,7 @@ Create the `generate.py` file with the `nano` editor
 
 `nano generate.py`
 
-Copy the code above and replace the placeholder with your own SHA-256 fingerprint in the `sha256 Fingerprint=6F:CX:9A:FE:32:2B:J9:8V:.............` section
-
+Copy the code above and replace the placeholder with your own SHA-256 fingerprint
 
 And run the file with the command:
 

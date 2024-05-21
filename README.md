@@ -115,5 +115,5 @@ Import values from the config.yaml file:
 - `authpassword`
 - **`IP`** enter your server IP
 - `port`
-- `obfs-password`
+- `obfspassword`
 - `sha256-key`

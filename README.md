@@ -40,6 +40,17 @@ base64_encoded = base64.b64encode(binary_data).decode('utf-8')
 
 print("sha256/" +base64_encoded)
 ```
+
+Create the `generate.py` file with the `nano` editor
+
+Copy the code above and replace the placeholder with your own SHA-256 fingerprint in the `sha256 Fingerprint=6F:CX:9A:FE:32:2B:J9:8V:.............` section
+
+`nano generate.py`
+
+And run the file with the command:
+
+`python3 generate.py`
+
 example result : `sha256/CMn3/tZqjIRUnclf0mFi/bOq7radMYjrOqLxlxqfXFN0=`
 
 Now use the sha256-key in the config file (pinSHA256).

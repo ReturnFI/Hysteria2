@@ -1,0 +1,48 @@
+listen: :port
+tls:
+  cert: /root/hysteria/ca.crt
+  key: /root/hysteria/ca.key
+  insecure: true
+  pinSHA256: "sha256-key"
+obfs:
+  type: salamander
+  salamander:
+    password: obfspassword #Use a strong password.
+auth:
+  type: password
+  password: authpassword #Use a strong password.
+quic:
+  initStreamReceiveWindow: 8388608
+  maxStreamReceiveWindow: 8388608
+  initConnReceiveWindow: 20971520
+  maxConnReceiveWindow: 20971520
+  maxIdleTimeout: 60s
+  maxIncomingStreams: 60
+  disablePathMTUDiscovery: false
+bandwidth:
+  up: 1 gbps
+  down: 1 gbps
+ignoreClientBandwidth: false
+disableUDP: false
+udpIdleTimeout: 60s
+resolver:
+  type: tls
+  tcp:
+    addr: 8.8.8.8:53
+    timeout: 4s
+  udp:
+    addr: 8.8.4.4:53
+    timeout: 4s
+  tls:
+    addr: 1.1.1.1:853
+    timeout: 10s
+    sni: cloudflare-dns.com
+    insecure: false
+  https:
+    addr: 1.1.1.1:443
+    timeout: 10s
+    sni: cloudflare-dns.com
+    insecure: false
+trafficStats:
+  listen: 127.0.0.1:25413
+  secret: UUID #It is recommended to generate a UUID.

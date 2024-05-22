@@ -13,11 +13,13 @@ bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
 # Step 2: Create hysteria directory and navigate into it
 mkdir -p /etc/hysteria && cd /etc/hysteria/
 
-# Step 3: Generate CA key and certificate
+# Step 3: Generate CA key and certificate and download geo data
 echo "Generating CA key and certificate..."
 openssl ecparam -genkey -name prime256v1 -out ca.key >/dev/null 2>&1
 openssl req -new -x509 -days 36500 -key ca.key -out ca.crt -subj "/CN=bing.com" >/dev/null 2>&1
-
+echo "Downloading geo data..."
+wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
+wget -O /etc/hysteria/geoip.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geoip.dat >/dev/null 2>&1
 # Step 4: Extract the SHA-256 fingerprint
 fingerprint=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s/://g')
 

@@ -63,7 +63,7 @@ Open the `config.yaml` file with an editor like `nano` or `vim`.
 
 Fill in the following values carefully in the config.yaml file:
 
-- `port`: 74821 or any port you want to use
+- `port`: 2087 or any port you want to use
 
 - `sha256-key` : Use the sha256-key from the [sha256-key](https://github.com/H-Return/Hysteria2?tab=readme-ov-file#sha256-key) section obtained with the Python script
 

@@ -112,8 +112,8 @@ Install and enable the service:
 
 Import values from the config.yaml file:
 
-- `authpassword`
+- `$authpassword`
 - **`IP`** enter your server IP
-- `port`
-- `obfspassword`
-- `sha256-key`
+- `$port`
+- `$obfspassword`
+- `$sha256`

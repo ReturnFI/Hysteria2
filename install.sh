@@ -36,8 +36,7 @@ sha256=$(python3 generate.py)
 # Step 6: Download the config.yaml file
 echo "Downloading config.yaml..."
 wget https://raw.githubusercontent.com/H-Return/Hysteria2/main/config.yaml -O /etc/hysteria/config.yaml >/dev/null 2>&1
-sleep 5
-clear
+echo -e "\n\n"
 # Ask for the port number
 read -p "Enter the port number you want to use: " port
 

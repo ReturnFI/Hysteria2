@@ -1,14 +1,19 @@
 #!/bin/bash
 
-if ! command -v jq &> /dev/null; then
-  sudo apt install jq -y
-fi
-
 green='\033[0;32m'
 cyan='\033[0;36m'
 NC='\033[0m'
 
-response=$(curl -s -H 'Authorization: uuid' http://127.0.0.1:25413/traffic) #It is recommended to generate a UUID.
+# Extract secret from config.yaml
+secret=$(grep -Po '(?<=secret: ).*' /etc/hysteria/config.yaml | awk '{$1=$1};1')
+
+# If secret is empty, exit with error
+if [ -z "$secret" ]; then
+    echo "Error: Secret not found in config.yaml"
+    exit 1
+fi
+
+response=$(curl -s -H "Authorization: $secret" http://127.0.0.1:25413/traffic)
 if [ -z "$response" ] || [ "$response" = "{}" ]; then
     echo -e "Upload (TX): ${green}0B${NC}"
     echo -e "Download (RX): ${cyan}0B${NC}"

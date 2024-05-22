@@ -1,4 +1,13 @@
 # Hysteria2
+
+### install command :
+```
+bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/install.sh)
+```
+
+<details>
+  <summary><b>How to manual Installation ?</b></summary>
+
 Make dir and wget the latest version of Hysteria 2 compatible with your server.
 
 `mkdir hysteria`
@@ -65,6 +74,8 @@ Fill in the following values carefully in the config.yaml file:
 
 - `$port`: 2087 or any port you want to use
 
+- /path/to/ca.key and /path/to/ca.crt to /root/hysteria/ca.key and /root/hysteria/ca.crt
+
 - `$sha256` : Use the sha256-key from the [sha256-key](https://github.com/H-Return/Hysteria2?tab=readme-ov-file#sha256-key) section obtained with the Python script
 
 - `$obfspassword` : Use this [website](https://www.avast.com/random-password-generator) to generate a password
@@ -117,3 +128,4 @@ Import values from the config.yaml file:
 - `$port`
 - `$obfspassword`
 - `$sha256`
+</details>

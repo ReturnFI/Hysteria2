@@ -1,8 +1,12 @@
 # Hysteria2
 
-### install command :
+### Install command :
 ```
 bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/install.sh)
+```
+### Check Traffic Status:
+```
+bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/Traffic.sh)
 ```
 
 <details>

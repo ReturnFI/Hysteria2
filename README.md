@@ -63,15 +63,15 @@ Open the `config.yaml` file with an editor like `nano` or `vim`.
 
 Fill in the following values carefully in the config.yaml file:
 
-- `port`: 2087 or any port you want to use
+- `$port`: 2087 or any port you want to use
 
-- `sha256-key` : Use the sha256-key from the [sha256-key](https://github.com/H-Return/Hysteria2?tab=readme-ov-file#sha256-key) section obtained with the Python script
+- `$sha256` : Use the sha256-key from the [sha256-key](https://github.com/H-Return/Hysteria2?tab=readme-ov-file#sha256-key) section obtained with the Python script
 
-- `obfspassword` : Use this [website](https://www.avast.com/random-password-generator) to generate a password
+- `$obfspassword` : Use this [website](https://www.avast.com/random-password-generator) to generate a password
 
-- `authpassword` : Use this [website](https://www.avast.com/random-password-generator) to generate a password
+- `$authpassword` : Use this [website](https://www.avast.com/random-password-generator) to generate a password
 
-- `UUID` To generate a UUID for the trafficStats section, use this [website](https://www.uuidgenerator.net/) 
+- `$UUID` To generate a UUID for the trafficStats section, use this [website](https://www.uuidgenerator.net/) 
 # System file
 Building a Systemd Service File:
 

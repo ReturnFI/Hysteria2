@@ -3,7 +3,7 @@ tls:
   cert: /root/hysteria/ca.crt
   key: /root/hysteria/ca.key
   insecure: true
-  pinSHA256: "sha256-key"
+  pinSHA256: "$sha256"
 obfs:
   type: salamander
   salamander:

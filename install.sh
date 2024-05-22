@@ -32,9 +32,9 @@ install_and_configure() {
     binary_data = binascii.unhexlify(hex_string)
     base64_encoded = base64.b64encode(binary_data).decode('utf-8')
 
-    print(\"sha256/\" + base64_encoded)" > generate.py
+    print(\"sha256/\" + base64_encoded)" > /etc/hysteria/generate.py
 
-    sha256=$(python3 generate.py)
+    sha256=$(python3 /etc/hysteria/generate.py)
 
     # Step 6: Download the config.yaml file
     echo "Downloading config.yaml..."

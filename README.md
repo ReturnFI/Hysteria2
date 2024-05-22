@@ -2,16 +2,14 @@
 
 ### Install command :
 ```
-bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/install.sh)
-```
-### Check Traffic Status:
-```
-bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/Traffic.sh)
+bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)
 ```
 
 <details>
   <summary><b>How to manual Installation ?</b></summary>
-
+  
+# Manual Installation
+  
 Make dir and wget the latest version of Hysteria 2 compatible with your server.
 
 `mkdir hysteria`
@@ -24,7 +22,7 @@ Command to change kernel permissions:
 
 `chmod 755 hysteria-linux-amd64`
 
-# SSL
+### SSL
 Commands to generate and sign a certificate:
 
 `openssl ecparam -genkey -name prime256v1 -out ca.key`
@@ -39,7 +37,7 @@ example result:
 
 `sha256 Fingerprint=6F:CX:9A:FE:32:2B:J9:8V:.............`
 
-# sha256-key 
+### sha256-key 
 ```python
 import re
 import base64
@@ -67,7 +65,7 @@ And run the file with the command:
 example result : `sha256/CMn3/tZqjIRUnclf0mFi/bOq7radMYjrOqLxlxqfXFN0=`
 
 Now use the sha256-key in the config file (pinSHA256).
-# Config 
+### Config 
 Downloading the `config.yaml` file using wget on the server
 
 `wget https://raw.githubusercontent.com/H-Return/Hysteria2/main/config.yaml`
@@ -87,7 +85,7 @@ Fill in the following values carefully in the config.yaml file:
 - `$authpassword` : Use this [website](https://www.avast.com/random-password-generator) to generate a password
 
 - `$UUID` To generate a UUID for the trafficStats section, use this [website](https://www.uuidgenerator.net/) 
-# System file
+### System file
 Building a Systemd Service File:
 
 `nano /etc/systemd/system/Hysteria.service`
@@ -120,7 +118,7 @@ Install and enable the service:
 
 `sudo systemctl start hysteria.service`
 
-# URI Scheme
+### URI Scheme
 
 `hy2://authpassword@IP:Port?obfs=salamander&obfs-password=obfspassword&pinSHA256=sha256-key&insecure=1&sni=bing.com#Hysteria2`
 
@@ -132,4 +130,9 @@ Import values from the config.yaml file:
 - `$port`
 - `$obfspassword`
 - `$sha256`
+
+# Check Traffic Status:
+```
+bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/Traffic.sh)
+```
 </details>

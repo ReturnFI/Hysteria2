@@ -1,15 +1,9 @@
 #!/bin/bash
 
-# Ensure jq is installed
-if ! command -v jq &> /dev/null; then
-    echo "jq could not be found, installing..."
-    apt-get update -qq && apt-get install jq -y >/dev/null 2>&1
-fi
-
-# Ensure qrencode is installed
-if ! command -v qrencode &> /dev/null; then
-    echo "qrencode could not be found, installing..."
-    apt-get update -qq && apt-get install qrencode -y >/dev/null 2>&1
+# Ensure jq and qrencode are installed
+if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null; then
+    echo "Necessary packages are not installed. Please wait while they are being installed..."
+    apt-get update -qq && apt-get install jq qrencode -y >/dev/null 2>&1
 fi
 
 # Step 1: Install Hysteria2

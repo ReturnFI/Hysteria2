@@ -43,6 +43,14 @@ resolver:
     timeout: 10s
     sni: cloudflare-dns.com
     insecure: false
+acl:
+  inline:
+    - reject(geosite:ir)
+    - reject(geoip:ir)
+    - reject(geosite:category-ads-all)
+    - reject(geoip:private)
+  geoip: /etc/hysteria/geoip.dat
+  geosite: /etc/hysteria/geosite.dat
 trafficStats:
   listen: 127.0.0.1:25413
   secret: $UUID

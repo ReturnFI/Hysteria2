@@ -1,4 +1,4 @@
-listen: :port
+listen: :$port
 tls:
   cert: /root/hysteria/ca.crt
   key: /root/hysteria/ca.key
@@ -7,10 +7,10 @@ tls:
 obfs:
   type: salamander
   salamander:
-    password: obfspassword #Use a strong password.
+    password: $obfspassword
 auth:
   type: password
-  password: authpassword #Use a strong password.
+  password: $authpassword
 quic:
   initStreamReceiveWindow: 8388608
   maxStreamReceiveWindow: 8388608
@@ -45,4 +45,4 @@ resolver:
     insecure: false
 trafficStats:
   listen: 127.0.0.1:25413
-  secret: UUID #It is recommended to generate a UUID.
+  secret: $UUID

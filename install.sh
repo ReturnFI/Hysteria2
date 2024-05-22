@@ -36,7 +36,7 @@ sha256=$(python3 generate.py)
 # Step 6: Download the config.yaml file
 echo "Downloading config.yaml..."
 wget https://raw.githubusercontent.com/H-Return/Hysteria2/main/config.yaml -O /etc/hysteria/config.yaml >/dev/null 2>&1
-echo -e "\n\n"
+echo -e "\n"
 # Ask for the port number
 read -p "Enter the port number you want to use: " port
 
@@ -84,11 +84,11 @@ if systemctl is-active --quiet hysteria-server.service; then
     rows=$(tput lines)
     qr=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
 
-    echo -e "\n\n\n"
+    echo -e "\n\n"
     echo "$qr" | while IFS= read -r line; do
         printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
     done
-    echo -e "\n\n\n"
+    echo -e "\n\n"
 
     # Output the URI scheme
     echo $URI

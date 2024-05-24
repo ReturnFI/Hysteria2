@@ -96,7 +96,28 @@ traffic_status() {
     echo -e "Upload (TX): ${green}$(format_bytes "$tx_bytes")${NC}"
     echo -e "Download (RX): ${cyan}$(format_bytes "$rx_bytes")${NC}"
 }
-
+uninstall_hysteria() {
+    echo "Uninstalling Hysteria2..."
+    sleep 1
+    echo "Running uninstallation script..."
+    bash <(curl -fsSL https://get.hy2.sh/) --remove >/dev/null 2>&1
+    sleep 1
+    echo "Removing Hysteria folder..."
+    rm -rf /etc/hysteria >/dev/null 2>&1
+    sleep 1
+    echo "Deleting hysteria user..."
+    userdel -r hysteria >/dev/null 2>&1
+    sleep 1
+    echo "Removing systemd service files..."
+    rm -f /etc/systemd/system/multi-user.target.wants/hysteria-server.service >/dev/null 2>&1
+    rm -f /etc/systemd/system/multi-user.target.wants/hysteria-server@*.service >/dev/null 2>&1
+    sleep 1
+    echo "Reloading systemd daemon..."
+    systemctl daemon-reload >/dev/null 2>&1
+    sleep 1
+    echo "Hysteria2 uninstalled!"
+    echo ""
+}
 # Main menu
 main_menu() {
     clear
@@ -105,7 +126,8 @@ main_menu() {
     echo "2. Change Port"
     echo "3. Show URI"
     echo "4. Check Traffic Status"
-    echo "5. Exit"
+    echo "5. Uninstall Hysteria2"
+    echo "6. Exit"
     echo "================================"
 
     read -p "Enter your choice: " choice
@@ -114,7 +136,8 @@ main_menu() {
         2) change_port ;;
         3) show_uri ;;
         4) traffic_status ;;
-        5) exit 0 ;;
+        5) uninstall_hysteria ;;
+        6) exit 0 ;;
         *) echo "Invalid option. Please try again." ;;
     esac
     read -p "Press any key to return to the menu..."

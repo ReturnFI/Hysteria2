@@ -7,7 +7,17 @@ install_and_configure() {
     echo -e "\n\n\n"
     echo "Installation and configuration complete."
 }
+# Function to Update Hysteria2
+update_core() {
+    echo "Starting the update process for Hysteria2..."
+    sleep 1
 
+    echo "Downloading and installing the latest version of Hysteria2..."
+    bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
+    sleep 1
+    echo "Hysteria2 has been successfully updated."
+    echo ""
+}
 # Function to change port
 change_port() {
     read -p "Enter the new port number you want to use: " port
@@ -123,21 +133,23 @@ main_menu() {
     clear
     echo "===== Hysteria2 Setup Menu ====="
     echo "1. Install and Configure Hysteria2"
-    echo "2. Change Port"
-    echo "3. Show URI"
-    echo "4. Check Traffic Status"
-    echo "5. Uninstall Hysteria2"
-    echo "6. Exit"
+    echo "2. Update Hysteria2"
+    echo "3. Change Port"
+    echo "4. Show URI"
+    echo "5. Check Traffic Status"
+    echo "6. Uninstall Hysteria2"
+    echo "7. Exit"
     echo "================================"
 
     read -p "Enter your choice: " choice
     case $choice in
         1) install_and_configure ;;
-        2) change_port ;;
-        3) show_uri ;;
-        4) traffic_status ;;
-        5) uninstall_hysteria ;;
-        6) exit 0 ;;
+        2) update_core ;;
+        3) change_port ;;
+        4) show_uri ;;
+        5) traffic_status ;;
+        6) uninstall_hysteria ;;
+        7) exit 0 ;;
         *) echo "Invalid option. Please try again." ;;
     esac
     read -p "Press any key to return to the menu..."

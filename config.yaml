@@ -49,6 +49,7 @@ acl:
     - reject(geoip:ir)
     - reject(geosite:category-ads-all)
     - reject(geoip:private)
+    - reject(suffix:adservice.google.com)
   geoip: /etc/hysteria/geoip.dat
   geosite: /etc/hysteria/geosite.dat
 trafficStats:

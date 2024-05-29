@@ -81,7 +81,7 @@ if systemctl is-active --quiet hysteria-server.service; then
     IP=$(curl -4 ip.sb)
     IP6=$(curl -6 ip.sb)
     URI="hy2://$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
-    URI6="hy2://$authpassword@$IP6:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
+    URI6="hy2://$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
     # Step 13: Generate and display QR Code in the center of the terminal
     cols=$(tput cols)
     rows=$(tput lines)

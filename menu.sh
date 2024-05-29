@@ -45,18 +45,29 @@ show_uri() {
 
         if systemctl is-active --quiet hysteria-server.service; then
             IP=$(curl -s -4 ip.sb)
+            IP6=$(curl -s -6 ip.sb)
             URI="hy2://$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
+            URI6="hy2://$authpassword@$IP6:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
 
             cols=$(tput cols)
             rows=$(tput lines)
-            qr=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
+            qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
+            qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
 
-            echo -e "\n\n\n"
-            echo "$qr" | while IFS= read -r line; do
+
+            echo -e "\nIPv4:\n"
+            echo "$qr1" | while IFS= read -r line; do
                 printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
             done
-            echo -e "\n\n\n"
-            echo "URI: $URI"
+
+            echo -e "\nIPv6:\n"
+            echo "$qr2" | while IFS= read -r line; do
+                printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
+            done
+            echo "IPv4: $URI"
+            echo
+            echo "IPv6: $URI6"
+            echo
         else
             echo "Error: Hysteria2 is not active."
         fi

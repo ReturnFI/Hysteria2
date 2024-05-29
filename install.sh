@@ -79,21 +79,32 @@ if systemctl is-active --quiet hysteria-server.service; then
     # Step 12: Generate URI Scheme
     echo "Generating URI Scheme..."
     IP=$(curl -4 ip.sb)
+    IP6=$(curl -6 ip.sb)
     URI="hy2://$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
-
+    URI6="hy2://$authpassword@$IP6:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
     # Step 13: Generate and display QR Code in the center of the terminal
     cols=$(tput cols)
     rows=$(tput lines)
-    qr=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
 
-    echo -e "\n\n"
-    echo "$qr" | while IFS= read -r line; do
+    qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
+    qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
+    clear
+    echo -e "\nIPv4:\n"
+    echo "$qr1" | while IFS= read -r line; do
+        printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
+    done
+    echo -e "\nIPv6:\n"
+
+    echo "$qr2" | while IFS= read -r line; do
         printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
     done
     echo -e "\n\n"
 
     # Output the URI scheme
-    echo $URI
+    echo "IPv4: $URI"
+    echo
+    echo "IPv6: $URI6"
+    echo
 else
     echo "Error: hysteria-server.service is not active."
 fi

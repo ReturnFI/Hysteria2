@@ -46,8 +46,8 @@ show_uri() {
         if systemctl is-active --quiet hysteria-server.service; then
             IP=$(curl -s -4 ip.sb)
             IP6=$(curl -s -6 ip.sb)
-            URI="hy2://$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
-            URI6="hy2://$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
+            URI="hy2://$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2-IPv4"
+            URI6="hy2://$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2-IPv6"
 
             cols=$(tput cols)
             rows=$(tput lines)

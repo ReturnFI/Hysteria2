@@ -64,7 +64,7 @@ show_uri() {
             echo "$qr2" | while IFS= read -r line; do
                 printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
             done
-            echo -e "\n"
+            echo
             echo "IPv4: $URI"
             echo
             echo "IPv6: $URI6"

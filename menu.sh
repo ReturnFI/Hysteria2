@@ -47,7 +47,7 @@ show_uri() {
             IP=$(curl -s -4 ip.sb)
             IP6=$(curl -s -6 ip.sb)
             URI="hy2://$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
-            URI6="hy2://$authpassword@$IP6:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
+            URI6="hy2://$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2"
 
             cols=$(tput cols)
             rows=$(tput lines)

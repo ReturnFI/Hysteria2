@@ -18,6 +18,14 @@ update_core() {
     echo "Hysteria2 has been successfully updated."
     echo ""
 }
+# Function to install TCP Brutal
+install_tcp_brutal() {
+    echo "Installing TCP Brutal..."
+    bash <(curl -fsSL https://tcp.hy2.sh/)
+    sleep 3
+    clear
+    echo "TCP Brutal installation complete."
+}
 # Function to change port
 change_port() {
     read -p "Enter the new port number you want to use: " port
@@ -143,25 +151,27 @@ uninstall_hysteria() {
 # Main menu
 main_menu() {
     clear
-    echo "===== Hysteria2 Setup Menu ====="
+    echo "===== Hysteria2 & TCP Brutal Setup Menu ====="
     echo "1. Install and Configure Hysteria2"
     echo "2. Update Hysteria2"
-    echo "3. Change Port"
-    echo "4. Show URI"
-    echo "5. Check Traffic Status"
-    echo "6. Uninstall Hysteria2"
-    echo "7. Exit"
-    echo "================================"
+    echo "3. Install TCP Brutal"
+    echo "4. Change Port (Hysteria2)"
+    echo "5. Show URI (Hysteria2)"
+    echo "6. Check Traffic Status (Hysteria2)"
+    echo "7. Uninstall Hysteria2"
+    echo "8. Exit"
+    echo "============================================="
 
     read -p "Enter your choice: " choice
     case $choice in
         1) install_and_configure ;;
         2) update_core ;;
-        3) change_port ;;
-        4) show_uri ;;
-        5) traffic_status ;;
-        6) uninstall_hysteria ;;
-        7) exit 0 ;;
+        3) install_tcp_brutal ;;
+        4) change_port ;;
+        5) show_uri ;;
+        6) traffic_status ;;
+        7) uninstall_hysteria ;;
+        8) exit 0 ;;
         *) echo "Invalid option. Please try again." ;;
     esac
     read -p "Press any key to return to the menu..."

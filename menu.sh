@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Ensure necessary packages are installed
+if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null || ! command -v curl &> /dev/null; then
+    echo "Necessary packages are not installed. Please wait while they are being installed..."
+    apt-get update -qq && apt-get install jq qrencode curl -y >/dev/null 2>&1
+fi
+
 # Function to install and configure Hysteria2
 install_and_configure() {
     echo "Installing and configuring Hysteria2..."
@@ -7,17 +13,27 @@ install_and_configure() {
     echo -e "\n\n\n"
     echo "Installation and configuration complete."
 }
-# Function to Update Hysteria2
-update_core() {
-    echo "Starting the update process for Hysteria2..."
-    sleep 1
 
+# Function to update Hysteria2
+update_core() {
+    echo "Starting the update process for Hysteria2..." 
+    echo "Backing up the current configuration..."
+    cp /etc/hysteria/config.json /etc/hysteria/config_backup.json
+    sleep 1
     echo "Downloading and installing the latest version of Hysteria2..."
     bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
+    echo "Restoring configuration from backup..."
+    mv /etc/hysteria/config_backup.json /etc/hysteria/config.json
+    echo "Modifying systemd service to use config.json..."
+    sed -i 's|/etc/hysteria/config.yaml|/etc/hysteria/config.json|' /etc/systemd/system/hysteria-server.service
+    systemctl daemon-reload >/dev/null 2>&1
+    systemctl restart hysteria-server.service >/dev/null 2>&1
     sleep 1
     echo "Hysteria2 has been successfully updated."
     echo ""
 }
+
+
 # Function to install TCP Brutal
 install_tcp_brutal() {
     echo "Installing TCP Brutal..."
@@ -26,30 +42,34 @@ install_tcp_brutal() {
     clear
     echo "TCP Brutal installation complete."
 }
+
 # Function to change port
 change_port() {
-    read -p "Enter the new port number you want to use: " port
-    if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
-        echo "Invalid port number. Please enter a number between 1 and 65535."
-        return
-    fi
+    while true; do
+        read -p "Enter the new port number you want to use: " port
+        if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+            echo "Invalid port number. Please enter a number between 1 and 65535."
+        else
+            break
+        fi
+    done
 
-    if [ -f "/etc/hysteria/config.yaml" ]; then
-        sed -i "s/listen: :[0-9]*/listen: :$port/" /etc/hysteria/config.yaml
+    if [ -f "/etc/hysteria/config.json" ]; then
+        jq --arg port "$port" '.listen = ":" + $port' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
         systemctl restart hysteria-server.service >/dev/null 2>&1
         echo "Port changed successfully to $port."
     else
-        echo "Error: Config file /etc/hysteria/config.yaml not found."
+        echo "Error: Config file /etc/hysteria/config.json not found."
     fi
 }
 
 # Function to show URI if Hysteria2 is installed and active
 show_uri() {
-    if [ -f "/etc/hysteria/config.yaml" ]; then
-        port=$(grep -oP '(?<=listen: :)\d+' /etc/hysteria/config.yaml)
-        sha256=$(grep -oP '(?<=pinSHA256: ").*(?=")' /etc/hysteria/config.yaml)
-        obfspassword=$(grep -oP '(?<=password: ).*' /etc/hysteria/config.yaml | head -1)
-        authpassword=$(grep -oP '(?<=password: ).*' /etc/hysteria/config.yaml | tail -1)
+    if [ -f "/etc/hysteria/config.json" ]; then
+        port=$(jq -r '.listen' /etc/hysteria/config.json | cut -d':' -f2)
+        sha256=$(jq -r '.tls.pinSHA256' /etc/hysteria/config.json)
+        obfspassword=$(jq -r '.obfs.salamander.password' /etc/hysteria/config.json)
+        authpassword=$(jq -r '.auth.password' /etc/hysteria/config.json)
 
         if systemctl is-active --quiet hysteria-server.service; then
             IP=$(curl -s -4 ip.sb)
@@ -61,7 +81,6 @@ show_uri() {
             rows=$(tput lines)
             qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
             qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
-
 
             echo -e "\nIPv4:\n"
             echo "$qr1" | while IFS= read -r line; do
@@ -81,7 +100,7 @@ show_uri() {
             echo "Error: Hysteria2 is not active."
         fi
     else
-        echo "Error: Config file /etc/hysteria/config.yaml not found."
+        echo "Error: Config file /etc/hysteria/config.json not found."
     fi
 }
 
@@ -91,10 +110,10 @@ traffic_status() {
     cyan='\033[0;36m'
     NC='\033[0m'
 
-    secret=$(grep -Po '(?<=secret: ).*' /etc/hysteria/config.yaml | awk '{$1=$1};1')
+    secret=$(jq -r '.trafficStats.secret' /etc/hysteria/config.json)
 
     if [ -z "$secret" ]; then
-        echo "Error: Secret not found in config.yaml"
+        echo "Error: Secret not found in config.json"
         return
     fi
 
@@ -126,6 +145,8 @@ traffic_status() {
     echo -e "Upload (TX): ${green}$(format_bytes "$tx_bytes")${NC}"
     echo -e "Download (RX): ${cyan}$(format_bytes "$rx_bytes")${NC}"
 }
+
+# Function to uninstall Hysteria2
 uninstall_hysteria() {
     echo "Uninstalling Hysteria2..."
     sleep 1
@@ -148,6 +169,7 @@ uninstall_hysteria() {
     echo "Hysteria2 uninstalled!"
     echo ""
 }
+
 # Main menu
 main_menu() {
     clear

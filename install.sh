@@ -20,6 +20,7 @@ openssl req -new -x509 -days 36500 -key ca.key -out ca.crt -subj "/CN=bing.com" 
 echo "Downloading geo data..."
 wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
 wget -O /etc/hysteria/geoip.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geoip.dat >/dev/null 2>&1
+
 # Step 4: Extract the SHA-256 fingerprint
 fingerprint=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s/://g')
 
@@ -35,20 +36,28 @@ print(\"sha256/\" + base64_encoded)" > generate.py
 
 sha256=$(python3 generate.py)
 
-# Step 6: Download the config.yaml file
-echo "Downloading config.yaml..."
-wget https://raw.githubusercontent.com/H-Return/Hysteria2/main/config.yaml -O /etc/hysteria/config.yaml >/dev/null 2>&1
+# Step 6: Download the config.json file
+echo "Downloading config.json..."
+wget https://raw.githubusercontent.com/H-Return/Hysteria2/main/config.json -O /etc/hysteria/config.json >/dev/null 2>&1
 echo -e "\n"
-# Ask for the port number
-read -p "Enter the port number you want to use: " port
 
-# Step 7: Generate required passwords and UUID
+# Step 7: Ask for the port number and validate input
+while true; do
+    read -p "Enter the port number you want to use (1-65535): " port
+    if [[ $port =~ ^[0-9]+$ ]] && [ "$port" -ge 1 ] && [ "$port" -le 65535 ]; then
+        break
+    else
+        echo "Invalid port number. Please enter a number between 1 and 65535."
+    fi
+done
+
+# Step 8: Generate required passwords and UUID
 echo "Generating passwords and UUID..."
 obfspassword=$(curl -s "https://api.genratr.com/?length=32&uppercase&lowercase&numbers" | jq -r '.password')
 authpassword=$(curl -s "https://api.genratr.com/?length=32&uppercase&lowercase&numbers" | jq -r '.password')
 UUID=$(curl -s https://www.uuidgenerator.net/api/version4)
 
-# Step 8: Adjust file permissions for Hysteria service
+# Step 9: Adjust file permissions for Hysteria service
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
 
@@ -57,32 +66,42 @@ if ! id -u hysteria &> /dev/null; then
     useradd -r -s /usr/sbin/nologin hysteria
 fi
 
-# Step 9: Customize the config.yaml file
-echo "Customizing config.yaml..."
-sed -i "s/\$port/$port/" /etc/hysteria/config.yaml
-sed -i "s|\$sha256|$sha256|" /etc/hysteria/config.yaml
-sed -i "s|\$obfspassword|$obfspassword|" /etc/hysteria/config.yaml
-sed -i "s|\$authpassword|$authpassword|" /etc/hysteria/config.yaml
-sed -i "s|\$UUID|$UUID|" /etc/hysteria/config.yaml
-sed -i "s|/path/to/ca.crt|/etc/hysteria/ca.crt|" /etc/hysteria/config.yaml
-sed -i "s|/path/to/ca.key|/etc/hysteria/ca.key|" /etc/hysteria/config.yaml
+# Step 10: Customize the config.json file
+echo "Customizing config.json..."
+jq --arg port "$port" \
+   --arg sha256 "$sha256" \
+   --arg obfspassword "$obfspassword" \
+   --arg authpassword "$authpassword" \
+   --arg UUID "$UUID" \
+   '.listen = ":\($port)" | 
+    .tls.cert = "/etc/hysteria/ca.crt" | 
+    .tls.key = "/etc/hysteria/ca.key" | 
+    .tls.pinSHA256 = $sha256 | 
+    .obfs.salamander.password = $obfspassword | 
+    .auth.password = $authpassword | 
+    .trafficStats.secret = $UUID' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
 
-# Step 10: Start and enable the Hysteria service
+# Step 11: Modify the systemd service file to use config.json
+echo "Updating hysteria-server.service to use config.json..."
+sed -i 's|/etc/hysteria/config.yaml|/etc/hysteria/config.json|' /etc/systemd/system/hysteria-server.service
+sleep 1
+
+# Step 12: Start and enable the Hysteria service
 echo "Starting and enabling Hysteria service..."
 systemctl daemon-reload >/dev/null 2>&1
 systemctl start hysteria-server.service >/dev/null 2>&1
 systemctl enable hysteria-server.service >/dev/null 2>&1
 systemctl restart hysteria-server.service >/dev/null 2>&1
 
-# Step 11: Check if the hysteria-server.service is active
+# Step 13: Check if the hysteria-server.service is active
 if systemctl is-active --quiet hysteria-server.service; then
-    # Step 12: Generate URI Scheme
+    # Step 14: Generate URI Scheme
     echo "Generating URI Scheme..."
     IP=$(curl -4 ip.sb)
     IP6=$(curl -6 ip.sb)
     URI="hy2://$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2-IPv4"
     URI6="hy2://$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bing.com#Hysteria2-IPv6"
-    # Step 13: Generate and display QR Code in the center of the terminal
+    # Step 15: Generate and display QR Code in the center of the terminal
     cols=$(tput cols)
     rows=$(tput lines)
 

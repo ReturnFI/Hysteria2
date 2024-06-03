@@ -66,6 +66,9 @@ if ! id -u hysteria &> /dev/null; then
     useradd -r -s /usr/sbin/nologin hysteria
 fi
 
+# Get the default network interface
+networkdef=$(ip route | grep "^default" | awk '{print $5}')
+
 # Step 10: Customize the config.json file
 echo "Customizing config.json..."
 jq --arg port "$port" \
@@ -73,13 +76,15 @@ jq --arg port "$port" \
    --arg obfspassword "$obfspassword" \
    --arg authpassword "$authpassword" \
    --arg UUID "$UUID" \
-   '.listen = ":\($port)" | 
-    .tls.cert = "/etc/hysteria/ca.crt" | 
-    .tls.key = "/etc/hysteria/ca.key" | 
-    .tls.pinSHA256 = $sha256 | 
-    .obfs.salamander.password = $obfspassword | 
-    .auth.password = $authpassword | 
-    .trafficStats.secret = $UUID' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+   --arg networkdef "$networkdef" \
+   '.listen = ":\($port)" |
+    .tls.cert = "/etc/hysteria/ca.crt" |
+    .tls.key = "/etc/hysteria/ca.key" |
+    .tls.pinSHA256 = $sha256 |
+    .obfs.salamander.password = $obfspassword |
+    .auth.password = $authpassword |
+    .trafficStats.secret = $UUID |
+    .outbounds[0].direct.bindDevice = $networkdef' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
 
 # Step 11: Modify the systemd service file to use config.json
 echo "Updating hysteria-server.service to use config.json..."

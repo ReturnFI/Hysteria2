@@ -55,13 +55,24 @@
       "insecure": false
     }
   },
+  "outbounds": [
+    {
+      "name": "v4",
+      "type": "direct",
+      "direct": {
+        "mode": 4,
+        "bindDevice": "$networkdef"
+      }
+    }
+  ],
   "acl": {
     "inline": [
       "reject(geosite:ir)",
       "reject(geoip:ir)",
       "reject(geosite:category-ads-all)",
       "reject(geoip:private)",
-      "reject(suffix:adservice.google.com)"
+      "reject(geosite:google@ads)",
+      "v4(all)"
     ],
     "geoip": "/etc/hysteria/geoip.dat",
     "geosite": "/etc/hysteria/geosite.dat"

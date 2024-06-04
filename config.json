@@ -71,8 +71,7 @@
       "reject(geoip:ir)",
       "reject(geosite:category-ads-all)",
       "reject(geoip:private)",
-      "reject(geosite:google@ads)",
-      "v4(all)"
+      "reject(geosite:google@ads)"
     ],
     "geoip": "/etc/hysteria/geoip.dat",
     "geosite": "/etc/hysteria/geosite.dat"

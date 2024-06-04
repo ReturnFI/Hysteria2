@@ -26,21 +26,12 @@ update_core() {
     mv /etc/hysteria/config_backup.json /etc/hysteria/config.json
     echo "Modifying systemd service to use config.json..."
     sed -i 's|/etc/hysteria/config.yaml|/etc/hysteria/config.json|' /etc/systemd/system/hysteria-server.service
+    rm /etc/hysteria/config.yaml
     systemctl daemon-reload >/dev/null 2>&1
     systemctl restart hysteria-server.service >/dev/null 2>&1
     sleep 1
     echo "Hysteria2 has been successfully updated."
     echo ""
-}
-
-
-# Function to install TCP Brutal
-install_tcp_brutal() {
-    echo "Installing TCP Brutal..."
-    bash <(curl -fsSL https://tcp.hy2.sh/)
-    sleep 3
-    clear
-    echo "TCP Brutal installation complete."
 }
 
 # Function to change port
@@ -170,33 +161,153 @@ uninstall_hysteria() {
     echo ""
 }
 
-# Main menu
-main_menu() {
+# Function to install TCP Brutal
+install_tcp_brutal() {
+    echo "Installing TCP Brutal..."
+    bash <(curl -fsSL https://tcp.hy2.sh/)
+    sleep 3
     clear
-    echo "===== Hysteria2 & TCP Brutal Setup Menu ====="
+    echo "TCP Brutal installation complete."
+}
+
+# Function to install WARP and update config.json
+install_warp() {
+    echo "Installing WARP..."
+    bash <(curl -fsSL git.io/warp.sh) wgx
+
+    if [ -f "/etc/hysteria/config.json" ]; then
+        jq '.outbounds += [{"name": "warps", "type": "direct", "direct": {"mode": 4, "bindDevice": "wgcf"}}]' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+        systemctl restart hysteria-server.service >/dev/null 2>&1
+        echo "WARP installed and outbound added to config.json."
+    else
+        echo "Error: Config file /etc/hysteria/config.json not found."
+    fi
+}
+
+# Function to configure WARP
+configure_warp() {
+    if [ -f "/etc/hysteria/config.json" ]; then
+        # Check the current status of WARP configurations
+        warp_all_status=$(jq -r 'if .acl.inline | index("warps(all)") then "WARP active" else "Direct" end' /etc/hysteria/config.json)
+        google_openai_status=$(jq -r 'if (.acl.inline | index("warps(geoip:google)")) or (.acl.inline | index("warps(geosite:google)")) or (.acl.inline | index("warps(geosite:netflix)")) or (.acl.inline | index("warps(geosite:spotify)")) or (.acl.inline | index("warps(geosite:openai)")) or (.acl.inline | index("warps(geoip:openai)")) then "WARP active" else "Direct" end' /etc/hysteria/config.json)
+        iran_status=$(jq -r 'if (.acl.inline | index("warps(geosite:ir)")) and (.acl.inline | index("warps(geoip:ir)")) then "Use WARP" else "Reject" end' /etc/hysteria/config.json)
+
+        echo "===== WARP Configuration Menu ====="
+        echo "1. Use WARP for all traffic ($warp_all_status)"
+        echo "2. Use WARP for Google, OpenAI, etc. ($google_openai_status)"
+        echo "3. Use WARP for geosite:ir and geoip:ir ($iran_status)"
+        echo "4. Back to Advance Menu"
+        echo "==================================="
+
+        read -p "Enter your choice: " choice
+        case $choice in
+            1)
+                if [ "$warp_all_status" == "WARP active" ]; then
+                    jq 'del(.acl.inline[] | select(. == "warps(all)"))' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+                    echo "Traffic configuration changed to Direct."
+                else
+                    jq '.acl.inline += ["warps(all)"]' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+                    echo "Traffic configuration changed to WARP."
+                fi
+                ;;
+            2)
+                if [ "$google_openai_status" == "WARP active" ]; then
+                    jq 'del(.acl.inline[] | select(. == "warps(geoip:google)" or . == "warps(geosite:google)" or . == "warps(geosite:netflix)" or . == "warps(geosite:spotify)" or . == "warps(geosite:openai)" or . == "warps(geoip:openai)"))' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+                    echo "WARP configuration for Google, OpenAI, etc. removed."
+                else
+                    jq '.acl.inline += ["warps(geoip:google)", "warps(geosite:google)", "warps(geosite:netflix)", "warps(geosite:spotify)", "warps(geosite:openai)", "warps(geoip:openai)"]' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+                    echo "WARP configured for Google, OpenAI, etc."
+                fi
+                ;;
+            3)
+                if [ "$iran_status" == "Use WARP" ]; then
+                    jq '(.acl.inline[] | select(. == "warps(geosite:ir)")) = "reject(geosite:ir)" | (.acl.inline[] | select(. == "warps(geoip:ir)")) = "reject(geoip:ir)"' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+                    echo "Configuration changed to Reject for geosite:ir and geoip:ir."
+                else
+                    jq '(.acl.inline[] | select(. == "reject(geosite:ir)")) = "warps(geosite:ir)" | (.acl.inline[] | select(. == "reject(geoip:ir)")) = "warps(geoip:ir)"' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+                    echo "Configuration changed to Use WARP for geosite:ir and geoip:ir."
+                fi
+                ;;
+            4)
+                return
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+        systemctl restart hysteria-server.service >/dev/null 2>&1
+    else
+        echo "Error: Config file /etc/hysteria/config.json not found."
+    fi
+}
+
+# Hysteria2 menu
+hysteria2_menu() {
+    clear
+    echo "===== Hysteria2 Menu ====="
     echo "1. Install and Configure Hysteria2"
     echo "2. Update Hysteria2"
-    echo "3. Install TCP Brutal"
-    echo "4. Change Port (Hysteria2)"
-    echo "5. Show URI (Hysteria2)"
-    echo "6. Check Traffic Status (Hysteria2)"
-    echo "7. Uninstall Hysteria2"
-    echo "8. Exit"
-    echo "============================================="
+    echo "3. Change Port (Hysteria2)"
+    echo "4. Show URI (Hysteria2)"
+    echo "5. Check Traffic Status (Hysteria2)"
+    echo "6. Uninstall Hysteria2"
+    echo "7. Back to Main Menu"
+    echo "=========================="
 
     read -p "Enter your choice: " choice
     case $choice in
         1) install_and_configure ;;
         2) update_core ;;
-        3) install_tcp_brutal ;;
-        4) change_port ;;
-        5) show_uri ;;
-        6) traffic_status ;;
-        7) uninstall_hysteria ;;
-        8) exit 0 ;;
+        3) change_port ;;
+        4) show_uri ;;
+        5) traffic_status ;;
+        6) uninstall_hysteria ;;
+        7) return ;;
         *) echo "Invalid option. Please try again." ;;
     esac
-    read -p "Press any key to return to the menu..."
+    read -p "Press any key to return to the Hysteria2 menu..."
+    hysteria2_menu
+}
+
+# Advance menu
+advance_menu() {
+    clear
+    echo "===== Advance Menu ====="
+    echo "1. Install TCP Brutal"
+    echo "2. Install WARP"
+    echo "3. Configure WARP"
+    echo "4. Back to Main Menu"
+    echo "========================="
+
+    read -p "Enter your choice: " choice
+    case $choice in
+        1) install_tcp_brutal ;;
+        2) install_warp ;;
+        3) configure_warp ;;
+        4) return ;;
+        *) echo "Invalid option. Please try again." ;;
+    esac
+    read -p "Press any key to return to the Advance menu..."
+    advance_menu
+}
+
+# Main menu
+main_menu() {
+    clear
+    echo "===== Main Menu ====="
+    echo "1. Hysteria2"
+    echo "2. Advance"
+    echo "3. Exit"
+    echo "====================="
+
+    read -p "Enter your choice: " choice
+    case $choice in
+        1) hysteria2_menu ;;
+        2) advance_menu ;;
+        3) exit 0 ;;
+        *) echo "Invalid option. Please try again." ;;
+    esac
+    read -p "Press any key to return to the main menu..."
 }
 
 # Loop to display the menu repeatedly

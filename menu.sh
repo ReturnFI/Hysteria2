@@ -245,12 +245,12 @@ configure_warp() {
 hysteria2_menu() {
     clear
     echo "===== Hysteria2 Menu ====="
-    echo "1. Install and Configure Hysteria2"
-    echo "2. Update Hysteria2"
-    echo "3. Change Port (Hysteria2)"
-    echo "4. Show URI (Hysteria2)"
-    echo "5. Check Traffic Status (Hysteria2)"
-    echo "6. Uninstall Hysteria2"
+    echo "1. Install and Configure"
+    echo "2. Update Core"
+    echo "3. Change Port"
+    echo "4. Show URI"
+    echo "5. Check Traffic Status"
+    echo "6. Uninstall"
     echo "7. Back to Main Menu"
     echo "=========================="
 

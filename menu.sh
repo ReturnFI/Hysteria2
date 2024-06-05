@@ -60,13 +60,13 @@ show_uri() {
         port=$(jq -r '.listen' /etc/hysteria/config.json | cut -d':' -f2)
         sha256=$(jq -r '.tls.pinSHA256' /etc/hysteria/config.json)
         obfspassword=$(jq -r '.obfs.salamander.password' /etc/hysteria/config.json)
-        authpassword=$(jq -r '.auth.password' /etc/hysteria/config.json)
+        authpassword=$(jq -r '.auth.userpass.default' /etc/hysteria/config.json)
 
         if systemctl is-active --quiet hysteria-server.service; then
             IP=$(curl -s -4 ip.sb)
             IP6=$(curl -s -6 ip.sb)
-            URI="hy2://$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv4"
-            URI6="hy2://$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv6"
+            URI="hy2://default:$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv4"
+            URI6="hy2://:default$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv6"
 
             cols=$(tput cols)
             rows=$(tput lines)

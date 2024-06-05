@@ -57,36 +57,52 @@ change_port() {
 # Function to show URI if Hysteria2 is installed and active
 show_uri() {
     if [ -f "/etc/hysteria/config.json" ]; then
-        port=$(jq -r '.listen' /etc/hysteria/config.json | cut -d':' -f2)
-        sha256=$(jq -r '.tls.pinSHA256' /etc/hysteria/config.json)
-        obfspassword=$(jq -r '.obfs.salamander.password' /etc/hysteria/config.json)
-        authpassword=$(jq -r '.auth.userpass.default' /etc/hysteria/config.json)
-
         if systemctl is-active --quiet hysteria-server.service; then
-            IP=$(curl -s -4 ip.sb)
-            IP6=$(curl -s -6 ip.sb)
-            URI="hy2://default:$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv4"
-            URI6="hy2://:default$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv6"
+            # Get the list of configured usernames
+            usernames=$(jq -r '.auth.userpass | keys_unsorted[]' /etc/hysteria/config.json)
+            
+            # Prompt the user to select a username
+            PS3="Select a username: "
+            select username in $usernames; do
+                if [ -n "$username" ]; then
+                    # Get the selected user's password and other required parameters
+                    authpassword=$(jq -r ".auth.userpass[\"$username\"]" /etc/hysteria/config.json)
+                    port=$(jq -r '.listen' /etc/hysteria/config.json | cut -d':' -f2)
+                    sha256=$(jq -r '.tls.pinSHA256' /etc/hysteria/config.json)
+                    obfspassword=$(jq -r '.obfs.salamander.password' /etc/hysteria/config.json)
 
-            cols=$(tput cols)
-            rows=$(tput lines)
-            qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
-            qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
+                    # Get IP addresses
+                    IP=$(curl -s -4 ip.sb)
+                    IP6=$(curl -s -6 ip.sb)
 
-            echo -e "\nIPv4:\n"
-            echo "$qr1" | while IFS= read -r line; do
-                printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
+                    # Construct URI
+                    URI="hy2://$username:$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv4"
+                    URI6="hy2://$username:$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv6"
+
+                    cols=$(tput cols)
+                    rows=$(tput lines)
+                    qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
+                    qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
+
+                    echo -e "\nIPv4:\n"
+                    echo "$qr1" | while IFS= read -r line; do
+                        printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
+                    done
+
+                    echo -e "\nIPv6:\n"
+                    echo "$qr2" | while IFS= read -r line; do
+                        printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
+                    done
+                    echo
+                    echo "IPv4: $URI"
+                    echo
+                    echo "IPv6: $URI6"
+                    echo
+                    break
+                else
+                    echo "Invalid selection. Please try again."
+                fi
             done
-
-            echo -e "\nIPv6:\n"
-            echo "$qr2" | while IFS= read -r line; do
-                printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
-            done
-            echo
-            echo "IPv4: $URI"
-            echo
-            echo "IPv6: $URI6"
-            echo
         else
             echo "Error: Hysteria2 is not active."
         fi
@@ -95,7 +111,7 @@ show_uri() {
     fi
 }
 
-# Function to check traffic status
+# Function to check traffic status for each user
 traffic_status() {
     green='\033[0;32m'
     cyan='\033[0;36m'
@@ -109,32 +125,47 @@ traffic_status() {
     fi
 
     response=$(curl -s -H "Authorization: $secret" http://127.0.0.1:25413/traffic)
+
     if [ -z "$response" ] || [ "$response" = "{}" ]; then
-        echo -e "Upload (TX): ${green}0B${NC}"
-        echo -e "Download (RX): ${cyan}0B${NC}"
+        echo -e "No traffic data available."
         return
     fi
 
-    tx_bytes=$(echo "$response" | jq -r '.user.tx // 0')
-    rx_bytes=$(echo "$response" | jq -r '.user.rx // 0')
+    echo "Traffic status for each user:"
+    echo "-------------------------------------------------"
+    printf "%-15s %-15s %-15s\n" "User" "Upload (TX)" "Download (RX)"
+    echo "-------------------------------------------------"
 
-    format_bytes() {
-        bytes=$1
-        if [ "$bytes" -lt 1024 ]; then
-            echo "${bytes}B"
-        elif [ "$bytes" -lt 1048576 ]; then
-            echo "$(bc <<< "scale=2; $bytes / 1024")KB"
-        elif [ "$bytes" -lt 1073741824 ]; then
-            echo "$(bc <<< "scale=2; $bytes / 1048576")MB"
-        elif [ "$bytes" -lt 1099511627776 ]; then
-            echo "$(bc <<< "scale=2; $bytes / 1073741824")GB"
-        else
-            echo "$(bc <<< "scale=2; $bytes / 1099511627776")TB"
-        fi
-    }
+    # Iterate over each user in the response
+    users=$(echo "$response" | jq -r 'keys[]')
+    for user in $users; do
+        tx_bytes=$(echo "$response" | jq -r ".[\"$user\"].tx // 0")
+        rx_bytes=$(echo "$response" | jq -r ".[\"$user\"].rx // 0")
 
-    echo -e "Upload (TX): ${green}$(format_bytes "$tx_bytes")${NC}"
-    echo -e "Download (RX): ${cyan}$(format_bytes "$rx_bytes")${NC}"
+        # Format the bytes into human-readable format
+        formatted_tx=$(format_bytes "$tx_bytes")
+        formatted_rx=$(format_bytes "$rx_bytes")
+
+        # Print user traffic information with color formatting
+        printf "%-15s ${green}%-15s${NC} ${cyan}%-15s${NC}\n" "$user" "$formatted_tx" "$formatted_rx"
+        echo "-------------------------------------------------"
+    done
+}
+
+# Helper function to format bytes into human-readable format
+format_bytes() {
+    bytes=$1
+    if [ "$bytes" -lt 1024 ]; then
+        echo "${bytes}B"
+    elif [ "$bytes" -lt 1048576 ]; then
+        echo "$(bc <<< "scale=2; $bytes / 1024")KB"
+    elif [ "$bytes" -lt 1073741824 ]; then
+        echo "$(bc <<< "scale=2; $bytes / 1048576")MB"
+    elif [ "$bytes" -lt 1099511627776 ]; then
+        echo "$(bc <<< "scale=2; $bytes / 1073741824")GB"
+    else
+        echo "$(bc <<< "scale=2; $bytes / 1099511627776")TB"
+    fi
 }
 
 # Function to uninstall Hysteria2
@@ -240,29 +271,43 @@ configure_warp() {
         echo "Error: Config file /etc/hysteria/config.json not found."
     fi
 }
+# Function to add a new user to the configuration
+add_user() {
+    if [ -f "/etc/hysteria/config.json" ]; then
+        read -p "Enter the username: " username
+        password=$(curl -s "https://api.genratr.com/?length=32&uppercase&lowercase&numbers" | jq -r '.password')
 
+        jq --arg username "$username" --arg password "$password" '.auth.userpass[$username] = $password' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+        systemctl restart hysteria-server.service >/dev/null 2>&1
+        echo "User $username added successfully."
+    else
+        echo "Error: Config file /etc/hysteria/config.json not found."
+    fi
+}
 # Hysteria2 menu
 hysteria2_menu() {
     clear
     echo "===== Hysteria2 Menu ====="
     echo "1. Install and Configure"
-    echo "2. Update Core"
-    echo "3. Change Port"
-    echo "4. Show URI"
-    echo "5. Check Traffic Status"
-    echo "6. Uninstall"
-    echo "7. Back to Main Menu"
+    echo "2. Add User"
+    echo "3. Show URI"
+    echo "4. Check Traffic Status"
+    echo "5. Change Port"
+    echo "6. Update Core"
+    echo "7. Uninstall"
+    echo "8. Back to Main Menu"
     echo "=========================="
 
     read -p "Enter your choice: " choice
     case $choice in
         1) install_and_configure ;;
-        2) update_core ;;
-        3) change_port ;;
-        4) show_uri ;;
-        5) traffic_status ;;
-        6) uninstall_hysteria ;;
-        7) return ;;
+        2) add_user ;;
+        3) show_uri ;;
+        4) traffic_status ;;
+        5) change_port ;;
+        6) update_core ;;
+        7) uninstall_hysteria ;;
+        8) return ;;
         *) echo "Invalid option. Please try again." ;;
     esac
     read -p "Press any key to return to the Hysteria2 menu..."

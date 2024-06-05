@@ -13,8 +13,10 @@
     }
   },
   "auth": {
-    "type": "password",
-    "password": "$authpassword"
+    "type": "userpass",
+    "userpass": {
+      "default": "$authpassword"
+    }
   },
   "quic": {
     "initStreamReceiveWindow": 8388608,

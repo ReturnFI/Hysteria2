@@ -8,30 +8,63 @@ fi
 
 # Function to install and configure Hysteria2
 install_and_configure() {
-    echo "Installing and configuring Hysteria2..."
-    bash <(curl -s https://raw.githubusercontent.com/H-Return/Hysteria2/main/install.sh)
-    echo -e "\n\n\n"
-    echo "Installation and configuration complete."
+    if systemctl is-active --quiet hysteria-server.service; then
+        echo -e "\033[0;31mError:\033[0mHysteria2 is already installed and running."
+        echo
+        echo "If you need to update the core, please use the 'Update Core' option."
+    else
+        echo "Installing and configuring Hysteria2..."
+        bash <(curl -s https://raw.githubusercontent.com/H-Return/Hysteria2/main/install.sh)
+        echo -e "\n\n\n"
+        echo "Installation and configuration complete."
+    fi
 }
+
 
 # Function to update Hysteria2
 update_core() {
     echo "Starting the update process for Hysteria2..." 
     echo "Backing up the current configuration..."
     cp /etc/hysteria/config.json /etc/hysteria/config_backup.json
-    sleep 1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to back up configuration. Aborting update."
+        return 1
+    fi
+
     echo "Downloading and installing the latest version of Hysteria2..."
     bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to download or install the latest version. Restoring backup configuration."
+        mv /etc/hysteria/config_backup.json /etc/hysteria/config.json
+        systemctl restart hysteria-server.service >/dev/null 2>&1
+        return 1
+    fi
+
     echo "Restoring configuration from backup..."
     mv /etc/hysteria/config_backup.json /etc/hysteria/config.json
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to restore configuration from backup."
+        return 1
+    fi
+
     echo "Modifying systemd service to use config.json..."
     sed -i 's|/etc/hysteria/config.yaml|/etc/hysteria/config.json|' /etc/systemd/system/hysteria-server.service
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to modify systemd service."
+        return 1
+    fi
+
     rm /etc/hysteria/config.yaml
     systemctl daemon-reload >/dev/null 2>&1
     systemctl restart hysteria-server.service >/dev/null 2>&1
-    sleep 1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to restart Hysteria2 service."
+        return 1
+    fi
+
     echo "Hysteria2 has been successfully updated."
     echo ""
+    return 0
 }
 
 # Function to change port
@@ -352,80 +385,3 @@ remove_user() {
     fi
 }
 
-# Hysteria2 menu
-hysteria2_menu() {
-    clear
-    echo "===== Hysteria2 Menu ====="
-    echo "1. Install and Configure"
-    echo "2. Add User"
-    echo "3. Show URI"
-    echo "4. Check Traffic Status"
-    echo "5. Remove User"
-    echo "6. Change Port"
-    echo "7. Update Core"
-    echo "8. Uninstall Hysteria2"
-    echo "9. Back to Main Menu"
-    echo "=========================="
-
-    read -p "Enter your choice: " choice
-    case $choice in
-        1) install_and_configure ;;
-        2) add_user ;;
-        3) show_uri ;;
-        4) traffic_status ;;
-        5) remove_user ;;
-        6) change_port ;;
-        7) update_core ;;
-        8) uninstall_hysteria ;;
-        9) return ;;
-        *) echo "Invalid option. Please try again." ;;
-    esac
-    read -p "Press any key to return to the Hysteria2 menu..."
-    hysteria2_menu
-}
-
-# Advance menu
-advance_menu() {
-    clear
-    echo "===== Advance Menu ====="
-    echo "1. Install TCP Brutal"
-    echo "2. Install WARP"
-    echo "3. Configure WARP"
-    echo "4. Back to Main Menu"
-    echo "========================="
-
-    read -p "Enter your choice: " choice
-    case $choice in
-        1) install_tcp_brutal ;;
-        2) install_warp ;;
-        3) configure_warp ;;
-        4) return ;;
-        *) echo "Invalid option. Please try again." ;;
-    esac
-    read -p "Press any key to return to the Advance menu..."
-    advance_menu
-}
-
-# Main menu
-main_menu() {
-    clear
-    echo "===== Main Menu ====="
-    echo "1. Hysteria2"
-    echo "2. Advance"
-    echo "3. Exit"
-    echo "====================="
-
-    read -p "Enter your choice: " choice
-    case $choice in
-        1) hysteria2_menu ;;
-        2) advance_menu ;;
-        3) exit 0 ;;
-        *) echo "Invalid option. Please try again." ;;
-    esac
-    read -p "Press any key to return to the main menu..."
-}
-
-# Loop to display the menu repeatedly
-while true; do
-    main_menu
-done

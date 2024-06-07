@@ -308,6 +308,50 @@ add_user() {
         echo -e "\033[0;31mError:\033[0m Config file /etc/hysteria/config.json not found."
     fi
 }
+# Function to remove a user from the configuration
+remove_user() {
+    if [ -f "/etc/hysteria/config.json" ]; then
+        # Extract current users from the config file
+        users=$(jq -r '.auth.userpass | keys | .[]' /etc/hysteria/config.json)
+
+        if [ -z "$users" ]; then
+            echo "No users found."
+            return
+        fi
+
+        # Display current users with numbering
+        echo "Current users:"
+        echo "-----------------"
+        i=1
+        for user in $users; do
+            echo "$i. $user"
+            ((i++))
+        done
+        echo "-----------------"
+
+        read -p "Enter the number of the user to remove: " selected_number
+
+        if ! [[ "$selected_number" =~ ^[0-9]+$ ]]; then
+            echo "Error: Invalid input. Please enter a number."
+            return
+        fi
+
+        if [ "$selected_number" -lt 1 ] || [ "$selected_number" -gt "$i" ]; then
+            echo "Error: Invalid selection. Please enter a number within the range."
+            return
+        fi
+
+        selected_user=$(echo "$users" | sed -n "${selected_number}p")
+
+        jq --arg selected_user "$selected_user" 'del(.auth.userpass[$selected_user])' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+
+        systemctl restart hysteria-server.service >/dev/null 2>&1
+        echo "User $selected_user removed successfully."
+    else
+        echo "Error: Config file /etc/hysteria/config.json not found."
+    fi
+}
+
 # Hysteria2 menu
 hysteria2_menu() {
     clear
@@ -316,10 +360,11 @@ hysteria2_menu() {
     echo "2. Add User"
     echo "3. Show URI"
     echo "4. Check Traffic Status"
-    echo "5. Change Port"
-    echo "6. Update Core"
-    echo "7. Uninstall"
-    echo "8. Back to Main Menu"
+    echo "5. Remove User"
+    echo "6. Change Port"
+    echo "7. Update Core"
+    echo "8. Uninstall Hysteria2"
+    echo "9. Back to Main Menu"
     echo "=========================="
 
     read -p "Enter your choice: " choice
@@ -328,13 +373,13 @@ hysteria2_menu() {
         2) add_user ;;
         3) show_uri ;;
         4) traffic_status ;;
-        5) change_port ;;
-        6) update_core ;;
-        7) uninstall_hysteria ;;
-        8) return ;;
+        5) remove_user ;;
+        6) change_port ;;
+        7) update_core ;;
+        8) uninstall_hysteria ;;
+        9) return ;;
         *) echo "Invalid option. Please try again." ;;
     esac
-    read -p "Press any key to return to the Hysteria2 menu..."
     hysteria2_menu
 }
 

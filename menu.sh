@@ -384,4 +384,83 @@ remove_user() {
         echo "Error: Config file /etc/hysteria/config.json not found."
     fi
 }
+# Hysteria2 menu
+hysteria2_menu() {
+    clear
+    echo "===== Hysteria2 Menu ====="
+    echo "1. Install and Configure"
+    echo "2. Add User"
+    echo "3. Show URI"
+    echo "4. Check Traffic Status"
+    echo "5. Remove User"
+    echo "6. Change Port"
+    echo "7. Update Core"
+    echo "8. Uninstall Hysteria2"
+    echo "9. Back to Main Menu"
+    echo "=========================="
 
+    read -p "Enter your choice: " choice
+    case $choice in
+        1) install_and_configure ;;
+        2) add_user ;;
+        3) show_uri ;;
+        4) traffic_status ;;
+        5) remove_user ;;
+        6) change_port ;;
+        7) update_core ;;
+        8) uninstall_hysteria ;;
+        9) return ;;
+        *) echo "Invalid option. Please try again." ;;
+    esac
+    echo
+    read -p "Press any key to return to the Hysteria2 menu..."
+    hysteria2_menu
+}
+
+# Advance menu
+advance_menu() {
+    clear
+    echo "===== Advance Menu ====="
+    echo "1. Install TCP Brutal"
+    echo "2. Install WARP"
+    echo "3. Configure WARP"
+    echo "4. Back to Main Menu"
+    echo "========================="
+
+    read -p "Enter your choice: " choice
+    case $choice in
+        1) install_tcp_brutal ;;
+        2) install_warp ;;
+        3) configure_warp ;;
+        4) return ;;
+        *) echo "Invalid option. Please try again." ;;
+    esac
+    echo
+    read -p "Press any key to return to the Advance menu..."
+    advance_menu
+}
+
+# Main menu
+main_menu() {
+    clear
+    echo "===== Main Menu ====="
+    echo "1. Hysteria2"
+    echo "2. Advance"
+    echo "3. Exit"
+    echo "====================="
+
+    read -p "Enter your choice: " choice
+    case $choice in
+        1) hysteria2_menu ;;
+        2) advance_menu ;;
+        3) exit 0 ;;
+        *) echo "Invalid option. Please try again." ;;
+    esac
+    echo
+    read -p "Press any key to return to the main menu..."
+}
+
+# Loop to display the menu repeatedly
+while true; do
+    main_menu
+done

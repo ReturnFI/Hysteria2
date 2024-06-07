@@ -274,14 +274,24 @@ configure_warp() {
 # Function to add a new user to the configuration
 add_user() {
     if [ -f "/etc/hysteria/config.json" ]; then
-        read -p "Enter the username: " username
+        while true; do
+            read -p "Enter the username: " username
+
+            # Validate username (only lowercase letters and numbers allowed)
+            if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+                break
+            else
+                echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+            fi
+        done
+
         password=$(curl -s "https://api.genratr.com/?length=32&uppercase&lowercase&numbers" | jq -r '.password')
 
         jq --arg username "$username" --arg password "$password" '.auth.userpass[$username] = $password' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
         systemctl restart hysteria-server.service >/dev/null 2>&1
-        echo "User $username added successfully."
+        echo -e "\033[0;32mUser $username added successfully.\033[0m"
     else
-        echo "Error: Config file /etc/hysteria/config.json not found."
+        echo -e "\033[0;31mError:\033[0m Config file /etc/hysteria/config.json not found."
     fi
 }
 # Hysteria2 menu

@@ -131,23 +131,37 @@ traffic_status() {
         return
     fi
 
+    # Get online status
+    online_response=$(curl -s -H "Authorization: $secret" http://127.0.0.1:25413/online)
+    if [ -z "$online_response" ]; then
+        echo -e "No online data available."
+        return
+    fi
+
     echo "Traffic status for each user:"
     echo "-------------------------------------------------"
-    printf "%-15s %-15s %-15s\n" "User" "Upload (TX)" "Download (RX)"
+    printf "%-15s %-15s %-15s %-10s\n" "User" "Upload (TX)" "Download (RX)" "Status"
     echo "-------------------------------------------------"
 
-    # Iterate over each user in the response
     users=$(echo "$response" | jq -r 'keys[]')
     for user in $users; do
         tx_bytes=$(echo "$response" | jq -r ".[\"$user\"].tx // 0")
         rx_bytes=$(echo "$response" | jq -r ".[\"$user\"].rx // 0")
 
-        # Format the bytes into human-readable format
+        online=$(echo "$online_response" | jq -r ".[\"$user\"] // 0")
+
         formatted_tx=$(format_bytes "$tx_bytes")
         formatted_rx=$(format_bytes "$rx_bytes")
 
+        status=""
+        if [ "$online" -eq 1 ]; then
+            status="Online"
+        else
+            status="Offline"
+        fi
+
         # Print user traffic information with color formatting
-        printf "%-15s ${green}%-15s${NC} ${cyan}%-15s${NC}\n" "$user" "$formatted_tx" "$formatted_rx"
+        printf "%-15s ${green}%-15s${NC} ${cyan}%-15s${NC} %-10s\n" "$user" "$formatted_tx" "$formatted_rx" "$status"
         echo "-------------------------------------------------"
     done
 }

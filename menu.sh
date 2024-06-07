@@ -380,6 +380,7 @@ hysteria2_menu() {
         9) return ;;
         *) echo "Invalid option. Please try again." ;;
     esac
+    read -p "Press any key to return to the Hysteria2 menu..."
     hysteria2_menu
 }
 

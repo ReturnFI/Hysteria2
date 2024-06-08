@@ -3,7 +3,7 @@
 # Ensure necessary packages are installed
 if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null || ! command -v curl &> /dev/null; then
     echo "Necessary packages are not installed. Please wait while they are being installed..."
-    apt-get update -qq && apt-get install jq qrencode curl -y >/dev/null 2>&1
+    apt-get update -qq && apt-get install jq qrencode curl pwgen uuid-runtime -y >/dev/null 2>&1
 fi
 
 # Function to install and configure Hysteria2
@@ -332,7 +332,7 @@ add_user() {
             fi
         done
 
-        password=$(curl -s "https://api.genratr.com/?length=32&uppercase&lowercase&numbers" | jq -r '.password')
+        password=$(pwgen -s 32 1)
 
         jq --arg username "$username" --arg password "$password" '.auth.userpass[$username] = $password' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
         systemctl restart hysteria-server.service >/dev/null 2>&1

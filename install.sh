@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Ensure jq and qrencode are installed
-if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null; then
-    echo "Necessary packages are not installed. Please wait while they are being installed..."
-    apt-get update -qq && apt-get install jq qrencode -y >/dev/null 2>&1
-fi
-
 # Step 1: Install Hysteria2
 echo "Installing Hysteria2..."
 bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1

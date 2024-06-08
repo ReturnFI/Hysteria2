@@ -53,9 +53,9 @@ done
 
 # Step 8: Generate required passwords and UUID
 echo "Generating passwords and UUID..."
-obfspassword=$(curl -s "https://api.genratr.com/?length=32&uppercase&lowercase&numbers" | jq -r '.password')
-authpassword=$(curl -s "https://api.genratr.com/?length=32&uppercase&lowercase&numbers" | jq -r '.password')
-UUID=$(curl -s https://www.uuidgenerator.net/api/version4)
+obfspassword=$(pwgen -s 32 1)
+authpassword=$(pwgen -s 32 1)
+UUID=$(uuidgen)
 
 # Step 9: Adjust file permissions for Hysteria service
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt

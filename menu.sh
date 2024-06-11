@@ -3,7 +3,9 @@
 # Ensure necessary packages are installed
 if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null || ! command -v curl &> /dev/null; then
     echo "Necessary packages are not installed. Please wait while they are being installed..."
-    apt-get update -qq && apt-get install jq qrencode curl pwgen uuid-runtime -y >/dev/null 2>&1
+    sleep 3
+    echo 
+    apt-get update && apt-get install jq qrencode curl pwgen uuid-runtime -y
 fi
 
 # Function to install and configure Hysteria2

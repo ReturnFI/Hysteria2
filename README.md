@@ -37,5 +37,5 @@ If any of these are missing, the script will attempt to install them automatical
 
 ## Disclaimer:
 
-This script is provided for educational purposes only. The authors are not responsible for any misuse or consequences arising from its use. Please ensure you understand the implications of using Hysteria2 and related tools before deployment in a production environment.
+This script is provided for educational purposes only. The developer are not responsible for any misuse or consequences arising from its use. Please ensure you understand the implications of using Hysteria2 and related tools before deployment in a production environment.
 

@@ -1,138 +1,41 @@
-# Hysteria2
+# Hysteria2 Management Shell Script
+
+This shell script provides a menu-driven interface to manage Hysteria2 server operations. It includes options to install, configure, update, and uninstall Hysteria2, as well as manage users, ports, traffic status, and integrate with other tools like TCP Brutal and WARP.
 
 ### Install command :
 ```
 bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)
 ```
 
-<details>
-  <summary><b>How to manual Installation ?</b></summary>
-  
-# Manual Installation
-  
-Make dir and wget the latest version of Hysteria 2 compatible with your server.
+## Features
 
-`mkdir hysteria`
+- ### Hysteria2:
+- Install and Configure: Installs and configures Hysteria2 server.
+- Add User: Creates a new user for Hysteria2 access.
+- Show URI: Displays the connection URI and QR code for existing users.
+- Check Traffic Status: Monitors real-time traffic information for each user.
+- Remove User: Deletes a user from the Hysteria2 configuration.
+- Change Port: Modifies the listening port for the Hysteria2 server.
+- Update Core: Updates Hysteria2 to the latest available version.
+- Uninstall Hysteria2: Removes Hysteria2 server and its configuration.
+- ### Advance: (Optional features)
+- Install TCP Brutal: Installs TCP Brutal for additional security measures.
+- Install WARP: Installs WARP for encrypted connection through Cloudflare.
+- Configure WARP: Manages WARP integration with Hysteria2 for traffic routing.
 
-`cd hysteria`
+## Prerequisites
+Ensure the following packages are installed:
 
-`wget https://github.com/apernet/hysteria/releases/download/app%2Fv2.4.4/hysteria-linux-amd64`
+- Ubuntu-based Linux distribution (tested on Ubuntu)
+- jq
+- qrencode
+- curl
+- pwgen
+- uuid-runtime
 
-Command to change kernel permissions:
+If any of these are missing, the script will attempt to install them automatically.
 
-`chmod 755 hysteria-linux-amd64`
+## Disclaimer:
 
-### SSL
-Commands to generate and sign a certificate:
+This script is provided for educational purposes only. The authors are not responsible for any misuse or consequences arising from its use. Please ensure you understand the implications of using Hysteria2 and related tools before deployment in a production environment.
 
-`openssl ecparam -genkey -name prime256v1 -out ca.key`
-
-`openssl req -new -x509 -days 36500 -key ca.key -out ca.crt  -subj "/CN=bing.com"`
-
-Extract the SHA-256 fingerprint:
-
-`openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt`
-
-example result:
-
-`sha256 Fingerprint=6F:CX:9A:FE:32:2B:J9:8V:.............`
-
-### sha256-key 
-```python
-import re
-import base64
-import binascii
-
-hex_string = "sha256 Fingerprint=6F:CX:9A:FE:32:2B:J9:8V:............."
-hex_string = re.sub(r"sha256 Fingerprint=", "", hex_string)
-hex_string = re.sub(r":", "", hex_string)
-binary_data = binascii.unhexlify(hex_string)
-base64_encoded = base64.b64encode(binary_data).decode('utf-8')
-
-print("sha256/" +base64_encoded)
-```
-
-Create the `generate.py` file with the `nano` editor
-
-`nano generate.py`
-
-Copy the code above and replace the placeholder with your own SHA-256 fingerprint
-
-And run the file with the command:
-
-`python3 generate.py`
-
-example result : `sha256/CMn3/tZqjIRUnclf0mFi/bOq7radMYjrOqLxlxqfXFN0=`
-
-Now use the sha256-key in the config file (pinSHA256).
-### Config 
-Downloading the `config.yaml` file using wget on the server
-
-`wget https://raw.githubusercontent.com/H-Return/Hysteria2/main/config.yaml`
-
-Open the `config.yaml` file with an editor like `nano` or `vim`.
-
-Fill in the following values carefully in the config.yaml file:
-
-- `$port`: 2087 or any port you want to use
-
-- /path/to/ca.key and /path/to/ca.crt to /root/hysteria/ca.key and /root/hysteria/ca.crt
-
-- `$sha256` : Use the sha256-key from the [sha256-key](https://github.com/H-Return/Hysteria2?tab=readme-ov-file#sha256-key) section obtained with the Python script
-
-- `$obfspassword` : Use this [website](https://www.avast.com/random-password-generator) to generate a password
-
-- `$authpassword` : Use this [website](https://www.avast.com/random-password-generator) to generate a password
-
-- `$UUID` To generate a UUID for the trafficStats section, use this [website](https://www.uuidgenerator.net/) 
-### System file
-Building a Systemd Service File:
-
-`nano /etc/systemd/system/Hysteria.service`
-
-Code:
-```
-[Unit]
-After=network.target nss-lookup.target
-
-[Service]
-User=root
-WorkingDirectory=/root
-CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
-AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
-ExecStart=/path/hysteria/hysteria-linux-amd64 server -c /path/hysteria/config.yaml
-ExecReload=/bin/kill -HUP $MAINPID
-Restart=always
-RestartSec=5
-LimitNOFILE=infinity
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Install and enable the service:
-
-`sudo systemctl daemon-reload`
-
-`sudo systemctl enable hysteria.service`
-
-`sudo systemctl start hysteria.service`
-
-### URI Scheme
-
-`hy2://authpassword@IP:Port?obfs=salamander&obfs-password=obfspassword&pinSHA256=sha256-key&insecure=1&sni=bing.com#Hysteria2`
-
-
-Import values from the config.yaml file:
-
-- `$authpassword`
-- **`IP`** enter your server IP
-- `$port`
-- `$obfspassword`
-- `$sha256`
-
-# Check Traffic Status:
-```
-bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/Traffic.sh)
-```
-</details>

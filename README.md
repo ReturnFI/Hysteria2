@@ -3,7 +3,7 @@
 This shell script provides a menu-driven interface to manage Hysteria2 server operations. It includes options to install, configure, update, and uninstall Hysteria2, as well as manage users, ports, traffic status, and integrate with other tools like TCP Brutal and WARP.
 
 ### Install command :
-```
+```shell
 bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)
 ```
 

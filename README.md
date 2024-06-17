@@ -9,7 +9,7 @@ bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)
 
 ## Features
 
-- ### Hysteria2:
+### Hysteria2:
 - Install and Configure: Installs and configures Hysteria2 server.
 - Add User: Creates a new user for Hysteria2 access.
 - Show URI: Displays the connection URI and QR code for existing users.
@@ -18,9 +18,11 @@ bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)
 - Change Port: Modifies the listening port for the Hysteria2 server.
 - Update Core: Updates Hysteria2 to the latest available version.
 - Uninstall Hysteria2: Removes Hysteria2 server and its configuration.
-- ### Advance: (Optional features)
-- Install TCP Brutal: Installs TCP Brutal for additional security measures.
-- Install WARP: Installs WARP for encrypted connection through Cloudflare.
+
+### Advance: (Optional features)
+
+- Install TCP Brutal:  The script can optionally install TCP Brutal, a tool designed to improve performance on congested networks.
+- Install WARP: Integrate WARP from Cloudflare to add an extra layer of encryption to your Hysteria2 connections, further protecting your online activity.
 - Configure WARP: Manages WARP integration with Hysteria2 for traffic routing.
 
 ## Prerequisites

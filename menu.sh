@@ -8,10 +8,32 @@ if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null || ! comma
     apt-get update && apt-get install jq qrencode curl pwgen uuid-runtime -y
 fi
 
+# Function to get system information
+get_system_info() {
+    OS=$(lsb_release -d | awk -F'\t' '{print $2}')
+    ARCH=$(uname -m)
+    # Fetching detailed IP information in JSON format
+    IP_API_DATA=$(curl -s https://ipapi.co/json/ -4)
+    ISP=$(echo "$IP_API_DATA" | jq -r '.org')
+    IP=$(echo "$IP_API_DATA" | jq -r '.ip')
+    CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4 "%"}')
+    RAM=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')
+}
+
+# Function to define colors
+define_colors() {
+    green='\033[1;34m'
+    cyan='\033[0;36m'
+    red='\033[0;31m'
+    yellow='\033[0;33m'
+    LPurple='\033[1;35m'
+    NC='\033[0m' # No Color
+}
+
 # Function to install and configure Hysteria2
 install_and_configure() {
     if systemctl is-active --quiet hysteria-server.service; then
-        echo -e "\033[0;31mError:\033[0mHysteria2 is already installed and running."
+        echo -e "${red}Error:${NC}Hysteria2 is already installed and running."
         echo
         echo "If you need to update the core, please use the 'Update Core' option."
     else
@@ -29,14 +51,14 @@ update_core() {
     echo "Backing up the current configuration..."
     cp /etc/hysteria/config.json /etc/hysteria/config_backup.json
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to back up configuration. Aborting update."
+        echo "${red}Error:${NC} Failed to back up configuration. Aborting update."
         return 1
     fi
 
     echo "Downloading and installing the latest version of Hysteria2..."
     bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to download or install the latest version. Restoring backup configuration."
+        echo "${red}Error:${NC} Failed to download or install the latest version. Restoring backup configuration."
         mv /etc/hysteria/config_backup.json /etc/hysteria/config.json
         systemctl restart hysteria-server.service >/dev/null 2>&1
         return 1
@@ -45,14 +67,14 @@ update_core() {
     echo "Restoring configuration from backup..."
     mv /etc/hysteria/config_backup.json /etc/hysteria/config.json
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to restore configuration from backup."
+        echo "${red}Error:${NC} Failed to restore configuration from backup."
         return 1
     fi
 
     echo "Modifying systemd service to use config.json..."
     sed -i 's|/etc/hysteria/config.yaml|/etc/hysteria/config.json|' /etc/systemd/system/hysteria-server.service
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to modify systemd service."
+        echo "${red}Error:${NC} Failed to modify systemd service."
         return 1
     fi
 
@@ -60,7 +82,7 @@ update_core() {
     systemctl daemon-reload >/dev/null 2>&1
     systemctl restart hysteria-server.service >/dev/null 2>&1
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to restart Hysteria2 service."
+        echo "${red}Error:${NC} Failed to restart Hysteria2 service."
         return 1
     fi
 
@@ -85,7 +107,7 @@ change_port() {
         systemctl restart hysteria-server.service >/dev/null 2>&1
         echo "Port changed successfully to $port."
     else
-        echo "Error: Config file /etc/hysteria/config.json not found."
+        echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
     fi
 }
 
@@ -139,10 +161,10 @@ show_uri() {
                 fi
             done
         else
-            echo "Error: Hysteria2 is not active."
+            echo "${red}Error:${NC} Hysteria2 is not active."
         fi
     else
-        echo "Error: Config file /etc/hysteria/config.json not found."
+        echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
     fi
 }
 
@@ -155,7 +177,7 @@ traffic_status() {
     secret=$(jq -r '.trafficStats.secret' /etc/hysteria/config.json)
 
     if [ -z "$secret" ]; then
-        echo "Error: Secret not found in config.json"
+        echo "${red}Error:${NC} Secret not found in config.json"
         return
     fi
 
@@ -267,7 +289,7 @@ install_warp() {
             systemctl restart hysteria-server.service >/dev/null 2>&1
             echo "WARP installed and outbound added to config.json."
         else
-            echo "Error: Config file /etc/hysteria/config.json not found."
+            echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
         fi
     fi
 }
@@ -325,7 +347,7 @@ configure_warp() {
         esac
         systemctl restart hysteria-server.service >/dev/null 2>&1
     else
-        echo "Error: Config file /etc/hysteria/config.json not found."
+        echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
     fi
 }
 # Function to add a new user to the configuration
@@ -338,7 +360,7 @@ add_user() {
             if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
                 break
             else
-                echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+                echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
             fi
         done
 
@@ -348,7 +370,7 @@ add_user() {
         systemctl restart hysteria-server.service >/dev/null 2>&1
         echo -e "\033[0;32mUser $username added successfully.\033[0m"
     else
-        echo -e "\033[0;31mError:\033[0m Config file /etc/hysteria/config.json not found."
+        echo -e "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
     fi
 }
 # Function to remove a user from the configuration
@@ -375,12 +397,12 @@ remove_user() {
         read -p "Enter the number of the user to remove: " selected_number
 
         if ! [[ "$selected_number" =~ ^[0-9]+$ ]]; then
-            echo "Error: Invalid input. Please enter a number."
+            echo "${red}Error:${NC} Invalid input. Please enter a number."
             return
         fi
 
         if [ "$selected_number" -lt 1 ] || [ "$selected_number" -gt "$i" ]; then
-            echo "Error: Invalid selection. Please enter a number within the range."
+            echo "${red}Error:${NC} Invalid selection. Please enter a number within the range."
             return
         fi
 
@@ -391,86 +413,140 @@ remove_user() {
         systemctl restart hysteria-server.service >/dev/null 2>&1
         echo "User $selected_user removed successfully."
     else
-        echo "Error: Config file /etc/hysteria/config.json not found."
+        echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
     fi
 }
-# Hysteria2 menu
-hysteria2_menu() {
+# Function to display the main menu
+display_main_menu() {
     clear
-    echo "===== Hysteria2 Menu ====="
-    echo "1. Install and Configure"
-    echo "2. Add User"
-    echo "3. Show URI"
-    echo "4. Check Traffic Status"
-    echo "5. Remove User"
-    echo "6. Change Port"
-    echo "7. Update Core"
-    echo "8. Uninstall Hysteria2"
-    echo "9. Back to Main Menu"
-    echo "=========================="
+    tput setaf 7 ; tput setab 4 ; tput bold ; printf '%40s%s%-12s\n' "◇───────────ㅤ🚀ㅤWelcome To Hysteria2 Managementㅤ🚀ㅤ───────────◇" ; tput sgr0
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
 
-    read -p "Enter your choice: " choice
-    case $choice in
-        1) install_and_configure ;;
-        2) add_user ;;
-        3) show_uri ;;
-        4) traffic_status ;;
-        5) remove_user ;;
-        6) change_port ;;
-        7) update_core ;;
-        8) uninstall_hysteria ;;
-        9) return ;;
-        *) echo "Invalid option. Please try again." ;;
-    esac
-    echo
-    read -p "Press any key to return to the Hysteria2 menu..."
-    hysteria2_menu
+    echo -e "${green}• OS: ${NC}$OS           ${green}• ARCH: ${NC}$ARCH"
+    echo -e "${green}• ISP: ${NC}$ISP         ${green}• CPU: ${NC}$CPU"
+    echo -e "${green}• IP: ${NC}$IP                ${green}• RAM: ${NC}$RAM"
+
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+
+    echo -e "${yellow}                   ☼ Main Menu ☼                   ${NC}"
+
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+    echo -e "${green}[1] ${NC}↝ Hysteria2 Menu"
+    echo -e "${cyan}[2] ${NC}↝ Advance Menu"
+    echo -e "${red}[0] ${NC}↝ Exit"
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+    echo -ne "${yellow}➜ Enter your option: ${NC}"
 }
 
-# Advance menu
-advance_menu() {
-    clear
-    echo "===== Advance Menu ====="
-    echo "1. Install TCP Brutal"
-    echo "2. Install WARP"
-    echo "3. Configure WARP"
-    echo "4. Back to Main Menu"
-    echo "========================="
-
-    read -p "Enter your choice: " choice
-    case $choice in
-        1) install_tcp_brutal ;;
-        2) install_warp ;;
-        3) configure_warp ;;
-        4) return ;;
-        *) echo "Invalid option. Please try again." ;;
-    esac
-    echo
-    read -p "Press any key to return to the Advance menu..."
-    advance_menu
-}
-
-# Main menu
+# Function to handle main menu options
 main_menu() {
     clear
-    echo "===== Main Menu ====="
-    echo "1. Hysteria2"
-    echo "2. Advance"
-    echo "3. Exit"
-    echo "====================="
-
-    read -p "Enter your choice: " choice
-    case $choice in
-        1) hysteria2_menu ;;
-        2) advance_menu ;;
-        3) exit 0 ;;
-        *) echo "Invalid option. Please try again." ;;
-    esac
-    echo
-    read -p "Press any key to return to the main menu..."
+    local choice
+    while true; do
+        define_colors
+        get_system_info
+        display_main_menu
+        read -r choice
+        case $choice in
+            1) hysteria2_menu ;;
+            2) advance_menu ;;
+            0) exit 0 ;;
+            *) echo "Invalid option. Please try again." ;;
+        esac
+        echo
+        read -rp "Press Enter to continue..."
+    done
 }
 
-# Loop to display the menu repeatedly
-while true; do
+# Function to display the Hysteria2 menu
+display_hysteria2_menu() {
+    clear
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+
+    echo -e "${yellow}                   ☼ Hysteria2 Menu ☼                   ${NC}"
+
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+
+    echo -e "${green}[1] ${NC}↝ Install and Configure Hysteria2"
+    echo -e "${cyan}[2] ${NC}↝ Add User"
+    echo -e "${cyan}[3] ${NC}↝ Show URI"
+    echo -e "${cyan}[4] ${NC}↝ Check Traffic Status"
+    echo -e "${cyan}[5] ${NC}↝ Remove User"
+    echo -e "${cyan}[6] ${NC}↝ Change Port"
+    echo -e "${cyan}[7] ${NC}↝ Update Core"
+    echo -e "${cyan}[8] ${NC}↝ Uninstall Hysteria2"
+
+    echo -e "${red}[0] ${NC}↝ Back to Main Menu"
+
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+
+    echo -ne "${yellow}➜ Enter your option: ${NC}"
+}
+
+# Function to handle Hysteria2 menu options
+hysteria2_menu() {
+    clear
+    local choice
+    while true; do
+        define_colors
+        get_system_info
+        display_hysteria2_menu
+        read -r choice
+        case $choice in
+            1) install_and_configure ;;
+            2) add_user ;;
+            3) show_uri ;;
+            4) traffic_status ;;
+            5) remove_user ;;
+            6) change_port ;;
+            7) update_core ;;
+            8) uninstall_hysteria ;;
+            0) return ;;
+            *) echo "Invalid option. Please try again." ;;
+        esac
+        echo
+        read -rp "Press Enter to continue..."
+    done
+}
+
+# Function to handle Advance menu options
+advance_menu() {
+    clear
+    local choice
+    while true; do
+        define_colors
+        display_advance_menu
+        read -r choice
+        case $choice in
+            1) install_tcp_brutal ;;
+            2) install_warp ;;
+            3) configure_warp ;;
+            4) return ;;
+            *) echo "Invalid option. Please try again." ;;
+        esac
+        echo
+        read -rp "Press Enter to continue..."
+    done
+}
+
+# Function to get Advance menu
+display_advance_menu() {
+    clear
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+    echo -e "${yellow}                   ☼ Advance Menu ☼                   ${NC}"
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+    echo -e "${green}[1] ${NC}↝ Install TCP Brutal"
+    echo -e "${cyan}[2] ${NC}↝ Install WARP"
+    echo -e "${cyan}[3] ${NC}↝ Configure WARP"
+    echo -e "${red}[4] ${NC}↝ Back to Main Menu"
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+    echo -ne "${yellow}➜ Enter your option: ${NC}"
+}
+
+# Main function to run the script
+main() {
     main_menu
-done
+}
+
+# Run the main function
+main

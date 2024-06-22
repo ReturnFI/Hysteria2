@@ -97,8 +97,8 @@ systemctl restart hysteria-server.service >/dev/null 2>&1
 if systemctl is-active --quiet hysteria-server.service; then
     # Step 14: Generate URI Scheme
     echo "Generating URI Scheme..."
-    IP=$(curl -4 ip.sb)
-    IP6=$(curl -6 ip.sb)
+    IP=$(curl -4 ip.gs)
+    IP6=$(curl -6 ip.gs)
     URI="hy2://default%3A$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv4"
     URI6="hy2://default%3A$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv6"
     # Step 15: Generate and display QR Code in the center of the terminal

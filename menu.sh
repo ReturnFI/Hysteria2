@@ -129,8 +129,8 @@ show_uri() {
                     obfspassword=$(jq -r '.obfs.salamander.password' /etc/hysteria/config.json)
 
                     # Get IP addresses
-                    IP=$(curl -s -4 ip.sb)
-                    IP6=$(curl -s -6 ip.sb)
+                    IP=$(curl -s -4 ip.gs)
+                    IP6=$(curl -s -6 ip.gs)
 
                     # Construct URI
                     URI="hy2://$username%3A$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#$username-IPv4"

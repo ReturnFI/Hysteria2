@@ -129,6 +129,4 @@ else
 fi
 
 # Step 15: wget Traffic script
-echo "wget Traffic File"
 wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/traffic.py -O /etc/hysteria/traffic.py >/dev/null 2>&1
-echo -e "\n"

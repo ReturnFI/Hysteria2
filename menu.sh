@@ -1,11 +1,22 @@
 #!/bin/bash
 
+# Function to define colors
+define_colors() {
+    green='\033[1;34m'
+    cyan='\033[0;36m'
+    red='\033[0;31m'
+    yellow='\033[0;33m'
+    LPurple='\033[1;35m'
+    NC='\033[0m' # No Color
+}
+
 # Ensure necessary packages are installed
+clear
 if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null || ! command -v curl &> /dev/null; then
-    echo "Necessary packages are not installed. Please wait while they are being installed..."
+    echo "${yellow}Necessary packages are not installed. Please wait while they are being installed..."
     sleep 3
     echo 
-    apt-get update && apt-get install jq qrencode curl pwgen uuid-runtime -y
+    apt update && apt upgrade -y && apt install jq qrencode curl pwgen uuid-runtime python3 python3-pip -y
 fi
 
 # Function to get system information
@@ -20,16 +31,6 @@ get_system_info() {
     RAM=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')
 }
 
-# Function to define colors
-define_colors() {
-    green='\033[1;34m'
-    cyan='\033[0;36m'
-    red='\033[0;31m'
-    yellow='\033[0;33m'
-    LPurple='\033[1;35m'
-    NC='\033[0m' # No Color
-}
-
 # Function to install and configure Hysteria2
 install_and_configure() {
     if systemctl is-active --quiet hysteria-server.service; then
@@ -38,7 +39,7 @@ install_and_configure() {
         echo "If you need to update the core, please use the 'Update Core' option."
     else
         echo "Installing and configuring Hysteria2..."
-        bash <(curl -s https://raw.githubusercontent.com/H-Return/Hysteria2/main/install.sh)
+        bash <(curl -s https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
         echo -e "\n\n\n"
         echo "Installation and configuration complete."
     fi
@@ -170,57 +171,11 @@ show_uri() {
 
 # Function to check traffic status for each user
 traffic_status() {
-    green='\033[0;32m'
-    cyan='\033[0;36m'
-    NC='\033[0m'
-
-    secret=$(jq -r '.trafficStats.secret' /etc/hysteria/config.json)
-
-    if [ -z "$secret" ]; then
-        echo "${red}Error:${NC} Secret not found in config.json"
-        return
+    if [ -f "/etc/hysteria/traffic.py" ]; then
+        python3 /etc/hysteria/traffic.py
+    else
+        echo "Error: /etc/hysteria/traffic.py not found."
     fi
-
-    response=$(curl -s -H "Authorization: $secret" http://127.0.0.1:25413/traffic)
-
-    if [ -z "$response" ] || [ "$response" = "{}" ]; then
-        echo -e "No traffic data available."
-        return
-    fi
-
-    # Get online status
-    online_response=$(curl -s -H "Authorization: $secret" http://127.0.0.1:25413/online)
-    if [ -z "$online_response" ]; then
-        echo -e "No online data available."
-        return
-    fi
-
-    echo "Traffic status for each user:"
-    echo "-------------------------------------------------"
-    printf "%-15s %-15s %-15s %-10s\n" "User" "Upload (TX)" "Download (RX)" "Status"
-    echo "-------------------------------------------------"
-
-    users=$(echo "$response" | jq -r 'keys[]')
-    for user in $users; do
-        tx_bytes=$(echo "$response" | jq -r ".[\"$user\"].tx // 0")
-        rx_bytes=$(echo "$response" | jq -r ".[\"$user\"].rx // 0")
-
-        online=$(echo "$online_response" | jq -r ".[\"$user\"] // 0")
-
-        formatted_tx=$(format_bytes "$tx_bytes")
-        formatted_rx=$(format_bytes "$rx_bytes")
-
-        status=""
-        if [ "$online" -eq 1 ]; then
-            status="Online"
-        else
-            status="Offline"
-        fi
-
-        # Print user traffic information with color formatting
-        printf "%-15s ${green}%-15s${NC} ${cyan}%-15s${NC} %-10s\n" "$user" "$formatted_tx" "$formatted_rx" "$status"
-        echo "-------------------------------------------------"
-    done
 }
 
 # Helper function to format bytes into human-readable format

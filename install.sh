@@ -32,7 +32,7 @@ sha256=$(python3 generate.py)
 
 # Step 6: Download the config.json file
 echo "Downloading config.json..."
-wget https://raw.githubusercontent.com/H-Return/Hysteria2/main/config.json -O /etc/hysteria/config.json >/dev/null 2>&1
+wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/config.json -O /etc/hysteria/config.json >/dev/null 2>&1
 echo -e "\n"
 
 # Step 7: Ask for the port number and validate input
@@ -127,3 +127,7 @@ if systemctl is-active --quiet hysteria-server.service; then
 else
     echo "Error: hysteria-server.service is not active."
 fi
+
+# Step 15: wget Traffic script
+echo "wget Traffic File"
+wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/traffic.py -O /etc/hysteria/traffic.py >/dev/null 2>&1

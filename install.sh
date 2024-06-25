@@ -82,6 +82,7 @@ jq --arg port "$port" \
 
 # Step 11: Modify the systemd service file to use config.json
 echo "Updating hysteria-server.service to use config.json..."
+sed -i 's|(config.yaml)||' /etc/systemd/system/hysteria-server.service
 sed -i 's|/etc/hysteria/config.yaml|/etc/hysteria/config.json|' /etc/systemd/system/hysteria-server.service
 rm /etc/hysteria/config.yaml
 sleep 1

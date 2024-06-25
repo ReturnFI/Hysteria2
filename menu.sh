@@ -19,6 +19,12 @@ if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null || ! comma
     apt update && apt upgrade -y && apt install jq qrencode curl pwgen uuid-runtime python3 python3-pip -y
 fi
 
+# Add alias 'hys2' for Hysteria2
+if ! grep -q "alias hys2='bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)'" ~/.bashrc; then
+    echo "alias hys2='bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)'" >> ~/.bashrc
+    source ~/.bashrc
+fi
+
 # Function to get system information
 get_system_info() {
     OS=$(lsb_release -d | awk -F'\t' '{print $2}')

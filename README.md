@@ -7,6 +7,11 @@ This shell script provides a menu-driven interface to manage Hysteria2 server op
 bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)
 ```
 
+<p align="center">
+<img src="https://github.com/ReturnFI/Hysteria2/assets/151555003/b1c7ab9f-7887-46fd-8e13-a7bfe9bf5990" width="500" height="250">
+<p/>
+
+
 ## Features
 
 ### Hysteria2:
@@ -36,7 +41,7 @@ Ensure the following packages are installed:
 - uuid-runtime
 
 If any of these are missing, the script will attempt to install them automatically.
-
+  
 ## Disclaimer:
 
 This script is provided for educational purposes only. The developer are not responsible for any misuse or consequences arising from its use. Please ensure you understand the implications of using Hysteria2 and related tools before deployment in a production environment.

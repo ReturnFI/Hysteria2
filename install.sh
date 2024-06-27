@@ -38,8 +38,15 @@ echo -e "\n"
 # Step 7: Ask for the port number and validate input
 while true; do
     read -p "Enter the port number you want to use (1-65535): " port
-    if [[ $port =~ ^[0-9]+$ ]] && [ "$port" -ge 1 ] && [ "$port" -le 65535 ]; then
-        break
+    if [[ $port =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )); then
+        # Check if the port is in use
+        if ss -tuln | grep -q ":$port\b"; then
+            clear
+            echo -e "\e[91mPort $port is already in use. Please choose another port.\e[0m"
+            echo
+        else
+            break
+        fi
     else
         echo "Invalid port number. Please enter a number between 1 and 65535."
     fi

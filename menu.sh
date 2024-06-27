@@ -40,17 +40,21 @@ get_system_info() {
 # Function to install and configure Hysteria2
 install_and_configure() {
     if systemctl is-active --quiet hysteria-server.service; then
-        echo -e "${red}Error:${NC}Hysteria2 is already installed and running."
+        echo -e "${red}Error:${NC} Hysteria2 is already installed and running."
         echo
         echo "If you need to update the core, please use the 'Update Core' option."
     else
         echo "Installing and configuring Hysteria2..."
         bash <(curl -s https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
         echo -e "\n\n\n"
-        echo "Installation and configuration complete."
+
+        if systemctl is-active --quiet hysteria-server.service; then
+            echo "Installation and configuration complete."
+        else
+            echo -e "${red}Error:${NC} Hysteria2 service is not active. Please check the logs for more details."
+        fi
     fi
 }
-
 
 # Function to update Hysteria2
 update_core() {
@@ -67,7 +71,7 @@ update_core() {
     if [ $? -ne 0 ]; then
         echo "${red}Error:${NC} Failed to download or install the latest version. Restoring backup configuration."
         mv /etc/hysteria/config_backup.json /etc/hysteria/config.json
-        systemctl restart hysteria-server.service >/dev/null 2>&1
+        restart_hysteria_service >/dev/null 2>&1
         return 1
     fi
 
@@ -87,7 +91,7 @@ update_core() {
 
     rm /etc/hysteria/config.yaml
     systemctl daemon-reload >/dev/null 2>&1
-    systemctl restart hysteria-server.service >/dev/null 2>&1
+    restart_hysteria_service >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "${red}Error:${NC} Failed to restart Hysteria2 service."
         return 1
@@ -111,7 +115,7 @@ change_port() {
 
     if [ -f "/etc/hysteria/config.json" ]; then
         jq --arg port "$port" '.listen = ":" + $port' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
-        systemctl restart hysteria-server.service >/dev/null 2>&1
+        restart_hysteria_service >/dev/null 2>&1
         echo "Port changed successfully to $port."
     else
         echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
@@ -184,6 +188,12 @@ traffic_status() {
     fi
 }
 
+# Function to restart Hysteria2 service
+restart_hysteria_service() {
+    python3 /etc/hysteria/traffic.py >/dev/null 2>&1
+    systemctl restart hysteria-server.service
+}
+
 # Function to uninstall Hysteria2
 uninstall_hysteria() {
     echo "Uninstalling Hysteria2..."
@@ -231,7 +241,7 @@ install_warp() {
             # Add the outbound configuration to the config.json file
             jq '.outbounds += [{"name": "warps", "type": "direct", "direct": {"mode": 4, "bindDevice": "wgcf"}}]' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
             # Restart the hysteria-server service
-            systemctl restart hysteria-server.service >/dev/null 2>&1
+            restart_hysteria_service >/dev/null 2>&1
             echo "WARP installed and outbound added to config.json."
         else
             echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
@@ -290,7 +300,7 @@ configure_warp() {
                 echo "Invalid option. Please try again."
                 ;;
         esac
-        systemctl restart hysteria-server.service >/dev/null 2>&1
+        restart_hysteria_service >/dev/null 2>&1
     else
         echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
     fi
@@ -312,7 +322,7 @@ add_user() {
         password=$(pwgen -s 32 1)
 
         jq --arg username "$username" --arg password "$password" '.auth.userpass[$username] = $password' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
-        systemctl restart hysteria-server.service >/dev/null 2>&1
+        restart_hysteria_service >/dev/null 2>&1
         echo -e "\033[0;32mUser $username added successfully.\033[0m"
     else
         echo -e "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
@@ -355,7 +365,7 @@ remove_user() {
 
         jq --arg selected_user "$selected_user" 'del(.auth.userpass[$selected_user])' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
 
-        systemctl restart hysteria-server.service >/dev/null 2>&1
+        restart_hysteria_service >/dev/null 2>&1
         echo "User $selected_user removed successfully."
     else
         echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."

@@ -184,22 +184,6 @@ traffic_status() {
     fi
 }
 
-# Helper function to format bytes into human-readable format
-format_bytes() {
-    bytes=$1
-    if [ "$bytes" -lt 1024 ]; then
-        echo "${bytes}B"
-    elif [ "$bytes" -lt 1048576 ]; then
-        echo "$(bc <<< "scale=2; $bytes / 1024")KB"
-    elif [ "$bytes" -lt 1073741824 ]; then
-        echo "$(bc <<< "scale=2; $bytes / 1048576")MB"
-    elif [ "$bytes" -lt 1099511627776 ]; then
-        echo "$(bc <<< "scale=2; $bytes / 1073741824")GB"
-    else
-        echo "$(bc <<< "scale=2; $bytes / 1099511627776")TB"
-    fi
-}
-
 # Function to uninstall Hysteria2
 uninstall_hysteria() {
     echo "Uninstalling Hysteria2..."

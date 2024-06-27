@@ -364,7 +364,11 @@ remove_user() {
         selected_user=$(echo "$users" | sed -n "${selected_number}p")
 
         jq --arg selected_user "$selected_user" 'del(.auth.userpass[$selected_user])' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
-
+        
+        if [ -f "/etc/hysteria/traffic_data.json" ]; then
+            jq --arg selected_user "$selected_user" 'del(.[$selected_user])' /etc/hysteria/traffic_data.json > /etc/hysteria/traffic_data_temp.json && mv /etc/hysteria/traffic_data_temp.json /etc/hysteria/traffic_data.json
+        fi
+        
         restart_hysteria_service >/dev/null 2>&1
         echo "User $selected_user removed successfully."
     else

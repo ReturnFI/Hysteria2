@@ -520,7 +520,8 @@ advance_menu() {
             1) install_tcp_brutal ;;
             2) install_warp ;;
             3) configure_warp ;;
-            4) return ;;
+            4) uninstall_warp ;;
+            5) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac
         echo
@@ -537,7 +538,8 @@ display_advance_menu() {
     echo -e "${green}[1] ${NC}↝ Install TCP Brutal"
     echo -e "${cyan}[2] ${NC}↝ Install WARP"
     echo -e "${cyan}[3] ${NC}↝ Configure WARP"
-    echo -e "${red}[4] ${NC}↝ Back to Main Menu"
+    echo -e "${cyan}[4] ${NC}↝ Uninstall WARP"
+    echo -e "${red}[5] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
 }

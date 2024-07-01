@@ -251,6 +251,12 @@ install_warp() {
 
 # Function to configure WARP
 configure_warp() {
+    # Check if wg-quick@wgcf.service is active
+    if ! systemctl is-active --quiet wg-quick@wgcf.service; then
+        echo "WARP is not active. Please Install WARP before configuring."
+        return
+    fi
+    
     if [ -f "/etc/hysteria/config.json" ]; then
         # Check the current status of WARP configurations
         warp_all_status=$(jq -r 'if .acl.inline | index("warps(all)") then "WARP active" else "Direct" end' /etc/hysteria/config.json)

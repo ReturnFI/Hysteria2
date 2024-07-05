@@ -45,7 +45,7 @@ install_and_configure() {
         echo "If you need to update the core, please use the 'Update Core' option."
     else
         echo "Installing and configuring Hysteria2..."
-        bash /root/Hysteria2/install.sh
+        bash <(curl -s https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
         echo -e "\n\n\n"
 
         if systemctl is-active --quiet hysteria-server.service; then

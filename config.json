@@ -13,10 +13,8 @@
     }
   },
   "auth": {
-    "type": "userpass",
-    "userpass": {
-      "default": "$authpassword"
-    }
+    "type": "command",
+    "command": "/etc/hysteria/users/user.sh"
   },
   "quic": {
     "initStreamReceiveWindow": 8388608,

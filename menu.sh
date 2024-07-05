@@ -45,7 +45,7 @@ install_and_configure() {
         echo "If you need to update the core, please use the 'Update Core' option."
     else
         echo "Installing and configuring Hysteria2..."
-        bash <(curl -s https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
+        bash /root/Hysteria2/install.sh
         echo -e "\n\n\n"
 
         if systemctl is-active --quiet hysteria-server.service; then
@@ -124,17 +124,17 @@ change_port() {
 
 # Function to show URI if Hysteria2 is installed and active
 show_uri() {
-    if [ -f "/etc/hysteria/config.json" ]; then
+    if [ -f "/etc/hysteria/users/users.json" ]; then
         if systemctl is-active --quiet hysteria-server.service; then
             # Get the list of configured usernames
-            usernames=$(jq -r '.auth.userpass | keys_unsorted[]' /etc/hysteria/config.json)
+            usernames=$(jq -r 'keys_unsorted[]' /etc/hysteria/users/users.json)
             
             # Prompt the user to select a username
             PS3="Select a username: "
             select username in $usernames; do
                 if [ -n "$username" ]; then
-                    # Get the selected user's password and other required parameters
-                    authpassword=$(jq -r ".auth.userpass[\"$username\"]" /etc/hysteria/config.json)
+                    # Get the selected user's details
+                    authpassword=$(jq -r ".\"$username\".password" /etc/hysteria/users/users.json)
                     port=$(jq -r '.listen' /etc/hysteria/config.json | cut -d':' -f2)
                     sha256=$(jq -r '.tls.pinSHA256' /etc/hysteria/config.json)
                     obfspassword=$(jq -r '.obfs.salamander.password' /etc/hysteria/config.json)
@@ -147,11 +147,12 @@ show_uri() {
                     URI="hy2://$username%3A$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#$username-IPv4"
                     URI6="hy2://$username%3A$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#$username-IPv6"
 
-                    cols=$(tput cols)
-                    rows=$(tput lines)
+                    # Generate QR codes
                     qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
                     qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
 
+                    # Display QR codes and URIs
+                    cols=$(tput cols)
                     echo -e "\nIPv4:\n"
                     echo "$qr1" | while IFS= read -r line; do
                         printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
@@ -161,6 +162,7 @@ show_uri() {
                     echo "$qr2" | while IFS= read -r line; do
                         printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
                     done
+
                     echo
                     echo "IPv4: $URI"
                     echo
@@ -172,10 +174,10 @@ show_uri() {
                 fi
             done
         else
-            echo "${red}Error:${NC} Hysteria2 is not active."
+            echo -e "\033[0;31mError:\033[0m Hysteria2 is not active."
         fi
     else
-        echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
+        echo -e "\033[0;31mError:\033[0m Config file /etc/hysteria/users/users.json not found."
     fi
 }
 
@@ -221,6 +223,7 @@ traffic_status() {
     done
 }
 
+
 # Function to restart Hysteria2 service
 restart_hysteria_service() {
     python3 /etc/hysteria/traffic.py >/dev/null 2>&1
@@ -246,6 +249,10 @@ uninstall_hysteria() {
     sleep 1
     echo "Reloading systemd daemon..."
     systemctl daemon-reload >/dev/null 2>&1
+    sleep 1
+    echo "Removing cron jobs..."
+    (crontab -l | grep -v "python3 /etc/hysteria/traffic.py" | crontab -) >/dev/null 2>&1
+    (crontab -l | grep -v "/etc/hysteria/users/kick.sh" | crontab -) >/dev/null 2>&1
     sleep 1
     echo "Hysteria2 uninstalled!"
     echo ""
@@ -380,32 +387,39 @@ configure_warp() {
 }
 # Function to add a new user to the configuration
 add_user() {
-    if [ -f "/etc/hysteria/config.json" ]; then
-        while true; do
-            read -p "Enter the username: " username
+    while true; do
+        read -p "Enter the username: " username
 
-            # Validate username (only lowercase letters and numbers allowed)
-            if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
-                break
-            else
-                echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
-            fi
-        done
+        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+            break
+        else
+            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        fi
+    done
 
-        password=$(pwgen -s 32 1)
+    read -p "Enter the traffic limit (in bytes): " traffic
+    read -p "Enter the expiration days: " expiration_days
+    password=$(pwgen -s 32 1)
+    creation_date=$(date +%Y-%m-%d)
 
-        jq --arg username "$username" --arg password "$password" '.auth.userpass[$username] = $password' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
-        restart_hysteria_service >/dev/null 2>&1
-        echo -e "\033[0;32mUser $username added successfully.\033[0m"
-    else
-        echo -e "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
+    if [ ! -f "/etc/hysteria/users/users.json" ]; then
+        echo "{}" > /etc/hysteria/users/users.json
     fi
+
+    jq --arg username "$username" --arg password "$password" --argjson traffic "$traffic" --argjson expiration_days "$expiration_days" --arg creation_date "$creation_date" \
+    '.[$username] = {password: $password, max_download_bytes: $traffic, expiration_days: $expiration_days, account_creation_date: $creation_date, blocked: false}' \
+    /etc/hysteria/users/users.json > /etc/hysteria/users/users_temp.json && mv /etc/hysteria/users/users_temp.json /etc/hysteria/users/users.json
+
+    restart_hysteria_service >/dev/null 2>&1
+
+    echo -e "\033[0;32mUser $username added successfully.\033[0m"
 }
+
 # Function to remove a user from the configuration
 remove_user() {
-    if [ -f "/etc/hysteria/config.json" ]; then
-        # Extract current users from the config file
-        users=$(jq -r '.auth.userpass | keys | .[]' /etc/hysteria/config.json)
+    if [ -f "/etc/hysteria/users/users.json" ]; then
+        # Extract current users from the users.json file
+        users=$(jq -r 'keys[]' /etc/hysteria/users/users.json)
 
         if [ -z "$users" ]; then
             echo "No users found."
@@ -436,7 +450,7 @@ remove_user() {
 
         selected_user=$(echo "$users" | sed -n "${selected_number}p")
 
-        jq --arg selected_user "$selected_user" 'del(.auth.userpass[$selected_user])' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+        jq --arg selected_user "$selected_user" 'del(.[$selected_user])' /etc/hysteria/users/users.json > /etc/hysteria/users/users_temp.json && mv /etc/hysteria/users/users_temp.json /etc/hysteria/users/users.json
         
         if [ -f "/etc/hysteria/traffic_data.json" ]; then
             jq --arg selected_user "$selected_user" 'del(.[$selected_user])' /etc/hysteria/traffic_data.json > /etc/hysteria/traffic_data_temp.json && mv /etc/hysteria/traffic_data_temp.json /etc/hysteria/traffic_data.json
@@ -445,7 +459,7 @@ remove_user() {
         restart_hysteria_service >/dev/null 2>&1
         echo "User $selected_user removed successfully."
     else
-        echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
+        echo "${red}Error:${NC} Config file /etc/hysteria/traffic_data.json not found."
     fi
 }
 # Function to display the main menu
@@ -504,9 +518,6 @@ display_hysteria2_menu() {
     echo -e "${cyan}[3] ${NC}↝ Show URI"
     echo -e "${cyan}[4] ${NC}↝ Check Traffic Status"
     echo -e "${cyan}[5] ${NC}↝ Remove User"
-    echo -e "${cyan}[6] ${NC}↝ Change Port"
-    echo -e "${cyan}[7] ${NC}↝ Update Core"
-    echo -e "${cyan}[8] ${NC}↝ Uninstall Hysteria2"
 
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
 
@@ -530,9 +541,6 @@ hysteria2_menu() {
             3) show_uri ;;
             4) traffic_status ;;
             5) remove_user ;;
-            6) change_port ;;
-            7) update_core ;;
-            8) uninstall_hysteria ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac
@@ -554,7 +562,10 @@ advance_menu() {
             2) install_warp ;;
             3) configure_warp ;;
             4) uninstall_warp ;;
-            5) return ;;
+            5) change_port ;;
+            6) update_core ;;
+            7) uninstall_hysteria ;;
+            0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac
         echo
@@ -569,10 +580,13 @@ display_advance_menu() {
     echo -e "${yellow}                   ☼ Advance Menu ☼                   ${NC}"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -e "${green}[1] ${NC}↝ Install TCP Brutal"
-    echo -e "${cyan}[2] ${NC}↝ Install WARP"
+    echo -e "${green}[2] ${NC}↝ Install WARP"
     echo -e "${cyan}[3] ${NC}↝ Configure WARP"
-    echo -e "${cyan}[4] ${NC}↝ Uninstall WARP"
-    echo -e "${red}[5] ${NC}↝ Back to Main Menu"
+    echo -e "${red}[4] ${NC}↝ Uninstall WARP"
+    echo -e "${cyan}[5] ${NC}↝ Change Port Hysteria2"
+    echo -e "${cyan}[6] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[7] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
 }

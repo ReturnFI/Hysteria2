@@ -1,5 +1,12 @@
 #!/bin/bash
-
+define_colors() {
+    green='\033[0;32m'
+    cyan='\033[0;36m'
+    red='\033[0;31m'
+    yellow='\033[0;33m'
+    LPurple='\033[1;35m'
+    NC='\033[0m'
+}
 # Step 1: Install Hysteria2
 echo "Installing Hysteria2..."
 bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
@@ -33,7 +40,7 @@ sha256=$(python3 generate.py)
 # Step 6: Download the config.json file
 echo "Downloading config.json..."
 wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/config.json -O /etc/hysteria/config.json >/dev/null 2>&1
-echo -e "\n"
+echo
 
 # Step 7: Ask for the port number and validate input
 while true; do
@@ -55,7 +62,6 @@ done
 # Step 8: Generate required passwords and UUID
 echo "Generating passwords and UUID..."
 obfspassword=$(pwgen -s 32 1)
-authpassword=$(pwgen -s 32 1)
 UUID=$(uuidgen)
 
 # Step 9: Adjust file permissions for Hysteria service
@@ -75,7 +81,6 @@ echo "Customizing config.json..."
 jq --arg port "$port" \
    --arg sha256 "$sha256" \
    --arg obfspassword "$obfspassword" \
-   --arg authpassword "$authpassword" \
    --arg UUID "$UUID" \
    --arg networkdef "$networkdef" \
    '.listen = ":\($port)" |
@@ -83,7 +88,6 @@ jq --arg port "$port" \
     .tls.key = "/etc/hysteria/ca.key" |
     .tls.pinSHA256 = $sha256 |
     .obfs.salamander.password = $obfspassword |
-    .auth.userpass.default = $authpassword |
     .trafficStats.secret = $UUID |
     .outbounds[0].direct.bindDevice = $networkdef' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
 
@@ -103,38 +107,19 @@ systemctl restart hysteria-server.service >/dev/null 2>&1
 
 # Step 13: Check if the hysteria-server.service is active
 if systemctl is-active --quiet hysteria-server.service; then
-    # Step 14: Generate URI Scheme
-    echo "Generating URI Scheme..."
-    IP=$(curl -4 ip.gs)
-    IP6=$(curl -6 ip.gs)
-    URI="hy2://default%3A$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv4"
-    URI6="hy2://default%3A$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#Hysteria2-IPv6"
-    # Step 15: Generate and display QR Code in the center of the terminal
-    cols=$(tput cols)
-    rows=$(tput lines)
-
-    qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
-    qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
-    clear
-    echo -e "\nIPv4:\n"
-    echo "$qr1" | while IFS= read -r line; do
-        printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
-    done
-    echo -e "\nIPv6:\n"
-
-    echo "$qr2" | while IFS= read -r line; do
-        printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
-    done
-    echo -e "\n\n"
-
-    # Output the URI scheme
-    echo "IPv4: $URI"
-    echo
-    echo "IPv6: $URI6"
-    echo
+    echo "${cyan}Hysteria2${green} has been successfully install."
 else
-    echo "Error: hysteria-server.service is not active."
+    echo "${red}Error:${NC} hysteria-server.service is not active."
 fi
 
-# Step 15: wget Traffic script
+# Step 15: wget Traffic/user/kick script
 wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/traffic.py -O /etc/hysteria/traffic.py >/dev/null 2>&1
+mkdir -p /etc/hysteria/users
+wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/user.sh -O /etc/hysteria/users/user.sh >/dev/null 2>&1
+wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/kick.sh -O /etc/hysteria/users/kick.sh >/dev/null 2>&1
+
+chmod +x /etc/hysteria/users/user.sh
+chmod +x /etc/hysteria/users/kick.sh
+# Add the commands to the crontab
+(crontab -l ; echo "*/1 * * * * python3 /etc/hysteria/traffic.py >/dev/null 2>&1") | crontab -
+(crontab -l ; echo "*/1 * * * * /etc/hysteria/users/kick.sh >/dev/null 2>&1") | crontab -

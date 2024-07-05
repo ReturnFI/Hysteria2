@@ -397,7 +397,10 @@ add_user() {
         fi
     done
 
-    read -p "Enter the traffic limit (in bytes): " traffic
+    read -p "Enter the traffic limit (in GB): " traffic_gb
+    # Convert GB to bytes (1 GB = 1073741824 bytes)
+    traffic=$((traffic_gb * 1073741824))
+
     read -p "Enter the expiration days: " expiration_days
     password=$(pwgen -s 32 1)
     creation_date=$(date +%Y-%m-%d)
@@ -414,6 +417,7 @@ add_user() {
 
     echo -e "\033[0;32mUser $username added successfully.\033[0m"
 }
+
 
 # Function to remove a user from the configuration
 remove_user() {

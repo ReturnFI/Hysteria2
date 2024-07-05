@@ -46,7 +46,7 @@ install_and_configure() {
     else
         echo "Installing and configuring Hysteria2..."
         bash <(curl -s https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
-        echo -e "\n\n\n"
+        echo -e "\n"
 
         if systemctl is-active --quiet hysteria-server.service; then
             echo "Installation and configuration complete."

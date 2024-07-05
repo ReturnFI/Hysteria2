@@ -10,16 +10,6 @@ CONFIG_FILE="/etc/hysteria/config.json"
 
 IFS=':' read -r USERNAME PASSWORD <<< "$AUTH"
 
-if [ ! -f "$USERS_FILE" ]; then
-  echo "Users file not found!"
-  exit 1
-fi
-
-if [ ! -f "$TRAFFIC_FILE" ]; then
-  echo "Traffic data file not found!"
-  return 1
-fi
-
 STORED_PASSWORD=$(jq -r --arg user "$USERNAME" '.[$user].password' "$USERS_FILE")
 MAX_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].max_download_bytes' "$USERS_FILE")
 EXPIRATION_DAYS=$(jq -r --arg user "$USERNAME" '.[$user].expiration_days' "$USERS_FILE")

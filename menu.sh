@@ -182,10 +182,27 @@ show_uri() {
 # Function to check traffic status for each user
 traffic_status() {
     if [ -f "/etc/hysteria/traffic.py" ]; then
-        python3 /etc/hysteria/traffic.py
+        python3 /etc/hysteria/traffic.py >/dev/null 2>&1
     else
         echo "Error: /etc/hysteria/traffic.py not found."
+        exit 1
     fi
+
+    if [ ! -f "/etc/hysteria/traffic_data.json" ]; then
+        echo "Error: /etc/hysteria/traffic_data.json not found."
+        exit 1
+    fi
+
+    data=$(cat /etc/hysteria/traffic_data.json)
+    echo "Traffic Data:"
+    echo "---------------------------------------------------------------------------"
+    echo -e "User       Upload (TX)     Download (RX)          Status"
+    echo "---------------------------------------------------------------------------"
+
+    echo "$data" | jq -r 'to_entries[] | [.key, (.value.upload_bytes / 1024 / 1024), (.value.download_bytes / 1024 / 1024), .value.status] | @tsv' | while IFS=$'\t' read -r user upload download status; do
+        printf "${yellow}%-15s ${cyan}%-15s ${green}%-15s ${NC}%-10s\n" "$user" "$(printf "%.2fMB" "$upload")" "$(printf "%.2fMB" "$download")" "$status"
+        echo "---------------------------------------------------------------------------"
+    done
 }
 
 # Function to restart Hysteria2 service

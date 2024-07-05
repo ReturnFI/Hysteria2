@@ -17,7 +17,7 @@ fi
 
 if [ ! -f "$TRAFFIC_FILE" ]; then
   echo "Traffic data file not found!"
-  exit 1
+  return 1
 fi
 
 STORED_PASSWORD=$(jq -r --arg user "$USERNAME" '.[$user].password' "$USERS_FILE")

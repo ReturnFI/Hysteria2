@@ -1,3 +1,11 @@
+<div dir="ltr">
+
+
+
+[**![Lang_farsi](https://user-images.githubusercontent.com/125398461/234186932-52f1fa82-52c6-417f-8b37-08fe9250a55f.png) &nbsp;فارسی**](README_fa.md)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+
+
 # Hysteria2 Management Shell Script
 
 This shell script provides a menu-driven interface to manage Hysteria2 server operations. It includes options to install, configure, update, and uninstall Hysteria2, as well as manage users, ports, traffic status, and integrate with other tools like TCP Brutal and WARP.

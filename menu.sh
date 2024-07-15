@@ -232,7 +232,12 @@ restart_hysteria_service() {
 
 # Function to modify users
 modify_users() {
-    python3 /etc/hysteria/users/modify.py 
+    modify_script="/root/Hysteria2/modify.py"
+    github_raw_url="https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/modify.py"
+
+    [ -f "$modify_script" ] || wget "$github_raw_url" -O "$modify_script" >/dev/null 2>&1
+
+    python3 "$modify_script"
 }
 
 # Function to uninstall Hysteria2

@@ -117,6 +117,7 @@ wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/traffic.py -O /et
 mkdir -p /etc/hysteria/users
 wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/user.sh -O /etc/hysteria/users/user.sh >/dev/null 2>&1
 wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/kick.sh -O /etc/hysteria/users/kick.sh >/dev/null 2>&1
+wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/modify.py -O /etc/hysteria/users/modify.py >/dev/null 2>&1
 
 chmod +x /etc/hysteria/users/user.sh
 chmod +x /etc/hysteria/users/kick.sh

@@ -232,7 +232,7 @@ restart_hysteria_service() {
 
 # Function to modify users
 modify_users() {
-    modify_script="/root/Hysteria2/modify.py"
+    modify_script="/etc/hysteria/users/modify.py"
     github_raw_url="https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/modify.py"
 
     [ -f "$modify_script" ] || wget "$github_raw_url" -O "$modify_script" >/dev/null 2>&1

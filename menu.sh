@@ -230,6 +230,11 @@ restart_hysteria_service() {
     systemctl restart hysteria-server.service
 }
 
+# Function to modify users
+modify_users() {
+    python3 /etc/hysteria/users/modify.py 
+}
+
 # Function to uninstall Hysteria2
 uninstall_hysteria() {
     echo "Uninstalling Hysteria2..."
@@ -519,9 +524,10 @@ display_hysteria2_menu() {
 
     echo -e "${green}[1] ${NC}↝ Install and Configure Hysteria2"
     echo -e "${cyan}[2] ${NC}↝ Add User"
-    echo -e "${cyan}[3] ${NC}↝ Show URI"
-    echo -e "${cyan}[4] ${NC}↝ Check Traffic Status"
-    echo -e "${cyan}[5] ${NC}↝ Remove User"
+    echo -e "${cyan}[3] ${NC}↝ Modify User"
+    echo -e "${cyan}[4] ${NC}↝ Show URI"
+    echo -e "${cyan}[5] ${NC}↝ Check Traffic Status"
+    echo -e "${cyan}[6] ${NC}↝ Remove User"
 
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
 
@@ -542,9 +548,10 @@ hysteria2_menu() {
         case $choice in
             1) install_and_configure ;;
             2) add_user ;;
-            3) show_uri ;;
-            4) traffic_status ;;
-            5) remove_user ;;
+            3) modify_users ;;
+            4) show_uri ;;
+            5) traffic_status ;;
+            6) remove_user ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

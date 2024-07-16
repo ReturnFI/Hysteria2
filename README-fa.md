@@ -7,7 +7,7 @@
 ### دستور نصب:
 
 ```shell
-bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/menu.sh)
 ```
 
 <p align="center">

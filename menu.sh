@@ -390,10 +390,12 @@ configure_warp() {
             4)
                 if [ "$adult_content_status" == "Blocked" ]; then
                     jq 'del(.acl.inline[] | select(. == "reject(geosite:category-porn)"))' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
-                    echo "Adult content blocking removed."
+                    jq '.resolver.tls.addr = "1.1.1.1:853"' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+                    echo "Adult content blocking removed and resolver updated."
                 else
                     jq '.acl.inline += ["reject(geosite:category-porn)"]' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
-                    echo "Adult content blocked."
+                    jq '.resolver.tls.addr = "1.1.1.3:853"' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+                    echo "Adult content blocked and resolver updated."
                 fi
                 ;;
             5)

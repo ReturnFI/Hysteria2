@@ -346,12 +346,14 @@ configure_warp() {
         warp_all_status=$(jq -r 'if .acl.inline | index("warps(all)") then "WARP active" else "Direct" end' /etc/hysteria/config.json)
         google_openai_status=$(jq -r 'if (.acl.inline | index("warps(geoip:google)")) or (.acl.inline | index("warps(geosite:google)")) or (.acl.inline | index("warps(geosite:netflix)")) or (.acl.inline | index("warps(geosite:spotify)")) or (.acl.inline | index("warps(geosite:openai)")) or (.acl.inline | index("warps(geoip:openai)")) then "WARP active" else "Direct" end' /etc/hysteria/config.json)
         iran_status=$(jq -r 'if (.acl.inline | index("warps(geosite:ir)")) and (.acl.inline | index("warps(geoip:ir)")) then "Use WARP" else "Reject" end' /etc/hysteria/config.json)
+        adult_content_status=$(jq -r 'if .acl.inline | index("reject(geosite:category-porn)") then "Blocked" else "Not blocked" end' "$CONFIG_FILE")
 
-        echo "===== WARP Configuration Menu ====="
+        echo "===== Configuration Menu ====="
         echo "1. Use WARP for all traffic ($warp_all_status)"
         echo "2. Use WARP for Google, OpenAI, etc. ($google_openai_status)"
         echo "3. Use WARP for geosite:ir and geoip:ir ($iran_status)"
-        echo "4. Back to Advance Menu"
+        echo "4. Block adult content ($adult_content_status)"
+        echo "5. Back to Advance Menu"
         echo "==================================="
 
         read -p "Enter your choice: " choice
@@ -384,6 +386,15 @@ configure_warp() {
                 fi
                 ;;
             4)
+                if [ "$adult_content_status" == "Blocked" ]; then
+                    jq 'del(.acl.inline[] | select(. == "reject(geosite:category-porn)"))' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+                    echo "Adult content blocking removed."
+                else
+                    jq '.acl.inline += ["reject(geosite:category-porn)"]' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+                    echo "Adult content blocked."
+                fi
+                ;;
+            5)
                 return
                 ;;
             *)
@@ -392,7 +403,7 @@ configure_warp() {
         esac
         restart_hysteria_service >/dev/null 2>&1
     else
-        echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
+        echo "${red}Error:${NC} Config file $CONFIG_FILE not found."
     fi
 }
 # Function to add a new user to the configuration

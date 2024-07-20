@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import os
-import subprocess
+import io
 import click
+import subprocess
 from enum import StrEnum
+from contextlib import redirect_stdout
 
 import traffic
 
@@ -15,6 +17,7 @@ class Command(StrEnum):
     INSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR,'hysteria2' ,'install.sh')
     UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR,'hysteria2', 'uninstall.sh')
     UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR,'hysteria2', 'update.sh')
+    RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR,'hysteria2','restart.sh')
     CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR,'hysteria2' ,'change_port.sh')
     ADD_USER = os.path.join(SCRIPT_DIR,'hysteria2' ,'add_user.sh')
     EDIT_USER = os.path.join(SCRIPT_DIR,'hysteria2' ,'edit_user.sh')
@@ -65,6 +68,16 @@ def uninstall_hysteria2():
 @cli.command('update-hysteria2')
 def update_hysteria2():
     run_cmd(['bash', Command.UPDATE_HYSTERIA2])
+
+@cli.command('restart-hysteria2')
+def restart_hysteria2():
+    # save traffic status before restarting hysteria2
+    # ignore the traffic_status prints
+    f = io.StringIO()
+    with redirect_stdout(f):
+        traffic.traffic_status()
+    run_cmd(['bash', Command.RESTART_HYSTERIA2])
+
 
 @cli.command('change-hysteria2-port')
 @click.option('--port','-p', required=True, help='New port for Hysteria2',type=int)

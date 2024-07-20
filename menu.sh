@@ -56,6 +56,7 @@ install_and_configure() {
     fi
 }
 
+# TODO: remove
 # Function to update Hysteria2
 update_core() {
     echo "Starting the update process for Hysteria2..." 
@@ -223,7 +224,7 @@ traffic_status() {
     done
 }
 
-
+# TODO: remove 
 # Function to restart Hysteria2 service
 restart_hysteria_service() {
     python3 /etc/hysteria/traffic.py >/dev/null 2>&1
@@ -240,6 +241,7 @@ modify_users() {
     python3 "$modify_script"
 }
 
+# TODO: remove
 # Function to uninstall Hysteria2
 uninstall_hysteria() {
     echo "Uninstalling Hysteria2..."

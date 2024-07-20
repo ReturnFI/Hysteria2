@@ -268,15 +268,6 @@ uninstall_hysteria() {
     echo ""
 }
 
-# Function to install TCP Brutal
-install_tcp_brutal() {
-    echo "Installing TCP Brutal..."
-    bash <(curl -fsSL https://tcp.hy2.sh/)
-    sleep 3
-    clear
-    echo "TCP Brutal installation complete."
-}
-
 # Function to install WARP and update config.json
 install_warp() {
     # Check if wg-quick@wgcf.service is active

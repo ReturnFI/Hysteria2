@@ -109,4 +109,3 @@ def format_bytes(bytes):
     else:
         return f"{bytes / 1099511627776:.2f}TB"
 
-traffic_status()

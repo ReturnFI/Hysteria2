@@ -1,13 +1,7 @@
 #!/bin/bash
 
-define_colors() {
-    green='\033[0;32m'
-    cyan='\033[0;36m'
-    red='\033[0;31m'
-    yellow='\033[0;33m'
-    LPurple='\033[1;35m'
-    NC='\033[0m'
-}
+source /etc/hysteria/core/scripts/utils.sh
+define_colors
 
 install_hysteria() {
     # Step 1: Install Hysteria2

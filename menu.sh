@@ -1,14 +1,6 @@
 #!/bin/bash
 
-# Function to define colors
-define_colors() {
-    green='\033[0;32m'
-    cyan='\033[0;36m'
-    red='\033[0;31m'
-    yellow='\033[0;33m'
-    LPurple='\033[1;35m'
-    NC='\033[0m' # No Color
-}
+source /etc/hysteria/core/scripts/utils.sh
 
 # Ensure necessary packages are installed
 clear
@@ -20,8 +12,8 @@ if ! command -v jq &> /dev/null || ! command -v qrencode &> /dev/null || ! comma
 fi
 
 # Add alias 'hys2' for Hysteria2
-if ! grep -q "alias hys2='bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)'" ~/.bashrc; then
-    echo "alias hys2='bash <(curl https://raw.githubusercontent.com/H-Return/Hysteria2/main/menu.sh)'" >> ~/.bashrc
+if ! grep -q "alias hys2='/etc/hysteria/menu.sh'" ~/.bashrc; then
+    echo "alias hys2='/etc/hysteria/menu.sh'" >> ~/.bashrc
     source ~/.bashrc
 fi
 
@@ -124,11 +116,11 @@ hysteria2_menu() {
         display_hysteria2_menu
         read -r choice
         case $choice in
-            1) install_and_configure ;;
+            1) python3 /etc/hysteria/core/cli.py install-hysteria2 ;;
             2) add_user ;;
             3) modify_users ;;
             4) show_uri ;;
-            5) traffic_status ;;
+            5) python3 /etc/hysteria2/core/cli.py traffic_status ;;
             6) remove_user ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;

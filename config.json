@@ -14,7 +14,7 @@
   },
   "auth": {
     "type": "command",
-    "command": "/etc/hysteria/users/user.sh"
+    "command": "/etc/hysteria/core/scripts/hysteria2/user.sh"
   },
   "quic": {
     "initStreamReceiveWindow": 8388608,

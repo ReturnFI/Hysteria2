@@ -37,48 +37,6 @@ get_system_info() {
     RAM=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')
 }
 
-# Function to check traffic status for each user
-traffic_status() {
-    if [ -f "/etc/hysteria/traffic.py" ]; then
-        python3 /etc/hysteria/traffic.py >/dev/null 2>&1
-    else
-        echo "Error: /etc/hysteria/traffic.py not found."
-        return 1
-    fi
-
-    if [ ! -f "/etc/hysteria/traffic_data.json" ]; then
-        echo "Error: /etc/hysteria/traffic_data.json not found."
-        return 1
-    fi
-
-    data=$(cat /etc/hysteria/traffic_data.json)
-    echo "Traffic Data:"
-    echo "---------------------------------------------------------------------------"
-    echo -e "User       Upload (TX)     Download (RX)          Status"
-    echo "---------------------------------------------------------------------------"
-
-    echo "$data" | jq -r 'to_entries[] | [.key, .value.upload_bytes, .value.download_bytes, .value.status] | @tsv' | while IFS=$'\t' read -r user upload_bytes download_bytes status; do
-        if [ $(echo "$upload_bytes < 1073741824" | bc -l) -eq 1 ]; then
-            upload=$(echo "scale=2; $upload_bytes / 1024 / 1024" | bc)
-            upload_unit="MB"
-        else
-            upload=$(echo "scale=2; $upload_bytes / 1024 / 1024 / 1024" | bc)
-            upload_unit="GB"
-        fi
-
-        if [ $(echo "$download_bytes < 1073741824" | bc -l) -eq 1 ]; then
-            download=$(echo "scale=2; $download_bytes / 1024 / 1024" | bc)
-            download_unit="MB"
-        else
-            download=$(echo "scale=2; $download_bytes / 1024 / 1024 / 1024" | bc)
-            download_unit="GB"
-        fi
-
-        printf "${yellow}%-15s ${cyan}%-15s ${green}%-15s ${NC}%-10s\n" "$user" "$(printf "%.2f%s" "$upload" "$upload_unit")" "$(printf "%.2f%s" "$download" "$download_unit")" "$status"
-        echo "---------------------------------------------------------------------------"
-    done
-}
-
 # TODO: remove 
 # Function to restart Hysteria2 service
 restart_hysteria_service() {

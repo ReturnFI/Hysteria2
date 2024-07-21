@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from datetime import datetime
 import os
 import io
 import click
@@ -83,8 +84,19 @@ def change_hysteria2_port(port:int):
 @click.option('--username','-u', required=True, help='Username for the new user',type=str)
 @click.option('--traffic-limit','-t', required=True, help='Traffic limit for the new user in GB',type=float)
 @click.option('--expiration-days','-e', required=True, help='Expiration days for the new user',type=int)
-def add_user(username:str, traffic_limit:float, expiration_days:int):
-    run_cmd(['bash', Command.ADD_USER, username, str(traffic_limit), str(expiration_days)])
+@click.option('--password','-p',required=False, help='Password for the user',type=str)
+@click.option('--creation-date','-c',required=False, help='Creation date for the user',type=str)
+def add_user(username:str, traffic_limit:float, expiration_days:int,password:str,creation_date:str):
+    if not password:
+        try:
+            password = generate_password()
+        except subprocess.CalledProcessError as e:
+            print(f'Error: failed to generate password\n{e}')
+            exit(1)
+    if not creation_date:
+        creation_date = datetime.now().strftime('%Y-%m-%d')
+
+    run_cmd(['bash', Command.ADD_USER, username, str(traffic_limit), str(expiration_days), password, creation_date])
 
 @cli.command('edit-user')
 @click.option('--username','-u', required=True, help='Username for the user to edit',type=str)

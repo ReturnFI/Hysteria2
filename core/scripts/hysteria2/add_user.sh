@@ -10,6 +10,26 @@ add_user() {
     username=$1
     traffic_gb=$2
     expiration_days=$3
+    password=$4
+    if [ -z "$password" ]; then
+        password=$(pwgen -s 32 1)
+    fi
+    creation_date=$5
+    # Check if the creation_date is empty
+    if [ -z "$creation_date" ]; then
+        creation_date=$(date +%Y-%m-%d)
+    else
+        # Validate the date format (YYYY-MM-DD)
+        if ! [[ "$creation_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "Invalid date format. Expected YYYY-MM-DD."
+            exit 1
+        fi
+        # Check if the date is valid
+        if ! date -d "$creation_date" >/dev/null 2>&1; then
+            echo "Invalid date. Please provide a valid date in YYYY-MM-DD format."
+            exit 1
+        fi
+    fi
 
     # Validate the username
     if ! [[ "$username" =~ ^[a-z0-9]+$ ]]; then
@@ -20,8 +40,6 @@ add_user() {
     # Convert GB to bytes (1 GB = 1073741824 bytes)
     traffic=$((traffic_gb * 1073741824))
 
-    password=$(pwgen -s 32 1)
-    creation_date=$(date +%Y-%m-%d)
 
     if [ ! -f "/etc/hysteria/users/users.json" ]; then
         echo "{}" > /etc/hysteria/users/users.json
@@ -37,4 +55,4 @@ add_user() {
 }
 
 # Call the function with the provided arguments
-add_user "$1" "$2" "$3"
+add_user "$1" "$2" "$3" "$4" "$5"

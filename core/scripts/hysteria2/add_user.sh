@@ -41,13 +41,13 @@ add_user() {
     traffic=$((traffic_gb * 1073741824))
 
 
-    if [ ! -f "/etc/hysteria/users/users.json" ]; then
-        echo "{}" > /etc/hysteria/users/users.json
+    if [ ! -f "/etc/hysteria/users.json" ]; then
+        echo "{}" > /etc/hysteria/users.json
     fi
 
     jq --arg username "$username" --arg password "$password" --argjson traffic "$traffic" --argjson expiration_days "$expiration_days" --arg creation_date "$creation_date" \
     '.[$username] = {password: $password, max_download_bytes: $traffic, expiration_days: $expiration_days, account_creation_date: $creation_date, blocked: false}' \
-    /etc/hysteria/users/users.json > /etc/hysteria/users/users_temp.json && mv /etc/hysteria/users/users_temp.json /etc/hysteria/users/users.json
+    /etc/hysteria/users.json > /etc/hysteria/users_temp.json && mv /etc/hysteria/users_temp.json /etc/hysteria/users.json
 
     python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
 

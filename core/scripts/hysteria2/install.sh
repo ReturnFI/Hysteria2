@@ -116,7 +116,7 @@ install_hysteria() {
     # Add the scripts to the crontab
     (crontab -l ; echo "*/1 * * * * python3 /etc/hysteria/core/cli.py traffic-status >/dev/null 2>&1") | crontab -
     (crontab -l ; echo "*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1") | crontab -
-    }
+}
 
 
 

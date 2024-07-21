@@ -37,12 +37,6 @@ get_system_info() {
     RAM=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')
 }
 
-# TODO: remove 
-# Function to restart Hysteria2 service
-restart_hysteria_service() {
-    python3 /etc/hysteria/traffic.py >/dev/null 2>&1
-    systemctl restart hysteria-server.service
-}
 
 # Function to modify users
 modify_users() {

@@ -97,54 +97,6 @@ modify_users() {
 }
 
 
-
-# Function to remove a user from the configuration
-remove_user() {
-    if [ -f "/etc/hysteria/users/users.json" ]; then
-        # Extract current users from the users.json file
-        users=$(jq -r 'keys[]' /etc/hysteria/users/users.json)
-
-        if [ -z "$users" ]; then
-            echo "No users found."
-            return
-        fi
-
-        # Display current users with numbering
-        echo "Current users:"
-        echo "-----------------"
-        i=1
-        for user in $users; do
-            echo "$i. $user"
-            ((i++))
-        done
-        echo "-----------------"
-
-        read -p "Enter the number of the user to remove: " selected_number
-
-        if ! [[ "$selected_number" =~ ^[0-9]+$ ]]; then
-            echo "${red}Error:${NC} Invalid input. Please enter a number."
-            return
-        fi
-
-        if [ "$selected_number" -lt 1 ] || [ "$selected_number" -gt "$i" ]; then
-            echo "${red}Error:${NC} Invalid selection. Please enter a number within the range."
-            return
-        fi
-
-        selected_user=$(echo "$users" | sed -n "${selected_number}p")
-
-        jq --arg selected_user "$selected_user" 'del(.[$selected_user])' /etc/hysteria/users/users.json > /etc/hysteria/users/users_temp.json && mv /etc/hysteria/users/users_temp.json /etc/hysteria/users/users.json
-        
-        if [ -f "/etc/hysteria/traffic_data.json" ]; then
-            jq --arg selected_user "$selected_user" 'del(.[$selected_user])' /etc/hysteria/traffic_data.json > /etc/hysteria/traffic_data_temp.json && mv /etc/hysteria/traffic_data_temp.json /etc/hysteria/traffic_data.json
-        fi
-        
-        restart_hysteria_service >/dev/null 2>&1
-        echo "User $selected_user removed successfully."
-    else
-        echo "${red}Error:${NC} Config file /etc/hysteria/traffic_data.json not found."
-    fi
-}
 # Function to display the main menu
 display_main_menu() {
     clear

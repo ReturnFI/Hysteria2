@@ -2,27 +2,37 @@
 
 source /etc/hysteria/core/scripts/utils.sh
 
-# Function to get system information
-get_system_info() {
-    OS=$(lsb_release -d | awk -F'\t' '{print $2}')
-    ARCH=$(uname -m)
-    # Fetching detailed IP information in JSON format
-    IP_API_DATA=$(curl -s https://ipapi.co/json/ -4)
-    ISP=$(echo "$IP_API_DATA" | jq -r '.org')
-    IP=$(echo "$IP_API_DATA" | jq -r '.ip')
-    CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4 "%"}')
-    RAM=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')
+# OPTION HANDLERS (ONLY NEEDED ONE)
+
+hysteria2_add_user_handler() {
+
+}
+
+hysteria2_remove_user_handler() {
+
+}
+
+hysteria2_show_user_uri_hanndler() {
+
+}
+
+hysteria2_change_port_handler() {
+
 }
 
 
 # Function to modify users
-modify_users() {
+hysteria2_modify_users() {
     modify_script="/etc/hysteria/users/modify.py"
     github_raw_url="https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/modify.py"
 
     [ -f "$modify_script" ] || wget "$github_raw_url" -O "$modify_script" >/dev/null 2>&1
 
     python3 "$modify_script"
+}
+
+warp_configure_handler() {
+
 }
 
 
@@ -100,34 +110,11 @@ hysteria2_menu() {
         read -r choice
         case $choice in
             1) python3 /etc/hysteria/core/cli.py install-hysteria2 ;;
-            2) add_user ;;
-            3) modify_users ;;
-            4) show_uri ;;
+            2) hysteria2_add_user_handler ;;
+            3) hysteria2_modify_users ;;
+            4) hysteria2_show_user_uri_hanndler ;;
             5) python3 /etc/hysteria2/core/cli.py traffic_status ;;
-            6) remove_user ;;
-            0) return ;;
-            *) echo "Invalid option. Please try again." ;;
-        esac
-        echo
-        read -rp "Press Enter to continue..."
-    done
-}
-
-# Function to handle Advance menu options
-advance_menu() {
-    clear
-    local choice
-    while true; do
-        display_advance_menu
-        read -r choice
-        case $choice in
-            1) install_tcp_brutal ;;
-            2) install_warp ;;
-            3) configure_warp ;;
-            4) uninstall_warp ;;
-            5) change_port ;;
-            6) update_core ;;
-            7) uninstall_hysteria ;;
+            6) hysteria2_remove_user_handler ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac
@@ -152,6 +139,29 @@ display_advance_menu() {
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
+}
+
+# Function to handle Advance menu options
+advance_menu() {
+    clear
+    local choice
+    while true; do
+        display_advance_menu
+        read -r choice
+        case $choice in
+            1) python3 /etc/hysteria/core/cli.py install-tcp-brutal ;;
+            2) python3 /etc/hysteria/core/cli.py install-warp ;;
+            3) warp_configure_handler ;;
+            4) python3 /etc/hysteria/core/cli.py uninstall-warp ;;
+            5) hysteria2_change_port_handler ;;
+            6) python3 /etc/hysteria/core/cli.py update-hysteria2 ;;
+            7) python3 /etc/hysteria/core/cli.py uninstall-hysteria2 ;;
+            0) return ;;
+            *) echo "Invalid option. Please try again." ;;
+        esac
+        echo
+        read -rp "Press Enter to continue..."
+    done
 }
 
 # Main function to run the script

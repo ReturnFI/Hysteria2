@@ -37,65 +37,6 @@ get_system_info() {
     RAM=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')
 }
 
-# Function to show URI if Hysteria2 is installed and active
-show_uri() {
-    if [ -f "/etc/hysteria/users/users.json" ]; then
-        if systemctl is-active --quiet hysteria-server.service; then
-            # Get the list of configured usernames
-            usernames=$(jq -r 'keys_unsorted[]' /etc/hysteria/users/users.json)
-            
-            # Prompt the user to select a username
-            PS3="Select a username: "
-            select username in $usernames; do
-                if [ -n "$username" ]; then
-                    # Get the selected user's details
-                    authpassword=$(jq -r ".\"$username\".password" /etc/hysteria/users/users.json)
-                    port=$(jq -r '.listen' /etc/hysteria/config.json | cut -d':' -f2)
-                    sha256=$(jq -r '.tls.pinSHA256' /etc/hysteria/config.json)
-                    obfspassword=$(jq -r '.obfs.salamander.password' /etc/hysteria/config.json)
-
-                    # Get IP addresses
-                    IP=$(curl -s -4 ip.gs)
-                    IP6=$(curl -s -6 ip.gs)
-
-                    # Construct URI
-                    URI="hy2://$username%3A$authpassword@$IP:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#$username-IPv4"
-                    URI6="hy2://$username%3A$authpassword@[$IP6]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#$username-IPv6"
-
-                    # Generate QR codes
-                    qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
-                    qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
-
-                    # Display QR codes and URIs
-                    cols=$(tput cols)
-                    echo -e "\nIPv4:\n"
-                    echo "$qr1" | while IFS= read -r line; do
-                        printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
-                    done
-
-                    echo -e "\nIPv6:\n"
-                    echo "$qr2" | while IFS= read -r line; do
-                        printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
-                    done
-
-                    echo
-                    echo "IPv4: $URI"
-                    echo
-                    echo "IPv6: $URI6"
-                    echo
-                    break
-                else
-                    echo "Invalid selection. Please try again."
-                fi
-            done
-        else
-            echo -e "\033[0;31mError:\033[0m Hysteria2 is not active."
-        fi
-    else
-        echo -e "\033[0;31mError:\033[0m Config file /etc/hysteria/users/users.json not found."
-    fi
-}
-
 # Function to check traffic status for each user
 traffic_status() {
     if [ -f "/etc/hysteria/traffic.py" ]; then

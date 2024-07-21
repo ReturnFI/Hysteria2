@@ -53,7 +53,6 @@ main_menu() {
     clear
     local choice
     while true; do
-        define_colors
         get_system_info
         display_main_menu
         read -r choice
@@ -96,7 +95,6 @@ hysteria2_menu() {
     clear
     local choice
     while true; do
-        define_colors
         get_system_info
         display_hysteria2_menu
         read -r choice
@@ -120,7 +118,6 @@ advance_menu() {
     clear
     local choice
     while true; do
-        define_colors
         display_advance_menu
         read -r choice
         case $choice in
@@ -162,5 +159,6 @@ main() {
     main_menu
 }
 
+define_colors
 # Run the main function
 main

@@ -17,8 +17,8 @@ echo "Reloading systemd daemon..."
 systemctl daemon-reload >/dev/null 2>&1
 sleep 1
 echo "Removing cron jobs..."
-(crontab -l | grep -v "python3 /etc/hysteria/traffic.py" | crontab -) >/dev/null 2>&1
-(crontab -l | grep -v "/etc/hysteria/users/kick.sh" | crontab -) >/dev/null 2>&1
+(crontab -l | grep -v "python3 /etc/hysteria/core/cli.py traffic-status" | crontab -) >/dev/null 2>&1
+(crontab -l | grep -v "/etc/hysteria/core/scripts/hysteria2/kick.sh" | crontab -) >/dev/null 2>&1
 sleep 1
 echo "Hysteria2 uninstalled!"
 echo ""

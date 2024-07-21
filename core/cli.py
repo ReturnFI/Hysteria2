@@ -71,11 +71,6 @@ def update_hysteria2():
 
 @cli.command('restart-hysteria2')
 def restart_hysteria2():
-    # save traffic status before restarting hysteria2
-    # ignore the traffic_status prints
-    f = io.StringIO()
-    with redirect_stdout(f):
-        traffic.traffic_status()
     run_cmd(['bash', Command.RESTART_HYSTERIA2])
 
 

@@ -34,27 +34,26 @@ install_hysteria() {
     
     sha256=$(python3 generate.py)
     
+    # WE CLONED THE REPO, SO WE HAVE THE config.json ALREADY
     # Step 6: Download the config.json file
-    echo "Downloading config.json..."
-    wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/config.json -O /etc/hysteria/config.json >/dev/null 2>&1
-    echo
+    # echo "Downloading config.json..."
+    # wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/config.json -O /etc/hysteria/config.json >/dev/null 2>&1
+    # echo
     
     # Step 7: Ask for the port number and validate input
-    while true; do
-        read -p "Enter the port number you want to use (1-65535): " port
-        if [[ $port =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )); then
-            # Check if the port is in use
-            if ss -tuln | grep -q ":$port\b"; then
-                clear
-                echo -e "\e[91mPort $port is already in use. Please choose another port.\e[0m"
-                echo
-            else
-                break
-            fi
+    port=$1
+    if [[ $port =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )); then
+        # Check if the port is in use
+        if ss -tuln | grep -q ":$port\b"; then
+            echo -e "\e[91mPort $port is already in use. Please choose another port.\e[0m"
+            exit 1
         else
-            echo "Invalid port number. Please enter a number between 1 and 65535."
+            break
         fi
-    done
+    else
+        echo "Invalid port number. Please enter a number between 1 and 65535."
+        exit 1
+    fi
     
     # Step 8: Generate required passwords and UUID
     echo "Generating passwords and UUID..."
@@ -107,20 +106,16 @@ install_hysteria() {
         echo "${cyan}Hysteria2${green} has been successfully install."
     else
         echo "${red}Error:${NC} hysteria-server.service is not active."
+        exit 1
     fi
     
-    # Step 15: wget Traffic/user/kick script
-    wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/traffic.py -O /etc/hysteria/traffic.py >/dev/null 2>&1
-    mkdir -p /etc/hysteria/users
-    wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/user.sh -O /etc/hysteria/users/user.sh >/dev/null 2>&1
-    wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/kick.sh -O /etc/hysteria/users/kick.sh >/dev/null 2>&1
-    wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/modify.py -O /etc/hysteria/users/modify.py >/dev/null 2>&1
-    
-    chmod +x /etc/hysteria/users/user.sh
-    chmod +x /etc/hysteria/users/kick.sh
-    # Add the commands to the crontab
-    (crontab -l ; echo "*/1 * * * * python3 /etc/hysteria/traffic.py >/dev/null 2>&1") | crontab -
-    (crontab -l ; echo "*/1 * * * * /etc/hysteria/users/kick.sh >/dev/null 2>&1") | crontab -
+    # Step 15: Give right permissions to scripts
+    chmod +x /etc/hysteria/core/scripts/hysteria2/user.sh
+    chmod +x /etc/hysteria/core/scripts/hysteria2/kick.sh
+
+    # Add the scripts to the crontab
+    (crontab -l ; echo "*/1 * * * * python3 /etc/hysteria/core/cli.py traffic-status >/dev/null 2>&1") | crontab -
+    (crontab -l ; echo "*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1") | crontab -
     }
 
 
@@ -136,7 +131,7 @@ if systemctl is-active --quiet hysteria-server.service; then
     echo "If you need to update the core, please use the 'Update Core' option."
 else
     echo "Installing and configuring Hysteria2..."
-    install_hysteria
+    install_hysteria "$1"
     echo -e "\n"
 
     if systemctl is-active --quiet hysteria-server.service; then

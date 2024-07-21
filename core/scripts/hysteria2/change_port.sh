@@ -9,7 +9,7 @@ done
 
 if [ -f "/etc/hysteria/config.json" ]; then
     jq --arg port "$port" '.listen = ":" + $port' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
-    restart_hysteria_service >/dev/null 2>&1
+    python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
     echo "Port changed successfully to $port."
 else
     echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."

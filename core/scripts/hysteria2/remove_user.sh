@@ -18,7 +18,7 @@ remove_user() {
                 jq --arg username "$username" 'del(.[$username])' /etc/hysteria/traffic_data.json > /etc/hysteria/traffic_data_temp.json && mv /etc/hysteria/traffic_data_temp.json /etc/hysteria/traffic_data.json
             fi
             
-            restart_hysteria_service >/dev/null 2>&1
+            python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
             echo "User $username removed successfully."
         else
             echo -e "\033[0;31mError:\033[0m User $username not found."

@@ -11,7 +11,7 @@ bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "${red}Error:${NC} Failed to download or install the latest version. Restoring backup configuration."
     mv /etc/hysteria/config_backup.json /etc/hysteria/config.json
-    restart_hysteria_service >/dev/null 2>&1
+    python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
     return 1
 fi
 
@@ -31,7 +31,7 @@ fi
 
 rm /etc/hysteria/config.yaml
 systemctl daemon-reload >/dev/null 2>&1
-restart_hysteria_service >/dev/null 2>&1
+python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "${red}Error:${NC} Failed to restart Hysteria2 service."
     return 1

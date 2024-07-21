@@ -31,7 +31,7 @@ add_user() {
     '.[$username] = {password: $password, max_download_bytes: $traffic, expiration_days: $expiration_days, account_creation_date: $creation_date, blocked: false}' \
     /etc/hysteria/users/users.json > /etc/hysteria/users/users_temp.json && mv /etc/hysteria/users/users_temp.json /etc/hysteria/users/users.json
 
-    restart_hysteria_service >/dev/null 2>&1
+    python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
 
     echo -e "\033[0;32mUser $username added successfully.\033[0m"
 }

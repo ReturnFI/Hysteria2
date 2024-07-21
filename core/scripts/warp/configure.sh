@@ -68,7 +68,7 @@ if [ -f "$CONFIG_FILE" ]; then
             echo "Invalid option. Please try again."
             ;;
     esac
-    restart_hysteria_service >/dev/null 2>&1
+    python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
 else
     echo "${red}Error:${NC} Config file $CONFIG_FILE not found."
 fi

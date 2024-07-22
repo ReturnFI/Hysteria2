@@ -73,7 +73,7 @@ hysteria2_change_port_handler() {
             break
         fi
     done
-    python3 $CLI_PATH change-port --port "$port"
+    python3 $CLI_PATH change-hysteria2-port --port "$port"
 }
 
 # TODO check it out

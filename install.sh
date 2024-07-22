@@ -13,14 +13,15 @@ if ! command -v jq &> /dev/null || ! command -v git &> /dev/null || ! command -v
     apt update && apt upgrade -y && apt install jq qrencode curl pwgen uuid-runtime python3 python3-pip git -y
 fi
 
+
+# TODO: change the url later
+git clone https://github.com/Iam54r1n4/Hysteria2 /etc/hysteria
+
 # Add alias 'hys2' for Hysteria2
 if ! grep -q "alias hys2='/etc/hysteria/menu.sh'" ~/.bashrc; then
     echo "alias hys2='/etc/hysteria/menu.sh'" >> ~/.bashrc
     source ~/.bashrc
 fi
-
-# TODO: change the url later
-git clone https://github.com/Iam54r1n4/Hysteria2 /etc/hysteria
 
 cd /etc/hysteria
 chmod +x menu.sh

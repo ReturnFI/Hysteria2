@@ -117,7 +117,7 @@ def add_user(username: str, traffic_limit: float, expiration_days: int, password
     run_cmd(['bash', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
 
 
-@click.command('edit-user')
+@cli.command('edit-user')
 @click.option('--username', '-u', required=True, help='Username for the user to edit', type=str)
 @click.option('--new-username', '-nu', required=False, help='New username for the user', type=str)
 @click.option('--new-traffic-limit', '-nt', required=False, help='Traffic limit for the new user in GB', type=float)

@@ -1,26 +1,82 @@
 #!/bin/bash
 
 source /etc/hysteria/core/scripts/utils.sh
+source /etc/hysteria/core/scripts/path.sh
 
 # OPTION HANDLERS (ONLY NEEDED ONE)
+hysteria2_install_handler() {
+    while true; do
+        read -p "Enter the new port number you want to use: " port
+        if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+            echo "Invalid port number. Please enter a number between 1 and 65535."
+        else
+            break
+        fi
+    done
+    python3 $CLI_PATH install-hysteria2 --port "$port"
+}
 
 hysteria2_add_user_handler() {
+    while true; do
+        read -p "Enter the username: " username
 
+        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+            break
+        else
+            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        fi
+    done
+
+    read -p "Enter the traffic limit (in GB): " traffic_gb
+    # Convert GB to bytes (1 GB = 1073741824 bytes)
+    traffic=$((traffic_gb * 1073741824))
+
+    read -p "Enter the expiration days: " expiration_days
+    password=$(pwgen -s 32 1)
+    creation_date=$(date +%Y-%m-%d)
+
+    python3 $CLI_PATH add-user --username "$username" --traffic-limit "$traffic" --expiration-days "$expiration_days" --password "$password" --creation-date "$creation_date"
 }
 
 hysteria2_remove_user_handler() {
+    while true; do
+        read -p "Enter the username: " username
 
+        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+            break
+        else
+            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        fi
+    done
+    python3 $CLI_PATH remove-user --username "$username"
 }
 
 hysteria2_show_user_uri_hanndler() {
+    while true; do
+        read -p "Enter the username: " username
 
+        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+            break
+        else
+            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        fi
+    done
+    python3 $CLI_PATH show-user-uri --username "$username"
 }
 
 hysteria2_change_port_handler() {
-
+    while true; do
+        read -p "Enter the new port number you want to use: " port
+        if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+            echo "Invalid port number. Please enter a number between 1 and 65535."
+        else
+            break
+        fi
+    done
+    python3 $CLI_PATH change-port --port "$port"
 }
 
-
+# TODO check it out
 # Function to modify users
 hysteria2_modify_users() {
     modify_script="/etc/hysteria/users/modify.py"
@@ -109,11 +165,11 @@ hysteria2_menu() {
         display_hysteria2_menu
         read -r choice
         case $choice in
-            1) python3 /etc/hysteria/core/cli.py install-hysteria2 ;;
+            1) hysteria2_install_handler ;;
             2) hysteria2_add_user_handler ;;
             3) hysteria2_modify_users ;;
             4) hysteria2_show_user_uri_hanndler ;;
-            5) python3 /etc/hysteria2/core/cli.py traffic_status ;;
+            5) python3 $CLI_PATH traffic_status ;;
             6) hysteria2_remove_user_handler ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
@@ -149,13 +205,13 @@ advance_menu() {
         display_advance_menu
         read -r choice
         case $choice in
-            1) python3 /etc/hysteria/core/cli.py install-tcp-brutal ;;
-            2) python3 /etc/hysteria/core/cli.py install-warp ;;
+            1) python3 $CLI_PATH install-tcp-brutal ;;
+            2) python3 $CLI_PATH install-warp ;;
             3) warp_configure_handler ;;
-            4) python3 /etc/hysteria/core/cli.py uninstall-warp ;;
+            4) python3 $CLI_PATH uninstall-warp ;;
             5) hysteria2_change_port_handler ;;
-            6) python3 /etc/hysteria/core/cli.py update-hysteria2 ;;
-            7) python3 /etc/hysteria/core/cli.py uninstall-hysteria2 ;;
+            6) python3 $CLI_PATH update-hysteria2 ;;
+            7) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

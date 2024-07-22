@@ -59,7 +59,7 @@ def cli():
 
 # region hysteria2 menu options
 @cli.command('install-hysteria2')
-@click.option('--port','-p', required=True, help='New port for Hysteria2',type=int,validate=validator.validate_port)
+@click.option('--port','-p', required=True, help='New port for Hysteria2',type=int,callback=validator.validate_port)
 def install_hysteria2(port:int):
     run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port)])
     
@@ -78,7 +78,7 @@ def restart_hysteria2():
 
 
 @cli.command('change-hysteria2-port')
-@click.option('--port','-p', required=True, help='New port for Hysteria2',type=int,validate=validator.validate_port)
+@click.option('--port','-p', required=True, help='New port for Hysteria2',type=int,callback=validator.validate_port)
 def change_hysteria2_port(port:int):
     run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
 

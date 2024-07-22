@@ -1,10 +1,10 @@
 import os
 
 
-def validate_port(p:int)-> bool:
-    if p < 1 or p > 65535:
+def validate_port(ctx,param,value)-> bool:
+    if value < 1 or value > 65535:
         return False
     # check if port is in use
-    if os.system(f'lsof -i:{p}') == 0:
+    if os.system(f'lsof -i:{value}') == 0:
         return False
     return True

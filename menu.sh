@@ -51,7 +51,7 @@ hysteria2_remove_user_handler() {
     python3 $CLI_PATH remove-user --username "$username"
 }
 
-hysteria2_show_user_uri_hanndler() {
+hysteria2_show_user_uri_handler() {
     while true; do
         read -p "Enter the username: " username
 
@@ -88,9 +88,9 @@ hysteria2_modify_users() {
 }
 
 warp_configure_handler() {
-
+    # Placeholder function, add implementation here if needed
+    echo "empty"
 }
-
 
 # Function to display the main menu
 display_main_menu() {
@@ -168,7 +168,7 @@ hysteria2_menu() {
             1) hysteria2_install_handler ;;
             2) hysteria2_add_user_handler ;;
             3) hysteria2_modify_users ;;
-            4) hysteria2_show_user_uri_hanndler ;;
+            4) hysteria2_show_user_uri_handler ;;
             5) python3 $CLI_PATH traffic_status ;;
             6) hysteria2_remove_user_handler ;;
             0) return ;;

@@ -19,7 +19,8 @@ if ! grep -q "alias hys2='/etc/hysteria/menu.sh'" ~/.bashrc; then
     source ~/.bashrc
 fi
 
-git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria
+# TODO: change the url later
+git clone https://github.com/Iam54r1n4/Hysteria2 /etc/hysteria
 
 cd /etc/hysteria
 chmod +x menu.sh

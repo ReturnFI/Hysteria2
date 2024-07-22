@@ -43,7 +43,7 @@ add_user() {
     fi
 
     # Convert GB to bytes (1 GB = 1073741824 bytes)
-    traffic=$((traffic_gb * 1073741824))
+    traffic=$(echo "$traffic_gb * 1073741824" | bc)
 
     if [ ! -f "$USERS_FILE" ]; then
         echo "{}" > "$USERS_FILE"

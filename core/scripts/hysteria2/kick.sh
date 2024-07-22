@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USERS_FILE="/etc/hysteria/users/users.json"
+USERS_FILE="/etc/hysteria/users.json"
 TRAFFIC_FILE="/etc/hysteria/traffic_data.json"
 CONFIG_FILE="/etc/hysteria/config.json"
 

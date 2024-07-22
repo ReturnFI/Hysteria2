@@ -11,7 +11,7 @@ import traffic
 import validator
 
 
-SCRIPT_DIR = 'scripts'
+SCRIPT_DIR = '/etc/hysteria/core/scripts'
 DEBUG = True
 
 class Command(Enum):
@@ -39,7 +39,7 @@ def run_cmd(command:list[str]):
     Runs a command and returns the output.
     Could raise subprocess.CalledProcessError
     '''
-    result = subprocess.check_output(command, shell=True)
+    result = subprocess.check_output(command, shell=False)
     if DEBUG:
         print(result.decode().strip())
 
@@ -48,7 +48,7 @@ def generate_password() -> str:
     Generates a random password using pwgen for user.
     Could raise subprocess.CalledProcessError
     '''
-    return subprocess.check_output(['pwgen', '-s', '32', '1'], shell=True).decode().strip()
+    return subprocess.check_output(['pwgen', '-s', '32', '1'], shell=False).decode().strip()
 
 # endregion
 
@@ -61,6 +61,7 @@ def cli():
 @cli.command('install-hysteria2')
 @click.option('--port','-p', required=True, help='New port for Hysteria2',type=int,callback=validator.validate_port)
 def install_hysteria2(port:int):
+    print(f"bash {Command.INSTALL_HYSTERIA2.value} {str(port)}")
     run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port)])
     
 

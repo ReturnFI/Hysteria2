@@ -21,7 +21,7 @@ validate_inputs() {
     fi
 
     # Validate traffic limit
-    if [ -n "$new_traffic_limit" ]; then
+    if [[ ! "$new_traffic_limit" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
         if ! [[ "$new_traffic_limit" =~ ^[0-9]+$ ]]; then
             echo -e "${red}Error:${NC} Traffic limit must be a valid integer."
             exit 1
@@ -59,7 +59,7 @@ validate_inputs() {
 # Function to get user info
 get_user_info() {
     local username=$1
-    python3 /etc/hysteria/core/scripts/get_user.py "$username"
+    python3 $CLI_PATH get-user -u "$username"
 }
 
 # Function to update user info in JSON
@@ -87,10 +87,10 @@ update_user_info() {
     # Prepare jq filter to update the fields
     jq_filter='.[$old_username] = 
     if $new_password != "" then .password = $new_password else . end |
-    if $new_max_download_bytes != null then .max_download_bytes = $new_max_download_bytes else . end |
-    if $new_expiration_days != null then .expiration_days = $new_expiration_days else . end |
+    if $new_max_download_bytes != "" then .max_download_bytes = ($new_max_download_bytes|tonumber) else . end |
+    if $new_expiration_days != "" then .expiration_days = ($new_expiration_days|tonumber) else . end |
     if $new_account_creation_date != "" then .account_creation_date = $new_account_creation_date else . end |
-    if $new_blocked != null then .blocked = $new_blocked else . end'
+    if $new_blocked != "" then .blocked = ($new_blocked|test("true")) else . end'
 
     # Rename the user if new_username is provided
     if [ -n "$new_username" ]; then
@@ -100,15 +100,16 @@ update_user_info() {
     jq --arg old_username "$old_username" \
        --arg new_username "$new_username" \
        --arg new_password "$new_password" \
-       --argjson new_max_download_bytes "$new_max_download_bytes" \
-       --argjson new_expiration_days "$new_expiration_days" \
+       --arg new_max_download_bytes "$new_max_download_bytes" \
+       --arg new_expiration_days "$new_expiration_days" \
        --arg new_account_creation_date "$new_account_creation_date" \
-       --argjson new_blocked "$new_blocked" \
+       --arg new_blocked "$new_blocked" \
        "$jq_filter" \
        "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
 
     echo "User '$old_username' updated successfully."
 }
+
 
 # Main function to edit user
 edit_user() {

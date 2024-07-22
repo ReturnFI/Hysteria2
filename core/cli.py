@@ -5,15 +5,16 @@ import os
 import io
 import click
 import subprocess
-from enum import StrEnum
+from enum import Enum
 
 import traffic
 import validator
 
+
 SCRIPT_DIR = 'scripts'
 DEBUG = True
 
-class Command(StrEnum):
+class Command(Enum):
     '''Constais path to command's script'''
     INSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR,'hysteria2' ,'install.sh')
     UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR,'hysteria2', 'uninstall.sh')
@@ -60,26 +61,26 @@ def cli():
 @cli.command('install-hysteria2')
 @click.option('--port','-p', required=True, help='New port for Hysteria2',type=int,validate=validator.validate_port)
 def install_hysteria2(port:int):
-    run_cmd(['bash', Command.INSTALL_HYSTERIA2, str(port)])
+    run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port)])
     
 
 @cli.command('uninstall-hysteria2')
 def uninstall_hysteria2():
-    run_cmd(['bash', Command.UNINSTALL_HYSTERIA2])
+    run_cmd(['bash', Command.UNINSTALL_HYSTERIA2.value])
 
 @cli.command('update-hysteria2')
 def update_hysteria2():
-    run_cmd(['bash', Command.UPDATE_HYSTERIA2])
+    run_cmd(['bash', Command.UPDATE_HYSTERIA2.value])
 
 @cli.command('restart-hysteria2')
 def restart_hysteria2():
-    run_cmd(['bash', Command.RESTART_HYSTERIA2])
+    run_cmd(['bash', Command.RESTART_HYSTERIA2.value])
 
 
 @cli.command('change-hysteria2-port')
 @click.option('--port','-p', required=True, help='New port for Hysteria2',type=int,validate=validator.validate_port)
 def change_hysteria2_port(port:int):
-    run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2, str(port)])
+    run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
 
 @cli.command('add-user')
 @click.option('--username','-u', required=True, help='Username for the new user',type=str)
@@ -97,24 +98,24 @@ def add_user(username:str, traffic_limit:float, expiration_days:int,password:str
     if not creation_date:
         creation_date = datetime.now().strftime('%Y-%m-%d')
 
-    run_cmd(['bash', Command.ADD_USER, username, str(traffic_limit), str(expiration_days), password, creation_date])
+    run_cmd(['bash', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
 
 @cli.command('edit-user')
 @click.option('--username','-u', required=True, help='Username for the user to edit',type=str)
 @click.option('--traffic-limit','-t', required=True, help='Traffic limit for the new user in GB',type=float)
 @click.option('--expiration-days','-e', required=True, help='Expiration days for the new user',type=int)
 def edit_user(username:str, traffic_limit:float, expiration_days:int):
-    run_cmd(['bash', Command.EDIT_USER, username, str(traffic_limit), str(expiration_days)])
+    run_cmd(['bash', Command.EDIT_USER.value, username, str(traffic_limit), str(expiration_days)])
 
 @cli.command('remove-user')
 @click.option('--username','-u', required=True, help='Username for the user to remove',type=str)
 def remove_user(username:str):
-    run_cmd(['bash', Command.REMOVE_USER, username])
+    run_cmd(['bash', Command.REMOVE_USER.value, username])
 
 @cli.command('show-user-uri')
 @click.option('--username','-u', required=True, help='Username for the user to show the URI',type=str)
 def show_user_uri(username:str):
-    run_cmd(['bash', Command.SHOW_USER_URI, username])
+    run_cmd(['bash', Command.SHOW_USER_URI.value, username])
 
 @cli.command('traffic-status')
 def traffic_status():
@@ -122,7 +123,7 @@ def traffic_status():
 
 @cli.command('list-users')
 def list_users():
-    run_cmd(['bash',Command.LIST_USERS])
+    run_cmd(['bash',Command.LIST_USERS.value])
 
 # endregion
 
@@ -130,21 +131,21 @@ def list_users():
 
 @cli.command('install-tcp-brutal')
 def install_tcp_brutal():
-    run_cmd(['bash', Command.INSTALL_TCP_BRUTAL])
+    run_cmd(['bash', Command.INSTALL_TCP_BRUTAL.value])
 
 @cli.command('install-warp')
 def install_warp():
-    run_cmd(['bash', Command.INSTALL_WARP])
+    run_cmd(['bash', Command.INSTALL_WARP.value])
 
 @cli.command('uninstall-warp')
 def uninstall_warp():
-    run_cmd(['bash', Command.UNINSTALL_WARP])
+    run_cmd(['bash', Command.UNINSTALL_WARP.value])
 
 @cli.command('configure-warp')
 @click.option('--warp-mode','-m', required=True, help='Warp mode',type=click.Choice(['proxy','direct','reject']))
 @click.option('--block-porn','-p', required=False, help='Block porn',type=bool)
 def configure_warp(warp_mode:str, block_porn:bool):
-    run_cmd(['bash', Command.CONFIGURE_WARP, warp_mode, str(block_porn)])
+    run_cmd(['bash', Command.CONFIGURE_WARP.value, warp_mode, str(block_porn)])
     
 # endregion
 

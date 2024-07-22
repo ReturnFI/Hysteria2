@@ -74,15 +74,85 @@ hysteria2_change_port_handler() {
     python3 $CLI_PATH change-hysteria2-port --port "$port"
 }
 
-# TODO check it out
-# Function to modify users
-hysteria2_modify_users() {
-    modify_script="/etc/hysteria/users/modify.py"
-    github_raw_url="https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/modify.py"
+hysteria2_edit_user() {
+    # Function to prompt for user input with validation
+    prompt_for_input() {
+        local prompt_message="$1"
+        local validation_regex="$2"
+        local default_value="$3"
+        local input_variable_name="$4"
 
-    [ -f "$modify_script" ] || wget "$github_raw_url" -O "$modify_script" >/dev/null 2>&1
+        while true; do
+            read -p "$prompt_message" input
+            if [[ -z "$input" ]]; then
+                input="$default_value"
+            fi
+            if [[ "$input" =~ $validation_regex ]]; then
+                eval "$input_variable_name='$input'"
+                break
+            else
+                echo -e "\033[0;31mError:\033[0m Invalid input. Please try again."
+            fi
+        done
+    }
 
-    python3 "$modify_script"
+    # Prompt for username
+    prompt_for_input "Enter the username you want to edit: " '^[a-z0-9]+$' '' username
+
+    # Check if user exists
+    if ! python3 $CLI_PATH get-user --username "$username" > /dev/null 2>&1; then
+        echo -e "\033[0;31mError:\033[0m User '$username' not found."
+        return 1
+    fi
+
+    # Prompt for new username
+    prompt_for_input "Enter the new username (leave empty to keep the current username): " '^[a-z0-9]*$' '' new_username
+
+    # Prompt for new traffic limit
+    prompt_for_input "Enter the new traffic limit (in GB) (leave empty to keep the current limit): " '^[0-9]*$' '' new_traffic_limit_GB
+
+    # Prompt for new expiration days
+    prompt_for_input "Enter the new expiration days (leave empty to keep the current expiration days): " '^[0-9]*$' '' new_expiration_days
+
+    # Prompt for renewing password
+    while true; do
+        read -p "Do you want to generate a new password? (y/n): " renew_password
+        case "$renew_password" in
+            y|Y) renew_password=true; break ;;
+            n|N) renew_password=false; break ;;
+            *) echo -e "\033[0;31mError:\033[0m Please answer 'y' or 'n'." ;;
+        esac
+    done
+
+    # Prompt for renewing creation date
+    while true; do
+        read -p "Do you want to generate a new creation date? (y/n): " renew_creation_date
+        case "$renew_creation_date" in
+            y|Y) renew_creation_date=true; break ;;
+            n|N) renew_creation_date=false; break ;;
+            *) echo -e "\033[0;31mError:\033[0m Please answer 'y' or 'n'." ;;
+        esac
+    done
+
+    # Prompt for blocking user
+    while true; do
+        read -p "Do you want to block the user? (y/n): " block_user
+        case "$block_user" in
+            y|Y) blocked=true; break ;;
+            n|N) blocked=false; break ;;
+            *) echo -e "\033[0;31mError:\033[0m Please answer 'y' or 'n'." ;;
+        esac
+    done
+
+    # Call the edit-user script with appropriate flags
+    python3 $CLI_PATH edit-user \
+        --username "$username" \
+        ${new_username:+--new-username "$new_username"} \
+        ${new_traffic_limit_GB:+--new-traffic-limit "$new_traffic_limit_GB"} \
+        ${new_expiration_days:+--new-expiration-days "$new_expiration_days"} \
+        ${renew_password:+--renew-password} \
+        ${renew_creation_date:+--renew-creation-date} \
+        ${blocked:+--blocked}
 }
 
 warp_configure_handler() {
@@ -165,7 +235,7 @@ hysteria2_menu() {
         case $choice in
             1) hysteria2_install_handler ;;
             2) hysteria2_add_user_handler ;;
-            3) hysteria2_modify_users ;;
+            3) hysteria2_edit_user ;;
             4) hysteria2_show_user_uri_handler ;;
             5) python3 $CLI_PATH traffic-status ;;
             6) hysteria2_remove_user_handler ;;

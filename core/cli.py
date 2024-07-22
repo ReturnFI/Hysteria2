@@ -160,7 +160,7 @@ def edit_user(username: str, new_username: str, new_traffic_limit: float, new_ex
     # Prepare arguments for the command
     command_args = [
         'bash',
-        'edit_user.sh',  # Replace with the actual path to your script
+        Command.EDIT_USER.value,
         username,
         new_username or '',
         str(new_traffic_limit) if new_traffic_limit is not None else '',

@@ -28,8 +28,6 @@ hysteria2_add_user_handler() {
     done
 
     read -p "Enter the traffic limit (in GB): " traffic_gb
-    # Convert GB to bytes (1 GB = 1073741824 bytes)
-    traffic=$((traffic_gb * 1073741824))
 
     read -p "Enter the expiration days: " expiration_days
     password=$(pwgen -s 32 1)

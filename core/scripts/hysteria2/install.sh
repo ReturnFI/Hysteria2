@@ -1,9 +1,13 @@
 #!/bin/bash
 
+# Source the path.sh script to load the necessary variables
+source /etc/hysteria/core/scripts/path.sh
 source /etc/hysteria/core/scripts/utils.sh
 define_colors
 
 install_hysteria() {
+    local port=$1
+
     # Step 1: Install Hysteria2
     echo "Installing Hysteria2..."
     bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
@@ -34,21 +38,12 @@ install_hysteria() {
     
     sha256=$(python3 generate.py)
     
-    # WE CLONED THE REPO, SO WE HAVE THE config.json ALREADY
-    # Step 6: Download the config.json file
-    # echo "Downloading config.json..."
-    # wget https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/config.json -O /etc/hysteria/config.json >/dev/null 2>&1
-    # echo
-    
     # Step 7: Ask for the port number and validate input
-    port=$1
     if [[ $port =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )); then
         # Check if the port is in use
         if ss -tuln | grep -q ":$port\b"; then
-            echo -e "\e[91mPort $port is already in use. Please choose another port.\e[0m"
+            echo -e "${red}Port $port is already in use. Please choose another port.${NC}"
             exit 1
-        else
-            break
         fi
     else
         echo "Invalid port number. Please enter a number between 1 and 65535."
@@ -85,12 +80,12 @@ install_hysteria() {
         .tls.pinSHA256 = $sha256 |
         .obfs.salamander.password = $obfspassword |
         .trafficStats.secret = $UUID |
-        .outbounds[0].direct.bindDevice = $networkdef' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+        .outbounds[0].direct.bindDevice = $networkdef' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
     
     # Step 11: Modify the systemd service file to use config.json
     echo "Updating hysteria-server.service to use config.json..."
     sed -i 's|(config.yaml)||' /etc/systemd/system/hysteria-server.service
-    sed -i 's|/etc/hysteria/config.yaml|/etc/hysteria/config.json|' /etc/systemd/system/hysteria-server.service
+    sed -i "s|/etc/hysteria/config.yaml|$CONFIG_FILE|" /etc/systemd/system/hysteria-server.service
     rm /etc/hysteria/config.yaml
     sleep 1
     
@@ -103,7 +98,7 @@ install_hysteria() {
     
     # Step 13: Check if the hysteria-server.service is active
     if systemctl is-active --quiet hysteria-server.service; then
-        echo "${cyan}Hysteria2${green} has been successfully install."
+        echo "${cyan}Hysteria2${green} has been successfully installed."
     else
         echo "${red}Error:${NC} hysteria-server.service is not active."
         exit 1
@@ -117,13 +112,6 @@ install_hysteria() {
     (crontab -l ; echo "*/1 * * * * python3 /etc/hysteria/core/cli.py traffic-status >/dev/null 2>&1") | crontab -
     (crontab -l ; echo "*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1") | crontab -
 }
-
-
-
-
-
-
-
 
 if systemctl is-active --quiet hysteria-server.service; then
     echo -e "${red}Error:${NC} Hysteria2 is already installed and running."
@@ -140,4 +128,3 @@ else
         echo -e "${red}Error:${NC} Hysteria2 service is not active. Please check the logs for more details."
     fi
 fi
-

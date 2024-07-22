@@ -1,11 +1,15 @@
-    # Check if wg-quick@wgcf.service is active
+#!/bin/bash
+
+# Source the path.sh script to load the CONFIG_FILE and CLI_PATH variables
+source /etc/hysteria/core/scripts/path.sh
+
+# Check if wg-quick@wgcf.service is active
 if ! systemctl is-active --quiet wg-quick@wgcf.service; then
     echo "WARP is not active. Please install WARP before configuring."
-    return
+    exit 1
 fi
 
-CONFIG_FILE="/etc/hysteria/config.json"
-    
+# Check if the config file exists
 if [ -f "$CONFIG_FILE" ]; then
     # Check the current status of WARP configurations
     warp_all_status=$(jq -r 'if .acl.inline | index("warps(all)") then "WARP active" else "Direct" end' "$CONFIG_FILE")
@@ -62,13 +66,13 @@ if [ -f "$CONFIG_FILE" ]; then
             fi
             ;;
         5)
-            return
+            exit 0
             ;;
         *)
             echo "Invalid option. Please try again."
             ;;
     esac
-    python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
+    python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 else
-    echo "${red}Error:${NC} Config file $CONFIG_FILE not found."
+    echo "Error: Config file $CONFIG_FILE not found."
 fi

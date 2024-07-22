@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# Source the path.sh script to load the CONFIG_FILE variable
+source /etc/hysteria/core/scripts/path.sh
+
 # Function to update port number in configuration
 update_port() {
     local port=$1
@@ -9,12 +14,12 @@ update_port() {
     fi
 
     # Check if the config file exists and update the port number
-    if [ -f "/etc/hysteria/config.json" ]; then
-        jq --arg port "$port" '.listen = ":" + $port' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
-        python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
+    if [ -f "$CONFIG_FILE" ]; then
+        jq --arg port "$port" '.listen = ":" + $port' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+        python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
         echo "Port changed successfully to $port."
     else
-        echo "Error: Config file /etc/hysteria/config.json not found."
+        echo "Error: Config file $CONFIG_FILE not found."
         return 1
     fi
 }

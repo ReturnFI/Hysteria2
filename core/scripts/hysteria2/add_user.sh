@@ -1,9 +1,14 @@
 #!/bin/bash
 
+# Source the path.sh script to load the necessary variables
+source /etc/hysteria/core/scripts/path.sh
+source /etc/hysteria/core/scripts/utils.sh
+define_colors
+
 # Function to add a new user to the configuration
 add_user() {
-    if [ $# -ne 3 ]; then
-        echo "Usage: $0 <username> <traffic_limit_GB> <expiration_days>"
+    if [ $# -ne 3 ] && [ $# -ne 5 ]; then
+        echo "Usage: $0 <username> <traffic_limit_GB> <expiration_days> [password] [creation_date]"
         exit 1
     fi
 
@@ -11,11 +16,11 @@ add_user() {
     traffic_gb=$2
     expiration_days=$3
     password=$4
+    creation_date=$5
+
     if [ -z "$password" ]; then
         password=$(pwgen -s 32 1)
     fi
-    creation_date=$5
-    # Check if the creation_date is empty
     if [ -z "$creation_date" ]; then
         creation_date=$(date +%Y-%m-%d)
     else
@@ -33,25 +38,24 @@ add_user() {
 
     # Validate the username
     if ! [[ "$username" =~ ^[a-z0-9]+$ ]]; then
-        echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
         exit 1
     fi
 
     # Convert GB to bytes (1 GB = 1073741824 bytes)
     traffic=$((traffic_gb * 1073741824))
 
-
-    if [ ! -f "/etc/hysteria/users.json" ]; then
-        echo "{}" > /etc/hysteria/users.json
+    if [ ! -f "$USERS_FILE" ]; then
+        echo "{}" > "$USERS_FILE"
     fi
 
     jq --arg username "$username" --arg password "$password" --argjson traffic "$traffic" --argjson expiration_days "$expiration_days" --arg creation_date "$creation_date" \
     '.[$username] = {password: $password, max_download_bytes: $traffic, expiration_days: $expiration_days, account_creation_date: $creation_date, blocked: false}' \
-    /etc/hysteria/users.json > /etc/hysteria/users_temp.json && mv /etc/hysteria/users_temp.json /etc/hysteria/users.json
+    "$USERS_FILE" > "${USERS_FILE}.temp" && mv "${USERS_FILE}.temp" "$USERS_FILE"
 
-    python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
+    python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 
-    echo -e "\033[0;32mUser $username added successfully.\033[0m"
+    echo -e "${green}User $username added successfully.${NC}"
 }
 
 # Call the function with the provided arguments

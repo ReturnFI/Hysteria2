@@ -1,8 +1,11 @@
 #!/bin/bash
 
+# Source the path.sh script to load the configuration variables
+source /etc/hysteria/core/scripts/path.sh
+
 # Function to show URI if Hysteria2 is installed and active
 show_uri() {
-    if [ -f "/etc/hysteria/users.json" ]; then
+    if [ -f "$USERS_FILE" ]; then
         if systemctl is-active --quiet hysteria-server.service; then
             # Check if the username is provided as an argument
             if [ -z "$1" ]; then
@@ -13,12 +16,12 @@ show_uri() {
             username=$1
 
             # Validate the username
-            if jq -e "has(\"$username\")" /etc/hysteria/users.json > /dev/null; then
+            if jq -e "has(\"$username\")" "$USERS_FILE" > /dev/null; then
                 # Get the selected user's details
-                authpassword=$(jq -r ".\"$username\".password" /etc/hysteria/users.json)
-                port=$(jq -r '.listen' /etc/hysteria/config.json | cut -d':' -f2)
-                sha256=$(jq -r '.tls.pinSHA256' /etc/hysteria/config.json)
-                obfspassword=$(jq -r '.obfs.salamander.password' /etc/hysteria/config.json)
+                authpassword=$(jq -r ".\"$username\".password" "$USERS_FILE")
+                port=$(jq -r '.listen' "$CONFIG_FILE" | cut -d':' -f2)
+                sha256=$(jq -r '.tls.pinSHA256' "$CONFIG_FILE")
+                obfspassword=$(jq -r '.obfs.salamander.password' "$CONFIG_FILE")
 
                 # Get IP addresses
                 IP=$(curl -s -4 ip.gs)
@@ -56,7 +59,7 @@ show_uri() {
             echo -e "\033[0;31mError:\033[0m Hysteria2 is not active."
         fi
     else
-        echo -e "\033[0;31mError:\033[0m Config file /etc/hysteria/users.json not found."
+        echo -e "\033[0;31mError:\033[0m Config file $USERS_FILE not found."
     fi
 }
 

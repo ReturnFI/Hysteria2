@@ -4,26 +4,30 @@ ADDR="$1"
 AUTH="$2"
 TX="$3"
 
-USERS_FILE="/etc/hysteria/users.json"
-TRAFFIC_FILE="/etc/hysteria/traffic_data.json"
-CONFIG_FILE="/etc/hysteria/config.json"
+# Source the path.sh script to load variables
+source /etc/hysteria/core/scripts/path.sh
 
+# Extract username and password from AUTH
 IFS=':' read -r USERNAME PASSWORD <<< "$AUTH"
 
+# Retrieve stored user data
 STORED_PASSWORD=$(jq -r --arg user "$USERNAME" '.[$user].password' "$USERS_FILE")
 MAX_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].max_download_bytes' "$USERS_FILE")
 EXPIRATION_DAYS=$(jq -r --arg user "$USERNAME" '.[$user].expiration_days' "$USERS_FILE")
 ACCOUNT_CREATION_DATE=$(jq -r --arg user "$USERNAME" '.[$user].account_creation_date' "$USERS_FILE")
 BLOCKED=$(jq -r --arg user "$USERNAME" '.[$user].blocked' "$USERS_FILE")
 
+# Check if the user is blocked
 if [ "$BLOCKED" == "true" ]; then
   exit 1
 fi
 
+# Check if the provided password matches the stored password
 if [ "$STORED_PASSWORD" != "$PASSWORD" ]; then
   exit 1
 fi
 
+# Check if the user's account has expired
 CURRENT_DATE=$(date +%s)
 EXPIRATION_DATE=$(date -d "$ACCOUNT_CREATION_DATE + $EXPIRATION_DAYS days" +%s)
 
@@ -32,6 +36,7 @@ if [ "$CURRENT_DATE" -ge "$EXPIRATION_DATE" ]; then
   exit 1
 fi
 
+# Check if the user's download limit has been exceeded
 CURRENT_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].download_bytes' "$TRAFFIC_FILE")
 
 if [ "$CURRENT_DOWNLOAD_BYTES" -ge "$MAX_DOWNLOAD_BYTES" ]; then
@@ -43,5 +48,6 @@ if [ "$CURRENT_DOWNLOAD_BYTES" -ge "$MAX_DOWNLOAD_BYTES" ]; then
   exit 1
 fi
 
+# If all checks pass, print the username and exit successfully
 echo "$USERNAME"
 exit 0

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Source the path.sh script to load the necessary variables
+source /etc/hysteria/core/scripts/path.sh
+source /etc/hysteria/core/scripts/utils.sh
+define_colors
+
 # Function to remove a user from the configuration
 remove_user() {
     if [ $# -ne 1 ]; then
@@ -9,22 +14,22 @@ remove_user() {
 
     username=$1
 
-    if [ -f "/etc/hysteria/users.json" ]; then
+    if [ -f "$USERS_FILE" ]; then
         # Check if the username exists in the users.json file
-        if jq -e "has(\"$username\")" /etc/hysteria/users.json > /dev/null; then
-            jq --arg username "$username" 'del(.[$username])' /etc/hysteria/users.json > /etc/hysteria/users_temp.json && mv /etc/hysteria/users_temp.json /etc/hysteria/users.json
+        if jq -e "has(\"$username\")" "$USERS_FILE" > /dev/null; then
+            jq --arg username "$username" 'del(.[$username])' "$USERS_FILE" > "${USERS_FILE}.temp" && mv "${USERS_FILE}.temp" "$USERS_FILE"
             
-            if [ -f "/etc/hysteria/traffic_data.json" ]; then
-                jq --arg username "$username" 'del(.[$username])' /etc/hysteria/traffic_data.json > /etc/hysteria/traffic_data_temp.json && mv /etc/hysteria/traffic_data_temp.json /etc/hysteria/traffic_data.json
+            if [ -f "$TRAFFIC_FILE" ]; then
+                jq --arg username "$username" 'del(.[$username])' "$TRAFFIC_FILE" > "${TRAFFIC_FILE}.temp" && mv "${TRAFFIC_FILE}.temp" "$TRAFFIC_FILE"
             fi
             
-            python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
+            python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
             echo "User $username removed successfully."
         else
-            echo -e "\033[0;31mError:\033[0m User $username not found."
+            echo -e "${red}Error:${NC} User $username not found."
         fi
     else
-        echo -e "\033[0;31mError:\033[0m Config file /etc/hysteria/users.json not found."
+        echo -e "${red}Error:${NC} Config file $USERS_FILE not found."
     fi
 }
 

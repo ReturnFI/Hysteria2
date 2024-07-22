@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# Source the path.sh script to load the CONFIG_FILE variable
+source /etc/hysteria/core/scripts/path.sh
+
 # Check if wg-quick@wgcf.service is active
 if systemctl is-active --quiet wg-quick@wgcf.service; then
     echo "WARP is already active. Skipping installation and configuration update."
@@ -6,13 +11,13 @@ else
     bash <(curl -fsSL git.io/warp.sh) wgx
 
     # Check if the config file exists
-    if [ -f "/etc/hysteria/config.json" ]; then
+    if [ -f "$CONFIG_FILE" ]; then
         # Add the outbound configuration to the config.json file
-        jq '.outbounds += [{"name": "warps", "type": "direct", "direct": {"mode": 4, "bindDevice": "wgcf"}}]' /etc/hysteria/config.json > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json /etc/hysteria/config.json
+        jq '.outbounds += [{"name": "warps", "type": "direct", "direct": {"mode": 4, "bindDevice": "wgcf"}}]' "$CONFIG_FILE" > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json "$CONFIG_FILE"
         # Restart the hysteria-server service
-        python3 /etc/hysteria/core/cli.py restart-hysteria2 > /dev/null 2>&1
+        python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
         echo "WARP installed and outbound added to config.json."
     else
-        echo "${red}Error:${NC} Config file /etc/hysteria/config.json not found."
+        echo "Error: Config file $CONFIG_FILE not found."
     fi
 fi

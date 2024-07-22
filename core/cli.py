@@ -25,7 +25,7 @@ class Command(StrEnum):
     REMOVE_USER = os.path.join(SCRIPT_DIR,'hysteria2' ,'remove_user.sh')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR,'hysteria2' ,'show_user_uri.sh')
     TRAFFIC_STATUS = 'traffic.py' # won't be call directly (it's a python module)
-    LIST_USERS = '' # unknown for now
+    LIST_USERS = os.path.join(SCRIPT_DIR,'hysteria2','list_users.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR,'tcp-brutal', 'install.sh')
     INSTALL_WARP = os.path.join(SCRIPT_DIR,'warp', 'install.sh')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR,'warp', 'uninstall.sh')
@@ -122,7 +122,7 @@ def traffic_status():
 
 @cli.command('list-users')
 def list_users():
-    pass
+    run_cmd(['bash',Command.LIST_USERS])
 
 # endregion
 

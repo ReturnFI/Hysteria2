@@ -27,13 +27,13 @@ hysteria2_add_user_handler() {
         fi
     done
 
-    read -p "Enter the traffic limit (in GB): " traffic_gb
+    read -p "Enter the traffic limit (in GB): " traffic_limit_GB
 
     read -p "Enter the expiration days: " expiration_days
     password=$(pwgen -s 32 1)
     creation_date=$(date +%Y-%m-%d)
 
-    python3 $CLI_PATH add-user --username "$username" --traffic-limit "$traffic" --expiration-days "$expiration_days" --password "$password" --creation-date "$creation_date"
+    python3 $CLI_PATH add-user --username "$username" --traffic-limit "$traffic_limit_GB" --expiration-days "$expiration_days" --password "$password" --creation-date "$creation_date"
 }
 
 hysteria2_remove_user_handler() {

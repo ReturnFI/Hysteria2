@@ -28,14 +28,24 @@ install_hysteria() {
     
     # Step 5: Generate the base64 encoded SHA-256 fingerprint
     echo "Generating base64 encoded SHA-256 fingerprint..."
-    echo "import re, base64, binascii
-    
-    hex_string = \"$fingerprint\"
-    binary_data = binascii.unhexlify(hex_string)
-    base64_encoded = base64.b64encode(binary_data).decode('utf-8')
-    
-    print(\"sha256/\" + base64_encoded)" > generate.py
-    
+    cat <<EOF > generate.py
+import base64
+import binascii
+
+# Hexadecimal string
+hex_string = "$fingerprint"
+
+# Convert hex to binary
+binary_data = binascii.unhexlify(hex_string)
+
+# Encode binary data to base64
+base64_encoded = base64.b64encode(binary_data).decode('utf-8')
+
+# Print the result prefixed with 'sha256/'
+print('sha256/' + base64_encoded)
+EOF
+
+    # Execute the Python script and capture the output
     sha256=$(python3 generate.py)
     
     # Step 7: Ask for the port number and validate input

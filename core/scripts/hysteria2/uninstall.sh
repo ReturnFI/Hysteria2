@@ -1,8 +1,12 @@
+source /etc/hysteria/core/scripts/path.sh
+
 echo "Uninstalling Hysteria2..."
 sleep 1
 echo "Running uninstallation script..."
 bash <(curl -fsSL https://get.hy2.sh/) --remove >/dev/null 2>&1
 sleep 1
+echo "Removing WARP"
+python3 $CLI_PATH uninstall-warp
 echo "Removing Hysteria folder..."
 rm -rf /etc/hysteria >/dev/null 2>&1
 sleep 1

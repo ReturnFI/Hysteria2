@@ -41,7 +41,7 @@ def run_cmd(command: list[str]):
     Runs a command and returns the output.
     Could raise subprocess.CalledProcessError
     '''
-    if DEBUG:
+    if DEBUG and Command.GET_USER.value not in command:
         print(' '.join(command))
     result = subprocess.check_output(command, shell=False)
     if DEBUG:

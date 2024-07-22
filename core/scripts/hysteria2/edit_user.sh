@@ -77,35 +77,56 @@ update_user_info() {
         return 1
     fi
 
+
+    echo "checking if user exists"
     # Check if the old username exists
     user_exists=$(jq -e --arg username "$old_username" '.[$username]' "$USERS_FILE")
     if [ $? -ne 0 ]; then
         echo "Error: User '$old_username' not found."
         return 1
     fi
+    echo "user exists done"
 
-    # Prepare jq filter to update the fields
-    jq_filter='.[$old_username] = 
-    if $new_password != "" then .password = $new_password else . end |
-    if $new_max_download_bytes != "" then .max_download_bytes = ($new_max_download_bytes|tonumber) else . end |
-    if $new_expiration_days != "" then .expiration_days = ($new_expiration_days|tonumber) else . end |
-    if $new_account_creation_date != "" then .account_creation_date = $new_account_creation_date else . end |
-    if $new_blocked != "" then .blocked = ($new_blocked|test("true")) else . end'
+    echo "change key"
+    # If new_username is provided and different from old_username, rename the key
+    if [ -n "$new_username" ] && [ "$old_username" != "$new_username" ]; then
+        jq --arg old_username "$old_username" \
+           --arg new_username "$new_username" \
+           'if .[$new_username] then error("User already exists with new username") else . end |
+            .[$new_username] = .[$old_username] | del(.[$old_username])' \
+           "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
 
-    # Rename the user if new_username is provided
-    if [ -n "$new_username" ]; then
-        jq_filter=$(echo "$jq_filter" | sed "s|.$old_username|.$new_username|")
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to rename user '$old_username' to '$new_username'."
+            return 1
+        fi
     fi
+    echo "change key done"
 
-    jq --arg old_username "$old_username" \
-       --arg new_username "$new_username" \
-       --arg new_password "$new_password" \
-       --arg new_max_download_bytes "$new_max_download_bytes" \
-       --arg new_expiration_days "$new_expiration_days" \
-       --arg new_account_creation_date "$new_account_creation_date" \
-       --arg new_blocked "$new_blocked" \
-       "$jq_filter" \
-       "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
+    echo "update user fields"
+    # print all new values
+    echo "Old username" "$old_username"
+    echo "New username: $new_username"
+    echo "New password: $new_password"
+    echo "New traffic limit: $new_max_download_bytes"
+    echo "New expiration days: $new_expiration_days"
+    echo "New creation date: $new_account_creation_date"
+    echo "New blocked status: $new_blocked"
+
+    jq --arg username "$new_username" \
+    --arg password "$new_password" \
+    --argjson max_download_bytes "$new_max_download_bytes" \
+    --argjson expiration_days "$new_expiration_days" \
+    --arg account_creation_date "$new_account_creation_date" \
+    --argjson blocked "$new_blocked" \
+    '.[$username] |= (.password = $password | .max_download_bytes = $max_download_bytes | .expiration_days = $expiration_days | .account_creation_date = $account_creation_date | .blocked = $blocked)' \
+    "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
+
+    echo "update user fields done"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to update user '$old_username'."
+        return 1
+    fi
 
     echo "User '$old_username' updated successfully."
 }
@@ -123,7 +144,7 @@ edit_user() {
 
     # Get user info
     user_info=$(get_user_info "$username")
-    if [ -z "$user_info" ]; then
+    if [ $? -ne 0 ] || [ -z "$user_info" ]; then
         echo -e "${red}Error:${NC} User '$username' not found."
         exit 1
     fi
@@ -146,6 +167,7 @@ edit_user() {
     new_expiration_days=${new_expiration_days:-$expiration_days}
     new_creation_date=${new_creation_date:-$creation_date}
     new_blocked=${new_blocked:-$blocked}
+
 
     # Update user info in JSON file
     update_user_info "$username" "$new_username" "$new_password" "$new_traffic_limit" "$new_expiration_days" "$new_creation_date" "$new_blocked"

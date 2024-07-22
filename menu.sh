@@ -169,7 +169,7 @@ hysteria2_menu() {
             2) hysteria2_add_user_handler ;;
             3) hysteria2_modify_users ;;
             4) hysteria2_show_user_uri_handler ;;
-            5) python3 $CLI_PATH traffic_status ;;
+            5) python3 $CLI_PATH traffic-status ;;
             6) hysteria2_remove_user_handler ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;

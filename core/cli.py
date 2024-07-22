@@ -61,7 +61,6 @@ def cli():
 @cli.command('install-hysteria2')
 @click.option('--port','-p', required=True, help='New port for Hysteria2',type=int,callback=validator.validate_port)
 def install_hysteria2(port:int):
-    print(f"bash {Command.INSTALL_HYSTERIA2.value} {str(port)}")
     run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port)])
     
 

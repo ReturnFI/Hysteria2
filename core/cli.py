@@ -100,11 +100,11 @@ def get_user(username: str):
 
 @cli.command('add-user')
 @click.option('--username', '-u', required=True, help='Username for the new user', type=str)
-@click.option('--traffic-limit', '-t', required=True, help='Traffic limit for the new user in GB', type=float)
+@click.option('--traffic-limit', '-t', required=True, help='Traffic limit for the new user in GB', type=int)
 @click.option('--expiration-days', '-e', required=True, help='Expiration days for the new user', type=int)
 @click.option('--password', '-p', required=False, help='Password for the user', type=str)
 @click.option('--creation-date', '-c', required=False, help='Creation date for the user', type=str)
-def add_user(username: str, traffic_limit: float, expiration_days: int, password: str, creation_date: str):
+def add_user(username: str, traffic_limit: int, expiration_days: int, password: str, creation_date: str):
     if not password:
         try:
             password = generate_password()
@@ -120,12 +120,12 @@ def add_user(username: str, traffic_limit: float, expiration_days: int, password
 @cli.command('edit-user')
 @click.option('--username', '-u', required=True, help='Username for the user to edit', type=str)
 @click.option('--new-username', '-nu', required=False, help='New username for the user', type=str)
-@click.option('--new-traffic-limit', '-nt', required=False, help='Traffic limit for the new user in GB', type=float)
+@click.option('--new-traffic-limit', '-nt', required=False, help='Traffic limit for the new user in GB', type=int)
 @click.option('--new-expiration-days', '-ne', required=False, help='Expiration days for the new user', type=int)
 @click.option('--renew-password', '-rp', is_flag=True, help='Renew password for the user')
 @click.option('--renew-creation-date', '-rc', is_flag=True, help='Renew creation date for the user')
 @click.option('--blocked', '-b', is_flag=True, help='Block the user')
-def edit_user(username: str, new_username: str, new_traffic_limit: float, new_expiration_days: int, renew_password: bool, renew_creation_date: bool, blocked: bool):
+def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expiration_days: int, renew_password: bool, renew_creation_date: bool, blocked: bool):
     if not username:
         print('Error: username is required')
         exit(1)

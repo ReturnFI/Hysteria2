@@ -148,24 +148,30 @@ hysteria2_list_users_handler() {
         echo -e "\033[0;31mError:\033[0m Failed to list users."
         return 1
     fi
-    users_array=($(echo "$users_json" | jq -r '.[] | .username'))
 
-    if [[ ${#users_array[@]} -eq 0 ]]; then
+    # Extract keys (usernames) from JSON
+    users_keys=$(echo "$users_json" | jq -r 'keys[]')
+
+    if [ -z "$users_keys" ]; then
         echo -e "\033[0;31mError:\033[0m No users found."
         return 1
     fi
 
     # Print headers
     echo -e "\033[0;32mUsers:\033[0m"
-    printf "%-20s %-15s %-15s %-20s %-30s %-10s\n" "Username" "Traffic Limit (GB)" "Expiration (Days)" "Creation Date" "Password" "Blocked"
+    printf "%-20s %-20s %-15s %-20s %-30s %-10s\n" "Username" "Traffic Limit (GB)" "Expiration (Days)" "Creation Date" "Password" "Blocked"
 
     # Print user details
-    echo "$users_json" | jq -r '.[] | "\(.username) \(.traffic_limit_GB) \(.expiration_days) \(.creation_date) \(.password) \(.blocked)"' | \
-    while IFS= read -r line; do
-        IFS=' ' read -r username traffic_limit expiration_date creation_date password blocked <<< "$line"
-        printf "%-20s %-15s %-15s %-20s %-30s %-10s\n" "$username" "$traffic_limit" "$expiration_date" "$creation_date" "$password" "$blocked"
+    for key in $users_keys; do
+        echo "$users_json" | jq -r --arg key "$key" '
+            "\($key) \(.[$key].max_download_bytes / 1073741824) \(.[$key].expiration_days) \(.[$key].account_creation_date) \(.[$key].password) \(.[$key].blocked)"' | \
+        while IFS= read -r line; do
+            IFS=' ' read -r username traffic_limit expiration_date creation_date password blocked <<< "$line"
+            printf "%-20s %-20s %-15s %-20s %-30s %-10s\n" "$username" "$traffic_limit" "$expiration_date" "$creation_date" "$password" "$blocked"
+        done
     done
 }
+
 
 hysteria2_show_user_uri_handler() {
     while true; do

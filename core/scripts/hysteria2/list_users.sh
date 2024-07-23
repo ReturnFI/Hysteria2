@@ -3,4 +3,4 @@
 source /etc/hysteria/core/scripts/path.sh
 
 
-cat "$USER_FILE"
+cat "$USERS_FILE"

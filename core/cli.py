@@ -215,10 +215,12 @@ def uninstall_warp():
 
 
 @ cli.command('configure-warp')
-@ click.option('--warp-mode', '-m', required=True, help='Warp mode', type=click.Choice(['proxy', 'direct', 'reject']))
-@ click.option('--block-porn', '-p', required=False, help='Block porn', type=bool)
-def configure_warp(warp_mode: str, block_porn: bool):
-    run_cmd(['bash', Command.CONFIGURE_WARP.value, warp_mode, str(block_porn)])
+@ click.option('--all', '-a', is_flag=True, help='Use WARP for all connections')
+@ click.option('--popular-sites', '-p', is_flag=True, help='Use WARP for popular sites like Google, OpenAI, etc')
+@ click.option('--domestic-sites', '-d', is_flag=True, help='Use WARP for Iran domestic sites')
+@ click.option('--block-adult-sites', '-x', is_flag=True, help='Block adult content (porn)')
+def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool):
+    run_cmd(['bash', Command.CONFIGURE_WARP.value, str(all).lower(), str(popular_sites).lower(), str(domestic_sites).lower(), str(block_adult_sites).lower()])
 
 # endregion
 

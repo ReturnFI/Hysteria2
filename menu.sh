@@ -36,56 +36,6 @@ hysteria2_add_user_handler() {
     python3 $CLI_PATH add-user --username "$username" --traffic-limit "$traffic_limit_GB" --expiration-days "$expiration_days" --password "$password" --creation-date "$creation_date"
 }
 
-hysteria2_remove_user_handler() {
-    while true; do
-        read -p "Enter the username: " username
-
-        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
-            break
-        else
-            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
-        fi
-    done
-    python3 $CLI_PATH remove-user --username "$username"
-}
-
-hysteria2_show_user_uri_handler() {
-    while true; do
-        read -p "Enter the username: " username
-
-        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
-            break
-        else
-            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
-        fi
-    done
-    python3 $CLI_PATH show-user-uri --username "$username"
-}
-
-hysteria2_get_user_handler() {
-    while true; do
-        read -p "Enter the username: " username
-        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
-            break
-        else
-            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
-        fi
-    done
-    python3 $CLI_PATH get-user --username "$username"
-}
-
-hysteria2_change_port_handler() {
-    while true; do
-        read -p "Enter the new port number you want to use: " port
-        if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
-            echo "Invalid port number. Please enter a number between 1 and 65535."
-        else
-            break
-        fi
-    done
-    python3 $CLI_PATH change-hysteria2-port --port "$port"
-}
-
 hysteria2_edit_user() {
     # Function to prompt for user input with validation
     prompt_for_input() {
@@ -165,6 +115,77 @@ hysteria2_edit_user() {
         ${renew_password:+--renew-password} \
         ${renew_creation_date:+--renew-creation-date} \
         ${blocked:+--blocked}
+}
+
+hysteria2_remove_user_handler() {
+    while true; do
+        read -p "Enter the username: " username
+
+        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+            break
+        else
+            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        fi
+    done
+    python3 $CLI_PATH remove-user --username "$username"
+}
+
+hysteria2_get_user_handler() {
+    while true; do
+        read -p "Enter the username: " username
+        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+            break
+        else
+            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        fi
+    done
+    python3 $CLI_PATH get-user --username "$username"
+}
+
+hysteria2_list_users_handler() {
+    users_json=$(python3 $CLI_PATH list-users)
+    users_array=($(echo "$users_json" | jq -r '.[] | .username'))
+
+    if [[ ${#users_array[@]} -eq 0 ]]; then
+        echo -e "\033[0;31mError:\033[0m No users found."
+        return 1
+    fi
+
+    # Print headers
+    echo -e "\033[0;32mUsers:\033[0m"
+    printf "%-20s %-15s %-15s %-20s %-30s %-10s\n" "Username" "Traffic Limit (GB)" "Expiration (Days)" "Creation Date" "Password" "Blocked"
+
+    # Print user details
+    echo "$users_json" | jq -r '.[] | "\(.username) \(.traffic_limit_GB) \(.expiration_days) \(.creation_date) \(.password) \(.blocked)"' | \
+    while IFS= read -r line; do
+        IFS=' ' read -r username traffic_limit expiration_date creation_date password blocked <<< "$line"
+        printf "%-20s %-15s %-15s %-20s %-30s %-10s\n" "$username" "$traffic_limit" "$expiration_date" "$creation_date" "$password" "$blocked"
+    done
+}
+
+hysteria2_show_user_uri_handler() {
+    while true; do
+        read -p "Enter the username: " username
+
+        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+            break
+        else
+            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        fi
+    done
+    python3 $CLI_PATH show-user-uri --username "$username"
+}
+
+hysteria2_change_port_handler() {
+    while true; do
+        read -p "Enter the new port number you want to use: " port
+        if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+            echo "Invalid port number. Please enter a number between 1 and 65535."
+        else
+            break
+        fi
+    done
+    python3 $CLI_PATH change-hysteria2-port --port "$port"
 }
 
 warp_configure_handler() {
@@ -252,7 +273,7 @@ hysteria2_menu() {
             3) hysteria2_edit_user ;;
             4) hysteria2_remove_user_handler  ;;
             5) hysteria2_get_user_handler ;;
-            6) python3 $CLI_PATH list-users ;;
+            6) hysteria2_list_users_handler ;;
             7) python3 $CLI_PATH traffic-status ;;
             8) hysteria2_show_user_uri_handler ;;
             0) return ;;

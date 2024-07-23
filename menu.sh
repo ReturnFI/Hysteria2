@@ -139,7 +139,12 @@ hysteria2_get_user_handler() {
             echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
         fi
     done
-    python3 $CLI_PATH get-user --username "$username"
+
+    # Run the command and suppress error output
+    if ! python3 "$CLI_PATH" get-user --username "$username" > /dev/null 2>&1; then
+        echo -e "${red}Error:${NC} User '$username' not found."
+        return 1
+    fi
 }
 
 hysteria2_list_users_handler() {

@@ -71,7 +71,7 @@ hysteria2_get_user_handler() {
             echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
         fi
     done
-    python $CLI_PATH get-user --username "$username"
+    python3 $CLI_PATH get-user --username "$username"
 }
 
 hysteria2_change_port_handler() {

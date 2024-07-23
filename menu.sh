@@ -62,6 +62,18 @@ hysteria2_show_user_uri_handler() {
     python3 $CLI_PATH show-user-uri --username "$username"
 }
 
+hysteria2_get_user_handler() {
+    while true; do
+        read -p "Enter the username: " username
+        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+            break
+        else
+            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+        fi
+    done
+    python $CLI_PATH get-user --username "$username"
+}
+
 hysteria2_change_port_handler() {
     while true; do
         read -p "Enter the new port number you want to use: " port
@@ -212,10 +224,12 @@ display_hysteria2_menu() {
 
     echo -e "${green}[1] ${NC}↝ Install and Configure Hysteria2"
     echo -e "${cyan}[2] ${NC}↝ Add User"
-    echo -e "${cyan}[3] ${NC}↝ Modify User"
-    echo -e "${cyan}[4] ${NC}↝ Show URI"
-    echo -e "${cyan}[5] ${NC}↝ Check Traffic Status"
-    echo -e "${cyan}[6] ${NC}↝ Remove User"
+    echo -e "${cyan}[3] ${NC}↝ Edit User"
+    echo -e "${cyan}[4] ${NC}↝ Remove User"
+    echo -e "${cyan}[5] ${NC}↝ Get User"
+    echo -e "${cyan}[6] ${NC}↝ List Users (WIP)"
+    echo -e "${cyan}[7] ${NC}↝ Check Traffic Status"
+    echo -e "${cyan}[8] ${NC}↝ Show User URI"
 
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
 
@@ -236,9 +250,11 @@ hysteria2_menu() {
             1) hysteria2_install_handler ;;
             2) hysteria2_add_user_handler ;;
             3) hysteria2_edit_user ;;
-            4) hysteria2_show_user_uri_handler ;;
-            5) python3 $CLI_PATH traffic-status ;;
-            6) hysteria2_remove_user_handler ;;
+            4) hysteria2_remove_user_handler  ;;
+            5) hysteria2_get_user_handler ;;
+            6) python3 $CLI_PATH list-users ;;
+            7) python3 $CLI_PATH traffic-status ;;
+            8) hysteria2_show_user_uri_handler ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

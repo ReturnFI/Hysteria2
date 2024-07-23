@@ -143,7 +143,11 @@ hysteria2_get_user_handler() {
 }
 
 hysteria2_list_users_handler() {
-    users_json=$(python3 $CLI_PATH list-users)
+    users_json=$(python3 $CLI_PATH list-users 2>/dev/null)
+    if [ $? -ne 0 ] || [ -z "$users_json" ]; then
+        echo -e "\033[0;31mError:\033[0m Failed to list users."
+        return 1
+    fi
     users_array=($(echo "$users_json" | jq -r '.[] | .username'))
 
     if [[ ${#users_array[@]} -eq 0 ]]; then

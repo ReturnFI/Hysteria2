@@ -23,7 +23,7 @@ hysteria2_add_user_handler() {
         if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
             break
         else
-            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
         fi
     done
 
@@ -53,7 +53,7 @@ hysteria2_edit_user() {
                 eval "$input_variable_name='$input'"
                 break
             else
-                echo -e "\033[0;31mError:\033[0m Invalid input. Please try again."
+                echo -e "${red}Error:${NC} Invalid input. Please try again."
             fi
         done
     }
@@ -63,7 +63,7 @@ hysteria2_edit_user() {
 
     # Check if user exists
     if ! python3 $CLI_PATH get-user --username "$username" > /dev/null 2>&1; then
-        echo -e "\033[0;31mError:\033[0m User '$username' not found."
+        echo -e "${red}Error:${NC} User '$username' not found."
         return 1
     fi
 
@@ -82,7 +82,7 @@ hysteria2_edit_user() {
         case "$renew_password" in
             y|Y) renew_password=true; break ;;
             n|N) renew_password=false; break ;;
-            *) echo -e "\033[0;31mError:\033[0m Please answer 'y' or 'n'." ;;
+            *) echo -e "${red}Error:${NC} Please answer 'y' or 'n'." ;;
         esac
     done
 
@@ -92,7 +92,7 @@ hysteria2_edit_user() {
         case "$renew_creation_date" in
             y|Y) renew_creation_date=true; break ;;
             n|N) renew_creation_date=false; break ;;
-            *) echo -e "\033[0;31mError:\033[0m Please answer 'y' or 'n'." ;;
+            *) echo -e "${red}Error:${NC} Please answer 'y' or 'n'." ;;
         esac
     done
 
@@ -102,7 +102,7 @@ hysteria2_edit_user() {
         case "$block_user" in
             y|Y) blocked=true; break ;;
             n|N) blocked=false; break ;;
-            *) echo -e "\033[0;31mError:\033[0m Please answer 'y' or 'n'." ;;
+            *) echo -e "${red}Error:${NC} Please answer 'y' or 'n'." ;;
         esac
     done
 
@@ -124,7 +124,7 @@ hysteria2_remove_user_handler() {
         if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
             break
         else
-            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
         fi
     done
     python3 $CLI_PATH remove-user --username "$username"
@@ -136,7 +136,7 @@ hysteria2_get_user_handler() {
         if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
             break
         else
-            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
         fi
     done
     python3 $CLI_PATH get-user --username "$username"
@@ -145,7 +145,7 @@ hysteria2_get_user_handler() {
 hysteria2_list_users_handler() {
     users_json=$(python3 $CLI_PATH list-users 2>/dev/null)
     if [ $? -ne 0 ] || [ -z "$users_json" ]; then
-        echo -e "\033[0;31mError:\033[0m Failed to list users."
+        echo -e "${red}Error:${NC} Failed to list users."
         return 1
     fi
 
@@ -153,12 +153,11 @@ hysteria2_list_users_handler() {
     users_keys=$(echo "$users_json" | jq -r 'keys[]')
 
     if [ -z "$users_keys" ]; then
-        echo -e "\033[0;31mError:\033[0m No users found."
+        echo -e "${red}Error:${NC} No users found."
         return 1
     fi
 
     # Print headers
-    echo -e "\033[0;32mUsers:\033[0m"
     printf "%-20s %-20s %-15s %-20s %-30s %-10s\n" "Username" "Traffic Limit (GB)" "Expiration (Days)" "Creation Date" "Password" "Blocked"
 
     # Print user details
@@ -180,7 +179,7 @@ hysteria2_show_user_uri_handler() {
         if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
             break
         else
-            echo -e "\033[0;31mError:\033[0m Username can only contain lowercase letters and numbers."
+            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
         fi
     done
     python3 $CLI_PATH show-user-uri --username "$username"

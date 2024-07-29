@@ -203,8 +203,30 @@ hysteria2_change_port_handler() {
 }
 
 warp_configure_handler() {
-    # Placeholder function, add implementation here if needed
-    echo "empty"
+    local service_name="wg-quick@wgcf.service"
+
+    if systemctl is-active --quiet "$service_name"; then
+        echo "Configure WARP Options:"
+        echo "1. Use WARP for all traffic"
+        echo "2. Use WARP for popular sites"
+        echo "3. Use WARP for domestic sites"
+        echo "4. Block adult content"
+        echo "0. Cancel"
+
+        read -p "Select an option: " option
+
+        case $option in
+            1) python3 $CLI_PATH configure-warp --all ;;
+            2) python3 $CLI_PATH configure-warp --popular-sites ;;
+            3) python3 $CLI_PATH configure-warp --domestic-sites ;;
+            4) python3 $CLI_PATH configure-warp --block-adult-sites ;;
+            0) echo "WARP configuration canceled." ;;
+            *) echo "Invalid option. Please try again." ;;
+        esac
+    else
+        # Notify user if the service is not active
+        echo "$service_name is not active. Please start the service before configuring WARP."
+    fi
 }
 
 # Function to display the main menu

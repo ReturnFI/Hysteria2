@@ -5,6 +5,12 @@ source /etc/hysteria/core/scripts/path.sh
 
 # OPTION HANDLERS (ONLY NEEDED ONE)
 hysteria2_install_handler() {
+    if systemctl is-active --quiet hysteria-server.service; then
+        echo "The hysteria-server.service is currently active."
+        echo "If you need to update the core, please use the 'Update Core' option."
+        return
+    fi
+
     while true; do
         read -p "Enter the new port number you want to use: " port
         if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
@@ -13,6 +19,7 @@ hysteria2_install_handler() {
             break
         fi
     done
+
     python3 $CLI_PATH install-hysteria2 --port "$port"
 }
 

@@ -362,10 +362,5 @@ advance_menu() {
 }
 
 # Main function to run the script
-main() {
-    main_menu
-}
-
-define_colors
-# Run the main function
 main
+

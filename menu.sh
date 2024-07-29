@@ -20,10 +20,10 @@ hysteria2_add_user_handler() {
     while true; do
         read -p "Enter the username: " username
 
-        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+        if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
             break
         else
-            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
+            echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi
     done
 
@@ -121,10 +121,10 @@ hysteria2_remove_user_handler() {
     while true; do
         read -p "Enter the username: " username
 
-        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+        if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
             break
         else
-            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
+            echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi
     done
     python3 $CLI_PATH remove-user --username "$username"
@@ -133,10 +133,10 @@ hysteria2_remove_user_handler() {
 hysteria2_get_user_handler() {
     while true; do
         read -p "Enter the username: " username
-        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+        if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
             break
         else
-            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
+            echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi
     done
 
@@ -181,10 +181,10 @@ hysteria2_show_user_uri_handler() {
     while true; do
         read -p "Enter the username: " username
 
-        if [[ "$username" =~ ^[a-z0-9]+$ ]]; then
+        if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
             break
         else
-            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
+            echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi
     done
     python3 $CLI_PATH show-user-uri --username "$username"

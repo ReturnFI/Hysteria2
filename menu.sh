@@ -370,4 +370,4 @@ advance_menu() {
 
 # Main function to run the script
 main_menu
-
+define_colors

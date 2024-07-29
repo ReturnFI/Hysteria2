@@ -3,15 +3,21 @@ import subprocess
 import json
 import os
 
+# Define static variables for paths and URLs
+CONFIG_FILE = '/etc/hysteria/config.json'
+TRAFFIC_FILE = '/etc/hysteria/traffic_data.json'
+TRAFFIC_API_URL = 'http://127.0.0.1:25413/traffic?clear=1'
+ONLINE_API_URL = 'http://127.0.0.1:25413/online'
+
 def traffic_status():
     green = '\033[0;32m'
     cyan = '\033[0;36m'
     NC = '\033[0m'
 
     try:
-        secret = subprocess.check_output(['jq', '-r', '.trafficStats.secret', '/etc/hysteria/config.json']).decode().strip()
+        secret = subprocess.check_output(['jq', '-r', '.trafficStats.secret', CONFIG_FILE]).decode().strip()
     except subprocess.CalledProcessError as e:
-        print(f"Error: Failed to read secret from config.json. Details: {e}")
+        print(f"Error: Failed to read secret from {CONFIG_FILE}. Details: {e}")
         return
 
     if not secret:
@@ -19,7 +25,7 @@ def traffic_status():
         return
 
     try:
-        response = subprocess.check_output(['curl', '-s', '-H', f'Authorization: {secret}', 'http://127.0.0.1:25413/traffic?clear=1']).decode().strip()
+        response = subprocess.check_output(['curl', '-s', '-H', f'Authorization: {secret}', TRAFFIC_API_URL]).decode().strip()
     except subprocess.CalledProcessError as e:
         print(f"Error: Failed to fetch traffic data. Details: {e}")
         return
@@ -29,7 +35,7 @@ def traffic_status():
         return
 
     try:
-        online_response = subprocess.check_output(['curl', '-s', '-H', f'Authorization: {secret}', 'http://127.0.0.1:25413/online']).decode().strip()
+        online_response = subprocess.check_output(['curl', '-s', '-H', f'Authorization: {secret}', ONLINE_API_URL]).decode().strip()
     except subprocess.CalledProcessError as e:
         print(f"Error: Failed to fetch online status data. Details: {e}")
         return
@@ -55,9 +61,9 @@ def traffic_status():
         }
 
     existing_data = {}
-    if os.path.exists('/etc/hysteria/traffic_data.json'):
+    if os.path.exists(TRAFFIC_FILE):
         try:
-            with open('/etc/hysteria/traffic_data.json', 'r') as json_file:
+            with open(TRAFFIC_FILE, 'r') as json_file:
                 existing_data = json.load(json_file)
         except json.JSONDecodeError:
             print("Error: Failed to parse existing traffic data JSON file.")
@@ -71,7 +77,7 @@ def traffic_status():
         else:
             existing_data[user] = data
 
-    with open('/etc/hysteria/traffic_data.json', 'w') as json_file:
+    with open(TRAFFIC_FILE, 'w') as json_file:
         json.dump(existing_data, json_file, indent=4)
 
     display_traffic_data(existing_data, green, cyan, NC)
@@ -108,5 +114,3 @@ def format_bytes(bytes):
         return f"{bytes / 1073741824:.2f}GB"
     else:
         return f"{bytes / 1099511627776:.2f}TB"
-
-traffic_status()

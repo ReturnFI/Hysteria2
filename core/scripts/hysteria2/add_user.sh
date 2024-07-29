@@ -37,8 +37,8 @@ add_user() {
     fi
 
     # Validate the username
-    if ! [[ "$username" =~ ^[a-z0-9]+$ ]]; then
-        echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
+    if ! [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
+        echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         exit 1
     fi
 

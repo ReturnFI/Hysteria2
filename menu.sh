@@ -369,5 +369,5 @@ advance_menu() {
 }
 
 # Main function to run the script
-main
+main_menu
 

@@ -214,13 +214,22 @@ def uninstall_warp():
     run_cmd(['bash', Command.UNINSTALL_WARP.value])
 
 
-@ cli.command('configure-warp')
-@ click.option('--all', '-a', is_flag=True, help='Use WARP for all connections')
-@ click.option('--popular-sites', '-p', is_flag=True, help='Use WARP for popular sites like Google, OpenAI, etc')
-@ click.option('--domestic-sites', '-d', is_flag=True, help='Use WARP for Iran domestic sites')
-@ click.option('--block-adult-sites', '-x', is_flag=True, help='Block adult content (porn)')
+@cli.command('configure-warp')
+@click.option('--all', '-a', is_flag=True, help='Use WARP for all connections')
+@click.option('--popular-sites', '-p', is_flag=True, help='Use WARP for popular sites like Google, OpenAI, etc')
+@click.option('--domestic-sites', '-d', is_flag=True, help='Use WARP for Iran domestic sites')
+@click.option('--block-adult-sites', '-x', is_flag=True, help='Block adult content (porn)')
 def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool):
-    run_cmd(['bash', Command.CONFIGURE_WARP.value, str(all).lower(), str(popular_sites).lower(), str(domestic_sites).lower(), str(block_adult_sites).lower()])
+    options = {
+        "all": all,
+        "popular_sites": popular_sites,
+        "domestic_sites": domestic_sites,
+        "block_adult_sites": block_adult_sites
+    }
+    
+    options = {k: 'true' if v else 'false' for k, v in options.items()}
+    run_cmd(['bash', Command.CONFIGURE_WARP.value, 
+             options['all'], options['popular_sites'], options['domestic_sites'], options['block_adult_sites']])
 
 # endregion
 

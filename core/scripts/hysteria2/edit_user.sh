@@ -14,8 +14,8 @@ validate_inputs() {
 
     # Validate username
     if [ -n "$new_username" ]; then
-        if ! [[ "$new_username" =~ ^[a-z0-9]+$ ]]; then
-            echo -e "${red}Error:${NC} Username can only contain lowercase letters and numbers."
+        if ! [[ "$new_username" =~ ^[a-zA-Z0-9]+$ ]]; then
+            echo -e "${red}Error:${NC} Username can only contain letters and numbers."
             exit 1
         fi
     fi

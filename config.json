@@ -21,7 +21,7 @@
     "maxStreamReceiveWindow": 8388608,
     "initConnReceiveWindow": 20971520,
     "maxConnReceiveWindow": 20971520,
-    "maxIdleTimeout": "60s",
+    "maxIdleTimeout": "20s",
     "maxIncomingStreams": 60,
     "disablePathMTUDiscovery": false
   },
@@ -31,7 +31,7 @@
   },
   "ignoreClientBandwidth": false,
   "disableUDP": false,
-  "udpIdleTimeout": "60s",
+  "udpIdleTimeout": "20s",
   "resolver": {
     "type": "tls",
     "tcp": {

@@ -83,7 +83,7 @@ hysteria2_edit_user() {
     # Prompt for new expiration days
     prompt_for_input "Enter the new expiration days (leave empty to keep the current expiration days): " '^[0-9]*$' '' new_expiration_days
 
-    # Prompt for renewing password
+    # Determine if we need to renew password
     while true; do
         read -p "Do you want to generate a new password? (y/n): " renew_password
         case "$renew_password" in
@@ -93,7 +93,7 @@ hysteria2_edit_user() {
         esac
     done
 
-    # Prompt for renewing creation date
+    # Determine if we need to renew creation date
     while true; do
         read -p "Do you want to generate a new creation date? (y/n): " renew_creation_date
         case "$renew_creation_date" in
@@ -103,7 +103,7 @@ hysteria2_edit_user() {
         esac
     done
 
-    # Prompt for blocking user
+    # Determine if user should be blocked
     while true; do
         read -p "Do you want to block the user? (y/n): " block_user
         case "$block_user" in
@@ -113,15 +113,17 @@ hysteria2_edit_user() {
         esac
     done
 
-    # Call the edit-user script with appropriate flags
-    python3 $CLI_PATH edit-user \
-        --username "$username" \
-        ${new_username:+--new-username "$new_username"} \
-        ${new_traffic_limit_GB:+--new-traffic-limit "$new_traffic_limit_GB"} \
-        ${new_expiration_days:+--new-expiration-days "$new_expiration_days"} \
-        ${renew_password:+--renew-password} \
-        ${renew_creation_date:+--renew-creation-date} \
-        ${blocked:+--blocked}
+    # Construct the arguments for the edit-user command
+    args=()
+    if [[ -n "$new_username" ]]; then args+=("--new-username" "$new_username"); fi
+    if [[ -n "$new_traffic_limit_GB" ]]; then args+=("--new-traffic-limit" "$new_traffic_limit_GB"); fi
+    if [[ -n "$new_expiration_days" ]]; then args+=("--new-expiration-days" "$new_expiration_days"); fi
+    if [[ "$renew_password" == "true" ]]; then args+=("--renew-password"); fi
+    if [[ "$renew_creation_date" == "true" ]]; then args+=("--renew-creation-date"); fi
+    if [[ "$blocked" == "true" ]]; then args+=("--blocked"); fi
+
+    # Call the edit-user script with the constructed arguments
+    python3 $CLI_PATH edit-user --username "$username" "${args[@]}"
 }
 
 hysteria2_remove_user_handler() {

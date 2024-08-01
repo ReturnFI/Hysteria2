@@ -167,10 +167,11 @@ def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expi
         str(new_expiration_days) if new_expiration_days is not None else '',
         password,
         creation_date,
-        str(blocked).lower() if blocked is not None else 'false'
+        'true' if blocked else 'false'
     ]
 
     run_cmd(command_args)
+
 
 
 @ cli.command('remove-user')

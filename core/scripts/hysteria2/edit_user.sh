@@ -21,7 +21,7 @@ validate_inputs() {
     fi
 
     # Validate traffic limit
-    if [[ ! "$new_traffic_limit" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+    if [ -n "$new_traffic_limit" ]; then
         if ! [[ "$new_traffic_limit" =~ ^[0-9]+$ ]]; then
             echo -e "${red}Error:${NC} Traffic limit must be a valid integer."
             exit 1
@@ -49,11 +49,22 @@ validate_inputs() {
 
     # Validate blocked status
     if [ -n "$new_blocked" ]; then
-        if [ "$new_blocked" != "true" ] && [ "$new_blocked" != "false" ]; then
-            echo -e "${red}Error:${NC} Blocked status must be 'true' or 'false'."
+        if [ "$new_blocked" != "true" ] && [ "$new_blocked" != "false" ] && [ "$new_blocked" != "y" ] && [ "$new_blocked" != "n" ]; then
+            echo -e "${red}Error:${NC} Blocked status must be 'true', 'false', 'y', or 'n'."
             exit 1
         fi
     fi
+}
+
+# Convert 'y'/'n' to 'true'/'false'
+convert_blocked_status() {
+    local status=$1
+    case "$status" in
+        y|Y) echo "true" ;;
+        n|N) echo "false" ;;
+        true|false) echo "$status" ;;
+        *) echo "false" ;;  # Default to false if something unexpected
+    esac
 }
 
 # Function to get user info
@@ -77,52 +88,43 @@ update_user_info() {
         return 1
     fi
 
-
-    echo "checking if user exists"
-    # Check if the old username exists
+    echo "Checking if user exists"
     user_exists=$(jq -e --arg username "$old_username" '.[$username]' "$USERS_FILE")
     if [ $? -ne 0 ]; then
         echo "Error: User '$old_username' not found."
         return 1
     fi
-    echo "user exists done"
+    echo "User exists."
 
-    echo "change key"
-    # If new_username is provided and different from old_username, rename the key
-    if [ -n "$new_username" ] && [ "$old_username" != "$new_username" ]; then
-        jq --arg old_username "$old_username" \
-           --arg new_username "$new_username" \
-           'if .[$new_username] then error("User already exists with new username") else . end |
-            .[$new_username] = .[$old_username] | del(.[$old_username])' \
-           "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
+    # Debugging output
+    echo "Updating user:"
+    echo "Username: $new_username"
+    echo "Password: $new_password"
+    echo "Max Download Bytes: $new_max_download_bytes"
+    echo "Expiration Days: $new_expiration_days"
+    echo "Creation Date: $new_account_creation_date"
+    echo "Blocked: $new_blocked"
 
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to rename user '$old_username' to '$new_username'."
-            return 1
-        fi
-    fi
-    echo "change key done"
+    # Update user fields, only if new values are provided
+    jq --arg old_username "$old_username" \
+    --arg new_username "$new_username" \
+    --arg password "${new_password:-null}" \
+    --argjson max_download_bytes "${new_max_download_bytes:-null}" \
+    --argjson expiration_days "${new_expiration_days:-null}" \
+    --arg account_creation_date "${new_creation_date:-null}" \
+    --argjson blocked "$(convert_blocked_status "${new_blocked:-false}")" \
+    '
+    .[$new_username] = .[$old_username] |
+    del(.[$old_username]) |
+    .[$new_username] |= (
+        .password = ($password // .password) |
+        .max_download_bytes = ($max_download_bytes // .max_download_bytes) |
+        .expiration_days = ($expiration_days // .expiration_days) |
+        .account_creation_date = ($account_creation_date // .account_creation_date) |
+        .blocked = $blocked
+    )' "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
 
-    echo "update user fields"
-    # print all new values
-    echo "Old username" "$old_username"
-    echo "New username: $new_username"
-    echo "New password: $new_password"
-    echo "New traffic limit: $new_max_download_bytes"
-    echo "New expiration days: $new_expiration_days"
-    echo "New creation date: $new_account_creation_date"
-    echo "New blocked status: $new_blocked"
 
-    jq --arg username "$new_username" \
-    --arg password "$new_password" \
-    --argjson max_download_bytes "$new_max_download_bytes" \
-    --argjson expiration_days "$new_expiration_days" \
-    --arg account_creation_date "$new_account_creation_date" \
-    --argjson blocked "$new_blocked" \
-    '.[$username] |= (.password = $password | .max_download_bytes = $max_download_bytes | .expiration_days = $expiration_days | .account_creation_date = $account_creation_date | .blocked = $blocked)' \
-    "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
-
-    echo "update user fields done"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to update user '$old_username'."
         return 1
@@ -130,7 +132,6 @@ update_user_info() {
 
     echo "User '$old_username' updated successfully."
 }
-
 
 # Main function to edit user
 edit_user() {
@@ -162,16 +163,22 @@ edit_user() {
     # Set new values with validation
     new_username=${new_username:-$username}
     new_password=${new_password:-$password}
-    new_traffic_limit=${new_traffic_limit:-$traffic_limit}
-    new_traffic_limit=$(echo "$new_traffic_limit * 1073741824" | bc)
+
+    # Convert traffic limit to bytes if provided, otherwise keep existing
+    if [ -n "$new_traffic_limit" ]; then
+        new_traffic_limit=$(echo "$new_traffic_limit * 1073741824" | bc)
+    else
+        new_traffic_limit=$traffic_limit
+    fi
+
     new_expiration_days=${new_expiration_days:-$expiration_days}
     new_creation_date=${new_creation_date:-$creation_date}
-    new_blocked=${new_blocked:-$blocked}
-
+    new_blocked=$(convert_blocked_status "${new_blocked:-$blocked}")
 
     # Update user info in JSON file
     update_user_info "$username" "$new_username" "$new_password" "$new_traffic_limit" "$new_expiration_days" "$new_creation_date" "$new_blocked"
 }
+
 
 # Run the script
 edit_user "$1" "$2" "$3" "$4" "$5" "$6" "$7"

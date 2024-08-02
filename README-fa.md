@@ -9,7 +9,9 @@
 ```shell
 bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/menu.sh)
 ```
+بعد از نصب کافیه از دستور `hys2`  برای اجرای اسکریپت Hysteria2 استفاده کنید و نیازی به اجرا دستور نصب نیست.
 
+<br />
 <p align="center">
 <img src="https://github.com/ReturnFI/Hysteria2/assets/151555003/b1c7ab9f-7887-46fd-8e13-a7bfe9bf5990" width="500" height="250">
 <p/>

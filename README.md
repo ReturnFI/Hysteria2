@@ -11,9 +11,14 @@ This shell script provides a menu-driven interface to manage Hysteria2 server op
 
 ### Install command :
 ```shell
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/menu.sh)
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
 ```
+After installation, simply use the command `hys2` to run the Hysteria2 script.
 
+There is no need to execute the installation command again.
+
+
+<br />
 <p align="center">
 <img src="https://github.com/ReturnFI/Hysteria2/assets/151555003/b1c7ab9f-7887-46fd-8e13-a7bfe9bf5990" width="500" height="250">
 <p/>

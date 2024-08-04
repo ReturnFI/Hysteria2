@@ -1,0 +1,4 @@
+pyTelegramBotAPI
+qrcode
+python-dotenv
+requests

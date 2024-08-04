@@ -29,6 +29,7 @@ class Command(Enum):
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
+    SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
@@ -195,6 +196,11 @@ def traffic_status():
 def list_users():
     run_cmd(['bash', Command.LIST_USERS.value])
 
+@cli.command('server-info')
+def server_info():
+    output = run_cmd(['bash', Command.SERVER_INFO.value])
+    if output:
+        print(output)
 # endregion
 
 # region advanced menu

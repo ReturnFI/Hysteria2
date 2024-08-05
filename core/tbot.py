@@ -193,7 +193,7 @@ def process_delete_user(message):
 
 @bot.inline_handler(lambda query: is_admin(query.from_user.id))
 def handle_inline_query(query):
-    command = "python3 /etc/hysteria/core/cli.py list-users"
+    command = f"python3 {CLI_PATH} list-users"
     result = run_cli_command(command)
     try:
         users = json.loads(result)

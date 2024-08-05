@@ -202,7 +202,7 @@ def delete_user(message):
 
 def process_delete_user(message):
     username = message.text.strip()
-    command = f"python3 {CLI_PATH} delete-user -u {username}"
+    command = f"python3 {CLI_PATH} remove-user -u {username}"
     result = run_cli_command(command)
     bot.reply_to(message, result)
 

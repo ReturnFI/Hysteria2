@@ -28,7 +28,11 @@ hysteria2_add_user_handler() {
         read -p "Enter the username: " username
 
         if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
-            break
+            if python3 $CLI_PATH get-user --username "$username" > /dev/null 2>&1; then
+                echo -e "${red}Error:${NC} Username already exists. Please choose another username."
+            else
+                break
+            fi
         else
             echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi

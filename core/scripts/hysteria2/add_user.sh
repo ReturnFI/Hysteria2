@@ -2,8 +2,8 @@
 
 # Source the path.sh script to load the necessary variables
 source /etc/hysteria/core/scripts/path.sh
-source /etc/hysteria/core/scripts/utils.sh
-define_colors
+# source /etc/hysteria/core/scripts/utils.sh
+# define_colors
 
 # Function to add a new user to the configuration
 add_user() {
@@ -55,7 +55,7 @@ add_user() {
 
     python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 
-    echo -e "${green}User $username added successfully.${NC}"
+    echo -e "User $username added successfully."
 }
 
 # Call the function with the provided arguments

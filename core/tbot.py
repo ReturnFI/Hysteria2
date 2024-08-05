@@ -12,6 +12,7 @@ load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
 ADMIN_USER_IDS = json.loads(os.getenv('ADMIN_USER_IDS'))
 CLI_PATH = '/etc/hysteria/core/cli.py'
+bot = telebot.TeleBot(API_TOKEN)
 
 def run_cli_command(command):
     try:

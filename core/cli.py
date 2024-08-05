@@ -42,11 +42,14 @@ def run_cmd(command: list[str]):
     Runs a command and returns the output.
     Could raise subprocess.CalledProcessError
     '''
-    if DEBUG and Command.GET_USER.value not in command and Command.LIST_USERS.value not in command:
+
+    # if the command is GET_USER or LIST_USERS we don't print the debug-command and just print the output
+    if DEBUG and not (Command.GET_USER.value in command or Command.LIST_USERS.value in command):
         print(' '.join(command))
+
     result = subprocess.check_output(command, shell=False)
-    if DEBUG:
-        print(result.decode().strip())
+
+    print(result.decode().strip())
 
 
 def generate_password() -> str:
@@ -174,7 +177,6 @@ def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expi
     run_cmd(command_args)
 
 
-
 @ cli.command('remove-user')
 @ click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
 def remove_user(username: str):
@@ -195,6 +197,7 @@ def traffic_status():
 @ cli.command('list-users')
 def list_users():
     run_cmd(['bash', Command.LIST_USERS.value])
+
 
 @cli.command('server-info')
 def server_info():
@@ -233,9 +236,9 @@ def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_a
         "domestic_sites": domestic_sites,
         "block_adult_sites": block_adult_sites
     }
-    
+
     options = {k: 'true' if v else 'false' for k, v in options.items()}
-    run_cmd(['bash', Command.CONFIGURE_WARP.value, 
+    run_cmd(['bash', Command.CONFIGURE_WARP.value,
              options['all'], options['popular_sites'], options['domestic_sites'], options['block_adult_sites']])
 
 # endregion

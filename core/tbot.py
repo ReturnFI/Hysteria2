@@ -45,6 +45,21 @@ def add_user(message):
 
 def process_add_user_step1(message):
     username = message.text.strip()
+    if username == "":
+        bot.reply_to(message, "Username cannot be empty. Please enter a valid username.")
+        return
+
+    command = f"python3 {CLI_PATH} list-users"
+    result = run_cli_command(command)
+    try:
+        users = json.loads(result)
+        if username in users:
+            bot.reply_to(message, f"Username '{username}' already exists. Please choose a different username.")
+            return
+    except json.JSONDecodeError:
+        bot.reply_to(message, "Error retrieving user list. Please try again later.")
+        return
+
     msg = bot.reply_to(message, "Enter traffic limit (GB):")
     bot.register_next_step_handler(msg, process_add_user_step2, username)
 

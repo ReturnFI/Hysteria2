@@ -17,6 +17,10 @@ After installation, simply use the command `hys2` to run the Hysteria2 script.
 
 There is no need to execute the installation command again.
 
+### Upgrade command :
+```shell
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
+```
 
 <br />
 <p align="center">

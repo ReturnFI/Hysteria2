@@ -183,10 +183,25 @@ def remove_user(username: str):
     run_cmd(['bash', Command.REMOVE_USER.value, username])
 
 
-@ cli.command('show-user-uri')
-@ click.option('--username', '-u', required=True, help='Username for the user to show the URI', type=str)
-def show_user_uri(username: str):
-    run_cmd(['bash', Command.SHOW_USER_URI.value, username])
+@cli.command('show-user-uri')
+@click.option('--username', '-u', required=True, help='Username for the user to show the URI', type=str)
+@click.option('--qrcode', '-qr', is_flag=True, help='Generate QR code for the URI')
+@click.option('--ipv', '-ip', type=click.IntRange(4, 6), default=4, help='IP version (4 or 6)')
+@click.option('--all', '-a', is_flag=True, help='Show both IPv4 and IPv6 URIs and generate QR codes for both if requested')
+def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool):
+    command_args = ['bash', Command.SHOW_USER_URI.value, '-u', username]
+    if qrcode:
+        command_args.append('-qr')
+    if all:
+        command_args.append('-a')
+    else:
+        command_args.extend(['-ip', str(ipv)])
+
+    try:
+        result = subprocess.check_output(command_args, shell=False, text=True)
+        print(result.strip())
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e.output.strip()}")
 
 
 @ cli.command('traffic-status')

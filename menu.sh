@@ -200,7 +200,7 @@ hysteria2_show_user_uri_handler() {
             echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi
     done
-    python3 $CLI_PATH show-user-uri --username "$username"
+    python3 $CLI_PATH show-user-uri --username "$username" -a -qr
 }
 
 hysteria2_change_port_handler() {

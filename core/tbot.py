@@ -32,7 +32,7 @@ def is_admin(user_id):
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    if is_admin(message):
+    if is_admin(message.from_user.id):
         markup = create_main_markup()
         bot.reply_to(message, "Welcome to the User Management Bot!", reply_markup=markup)
     else:

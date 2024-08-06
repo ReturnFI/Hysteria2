@@ -154,7 +154,7 @@ hysteria2_get_user_handler() {
     done
 
     # Run the command and suppress error output
-    if ! python3 "$CLI_PATH" get-user --username "$username" > /dev/null 2>&1; then
+    if ! python3 "$CLI_PATH" get-user --username "$username" 2>/dev/null; then
         echo -e "${red}Error:${NC} User '$username' not found."
         return 1
     fi
@@ -297,7 +297,7 @@ display_hysteria2_menu() {
     echo -e "${cyan}[3] ${NC}↝ Edit User"
     echo -e "${cyan}[4] ${NC}↝ Remove User"
     echo -e "${cyan}[5] ${NC}↝ Get User"
-    echo -e "${cyan}[6] ${NC}↝ List Users (WIP)"
+    echo -e "${cyan}[6] ${NC}↝ List Users"
     echo -e "${cyan}[7] ${NC}↝ Check Traffic Status"
     echo -e "${cyan}[8] ${NC}↝ Show User URI"
 

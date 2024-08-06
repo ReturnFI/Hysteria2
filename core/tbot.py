@@ -102,20 +102,13 @@ def process_show_user(message):
             f"Blocked: {user_details['blocked']}"
         )
 
-        qr_command = f"bash /etc/hysteria/core/scripts/hysteria2/show_user_uri.sh {username}"
+        qr_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4"
         qr_result = run_cli_command(qr_command)
 
         if "Error" in qr_result or "Invalid" in qr_result:
             bot.reply_to(message, qr_result)
             return
-
-        uris = qr_result.split('\n')
-        if len(uris) < 2:
-            bot.reply_to(message, "Failed to retrieve URIs. Please check the username or try again later.")
-            return
-
-        uri_v4 = uris[0].strip()
-        uri_v6 = uris[1].strip()
+        uri_v4 = qr_result.split('\n')[-1].strip()
 
         qr_v4 = qrcode.make(uri_v4)
         bio_v4 = io.BytesIO()

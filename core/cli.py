@@ -197,11 +197,7 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool):
     else:
         command_args.extend(['-ip', str(ipv)])
 
-    try:
-        result = subprocess.check_output(command_args, shell=False, text=True)
-        print(result.strip())
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e.output.strip()}")
+    run_cmd(command_args)
 
 
 @ cli.command('traffic-status')

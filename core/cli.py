@@ -12,7 +12,7 @@ import validator
 
 
 SCRIPT_DIR = '/etc/hysteria/core/scripts'
-DEBUG = True
+DEBUG = False
 
 
 class Command(Enum):
@@ -30,6 +30,7 @@ class Command(Enum):
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
+    INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
@@ -42,11 +43,14 @@ def run_cmd(command: list[str]):
     Runs a command and returns the output.
     Could raise subprocess.CalledProcessError
     '''
-    if DEBUG and Command.GET_USER.value not in command and Command.LIST_USERS.value not in command:
+
+    # if the command is GET_USER or LIST_USERS we don't print the debug-command and just print the output
+    if DEBUG and not (Command.GET_USER.value in command or Command.LIST_USERS.value in command):
         print(' '.join(command))
+
     result = subprocess.check_output(command, shell=False)
-    if DEBUG:
-        print(result.decode().strip())
+
+    print(result.decode().strip())
 
 
 def generate_password() -> str:
@@ -174,17 +178,27 @@ def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expi
     run_cmd(command_args)
 
 
-
 @ cli.command('remove-user')
 @ click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
 def remove_user(username: str):
     run_cmd(['bash', Command.REMOVE_USER.value, username])
 
 
-@ cli.command('show-user-uri')
-@ click.option('--username', '-u', required=True, help='Username for the user to show the URI', type=str)
-def show_user_uri(username: str):
-    run_cmd(['bash', Command.SHOW_USER_URI.value, username])
+@cli.command('show-user-uri')
+@click.option('--username', '-u', required=True, help='Username for the user to show the URI', type=str)
+@click.option('--qrcode', '-qr', is_flag=True, help='Generate QR code for the URI')
+@click.option('--ipv', '-ip', type=click.IntRange(4, 6), default=4, help='IP version (4 or 6)')
+@click.option('--all', '-a', is_flag=True, help='Show both IPv4 and IPv6 URIs and generate QR codes for both if requested')
+def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool):
+    command_args = ['bash', Command.SHOW_USER_URI.value, '-u', username]
+    if qrcode:
+        command_args.append('-qr')
+    if all:
+        command_args.append('-a')
+    else:
+        command_args.extend(['-ip', str(ipv)])
+
+    run_cmd(command_args)
 
 
 @ cli.command('traffic-status')
@@ -195,6 +209,7 @@ def traffic_status():
 @ cli.command('list-users')
 def list_users():
     run_cmd(['bash', Command.LIST_USERS.value])
+
 
 @cli.command('server-info')
 def server_info():
@@ -233,10 +248,24 @@ def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_a
         "domestic_sites": domestic_sites,
         "block_adult_sites": block_adult_sites
     }
-    
+
     options = {k: 'true' if v else 'false' for k, v in options.items()}
-    run_cmd(['bash', Command.CONFIGURE_WARP.value, 
+    run_cmd(['bash', Command.CONFIGURE_WARP.value,
              options['all'], options['popular_sites'], options['domestic_sites'], options['block_adult_sites']])
+
+@cli.command('telegram')
+@click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
+@click.option('--token', '-t', required=False, help='Token for running the telegram bot', type=str)
+@click.option('--adminid', '-aid', required=False, help='Telegram admins ID for running the telegram bot', type=str)
+def telegram(action: str, token: str, adminid: str):
+    if action == 'start':
+        if not token or not adminid:
+            print("Error: Both --token and --adminid are required for the start action.")
+            return
+        admin_ids = f'{adminid}'
+        run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'start', token, admin_ids])
+    elif action == 'stop':
+        run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
 
 # endregion
 

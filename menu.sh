@@ -28,7 +28,11 @@ hysteria2_add_user_handler() {
         read -p "Enter the username: " username
 
         if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
-            break
+            if python3 $CLI_PATH get-user --username "$username" > /dev/null 2>&1; then
+                echo -e "${red}Error:${NC} Username already exists. Please choose another username."
+            else
+                break
+            fi
         else
             echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi
@@ -150,7 +154,7 @@ hysteria2_get_user_handler() {
     done
 
     # Run the command and suppress error output
-    if ! python3 "$CLI_PATH" get-user --username "$username" > /dev/null 2>&1; then
+    if ! python3 "$CLI_PATH" get-user --username "$username" 2>/dev/null; then
         echo -e "${red}Error:${NC} User '$username' not found."
         return 1
     fi
@@ -196,7 +200,7 @@ hysteria2_show_user_uri_handler() {
             echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi
     done
-    python3 $CLI_PATH show-user-uri --username "$username"
+    python3 $CLI_PATH show-user-uri --username "$username" -a -qr
 }
 
 hysteria2_change_port_handler() {
@@ -238,6 +242,56 @@ warp_configure_handler() {
     fi
 }
 
+telegram_bot_handler() {
+    while true; do
+        echo -e "${cyan}1.${NC} Start Telegram bot service"
+        echo -e "${red}2.${NC} Stop Telegram bot service"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+                if systemctl is-active --quiet hysteria-bot.service; then
+                    echo "The hysteria-bot.service is already active."
+                else
+                    while true; do
+                        read -p "Enter the Telegram bot token: " token
+                        if [ -z "$token" ]; then
+                            echo "Token cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -p "Enter the admin IDs (comma-separated): " admin_ids
+                        if [ -z "$admin_ids" ]; then
+                            echo "Admin IDs cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    python3 $CLI_PATH telegram -a start -t "$token" -aid "$admin_ids"
+                fi
+                ;;
+            2)
+                if ! systemctl is-active --quiet hysteria-bot.service; then
+                    echo "The hysteria-bot.service is already inactive."
+                else
+                    python3 $CLI_PATH telegram -a stop
+                fi
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
+
 # Function to display the main menu
 display_main_menu() {
     clear
@@ -250,6 +304,9 @@ display_main_menu() {
 
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
 
+        check_version
+        
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -e "${yellow}                   ☼ Main Menu ☼                   ${NC}"
 
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
@@ -293,7 +350,7 @@ display_hysteria2_menu() {
     echo -e "${cyan}[3] ${NC}↝ Edit User"
     echo -e "${cyan}[4] ${NC}↝ Remove User"
     echo -e "${cyan}[5] ${NC}↝ Get User"
-    echo -e "${cyan}[6] ${NC}↝ List Users (WIP)"
+    echo -e "${cyan}[6] ${NC}↝ List Users"
     echo -e "${cyan}[7] ${NC}↝ Check Traffic Status"
     echo -e "${cyan}[8] ${NC}↝ Show User URI"
 
@@ -339,9 +396,10 @@ display_advance_menu() {
     echo -e "${green}[2] ${NC}↝ Install WARP"
     echo -e "${cyan}[3] ${NC}↝ Configure WARP"
     echo -e "${red}[4] ${NC}↝ Uninstall WARP"
-    echo -e "${cyan}[5] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[6] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[7] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${green}[5] ${NC}↝ Telegram Bot"
+    echo -e "${cyan}[6] ${NC}↝ Change Port Hysteria2"
+    echo -e "${cyan}[7] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[8] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -359,9 +417,10 @@ advance_menu() {
             2) python3 $CLI_PATH install-warp ;;
             3) warp_configure_handler ;;
             4) python3 $CLI_PATH uninstall-warp ;;
-            5) hysteria2_change_port_handler ;;
-            6) python3 $CLI_PATH update-hysteria2 ;;
-            7) python3 $CLI_PATH uninstall-hysteria2 ;;
+            5) telegram_bot_handler ;;
+            6) hysteria2_change_port_handler ;;
+            7) python3 $CLI_PATH update-hysteria2 ;;
+            8) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

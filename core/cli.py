@@ -12,7 +12,7 @@ import validator
 
 
 SCRIPT_DIR = '/etc/hysteria/core/scripts'
-DEBUG = True
+DEBUG = False
 
 
 class Command(Enum):

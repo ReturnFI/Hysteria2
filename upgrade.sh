@@ -8,7 +8,7 @@ FILES=(
     "/etc/hysteria/users.json"
     "/etc/hysteria/traffic_data.json"
     "/etc/hysteria/config.json"
-    "/etc/hysteria/core/.env"
+    "/etc/hysteria/core/scripts/telegrambot/.env"
 )
 
 echo "Backing up files to $TEMP_DIR"

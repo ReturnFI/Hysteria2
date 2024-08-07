@@ -242,6 +242,56 @@ warp_configure_handler() {
     fi
 }
 
+telegram_bot_handler() {
+    while true; do
+        echo -e "${cyan}1.${NC} Start Telegram bot service"
+        echo -e "${red}2.${NC} Stop Telegram bot service"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+                if systemctl is-active --quiet hysteria-bot.service; then
+                    echo "The hysteria-bot.service is already active."
+                else
+                    while true; do
+                        read -p "Enter the Telegram bot token: " token
+                        if [ -z "$token" ]; then
+                            echo "Token cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -p "Enter the admin IDs (comma-separated): " admin_ids
+                        if [ -z "$admin_ids" ]; then
+                            echo "Admin IDs cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    python3 $CLI_PATH telegram -a start -t "$token" -aid "$admin_ids"
+                fi
+                ;;
+            2)
+                if ! systemctl is-active --quiet hysteria-bot.service; then
+                    echo "The hysteria-bot.service is already inactive."
+                else
+                    python3 $CLI_PATH telegram -a stop
+                fi
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
+
 # Function to display the main menu
 display_main_menu() {
     clear
@@ -343,9 +393,10 @@ display_advance_menu() {
     echo -e "${green}[2] ${NC}↝ Install WARP"
     echo -e "${cyan}[3] ${NC}↝ Configure WARP"
     echo -e "${red}[4] ${NC}↝ Uninstall WARP"
-    echo -e "${cyan}[5] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[6] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[7] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${green}[5] ${NC}↝ Telegram Bot"
+    echo -e "${cyan}[6] ${NC}↝ Change Port Hysteria2"
+    echo -e "${cyan}[7] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[8] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -363,9 +414,10 @@ advance_menu() {
             2) python3 $CLI_PATH install-warp ;;
             3) warp_configure_handler ;;
             4) python3 $CLI_PATH uninstall-warp ;;
-            5) hysteria2_change_port_handler ;;
-            6) python3 $CLI_PATH update-hysteria2 ;;
-            7) python3 $CLI_PATH uninstall-hysteria2 ;;
+            5) telegram_bot_handler ;;
+            6) hysteria2_change_port_handler ;;
+            7) python3 $CLI_PATH update-hysteria2 ;;
+            8) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

@@ -1,12 +1,13 @@
 #!/bin/bash
-
+source /etc/hysteria/core/scripts/utils.sh
+define_colors
 install_dependencies() {
     echo "Installing dependencies from /etc/hysteria/requirements.txt..."
-    if ! pip3 install -r /etc/hysteria/requirements.txt; then
+    if ! pip3 install -r /etc/hysteria/requirements.txt > /dev/null 2>&1; then
         echo "Error: Failed to install dependencies. Please check the requirements file and try again."
         exit 1
     fi
-    echo "Dependencies installed successfully."
+    echo -e "${green}Dependencies installed successfully. ${NC}"
 }
 
 update_env_file() {
@@ -51,21 +52,24 @@ start_service() {
     create_service_file
 
     systemctl daemon-reload
-    systemctl enable hysteria-bot.service
-    systemctl start hysteria-bot.service
+    systemctl enable hysteria-bot.service > /dev/null 2>&1
+    systemctl start hysteria-bot.service > /dev/null 2>&1
 
     if systemctl is-active --quiet hysteria-bot.service; then
-        echo "Hysteria bot setup completed. The service is now running."
+        echo -e "${green}Hysteria bot setup completed. The service is now running. ${NC}"
+        echo -e "\n\n"
     else
         echo "Hysteria bot setup completed. The service failed to start."
     fi
 }
 
 stop_service() {
-    systemctl stop hysteria-bot.service
-    systemctl disable hysteria-bot.service
+    systemctl stop hysteria-bot.service > /dev/null 2>&1
+    systemctl disable hysteria-bot.service > /dev/null 2>&1
 
     rm -f /etc/hysteria/core/scripts/telegrambot/.env
+    echo -e "\n"
+
     echo "Hysteria bot service stopped and disabled. .env file removed."
 }
 
@@ -81,3 +85,5 @@ case "$1" in
         exit 1
         ;;
 esac
+
+define_colors

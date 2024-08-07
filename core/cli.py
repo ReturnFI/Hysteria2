@@ -30,6 +30,7 @@ class Command(Enum):
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
+    INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
@@ -251,6 +252,20 @@ def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_a
     options = {k: 'true' if v else 'false' for k, v in options.items()}
     run_cmd(['bash', Command.CONFIGURE_WARP.value,
              options['all'], options['popular_sites'], options['domestic_sites'], options['block_adult_sites']])
+
+@cli.command('telegram')
+@click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
+@click.option('--token', '-t', required=False, help='Token for running the telegram bot', type=str)
+@click.option('--adminid', '-aid', required=False, help='Telegram admins ID for running the telegram bot', type=str)
+def telegram(action: str, token: str, adminid: str):
+    if action == 'start':
+        if not token or not adminid:
+            print("Error: Both --token and --adminid are required for the start action.")
+            return
+        admin_ids = f'{adminid}'
+        run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'start', token, admin_ids])
+    elif action == 'stop':
+        run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
 
 # endregion
 

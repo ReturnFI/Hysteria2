@@ -48,4 +48,6 @@ if systemctl is-active --quiet hysteria-server.service; then
 else
     echo "Upgrade failed: hysteria-server.service is not active"
 fi
-
+cd /etc/hysteria
+chmod +x menu.sh
+./menu.sh

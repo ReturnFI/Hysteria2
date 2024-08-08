@@ -25,6 +25,7 @@ class Command(Enum):
     GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.sh')
     ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
+    RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
@@ -177,12 +178,15 @@ def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expi
 
     run_cmd(command_args)
 
+@ cli.command('reset-user')
+@ click.option('--username', '-u', required=True, help='Username for the user to Reset', type=str)
+def reset_user(username: str):
+    run_cmd(['bash', Command.RESET_USER.value, username])
 
 @ cli.command('remove-user')
 @ click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
 def remove_user(username: str):
     run_cmd(['bash', Command.REMOVE_USER.value, username])
-
 
 @cli.command('show-user-uri')
 @click.option('--username', '-u', required=True, help='Username for the user to show the URI', type=str)

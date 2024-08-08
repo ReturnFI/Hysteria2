@@ -115,16 +115,23 @@ def process_show_user(message):
         qr_v4.save(bio_v4, 'PNG')
         bio_v4.seek(0)
 
-        markup = types.InlineKeyboardMarkup(row_width=2)
+        markup = types.InlineKeyboardMarkup(row_width=3)
+        markup.add(types.InlineKeyboardButton("Reset User", callback_data=f"reset_user:{username}"),
+                   types.InlineKeyboardButton("IPv6-URI", callback_data=f"ipv6_uri:{username}"))
         markup.add(types.InlineKeyboardButton("Edit Username", callback_data=f"edit_username:{username}"),
                    types.InlineKeyboardButton("Edit Traffic Limit", callback_data=f"edit_traffic:{username}"))
         markup.add(types.InlineKeyboardButton("Edit Expiration Days", callback_data=f"edit_expiration:{username}"),
                    types.InlineKeyboardButton("Renew Password", callback_data=f"renew_password:{username}"))
         markup.add(types.InlineKeyboardButton("Renew Creation Date", callback_data=f"renew_creation:{username}"),
                    types.InlineKeyboardButton("Block User", callback_data=f"block_user:{username}"))
-        markup.add(types.InlineKeyboardButton("Reset User", callback_data=f"reset_user:{username}"))
 
-        bot.send_photo(message.chat.id, bio_v4, caption=f"User Details:\n{formatted_details}\n\nIPv4 URI: {uri_v4}", reply_markup=markup)
+        bot.send_photo(
+            message.chat.id,
+            bio_v4,
+            caption=f"**User Details:**\n\n{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`",
+            reply_markup=markup,
+            parse_mode="Markdown"
+        )
 
 @bot.message_handler(func=lambda message: is_admin(message.from_user.id) and message.text == 'Server Info')
 def server_info(message):
@@ -132,7 +139,7 @@ def server_info(message):
     result = run_cli_command(command)
     bot.reply_to(message, result)
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('edit_') or call.data.startswith('renew_') or call.data.startswith('block_') or call.data.startswith('reset_'))
+@bot.callback_query_handler(func=lambda call: call.data.startswith('edit_') or call.data.startswith('renew_') or call.data.startswith('block_') or call.data.startswith('reset_') or call.data.startswith('ipv6_'))
 def handle_edit_callback(call):
     action, username = call.data.split(':')
     if action == 'edit_username':
@@ -161,6 +168,25 @@ def handle_edit_callback(call):
         command = f"python3 {CLI_PATH} reset-user -u {username}"
         result = run_cli_command(command)
         bot.send_message(call.message.chat.id, result)
+    elif action == 'ipv6_uri':
+        command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 6"
+        result = run_cli_command(command)
+        if "Error" in result or "Invalid" in result:
+            bot.send_message(call.message.chat.id, result)
+            return
+        
+        uri_v6 = result.split('\n')[-1].strip()
+        qr_v6 = qrcode.make(uri_v6)
+        bio_v6 = io.BytesIO()
+        qr_v6.save(bio_v6, 'PNG')
+        bio_v6.seek(0)
+        
+        bot.send_photo(
+            call.message.chat.id,
+            bio_v6,
+            caption=f"**IPv6 URI for {username}:**\n\n`{uri_v6}`",
+            parse_mode="Markdown"
+        )
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('confirm_block:'))
 def handle_block_confirmation(call):

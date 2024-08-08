@@ -124,13 +124,38 @@ update_user_info() {
         .blocked = $blocked
     )' "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
 
-
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to update user '$old_username'."
+        echo "Error: Failed to update user '$old_username' in '$USERS_FILE'."
         return 1
     fi
 
-    echo "User '$old_username' updated successfully."
+    # Only update traffic_data.json and restart service if the username has changed
+    if [ "$old_username" != "$new_username" ]; then
+        # Update username in traffic_data.json
+        if [ -f "$TRAFFIC_FILE" ]; then
+            jq --arg old_username "$old_username" \
+               --arg new_username "$new_username" \
+               '
+               .[$new_username] = .[$old_username] |
+               del(.[$old_username])
+               ' "$TRAFFIC_FILE" > tmp.$$.json && mv tmp.$$.json "$TRAFFIC_FILE"
+
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to update username in '$TRAFFIC_FILE'."
+                return 1
+            fi
+        else
+            echo "Warning: '$TRAFFIC_FILE' not found. Skipping traffic data update."
+        fi
+
+        # Restart Hysteria service after updating user information
+        python3 $CLI_PATH restart-hysteria2
+
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to restart Hysteria service."
+            return 1
+        fi
+    fi
 }
 
 # Main function to edit user
@@ -177,8 +202,18 @@ edit_user() {
 
     # Update user info in JSON file
     update_user_info "$username" "$new_username" "$new_password" "$new_traffic_limit" "$new_expiration_days" "$new_creation_date" "$new_blocked"
-}
 
+    # Restart Hysteria service after updating user information
+    echo "Restarting Hysteria service..."
+    python3 $CLI_PATH restart-hysteria2
+
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to restart Hysteria service."
+        exit 1
+    fi
+
+    echo "Hysteria service restarted successfully."
+}
 
 # Run the script
 edit_user "$1" "$2" "$3" "$4" "$5" "$6" "$7"

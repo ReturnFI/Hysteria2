@@ -189,6 +189,18 @@ hysteria2_list_users_handler() {
     done
 }
 
+hysteria2_reset_user_handler() {
+    while true; do
+        read -p "Enter the username: " username
+
+        if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
+            break
+        else
+            echo -e "${red}Error:${NC} Username can only contain letters and numbers."
+        fi
+    done
+    python3 $CLI_PATH reset-user --username "$username"
+}
 
 hysteria2_show_user_uri_handler() {
     while true; do
@@ -362,6 +374,32 @@ display_hysteria2_menu() {
 }
 
 # Function to handle Hysteria2 menu options
+display_hysteria2_menu() {
+    clear
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+
+    echo -e "${yellow}                   ☼ Hysteria2 Menu ☼                   ${NC}"
+
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+
+    echo -e "${green}[1] ${NC}↝ Install and Configure Hysteria2"
+    echo -e "${cyan}[2] ${NC}↝ Add User"
+    echo -e "${cyan}[3] ${NC}↝ Edit User"
+    echo -e "${cyan}[4] ${NC}↝ Reset User"
+    echo -e "${cyan}[5] ${NC}↝ Remove User"
+    echo -e "${cyan}[6] ${NC}↝ Get User"
+    echo -e "${cyan}[7] ${NC}↝ List Users"
+    echo -e "${cyan}[8] ${NC}↝ Check Traffic Status"
+    echo -e "${cyan}[9] ${NC}↝ Show User URI"
+
+    echo -e "${red}[0] ${NC}↝ Back to Main Menu"
+
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+
+    echo -ne "${yellow}➜ Enter your option: ${NC}"
+}
+
+# Function to handle Hysteria2 menu options
 hysteria2_menu() {
     clear
     local choice
@@ -373,36 +411,18 @@ hysteria2_menu() {
             1) hysteria2_install_handler ;;
             2) hysteria2_add_user_handler ;;
             3) hysteria2_edit_user ;;
-            4) hysteria2_remove_user_handler  ;;
-            5) hysteria2_get_user_handler ;;
-            6) hysteria2_list_users_handler ;;
-            7) python3 $CLI_PATH traffic-status ;;
-            8) hysteria2_show_user_uri_handler ;;
+            4) hysteria2_reset_user_handler ;;
+            5) hysteria2_remove_user_handler  ;;
+            6) hysteria2_get_user_handler ;;
+            7) hysteria2_list_users_handler ;;
+            8) python3 $CLI_PATH traffic-status ;;
+            9) hysteria2_show_user_uri_handler ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac
         echo
         read -rp "Press Enter to continue..."
     done
-}
-
-# Function to get Advance menu
-display_advance_menu() {
-    clear
-    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
-    echo -e "${yellow}                   ☼ Advance Menu ☼                   ${NC}"
-    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
-    echo -e "${green}[1] ${NC}↝ Install TCP Brutal"
-    echo -e "${green}[2] ${NC}↝ Install WARP"
-    echo -e "${cyan}[3] ${NC}↝ Configure WARP"
-    echo -e "${red}[4] ${NC}↝ Uninstall WARP"
-    echo -e "${green}[5] ${NC}↝ Telegram Bot"
-    echo -e "${cyan}[6] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[7] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[8] ${NC}↝ Uninstall Hysteria2"
-    echo -e "${red}[0] ${NC}↝ Back to Main Menu"
-    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
-    echo -ne "${yellow}➜ Enter your option: ${NC}"
 }
 
 # Function to handle Advance menu options

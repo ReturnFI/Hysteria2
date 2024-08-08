@@ -360,31 +360,6 @@ display_hysteria2_menu() {
     echo -e "${green}[1] ${NC}↝ Install and Configure Hysteria2"
     echo -e "${cyan}[2] ${NC}↝ Add User"
     echo -e "${cyan}[3] ${NC}↝ Edit User"
-    echo -e "${cyan}[4] ${NC}↝ Remove User"
-    echo -e "${cyan}[5] ${NC}↝ Get User"
-    echo -e "${cyan}[6] ${NC}↝ List Users"
-    echo -e "${cyan}[7] ${NC}↝ Check Traffic Status"
-    echo -e "${cyan}[8] ${NC}↝ Show User URI"
-
-    echo -e "${red}[0] ${NC}↝ Back to Main Menu"
-
-    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
-
-    echo -ne "${yellow}➜ Enter your option: ${NC}"
-}
-
-# Function to handle Hysteria2 menu options
-display_hysteria2_menu() {
-    clear
-    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
-
-    echo -e "${yellow}                   ☼ Hysteria2 Menu ☼                   ${NC}"
-
-    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
-
-    echo -e "${green}[1] ${NC}↝ Install and Configure Hysteria2"
-    echo -e "${cyan}[2] ${NC}↝ Add User"
-    echo -e "${cyan}[3] ${NC}↝ Edit User"
     echo -e "${cyan}[4] ${NC}↝ Reset User"
     echo -e "${cyan}[5] ${NC}↝ Remove User"
     echo -e "${cyan}[6] ${NC}↝ Get User"
@@ -423,6 +398,25 @@ hysteria2_menu() {
         echo
         read -rp "Press Enter to continue..."
     done
+}
+
+# Function to get Advance menu
+display_advance_menu() {
+    clear
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+    echo -e "${yellow}                   ☼ Advance Menu ☼                   ${NC}"
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+    echo -e "${green}[1] ${NC}↝ Install TCP Brutal"
+    echo -e "${green}[2] ${NC}↝ Install WARP"
+    echo -e "${cyan}[3] ${NC}↝ Configure WARP"
+    echo -e "${red}[4] ${NC}↝ Uninstall WARP"
+    echo -e "${green}[5] ${NC}↝ Telegram Bot"
+    echo -e "${cyan}[6] ${NC}↝ Change Port Hysteria2"
+    echo -e "${cyan}[7] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[8] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${red}[0] ${NC}↝ Back to Main Menu"
+    echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
+    echo -ne "${yellow}➜ Enter your option: ${NC}"
 }
 
 # Function to handle Advance menu options

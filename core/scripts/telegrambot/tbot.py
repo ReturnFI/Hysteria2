@@ -122,6 +122,7 @@ def process_show_user(message):
                    types.InlineKeyboardButton("Renew Password", callback_data=f"renew_password:{username}"))
         markup.add(types.InlineKeyboardButton("Renew Creation Date", callback_data=f"renew_creation:{username}"),
                    types.InlineKeyboardButton("Block User", callback_data=f"block_user:{username}"))
+        markup.add(types.InlineKeyboardButton("Reset User", callback_data=f"reset_user:{username}"))
 
         bot.send_photo(message.chat.id, bio_v4, caption=f"User Details:\n{formatted_details}\n\nIPv4 URI: {uri_v4}", reply_markup=markup)
 
@@ -131,7 +132,7 @@ def server_info(message):
     result = run_cli_command(command)
     bot.reply_to(message, result)
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('edit_') or call.data.startswith('renew_') or call.data.startswith('block_'))
+@bot.callback_query_handler(func=lambda call: call.data.startswith('edit_') or call.data.startswith('renew_') or call.data.startswith('block_') or call.data.startswith('reset_'))
 def handle_edit_callback(call):
     action, username = call.data.split(':')
     if action == 'edit_username':
@@ -156,6 +157,10 @@ def handle_edit_callback(call):
         markup.add(types.InlineKeyboardButton("True", callback_data=f"confirm_block:{username}:true"),
                    types.InlineKeyboardButton("False", callback_data=f"confirm_block:{username}:false"))
         bot.send_message(call.message.chat.id, f"Set block status for {username}:", reply_markup=markup)
+    elif action == 'reset_user':
+        command = f"python3 {CLI_PATH} reset-user -u {username}"
+        result = run_cli_command(command)
+        bot.send_message(call.message.chat.id, result)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('confirm_block:'))
 def handle_block_confirmation(call):

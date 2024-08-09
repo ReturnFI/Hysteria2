@@ -1,9 +1,19 @@
-from aiohttp import web
+import os
 import ssl
 import json
 import subprocess
+from aiohttp import web
 from urllib.parse import unquote, parse_qs
 import re
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Environment variables
+DOMAIN = os.getenv('DOMAIN')
+CERTFILE = os.getenv('CERTFILE')
+KEYFILE = os.getenv('KEYFILE')
+PORT = int(os.getenv('PORT', '3324'))
 
 async def handle(request):
     username = request.query.get('username')
@@ -25,10 +35,9 @@ async def handle(request):
         
         return web.Response(text=config_json, content_type='application/json')
     except Exception as e:
-        return web.Response(status=500, text="Error: Internal server error.")
+        return web.Response(status=500, text=f"Error: {str(e)}")
 
 def generate_singbox_config(username, ip_version, fragment):
-    # CLI command
     try:
         uri = subprocess.check_output([
             'python3', '/etc/hysteria/core/cli.py', 'show-user-uri', '-u', username, '-ip', ip_version
@@ -102,10 +111,9 @@ if __name__ == '__main__':
     app = web.Application()
     app.add_routes([web.get('/sub/singbox/', handle)])
 
-    # SSL context
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ssl_context.load_cert_chain(certfile="/etc/letsencrypt/live/example.com/fullchain.pem", keyfile="/etc/letsencrypt/live/example.com/privkey.pem")
-    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+    ssl_context.load_cert_chain(certfile=CERTFILE, keyfile=KEYFILE)
+    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_1
     ssl_context.set_ciphers('AES256+EECDH:AES256+EDH')
     
-    web.run_app(app, port=3324, ssl_context=ssl_context)
+    web.run_app(app, port=PORT, ssl_context=ssl_context)

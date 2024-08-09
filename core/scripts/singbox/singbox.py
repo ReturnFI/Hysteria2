@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ssl_context.load_cert_chain(certfile=CERTFILE, keyfile=KEYFILE)
-    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_1
+    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
     ssl_context.set_ciphers('AES256+EECDH:AES256+EDH')
     
     web.run_app(app, port=PORT, ssl_context=ssl_context)

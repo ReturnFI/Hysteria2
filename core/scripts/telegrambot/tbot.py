@@ -4,6 +4,7 @@ import qrcode
 import io
 import json
 import os
+import re
 from dotenv import load_dotenv
 from telebot import types
 
@@ -87,52 +88,67 @@ def show_user(message):
 
 def process_show_user(message):
     username = message.text.strip()
+    
     command = f"python3 {CLI_PATH} get-user -u {username}"
-    result = run_cli_command(command)
+    user_result = run_cli_command(command)
 
-    if "Error" in result or "Invalid" in result:
-        bot.reply_to(message, result)
-    else:
-        user_details = json.loads(result)
-        formatted_details = (
-            f"Name: {username}\n"
-            f"Traffic limit: {user_details['max_download_bytes'] / (1024 ** 3):.2f} GB\n"
-            f"Days: {user_details['expiration_days']}\n"
-            f"Account Creation: {user_details['account_creation_date']}\n"
-            f"Blocked: {user_details['blocked']}"
-        )
+    user_json_match = re.search(r'User Information:\s*(\{.*?\})\s*Traffic Information:\s*(\{.*?\})', user_result, re.DOTALL)
+    
+    if not user_json_match:
+        bot.reply_to(message, "Failed to parse user details. The command output format may be incorrect.")
+        return
 
-        qr_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4"
-        qr_result = run_cli_command(qr_command)
+    user_json, traffic_json = user_json_match.groups()
 
-        if "Error" in qr_result or "Invalid" in qr_result:
-            bot.reply_to(message, qr_result)
-            return
-        uri_v4 = qr_result.split('\n')[-1].strip()
+    try:
+        user_details = json.loads(user_json)
+        traffic_data = json.loads(traffic_json)
+    except json.JSONDecodeError:
+        bot.reply_to(message, "Failed to parse JSON data. The command output may be malformed.")
+        return
 
-        qr_v4 = qrcode.make(uri_v4)
-        bio_v4 = io.BytesIO()
-        qr_v4.save(bio_v4, 'PNG')
-        bio_v4.seek(0)
+    formatted_details = (
+        f"Name: {username}\n"
+        f"Traffic Limit: {user_details['max_download_bytes'] / (1024 ** 3):.2f} GB\n"
+        f"Days: {user_details['expiration_days']}\n"
+        f"Account Creation: {user_details['account_creation_date']}\n"
+        f"Blocked: {user_details['blocked']}\n\n"
+        f"**Traffic Data:**\n"
+        f"Upload: {traffic_data.get('upload_bytes', 0) / (1024 ** 2):.2f} MB\n"
+        f"Download: {traffic_data.get('download_bytes', 0) / (1024 ** 2):.2f} MB\n"
+        f"Status: {traffic_data.get('status', 'Unknown')}"
+    )
 
-        markup = types.InlineKeyboardMarkup(row_width=3)
-        markup.add(types.InlineKeyboardButton("Reset User", callback_data=f"reset_user:{username}"),
-                   types.InlineKeyboardButton("IPv6-URI", callback_data=f"ipv6_uri:{username}"))
-        markup.add(types.InlineKeyboardButton("Edit Username", callback_data=f"edit_username:{username}"),
-                   types.InlineKeyboardButton("Edit Traffic Limit", callback_data=f"edit_traffic:{username}"))
-        markup.add(types.InlineKeyboardButton("Edit Expiration Days", callback_data=f"edit_expiration:{username}"),
-                   types.InlineKeyboardButton("Renew Password", callback_data=f"renew_password:{username}"))
-        markup.add(types.InlineKeyboardButton("Renew Creation Date", callback_data=f"renew_creation:{username}"),
-                   types.InlineKeyboardButton("Block User", callback_data=f"block_user:{username}"))
+    qr_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4"
+    qr_result = run_cli_command(qr_command)
 
-        bot.send_photo(
-            message.chat.id,
-            bio_v4,
-            caption=f"**User Details:**\n\n{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`",
-            reply_markup=markup,
-            parse_mode="Markdown"
-        )
+    if "Error" in qr_result or "Invalid" in qr_result:
+        bot.reply_to(message, qr_result)
+        return
 
+    uri_v4 = qr_result.split('\n')[-1].strip()
+    qr_v4 = qrcode.make(uri_v4)
+    bio_v4 = io.BytesIO()
+    qr_v4.save(bio_v4, 'PNG')
+    bio_v4.seek(0)
+
+    markup = types.InlineKeyboardMarkup(row_width=3)
+    markup.add(types.InlineKeyboardButton("Reset User", callback_data=f"reset_user:{username}"),
+               types.InlineKeyboardButton("IPv6-URI", callback_data=f"ipv6_uri:{username}"))
+    markup.add(types.InlineKeyboardButton("Edit Username", callback_data=f"edit_username:{username}"),
+               types.InlineKeyboardButton("Edit Traffic Limit", callback_data=f"edit_traffic:{username}"))
+    markup.add(types.InlineKeyboardButton("Edit Expiration Days", callback_data=f"edit_expiration:{username}"),
+               types.InlineKeyboardButton("Renew Password", callback_data=f"renew_password:{username}"))
+    markup.add(types.InlineKeyboardButton("Renew Creation Date", callback_data=f"renew_creation:{username}"),
+               types.InlineKeyboardButton("Block User", callback_data=f"block_user:{username}"))
+
+    bot.send_photo(
+        message.chat.id,
+        bio_v4,
+        caption=f"**User Details:**\n\n{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`",
+        reply_markup=markup,
+        parse_mode="Markdown"
+    )
 @bot.message_handler(func=lambda message: is_admin(message.from_user.id) and message.text == 'Server Info')
 def server_info(message):
     command = f"python3 {CLI_PATH} server-info"

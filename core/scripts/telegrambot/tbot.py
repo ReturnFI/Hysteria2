@@ -91,32 +91,39 @@ def process_show_user(message):
     
     command = f"python3 {CLI_PATH} get-user -u {username}"
     user_result = run_cli_command(command)
-
-    user_json_match = re.search(r'User Information:\s*(\{.*?\})\s*Traffic Information:\s*(\{.*?\})', user_result, re.DOTALL)
+    user_json_match = re.search(r'User Information:\s*(\{.*?\})\s*(Traffic Information:\s*(\{.*?\}|No traffic data found.*))?', user_result, re.DOTALL)
     
     if not user_json_match:
         bot.reply_to(message, "Failed to parse user details. The command output format may be incorrect.")
         return
 
-    user_json, traffic_json = user_json_match.groups()
+    user_json = user_json_match.group(1)
+    traffic_data_section = user_json_match.group(3)
 
     try:
         user_details = json.loads(user_json)
-        traffic_data = json.loads(traffic_json)
+        if traffic_data_section and "No traffic data found" not in traffic_data_section:
+            traffic_data = json.loads(traffic_data_section)
+            traffic_message = (
+                f"**Traffic Data:**\n"
+                f"Upload: {traffic_data.get('upload_bytes', 0) / (1024 ** 2):.2f} MB\n"
+                f"Download: {traffic_data.get('download_bytes', 0) / (1024 ** 2):.2f} MB\n"
+                f"Status: {traffic_data.get('status', 'Unknown')}"
+            )
+        else:
+            traffic_message = "No traffic data available.\nUser might be on hold or data is not yet available."
     except json.JSONDecodeError:
         bot.reply_to(message, "Failed to parse JSON data. The command output may be malformed.")
         return
 
     formatted_details = (
+        f"**User Details:**\n\n"
         f"Name: {username}\n"
         f"Traffic Limit: {user_details['max_download_bytes'] / (1024 ** 3):.2f} GB\n"
         f"Days: {user_details['expiration_days']}\n"
         f"Account Creation: {user_details['account_creation_date']}\n"
         f"Blocked: {user_details['blocked']}\n\n"
-        f"**Traffic Data:**\n"
-        f"Upload: {traffic_data.get('upload_bytes', 0) / (1024 ** 2):.2f} MB\n"
-        f"Download: {traffic_data.get('download_bytes', 0) / (1024 ** 2):.2f} MB\n"
-        f"Status: {traffic_data.get('status', 'Unknown')}"
+        f"{traffic_message}"
     )
 
     qr_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4"
@@ -145,10 +152,11 @@ def process_show_user(message):
     bot.send_photo(
         message.chat.id,
         bio_v4,
-        caption=f"**User Details:**\n\n{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`",
+        caption=f"{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`",
         reply_markup=markup,
         parse_mode="Markdown"
     )
+
 @bot.message_handler(func=lambda message: is_admin(message.from_user.id) and message.text == 'Server Info')
 def server_info(message):
     command = f"python3 {CLI_PATH} server-info"

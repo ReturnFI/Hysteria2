@@ -6,10 +6,22 @@ install_dependencies() {
     echo "Installing necessary dependencies..."
     apt-get install certbot -y > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        echo -e "${red}Error: Failed to install dependencies. ${NC}"
+        echo -e "${red}Error: Failed to install certbot. ${NC}"
         exit 1
     fi
-    echo -e "${green}Dependencies installed successfully. ${NC}"
+    echo -e "${green}Certbot installed successfully. ${NC}"
+
+    if [ -f /etc/hysteria/requirements.txt ]; then
+        pip install -r /etc/hysteria/requirements.txt > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            echo -e "${red}Error: Failed to install Python dependencies. ${NC}"
+            exit 1
+        fi
+        echo -e "${green}Python dependencies installed successfully. ${NC}"
+    else
+        echo -e "${red}Error: /etc/hysteria/requirements.txt not found. ${NC}"
+        exit 1
+    fi
 }
 
 update_env_file() {

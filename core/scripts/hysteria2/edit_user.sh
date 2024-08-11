@@ -70,7 +70,7 @@ convert_blocked_status() {
 # Function to get user info
 get_user_info() {
     local username=$1
-    python3 $CLI_PATH get-user -u "$username"
+    python3 $CLI_PATH get-user -u "$username" -t
 }
 
 # Function to update user info in JSON

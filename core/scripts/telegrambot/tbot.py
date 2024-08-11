@@ -180,11 +180,11 @@ def handle_edit_callback(call):
         msg = bot.send_message(call.message.chat.id, f"Enter new expiration days for {username}:")
         bot.register_next_step_handler(msg, process_edit_expiration, username)
     elif action == 'renew_password':
-        command = f"python3 {CLI_PATH} get-user -u {username} -t"
+        command = f"python3 {CLI_PATH} edit-user -u {username} -rp"
         result = run_cli_command(command)
         bot.send_message(call.message.chat.id, result)
     elif action == 'renew_creation':
-        command = f"python3 {CLI_PATH} get-user -u {username} -t"
+        command = f"python3 {CLI_PATH} edit-user -u {username} -rc"
         result = run_cli_command(command)
         bot.send_message(call.message.chat.id, result)
     elif action == 'block_user':
@@ -193,7 +193,7 @@ def handle_edit_callback(call):
                    types.InlineKeyboardButton("False", callback_data=f"confirm_block:{username}:false"))
         bot.send_message(call.message.chat.id, f"Set block status for {username}:", reply_markup=markup)
     elif action == 'reset_user':
-        command = f"python3 {CLI_PATH} get-user -u {username} -t"
+        command = f"python3 {CLI_PATH} reset-user -u {username}"
         result = run_cli_command(command)
         bot.send_message(call.message.chat.id, result)
     elif action == 'ipv6_uri':

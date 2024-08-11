@@ -304,6 +304,58 @@ telegram_bot_handler() {
     done
 }
 
+singbox_handler() {
+    while true; do
+        echo -e "${cyan}1.${NC} Start Singbox service"
+        echo -e "${red}2.${NC} Stop Singbox service"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+                if systemctl is-active --quiet singbox.service; then
+                    echo "The singbox.service is already active."
+                else
+                    while true; do
+                        read -p "Enter the domain name for the SSL certificate: " domain
+                        if [ -z "$domain" ]; then
+                            echo "Domain name cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -p "Enter the port number for the service: " port
+                        if [ -z "$port" ]; then
+                            echo "Port number cannot be empty. Please try again."
+                        elif ! [[ "$port" =~ ^[0-9]+$ ]]; then
+                            echo "Port must be a number. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    python3 $CLI_PATH singbox -a start -d "$domain" -p "$port"
+                fi
+                ;;
+            2)
+                if ! systemctl is-active --quiet singbox.service; then
+                    echo "The singbox.service is already inactive."
+                else
+                    python3 $CLI_PATH singbox -a stop
+                fi
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
+
 # Function to display the main menu
 display_main_menu() {
     clear
@@ -411,9 +463,10 @@ display_advance_menu() {
     echo -e "${cyan}[3] ${NC}↝ Configure WARP"
     echo -e "${red}[4] ${NC}↝ Uninstall WARP"
     echo -e "${green}[5] ${NC}↝ Telegram Bot"
-    echo -e "${cyan}[6] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[7] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[8] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${green}[6] ${NC}↝ SingBox SubLink"
+    echo -e "${cyan}[7] ${NC}↝ Change Port Hysteria2"
+    echo -e "${cyan}[8] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[9] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -432,9 +485,10 @@ advance_menu() {
             3) warp_configure_handler ;;
             4) python3 $CLI_PATH uninstall-warp ;;
             5) telegram_bot_handler ;;
-            6) hysteria2_change_port_handler ;;
-            7) python3 $CLI_PATH update-hysteria2 ;;
-            8) python3 $CLI_PATH uninstall-hysteria2 ;;
+            6) singbox_handler ;;
+            7) hysteria2_change_port_handler ;;
+            8) python3 $CLI_PATH update-hysteria2 ;;
+            9) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

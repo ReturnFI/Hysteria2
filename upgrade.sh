@@ -36,9 +36,10 @@ echo "Setting ownership and permissions for ca.key and ca.crt"
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
 
-echo "Restarting hysteria and bot service"
+echo "Restarting hysteria services"
 systemctl restart hysteria-server.service
 systemctl restart hysteria-bot.service
+systemctl restart singbox.service
 
 echo "Setting execute permissions for user.sh and kick.sh"
 chmod +x /etc/hysteria/core/scripts/hysteria2/user.sh

@@ -77,6 +77,24 @@ show_uri() {
                     fi
                 fi
 
+                if [ "$generate_qrcode" = true ]; then
+                    cols=$(tput cols)
+                    if [ -n "$URI" ]; then
+                        qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
+                        echo -e "\nIPv4 QR Code:\n"
+                        echo "$qr1" | while IFS= read -r line; do
+                            printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
+                        done
+                    fi
+                    if [ -n "$URI6" ]; then
+                        qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
+                        echo -e "\nIPv6 QR Code:\n"
+                        echo "$qr2" | while IFS= read -r line; do
+                            printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
+                        done
+                    fi
+                fi
+
                 if [ "$generate_singbox" = true ] && systemctl is-active --quiet singbox.service; then
                     read -r domain port < <(get_singbox_domain_and_port)
                     if [ -n "$domain" ] && [ -n "$port" ]; then

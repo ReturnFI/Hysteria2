@@ -30,10 +30,10 @@ update_env_file() {
     local cert_dir="/etc/letsencrypt/live/$domain"
 
     cat <<EOL > /etc/hysteria/core/scripts/singbox/.env
-hysteria_DOMAIN=$domain
-hysteria_PORT=$port
-hysteria_CERTFILE=$cert_dir/fullchain.pem
-hysteria_KEYFILE=$cert_dir/privkey.pem
+HYSTERIA_DOMAIN=$domain
+HYSTERIA_PORT=$port
+HYSTERIA_CERTFILE=$cert_dir/fullchain.pem
+HYSTERIA_KEYFILE=$cert_dir/privkey.pem
 EOL
 }
 

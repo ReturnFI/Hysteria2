@@ -7,16 +7,16 @@ from aiohttp.web_middlewares import middleware
 from urllib.parse import unquote, parse_qs
 import re
 import time
-
+import shlex
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # Environment variables
-DOMAIN = os.getenv('DOMAIN')
-CERTFILE = os.getenv('CERTFILE')
-KEYFILE = os.getenv('KEYFILE')
-PORT = int(os.getenv('PORT', '3324'))
+DOMAIN = os.getenv('hysteria_DOMAIN')
+CERTFILE = os.getenv('hysteria_CERTFILE')
+KEYFILE = os.getenv('hysteria_KEYFILE')
+PORT = int(os.getenv('hysteria_PORT', '3324'))
 
 RATE_LIMIT = 100
 RATE_LIMIT_WINDOW = 60
@@ -45,7 +45,7 @@ async def rate_limit_middleware(request, handler):
 def sanitize_input(value, pattern):
     if not re.match(pattern, value):
         raise ValueError(f"Invalid value: {value}")
-    return value
+    return shlex.quote(value)
 
 async def handle(request):
     try:
@@ -74,7 +74,17 @@ async def handle(request):
 
 def generate_singbox_config(username, ip_version, fragment):
     try:
-        command = ['python3', '/etc/hysteria/core/cli.py', 'show-user-uri', '-u', username, '-ip', ip_version]
+        username = sanitize_input(username, r'^[a-zA-Z0-9_-]+$')
+        ip_version = sanitize_input(ip_version, r'^[46]$')
+
+        command = [
+            'python3', 
+            '/etc/hysteria/core/cli.py', 
+            'show-user-uri', 
+            '-u', username, 
+            '-ip', ip_version
+        ]
+        
         uri = subprocess.check_output(command).decode().strip()
     except subprocess.CalledProcessError:
         raise RuntimeError("Failed to get URI.")
@@ -144,7 +154,6 @@ def load_singbox_template():
 async def handle_404(request):
     print(f"404 Not Found: {request.path}")
     return web.Response(status=404, text="Not Found")
-
 
 if __name__ == '__main__':
     app = web.Application(middlewares=[rate_limit_middleware])

@@ -13,10 +13,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Environment variables
-DOMAIN = os.getenv('hysteria_DOMAIN')
-CERTFILE = os.getenv('hysteria_CERTFILE')
-KEYFILE = os.getenv('hysteria_KEYFILE')
-PORT = int(os.getenv('hysteria_PORT', '3324'))
+DOMAIN = os.getenv('HYSTERIA_DOMAIN')
+CERTFILE = os.getenv('HYSTERIA_CERTFILE')
+KEYFILE = os.getenv('HYSTERIA_KEYFILE')
+PORT = int(os.getenv('HYSTERIA_PORT', '3324'))
 
 RATE_LIMIT = 100
 RATE_LIMIT_WINDOW = 60

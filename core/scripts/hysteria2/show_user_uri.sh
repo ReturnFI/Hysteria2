@@ -2,6 +2,17 @@
 
 source /etc/hysteria/core/scripts/path.sh
 
+get_singbox_domain_and_port() {
+    if [ -f "$SINGBOX_ENV" ]; then
+        local domain port
+        domain=$(grep -E '^hysteria_DOMAIN=' "$SINGBOX_ENV" | cut -d'=' -f2)
+        port=$(grep -E '^hysteria_PORT=' "$SINGBOX_ENV" | cut -d'=' -f2)
+        echo "$domain" "$port"
+    else
+        echo ""
+    fi
+}
+
 show_uri() {
     if [ -f "$USERS_FILE" ]; then
         if systemctl is-active --quiet hysteria-server.service; then
@@ -9,6 +20,7 @@ show_uri() {
             local generate_qrcode=false
             local ip_version=4
             local show_all=false
+            local generate_singbox=false
 
             while [[ "$#" -gt 0 ]]; do
                 case $1 in
@@ -16,13 +28,14 @@ show_uri() {
                     -qr|--qrcode) generate_qrcode=true ;;
                     -ip) ip_version="$2"; shift ;;
                     -a|--all) show_all=true ;;
+                    -s|--singbox) generate_singbox=true ;;
                     *) echo "Unknown parameter passed: $1"; exit 1 ;;
                 esac
                 shift
             done
 
             if [ -z "$username" ]; then
-                echo "Usage: $0 -u <username> [-qr] [-ip <4|6>] [-a]"
+                echo "Usage: $0 -u <username> [-qr] [-ip <4|6>] [-a] [-s]"
                 exit 1
             fi
 
@@ -64,21 +77,10 @@ show_uri() {
                     fi
                 fi
 
-                if [ "$generate_qrcode" = true ]; then
-                    cols=$(tput cols)
-                    if [ -n "$URI" ]; then
-                        qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
-                        echo -e "\nIPv4 QR Code:\n"
-                        echo "$qr1" | while IFS= read -r line; do
-                            printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
-                        done
-                    fi
-                    if [ -n "$URI6" ]; then
-                        qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
-                        echo -e "\nIPv6 QR Code:\n"
-                        echo "$qr2" | while IFS= read -r line; do
-                            printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
-                        done
+                if [ "$generate_singbox" = true ] && systemctl is-active --quiet singbox.service; then
+                    read -r domain port < <(get_singbox_domain_and_port)
+                    if [ -n "$domain" ] && [ -n "$port" ]; then
+                        echo -e "\nSingbox Sublink:\nhttps://$domain:$port/sub/singbox/$username/$ip_version#$username\n"
                     fi
                 fi
             else

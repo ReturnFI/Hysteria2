@@ -76,7 +76,8 @@ start_service() {
 
     update_env_file "$domain" "$port"
     create_service_file
-
+    chown -R hysteria:hysteria "/etc/letsencrypt/live/$domain"
+    chown -R hysteria:hysteria /etc/hysteria/core/scripts/singbox
     systemctl daemon-reload
     systemctl enable singbox.service > /dev/null 2>&1
     systemctl start singbox.service > /dev/null 2>&1

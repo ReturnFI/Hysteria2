@@ -24,7 +24,7 @@ def run_cli_command(command):
 
 def create_main_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row('Show User', 'Add User')
+    markup.row('Add User', 'Show User')
     markup.row('Delete User', 'Server Info')
     return markup
 
@@ -88,30 +88,26 @@ def show_user(message):
 
 def process_show_user(message):
     username = message.text.strip()
-    
     command = f"python3 {CLI_PATH} get-user -u {username}"
     user_result = run_cli_command(command)
-    user_json_match = re.search(r'User Information:\s*(\{.*?\})\s*(Traffic Information:\s*(\{.*?\}|No traffic data found.*))?', user_result, re.DOTALL)
+    user_json_match = re.search(r'(\{.*?\})\n(\{.*?\})', user_result, re.DOTALL)
     
     if not user_json_match:
         bot.reply_to(message, "Failed to parse user details. The command output format may be incorrect.")
         return
 
     user_json = user_json_match.group(1)
-    traffic_data_section = user_json_match.group(3)
+    traffic_data_section = user_json_match.group(2)
 
     try:
         user_details = json.loads(user_json)
-        if traffic_data_section and "No traffic data found" not in traffic_data_section:
-            traffic_data = json.loads(traffic_data_section)
-            traffic_message = (
-                f"**Traffic Data:**\n"
-                f"Upload: {traffic_data.get('upload_bytes', 0) / (1024 ** 2):.2f} MB\n"
-                f"Download: {traffic_data.get('download_bytes', 0) / (1024 ** 2):.2f} MB\n"
-                f"Status: {traffic_data.get('status', 'Unknown')}"
-            )
-        else:
-            traffic_message = "No traffic data available.\nUser might be on hold or data is not yet available."
+        traffic_data = json.loads(traffic_data_section)
+        traffic_message = (
+            f"**Traffic Data:**\n"
+            f"Upload: {traffic_data.get('upload_bytes', 0) / (1024 ** 2):.2f} MB\n"
+            f"Download: {traffic_data.get('download_bytes', 0) / (1024 ** 2):.2f} MB\n"
+            f"Status: {traffic_data.get('status', 'Unknown')}"
+        )
     except json.JSONDecodeError:
         bot.reply_to(message, "Failed to parse JSON data. The command output may be malformed.")
         return
@@ -126,14 +122,18 @@ def process_show_user(message):
         f"{traffic_message}"
     )
 
-    qr_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4"
-    qr_result = run_cli_command(qr_command)
+    combined_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4 -s"
+    combined_result = run_cli_command(combined_command)
 
-    if "Error" in qr_result or "Invalid" in qr_result:
-        bot.reply_to(message, qr_result)
+    if "Error" in combined_result or "Invalid" in combined_result:
+        bot.reply_to(message, combined_result)
         return
 
-    uri_v4 = qr_result.split('\n')[-1].strip()
+    result_lines = combined_result.split('\n')
+    uri_v4 = result_lines[1].strip()
+
+    singbox_sublink = result_lines[-1].strip() if "https://" in result_lines[-1] else None
+
     qr_v4 = qrcode.make(uri_v4)
     bio_v4 = io.BytesIO()
     qr_v4.save(bio_v4, 'PNG')
@@ -149,10 +149,14 @@ def process_show_user(message):
     markup.add(types.InlineKeyboardButton("Renew Creation Date", callback_data=f"renew_creation:{username}"),
                types.InlineKeyboardButton("Block User", callback_data=f"block_user:{username}"))
 
+    caption = f"{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`"
+    if singbox_sublink:
+        caption += f"\n\n\n**SingBox SUB:**\n{singbox_sublink}"
+
     bot.send_photo(
         message.chat.id,
         bio_v4,
-        caption=f"{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`",
+        caption=caption,
         reply_markup=markup,
         parse_mode="Markdown"
     )
@@ -176,11 +180,11 @@ def handle_edit_callback(call):
         msg = bot.send_message(call.message.chat.id, f"Enter new expiration days for {username}:")
         bot.register_next_step_handler(msg, process_edit_expiration, username)
     elif action == 'renew_password':
-        command = f"python3 {CLI_PATH} edit-user -u {username} -rp"
+        command = f"python3 {CLI_PATH} get-user -u {username} -t"
         result = run_cli_command(command)
         bot.send_message(call.message.chat.id, result)
     elif action == 'renew_creation':
-        command = f"python3 {CLI_PATH} edit-user -u {username} -rc"
+        command = f"python3 {CLI_PATH} get-user -u {username} -t"
         result = run_cli_command(command)
         bot.send_message(call.message.chat.id, result)
     elif action == 'block_user':
@@ -189,7 +193,7 @@ def handle_edit_callback(call):
                    types.InlineKeyboardButton("False", callback_data=f"confirm_block:{username}:false"))
         bot.send_message(call.message.chat.id, f"Set block status for {username}:", reply_markup=markup)
     elif action == 'reset_user':
-        command = f"python3 {CLI_PATH} reset-user -u {username}"
+        command = f"python3 {CLI_PATH} get-user -u {username} -t"
         result = run_cli_command(command)
         bot.send_message(call.message.chat.id, result)
     elif action == 'ipv6_uri':

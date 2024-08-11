@@ -98,12 +98,15 @@ def restart_hysteria2():
 def change_hysteria2_port(port: int):
     run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
 
-
 @cli.command('get-user')
 @click.option('--username', '-u', required=True, help='Username for the user to get', type=str)
-def get_user(username: str):
-    run_cmd(['bash', Command.GET_USER.value, username])
-
+@click.option('--no-traffic', '-t', is_flag=True, help='Do not display traffic information')
+def get_user(username: str, no_traffic: bool):
+    cmd = ['bash', Command.GET_USER.value, '-u', str(username)]
+    if no_traffic:
+        cmd.append('-t')
+    
+    run_cmd(cmd)
 
 @cli.command('add-user')
 @click.option('--username', '-u', required=True, help='Username for the new user', type=str)

@@ -5,8 +5,8 @@ source /etc/hysteria/core/scripts/path.sh
 get_singbox_domain_and_port() {
     if [ -f "$SINGBOX_ENV" ]; then
         local domain port
-        domain=$(grep -E '^hysteria_DOMAIN=' "$SINGBOX_ENV" | cut -d'=' -f2)
-        port=$(grep -E '^hysteria_PORT=' "$SINGBOX_ENV" | cut -d'=' -f2)
+        domain=$(grep -E '^HYSTERIA_DOMAIN=' "$SINGBOX_ENV" | cut -d'=' -f2)
+        port=$(grep -E '^HYSTERIA_PORT=' "$SINGBOX_ENV" | cut -d'=' -f2)
         echo "$domain" "$port"
     else
         echo ""

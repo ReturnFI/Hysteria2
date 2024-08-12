@@ -90,7 +90,8 @@ def process_show_user(message):
     username = message.text.strip()
     command = f"python3 {CLI_PATH} get-user -u {username}"
     user_result = run_cli_command(command)
-    user_json_match = re.search(r'(\{.*?\})\n(\{.*?\})', user_result, re.DOTALL)
+    
+    user_json_match = re.search(r'(\{.*?\})\n?(\{.*?\})?', user_result, re.DOTALL)
     
     if not user_json_match:
         bot.reply_to(message, "Failed to parse user details. The command output format may be incorrect.")
@@ -101,13 +102,17 @@ def process_show_user(message):
 
     try:
         user_details = json.loads(user_json)
-        traffic_data = json.loads(traffic_data_section)
-        traffic_message = (
-            f"**Traffic Data:**\n"
-            f"Upload: {traffic_data.get('upload_bytes', 0) / (1024 ** 2):.2f} MB\n"
-            f"Download: {traffic_data.get('download_bytes', 0) / (1024 ** 2):.2f} MB\n"
-            f"Status: {traffic_data.get('status', 'Unknown')}"
-        )
+        
+        if traffic_data_section:
+            traffic_data = json.loads(traffic_data_section)
+            traffic_message = (
+                f"**Traffic Data:**\n"
+                f"Upload: {traffic_data.get('upload_bytes', 0) / (1024 ** 2):.2f} MB\n"
+                f"Download: {traffic_data.get('download_bytes', 0) / (1024 ** 2):.2f} MB\n"
+                f"Status: {traffic_data.get('status', 'Unknown')}"
+            )
+        else:
+            traffic_message = "**Traffic Data:**\nNo traffic data available. The user might not have connected yet."
     except json.JSONDecodeError:
         bot.reply_to(message, "Failed to parse JSON data. The command output may be malformed.")
         return

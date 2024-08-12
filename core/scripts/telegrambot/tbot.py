@@ -52,14 +52,19 @@ def process_add_user_step1(message):
 
     command = f"python3 {CLI_PATH} list-users"
     result = run_cli_command(command)
+    
     try:
         users = json.loads(result)
+
         if username in users:
             bot.reply_to(message, f"Username '{username}' already exists. Please choose a different username.")
             return
     except json.JSONDecodeError:
-        bot.reply_to(message, "Error retrieving user list. Please try again later.")
-        return
+        if "No such file or directory" in result or result.strip() == "":
+            bot.reply_to(message, "User list file does not exist. Adding the first user.")
+        else:
+            bot.reply_to(message, "Error retrieving user list. Please try again later.")
+            return
 
     msg = bot.reply_to(message, "Enter traffic limit (GB):")
     bot.register_next_step_handler(msg, process_add_user_step2, username)

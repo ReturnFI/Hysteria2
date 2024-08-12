@@ -25,14 +25,14 @@ if [ -z "$USERNAME" ]; then
 fi
 
 if [ ! -f "$USERS_FILE" ]; then
-  echo "users.json file not found!"
+  echo "users.json file not found at $USERS_FILE!"
   exit 1
 fi
 
-USER_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' $USERS_FILE)
+USER_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' "$USERS_FILE")
 
 if [ -z "$USER_INFO" ]; then
-  echo "User '$USERNAME' not found."
+  echo "User '$USERNAME' not found in $USERS_FILE."
   exit 1
 fi
 
@@ -40,14 +40,14 @@ echo "$USER_INFO" | jq .
 
 if [ "$SHOW_TRAFFIC" = true ]; then
   if [ ! -f "$TRAFFIC_FILE" ]; then
-    echo "traffic_data.json file not found!"
-    exit 1
+    echo "No traffic data file found at $TRAFFIC_FILE. User might not have connected yet."
+    exit 0
   fi
 
-  TRAFFIC_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' $TRAFFIC_FILE)
+  TRAFFIC_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' "$TRAFFIC_FILE")
 
   if [ -z "$TRAFFIC_INFO" ]; then
-    echo "No traffic data found for user '$USERNAME'."
+    echo "No traffic data found for user '$USERNAME' in $TRAFFIC_FILE. User might not have connected yet."
   else
     echo "$TRAFFIC_INFO" | jq .
   fi

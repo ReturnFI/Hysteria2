@@ -4,14 +4,7 @@
 
 The Hysteria2 CLI Tool is a command-line utility for managing various aspects of Hysteria2 and related services on your system. It allows you to install, configure, and manage Hysteria2, as well as other services like Telegram bot, Singbox SubLink, TCP Brutal, and WARP.
 
-## Requirements
-
-- Python 3.6 or higher
-- `pwgen` for password generation
-- Required scripts located in `/etc/hysteria/core/scripts`
-- cli.py located in `/etc/hysteria/core`
-
-## Commands
+## Commands:
 
 ### Hysteria2 Management
 

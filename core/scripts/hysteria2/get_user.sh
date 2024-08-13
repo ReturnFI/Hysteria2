@@ -2,31 +2,55 @@
 
 source /etc/hysteria/core/scripts/path.sh
 
+SHOW_TRAFFIC=true
 
-# Check if a username is provided
-if [ -z "$1" ]; then
-  echo "Usage: $0 <username>"
+while getopts ":u:t" opt; do
+  case ${opt} in
+    u )
+      USERNAME=$OPTARG
+      ;;
+    t )
+      SHOW_TRAFFIC=false
+      ;;
+    \? )
+      echo "Usage: $0 -u <username> [-t]"
+      exit 1
+      ;;
+  esac
+done
+
+if [ -z "$USERNAME" ]; then
+  echo "Usage: $0 -u <username> [-t]"
   exit 1
 fi
 
-USERNAME=$1
-
-# Check if users.json file exists
 if [ ! -f "$USERS_FILE" ]; then
-  echo "users.json file not found!"
+  echo "users.json file not found at $USERS_FILE!"
   exit 1
 fi
 
-# Extract user info using jq
-USER_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' $USERS_FILE)
+USER_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' "$USERS_FILE")
 
-# Check if user info is found
 if [ -z "$USER_INFO" ]; then
-  echo "User '$USERNAME' not found."
+  echo "User '$USERNAME' not found in $USERS_FILE."
   exit 1
 fi
 
-# Print user info
 echo "$USER_INFO" | jq .
+
+if [ "$SHOW_TRAFFIC" = true ]; then
+  if [ ! -f "$TRAFFIC_FILE" ]; then
+    echo "No traffic data file found at $TRAFFIC_FILE. User might not have connected yet."
+    exit 0
+  fi
+
+  TRAFFIC_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' "$TRAFFIC_FILE")
+
+  if [ -z "$TRAFFIC_INFO" ]; then
+    echo "No traffic data found for user '$USERNAME' in $TRAFFIC_FILE. User might not have connected yet."
+  else
+    echo "$TRAFFIC_INFO" | jq .
+  fi
+fi
 
 exit 0

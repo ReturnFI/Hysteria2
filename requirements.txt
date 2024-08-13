@@ -2,3 +2,4 @@ pyTelegramBotAPI
 qrcode
 python-dotenv
 requests
+aiohttp

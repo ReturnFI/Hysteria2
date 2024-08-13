@@ -32,6 +32,7 @@ class Command(Enum):
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
+    INSTALL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
@@ -97,12 +98,15 @@ def restart_hysteria2():
 def change_hysteria2_port(port: int):
     run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
 
-
 @cli.command('get-user')
 @click.option('--username', '-u', required=True, help='Username for the user to get', type=str)
-def get_user(username: str):
-    run_cmd(['bash', Command.GET_USER.value, username])
-
+@click.option('--no-traffic', '-t', is_flag=True, help='Do not display traffic information')
+def get_user(username: str, no_traffic: bool):
+    cmd = ['bash', Command.GET_USER.value, '-u', str(username)]
+    if no_traffic:
+        cmd.append('-t')
+    
+    run_cmd(cmd)
 
 @cli.command('add-user')
 @click.option('--username', '-u', required=True, help='Username for the new user', type=str)
@@ -193,7 +197,8 @@ def remove_user(username: str):
 @click.option('--qrcode', '-qr', is_flag=True, help='Generate QR code for the URI')
 @click.option('--ipv', '-ip', type=click.IntRange(4, 6), default=4, help='IP version (4 or 6)')
 @click.option('--all', '-a', is_flag=True, help='Show both IPv4 and IPv6 URIs and generate QR codes for both if requested')
-def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool):
+@click.option('--singbox', '-s', is_flag=True, help='Generate Singbox sublink if Singbox service is active')
+def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: bool):
     command_args = ['bash', Command.SHOW_USER_URI.value, '-u', username]
     if qrcode:
         command_args.append('-qr')
@@ -201,9 +206,10 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool):
         command_args.append('-a')
     else:
         command_args.extend(['-ip', str(ipv)])
+    if singbox:
+        command_args.append('-s')
 
     run_cmd(command_args)
-
 
 @ cli.command('traffic-status')
 def traffic_status():
@@ -270,6 +276,19 @@ def telegram(action: str, token: str, adminid: str):
         run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'start', token, admin_ids])
     elif action == 'stop':
         run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
+
+@cli.command('singbox')
+@click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
+@click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
+@click.option('--port', '-p', required=False, help='Port number for Singbox service', type=int)
+def singbox(action: str, domain: str, port: int):
+    if action == 'start':
+        if not domain or not port:
+            click.echo("Error: Both --domain and --port are required for the start action.")
+            return
+        run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'start', domain, str(port)])
+    elif action == 'stop':
+        run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'stop'])
 
 # endregion
 

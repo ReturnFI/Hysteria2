@@ -32,9 +32,10 @@ for FILE in "${FILES[@]}"; do
     cp "$TEMP_DIR/$(basename $FILE)" "$FILE"
 done
 
-echo "Setting ownership and permissions for ca.key and ca.crt"
+echo "Setting ownership and permissions"
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
+chown -R hysteria:hysteria /etc/hysteria/core/scripts/singbox
 
 echo "Restarting hysteria services"
 systemctl restart hysteria-server.service

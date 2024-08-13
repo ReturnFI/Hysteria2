@@ -14,7 +14,8 @@ FILES=(
 
 echo "Backing up files to $TEMP_DIR"
 for FILE in "${FILES[@]}"; do
-    cp "$FILE" "$TEMP_DIR"
+    mkdir -p "$TEMP_DIR/$(dirname "$FILE")"
+    cp "$FILE" "$TEMP_DIR/$FILE"
 done
 
 echo "Removing /etc/hysteria directory"
@@ -29,7 +30,7 @@ wget -O /etc/hysteria/geoip.dat https://raw.githubusercontent.com/Chocolate4U/Ir
 
 echo "Restoring backup files"
 for FILE in "${FILES[@]}"; do
-    cp "$TEMP_DIR/$(basename $FILE)" "$FILE"
+    cp "$TEMP_DIR/$FILE" "$FILE"
 done
 
 echo "Setting ownership and permissions"
@@ -52,6 +53,7 @@ if systemctl is-active --quiet hysteria-server.service; then
 else
     echo "Upgrade failed: hysteria-server.service is not active"
 fi
+
 cd /etc/hysteria
 chmod +x menu.sh
 ./menu.sh

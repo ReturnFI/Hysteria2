@@ -17,7 +17,7 @@ git clone -b Dev https://github.com/ReturnFI/Hysteria2 /etc/hysteria
 
 # Create and activate Python virtual environment
 cd /etc/hysteria
-python3 -m venv venv
+python3 -m venv hysteria2_venv
 source /etc/hysteria/hysteria2_venv/bin/activate
 pip install -r requirements.txt
 

@@ -44,7 +44,7 @@ Description=Singbox Python Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /etc/hysteria/core/scripts/singbox/singbox.py
+ExecStart=/etc/hysteria/bin/python /etc/hysteria/core/scripts/singbox/singbox.py
 WorkingDirectory=/etc/hysteria/core/scripts/singbox
 EnvironmentFile=/etc/hysteria/core/scripts/singbox/.env
 Restart=always

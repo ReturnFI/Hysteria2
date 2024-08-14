@@ -108,7 +108,7 @@ EOF
     
     # Step 13: Check if the hysteria-server.service is active
     if systemctl is-active --quiet hysteria-server.service; then
-        echo -e "${cyan}Hysteria2${green} has been successfully installed."
+        echo -e "${cyan}Hysteria2${NC} has been successfully installed."
     else
         echo -e "${red}Error:${NC} hysteria-server.service is not active."
         exit 1

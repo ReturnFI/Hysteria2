@@ -19,7 +19,7 @@ Description=Hysteria Telegram Bot
 After=network.target
 
 [Service]
-ExecStart=/etc/hysteria/hysteria2_venv/bin/python /etc/hysteria/core/scripts/telegrambot/tbot.py
+ExecStart=/bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && /etc/hysteria/hysteria2_venv/bin/python /etc/hysteria/core/scripts/telegrambot/tbot.py'
 WorkingDirectory=/etc/hysteria/core/scripts/telegrambot
 Restart=always
 User=root

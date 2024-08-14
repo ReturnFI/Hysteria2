@@ -22,8 +22,8 @@ source /etc/hysteria/hysteria2_venv/bin/activate
 pip install -r requirements.txt
 
 # Add alias 'hys2' for Hysteria2
-if ! grep -q "alias hys2='/etc/hysteria/menu.sh'" ~/.bashrc; then
-    echo "alias hys2='/etc/hysteria/menu.sh'" >> ~/.bashrc
+if ! grep -q "alias hys2='source /etc/hysteria/hysteria2_venv/bin/activate && /etc/hysteria/menu.sh'" ~/.bashrc; then
+    echo "alias hys2='source /etc/hysteria/hysteria2_venv/bin/activate && /etc/hysteria/menu.sh'" >> ~/.bashrc
     source ~/.bashrc
 fi
 

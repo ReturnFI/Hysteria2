@@ -27,7 +27,7 @@ Description=Hysteria Telegram Bot
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /etc/hysteria/core/scripts/telegrambot/tbot.py
+ExecStart=/etc/hysteria/bin/python /etc/hysteria/core/scripts/telegrambot/tbot.py
 WorkingDirectory=/etc/hysteria/core/scripts/telegrambot
 Restart=always
 User=root

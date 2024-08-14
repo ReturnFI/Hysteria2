@@ -13,7 +13,7 @@ if ! command -v jq &> /dev/null || ! command -v git &> /dev/null || ! command -v
     apt update && apt upgrade -y && apt install jq qrencode curl pwgen uuid-runtime python3 python3-pip python3-venv git bc -y
 fi
 
-git clone -b Dev https://github.com/ReturnFI/Hysteria2 /etc/hysteria
+git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria
 
 # Create and activate Python virtual environment
 cd /etc/hysteria

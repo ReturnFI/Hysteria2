@@ -3,3 +3,4 @@ qrcode
 python-dotenv
 requests
 aiohttp
+click

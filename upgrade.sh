@@ -55,5 +55,9 @@ else
 fi
 
 cd /etc/hysteria
+python3 -m venv hysteria2_venv
+source /etc/hysteria/hysteria2_venv/bin/activate
+pip install -r requirements.txt
+
 chmod +x menu.sh
 ./menu.sh

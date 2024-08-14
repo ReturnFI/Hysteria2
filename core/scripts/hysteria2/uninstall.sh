@@ -28,10 +28,14 @@ echo "Removing cron jobs..."
 echo "Removing alias 'hys2' from .bashrc..."
 sed -i '/alias hys2=.*\/etc\/hysteria\/menu.sh/d' ~/.bashrc
 
-echo "Stopping hysteria-bot.service..."
-systemctl stop hysteria-bot.service >/dev/null 2>&1
-echo "Disabling hysteria-bot.service..."
-systemctl disable hysteria-bot.service >/dev/null 2>&1
+echo "Stop/Disabling Hysteria TelegramBOT Service..."
+systemctl stop hysteria-bot.service > /dev/null 2>&1
+systemctl disable hysteria-bot.service > /dev/null 2>&1
+
+echo "Stop/Disabling Singbox SubLink Service..."
+systemctl stop singbox.service > /dev/null 2>&1
+systemctl disable singbox.service > /dev/null 2>&1
+
 
 echo "Hysteria2 uninstalled!"
 echo ""

@@ -10,18 +10,6 @@ install_dependencies() {
         exit 1
     fi
     echo -e "${green}Certbot installed successfully. ${NC}"
-
-    if [ -f /etc/hysteria/requirements.txt ]; then
-        pip install -r /etc/hysteria/requirements.txt > /dev/null 2>&1
-        if [ $? -ne 0 ]; then
-            echo -e "${red}Error: Failed to install Python dependencies. ${NC}"
-            exit 1
-        fi
-        echo -e "${green}Python dependencies installed successfully. ${NC}"
-    else
-        echo -e "${red}Error: /etc/hysteria/requirements.txt not found. ${NC}"
-        exit 1
-    fi
 }
 
 update_env_file() {
@@ -44,7 +32,7 @@ Description=Singbox Python Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /etc/hysteria/core/scripts/singbox/singbox.py
+ExecStart=/etc/hysteria/hysteria2_venv/bin/python /etc/hysteria/core/scripts/singbox/singbox.py
 WorkingDirectory=/etc/hysteria/core/scripts/singbox
 EnvironmentFile=/etc/hysteria/core/scripts/singbox/.env
 Restart=always

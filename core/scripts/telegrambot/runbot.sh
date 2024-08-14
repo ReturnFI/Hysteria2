@@ -1,14 +1,6 @@
 #!/bin/bash
 source /etc/hysteria/core/scripts/utils.sh
 define_colors
-install_dependencies() {
-    echo "Installing dependencies from /etc/hysteria/requirements.txt..."
-    if ! pip3 install -r /etc/hysteria/requirements.txt > /dev/null 2>&1; then
-        echo "Error: Failed to install dependencies. Please check the requirements file and try again."
-        exit 1
-    fi
-    echo -e "${green}Dependencies installed successfully. ${NC}"
-}
 
 update_env_file() {
     local api_token=$1
@@ -47,7 +39,6 @@ start_service() {
         return
     fi
 
-    install_dependencies
     update_env_file "$api_token" "$admin_user_ids"
     create_service_file
 

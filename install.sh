@@ -19,6 +19,7 @@ git clone -b https://github.com/ReturnFI/Hysteria2 /etc/hysteria
 cd /etc/hysteria
 python3 -m venv venv
 source /etc/hysteria/venv/bin/activate
+pip install -r requirements.txt
 
 # Add alias 'hys2' for Hysteria2
 if ! grep -q "alias hys2='/etc/hysteria/menu.sh'" ~/.bashrc; then

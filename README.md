@@ -71,16 +71,20 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh
   - **Update Core Hysteria2:** Update Hysteria2 to the latest version.
   - **Uninstall Hysteria2:** Remove Hysteria2 and its configuration.
 
+## Support OS:
+
+- **Ubuntu 20+**
+- **Debian 11+**
 
 ## Prerequisites : 
 Ensure the following packages are installed:
 
-- Ubuntu-based Linux distribution (tested on Ubuntu)
 - jq
 - qrencode
 - curl
 - pwgen
 - uuid-runtime
+- bc
 
 If any of these are missing, the script will attempt to install them automatically.
 

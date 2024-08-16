@@ -267,7 +267,7 @@ telegram_bot_handler() {
                     echo "The hysteria-bot.service is already active."
                 else
                     while true; do
-                        read -p "Enter the Telegram bot token: " token
+                        read -e -p "Enter the Telegram bot token: " token
                         if [ -z "$token" ]; then
                             echo "Token cannot be empty. Please try again."
                         else
@@ -276,7 +276,7 @@ telegram_bot_handler() {
                     done
 
                     while true; do
-                        read -p "Enter the admin IDs (comma-separated): " admin_ids
+                        read -e -p "Enter the admin IDs (comma-separated): " admin_ids
                         if [ -z "$admin_ids" ]; then
                             echo "Admin IDs cannot be empty. Please try again."
                         else

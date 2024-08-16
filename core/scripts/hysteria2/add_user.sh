@@ -53,7 +53,7 @@ add_user() {
     '.[$username] = {password: $password, max_download_bytes: $traffic, expiration_days: $expiration_days, account_creation_date: $creation_date, blocked: false}' \
     "$USERS_FILE" > "${USERS_FILE}.temp" && mv "${USERS_FILE}.temp" "$USERS_FILE"
 
-    python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
+    # python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 
     echo -e "User $username added successfully."
 }

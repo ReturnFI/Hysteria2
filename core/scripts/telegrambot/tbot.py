@@ -82,7 +82,20 @@ def process_add_user_step3(message, username, traffic_limit):
         expiration_days = int(message.text.strip())
         command = f"python3 {CLI_PATH} add-user -u {username} -t {traffic_limit} -e {expiration_days}"
         result = run_cli_command(command)
-        bot.reply_to(message, result)
+        qr_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4"
+        qr_result = run_cli_command(qr_command)
+        
+        if qr_result.strip() == "":
+            bot.reply_to(message, "Failed to generate QR code.")
+            return
+
+        qr_v4 = qrcode.make(qr_result)
+        bio_v4 = io.BytesIO()
+        qr_v4.save(bio_v4, 'PNG')
+        bio_v4.seek(0)
+        caption = f"{result}"
+        bot.send_photo(message.chat.id, photo=bio_v4, caption=caption)
+    
     except ValueError:
         bot.reply_to(message, "Invalid expiration days. Please enter a number.")
 

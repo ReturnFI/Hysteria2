@@ -267,7 +267,7 @@ telegram_bot_handler() {
                     echo "The hysteria-bot.service is already active."
                 else
                     while true; do
-                        read -p "Enter the Telegram bot token: " token
+                        read -e -p "Enter the Telegram bot token: " token
                         if [ -z "$token" ]; then
                             echo "Token cannot be empty. Please try again."
                         else
@@ -276,7 +276,7 @@ telegram_bot_handler() {
                     done
 
                     while true; do
-                        read -p "Enter the admin IDs (comma-separated): " admin_ids
+                        read -e -p "Enter the admin IDs (comma-separated): " admin_ids
                         if [ -z "$admin_ids" ]; then
                             echo "Admin IDs cannot be empty. Please try again."
                         else
@@ -317,7 +317,7 @@ singbox_handler() {
                     echo "The singbox.service is already active."
                 else
                     while true; do
-                        read -p "Enter the domain name for the SSL certificate: " domain
+                        read -e -p "Enter the domain name for the SSL certificate: " domain
                         if [ -z "$domain" ]; then
                             echo "Domain name cannot be empty. Please try again."
                         else
@@ -326,7 +326,7 @@ singbox_handler() {
                     done
 
                     while true; do
-                        read -p "Enter the port number for the service: " port
+                        read -e -p "Enter the port number for the service: " port
                         if [ -z "$port" ]; then
                             echo "Port number cannot be empty. Please try again."
                         elif ! [[ "$port" =~ ^[0-9]+$ ]]; then

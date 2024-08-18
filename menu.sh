@@ -277,7 +277,9 @@ telegram_bot_handler() {
 
                     while true; do
                         read -e -p "Enter the admin IDs (comma-separated): " admin_ids
-                        if [ -z "$admin_ids" ]; then
+                        if [[ ! "$admin_ids" =~ ^[0-9,]+$ ]]; then
+                            echo "Admin IDs can only contain numbers and commas. Please try again."
+                        elif [ -z "$admin_ids" ]; then
                             echo "Admin IDs cannot be empty. Please try again."
                         else
                             break
@@ -288,11 +290,7 @@ telegram_bot_handler() {
                 fi
                 ;;
             2)
-                if ! systemctl is-active --quiet hysteria-bot.service; then
-                    echo "The hysteria-bot.service is already inactive."
-                else
-                    python3 $CLI_PATH telegram -a stop
-                fi
+                python3 $CLI_PATH telegram -a stop
                 ;;
             0)
                 break

@@ -55,9 +55,12 @@ def process_add_user_step1(message):
     
     try:
         users = json.loads(result)
+        existing_users = {user.lower() for user in users.keys()}
 
-        if username in users:
+        if username.lower() in existing_users:
             bot.reply_to(message, f"Username '{username}' already exists. Please choose a different username.")
+            msg = bot.reply_to(message, "Enter a new username:")
+            bot.register_next_step_handler(msg, process_add_user_step1)
             return
     except json.JSONDecodeError:
         if "No such file or directory" in result or result.strip() == "":

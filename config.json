@@ -22,7 +22,7 @@
     "initConnReceiveWindow": 20971520,
     "maxConnReceiveWindow": 20971520,
     "maxIdleTimeout": "20s",
-    "maxIncomingStreams": 60,
+    "maxIncomingStreams": 1024,
     "disablePathMTUDiscovery": false
   },
   "bandwidth": {

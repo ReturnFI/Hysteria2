@@ -123,9 +123,11 @@ def add_user(username: str, traffic_limit: int, expiration_days: int, password: 
             exit(1)
     if not creation_date:
         creation_date = datetime.now().strftime('%Y-%m-%d')
-
-    run_cmd(['bash', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
-
+    try:
+        run_cmd(['bash', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
+    except subprocess.CalledProcessError as e:
+        click.echo(f"{e.output.decode()}", err=True)
+        exit(1)
 
 @cli.command('edit-user')
 @click.option('--username', '-u', required=True, help='Username for the user to edit', type=str)

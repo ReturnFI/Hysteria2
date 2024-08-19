@@ -22,8 +22,6 @@ After=network.target
 ExecStart=/bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && /etc/hysteria/hysteria2_venv/bin/python /etc/hysteria/core/scripts/telegrambot/tbot.py'
 WorkingDirectory=/etc/hysteria/core/scripts/telegrambot
 Restart=always
-User=root
-Group=root
 
 [Install]
 WantedBy=multi-user.target

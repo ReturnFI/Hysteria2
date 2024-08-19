@@ -50,5 +50,6 @@ check_version() {
         echo -e "Panel Version: ${cyan}$local_version${NC}"
         echo -e "Latest Version: ${cyan}$latest_version${NC}"
         echo -e "${red}Please update your panel.${NC}"
+        echo -e "${cyan}Bug squashing party!${yellow} Update for the best invitation.${NC}"
     fi
 }

@@ -1,4 +1,5 @@
 #!/bin/bash
+cd /root/
 
 TEMP_DIR=$(mktemp -d)
 

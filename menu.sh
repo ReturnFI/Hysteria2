@@ -227,6 +227,10 @@ hysteria2_change_port_handler() {
     python3 $CLI_PATH change-hysteria2-port --port "$port"
 }
 
+hysteria_upgrade(){
+    bash /etc/hysteria/upgrade.sh
+}
+
 warp_configure_handler() {
     local service_name="wg-quick@wgcf.service"
 
@@ -374,6 +378,7 @@ display_main_menu() {
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -e "${green}[1] ${NC}↝ Hysteria2 Menu"
     echo -e "${cyan}[2] ${NC}↝ Advance Menu"
+    echo -e "${cyan}[3] ${NC}↝ Update Panel"
     echo -e "${red}[0] ${NC}↝ Exit"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -390,6 +395,7 @@ main_menu() {
         case $choice in
             1) hysteria2_menu ;;
             2) advance_menu ;;
+            3) hysteria_upgrade ;;
             0) exit 0 ;;
             *) echo "Invalid option. Please try again." ;;
         esac

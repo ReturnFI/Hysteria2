@@ -105,8 +105,24 @@ def show_user(message):
     bot.register_next_step_handler(msg, process_show_user)
 
 def process_show_user(message):
-    username = message.text.strip()
-    command = f"python3 {CLI_PATH} get-user -u {username}"
+    username = message.text.strip().lower()
+    command = f"python3 {CLI_PATH} list-users"
+    result = run_cli_command(command)
+
+    try:
+        users = json.loads(result)
+        existing_users = {user.lower(): user for user in users.keys()}
+
+        if username not in existing_users:
+            bot.reply_to(message, f"Username '{message.text.strip()}' does not exist. Please enter a valid username.")
+            return
+
+        actual_username = existing_users[username]
+    except json.JSONDecodeError:
+        bot.reply_to(message, "Error retrieving user list. Please try again later.")
+        return
+
+    command = f"python3 {CLI_PATH} get-user -u {actual_username}"
     user_result = run_cli_command(command)
     
     user_json_match = re.search(r'(\{.*?\})\n?(\{.*?\})?', user_result, re.DOTALL)
@@ -137,7 +153,7 @@ def process_show_user(message):
 
     formatted_details = (
         f"**User Details:**\n\n"
-        f"Name: {username}\n"
+        f"Name: {actual_username}\n"
         f"Traffic Limit: {user_details['max_download_bytes'] / (1024 ** 3):.2f} GB\n"
         f"Days: {user_details['expiration_days']}\n"
         f"Account Creation: {user_details['account_creation_date']}\n"
@@ -145,7 +161,7 @@ def process_show_user(message):
         f"{traffic_message}"
     )
 
-    combined_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4 -s"
+    combined_command = f"python3 {CLI_PATH} show-user-uri -u {actual_username} -ip 4 -s"
     combined_result = run_cli_command(combined_command)
 
     if "Error" in combined_result or "Invalid" in combined_result:
@@ -163,14 +179,14 @@ def process_show_user(message):
     bio_v4.seek(0)
 
     markup = types.InlineKeyboardMarkup(row_width=3)
-    markup.add(types.InlineKeyboardButton("Reset User", callback_data=f"reset_user:{username}"),
-               types.InlineKeyboardButton("IPv6-URI", callback_data=f"ipv6_uri:{username}"))
-    markup.add(types.InlineKeyboardButton("Edit Username", callback_data=f"edit_username:{username}"),
-               types.InlineKeyboardButton("Edit Traffic Limit", callback_data=f"edit_traffic:{username}"))
-    markup.add(types.InlineKeyboardButton("Edit Expiration Days", callback_data=f"edit_expiration:{username}"),
-               types.InlineKeyboardButton("Renew Password", callback_data=f"renew_password:{username}"))
-    markup.add(types.InlineKeyboardButton("Renew Creation Date", callback_data=f"renew_creation:{username}"),
-               types.InlineKeyboardButton("Block User", callback_data=f"block_user:{username}"))
+    markup.add(types.InlineKeyboardButton("Reset User", callback_data=f"reset_user:{actual_username}"),
+               types.InlineKeyboardButton("IPv6-URI", callback_data=f"ipv6_uri:{actual_username}"))
+    markup.add(types.InlineKeyboardButton("Edit Username", callback_data=f"edit_username:{actual_username}"),
+               types.InlineKeyboardButton("Edit Traffic Limit", callback_data=f"edit_traffic:{actual_username}"))
+    markup.add(types.InlineKeyboardButton("Edit Expiration Days", callback_data=f"edit_expiration:{actual_username}"),
+               types.InlineKeyboardButton("Renew Password", callback_data=f"renew_password:{actual_username}"))
+    markup.add(types.InlineKeyboardButton("Renew Creation Date", callback_data=f"renew_creation:{actual_username}"),
+               types.InlineKeyboardButton("Block User", callback_data=f"block_user:{actual_username}"))
 
     caption = f"{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`"
     if singbox_sublink:

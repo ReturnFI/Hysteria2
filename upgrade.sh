@@ -37,6 +37,7 @@ echo "Setting ownership and permissions"
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chown -R hysteria:hysteria /etc/hysteria/core/scripts/singbox
+chown -R hysteria:hysteria /etc/hysteria/core/scripts/telegrambot
 
 echo "Setting execute permissions for user.sh and kick.sh"
 chmod +x /etc/hysteria/core/scripts/hysteria2/user.sh

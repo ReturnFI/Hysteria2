@@ -21,7 +21,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh
 
 <br />
 <p align="center">
-<img src="https://github.com/ReturnFI/Hysteria2/assets/151555003/b1c7ab9f-7887-46fd-8e13-a7bfe9bf5990" width="500" height="250">
+<img src="https://github.com/user-attachments/assets/57e544cb-7456-4fe7-adea-e9dd17a7c83b" width="600" height="300">
 <p/>
 
 ## ویژگی‌ها:

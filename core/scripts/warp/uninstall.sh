@@ -1,14 +1,11 @@
 #!/bin/bash
 
-# Source the path.sh script to load the CONFIG_FILE and CLI_PATH variables
 source /etc/hysteria/core/scripts/path.sh
 
-# Check if WARP is active
 if systemctl is-active --quiet wg-quick@wgcf.service; then
     echo "Uninstalling WARP..."
     bash <(curl -fsSL git.io/warp.sh) dwg
 
-    # Check if the config file exists
     if [ -f "$CONFIG_FILE" ]; then
         default_config='["reject(geosite:ir)", "reject(geoip:ir)", "reject(geosite:category-ads-all)", "reject(geoip:private)", "reject(geosite:google@ads)"]'
 
@@ -27,6 +24,14 @@ if systemctl is-active --quiet wg-quick@wgcf.service; then
         ' "$CONFIG_FILE" > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json "$CONFIG_FILE"
 
         jq 'del(.outbounds[] | select(.name == "warps" and .type == "direct" and .direct.mode == 4 and .direct.bindDevice == "wgcf"))' "$CONFIG_FILE" > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json "$CONFIG_FILE"
+
+        if [ "$(jq -r 'if .acl.inline | index("reject(geosite:category-porn)") then "Blocked" else "Not blocked" end' "$CONFIG_FILE")" == "Blocked" ]; then
+            jq 'del(.acl.inline[] | select(. == "reject(geosite:category-porn)"))' "$CONFIG_FILE" > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json "$CONFIG_FILE"
+            echo "Adult content blocking removed."
+        fi
+
+        jq '.resolver.tls.addr = "1.1.1.1:853"' "$CONFIG_FILE" > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json "$CONFIG_FILE"
+        echo "DNS resolver address changed to 1.1.1.1:853."
 
         python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
         echo "WARP uninstalled and configurations reset to default."

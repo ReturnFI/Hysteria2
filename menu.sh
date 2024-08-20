@@ -240,6 +240,10 @@ warp_configure_handler() {
         echo "2. Use WARP for popular sites"
         echo "3. Use WARP for domestic sites"
         echo "4. Block adult content"
+        echo "5. WARP (Plus) Profile"
+        echo "6. WARP (Normal) Profile"
+        echo "7. WARP Status Profile"
+        echo "8. Change IP address"
         echo "0. Cancel"
 
         read -p "Select an option: " option
@@ -249,11 +253,30 @@ warp_configure_handler() {
             2) python3 $CLI_PATH configure-warp --popular-sites ;;
             3) python3 $CLI_PATH configure-warp --domestic-sites ;;
             4) python3 $CLI_PATH configure-warp --block-adult-sites ;;
+            5)
+                echo "Please enter your WARP Plus key:"
+                read -r warp_key
+                if [ -z "$warp_key" ]; then
+                    echo "Error: WARP Plus key cannot be empty. Exiting."
+                    return
+                fi
+                python3 $CLI_PATH configure-warp --warp-option "warp plus" --warp-key "$warp_key"
+                ;;
+            6) python3 $CLI_PATH configure-warp --warp-option "warp" ;;
+            7) cd /etc/warp/ && wgcf status ;;
+            8)
+                old_ip=$(curl -s --interface wgcf --connect-timeout 0.5 http://v4.ident.me)
+                echo "Current IP address: $old_ip"
+                echo "Restarting $service_name..."
+                systemctl restart "$service_name"
+                sleep 5
+                new_ip=$(curl -s --interface wgcf --connect-timeout 0.5 http://v4.ident.me)
+                echo "New IP address: $new_ip"
+                ;;
             0) echo "WARP configuration canceled." ;;
             *) echo "Invalid option. Please try again." ;;
         esac
     else
-        # Notify user if the service is not active
         echo "$service_name is not active. Please start the service before configuring WARP."
     fi
 }

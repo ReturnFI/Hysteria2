@@ -253,17 +253,35 @@ def uninstall_warp():
 @click.option('--popular-sites', '-p', is_flag=True, help='Use WARP for popular sites like Google, OpenAI, etc')
 @click.option('--domestic-sites', '-d', is_flag=True, help='Use WARP for Iran domestic sites')
 @click.option('--block-adult-sites', '-x', is_flag=True, help='Block adult content (porn)')
-def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool):
-    options = {
-        "all": all,
-        "popular_sites": popular_sites,
-        "domestic_sites": domestic_sites,
-        "block_adult_sites": block_adult_sites
-    }
+@click.option('--warp-option', '-w', type=click.Choice(['warp', 'warp plus'], case_sensitive=False), help='Specify whether to use WARP or WARP Plus')
+@click.option('--warp-key', '-k', help='WARP Plus key (required if warp-option is "warp plus")')
+def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool, warp_option: str, warp_key: str):
+    if warp_option == 'warp plus' and not warp_key:
+        print("Error: WARP Plus key is required when 'warp plus' is selected.")
+        return
 
-    options = {k: 'true' if v else 'false' for k, v in options.items()}
-    run_cmd(['bash', Command.CONFIGURE_WARP.value,
-             options['all'], options['popular_sites'], options['domestic_sites'], options['block_adult_sites']])
+    options = {
+        "all": 'true' if all else 'false',
+        "popular_sites": 'true' if popular_sites else 'false',
+        "domestic_sites": 'true' if domestic_sites else 'false',
+        "block_adult_sites": 'true' if block_adult_sites else 'false',
+        "warp_option": warp_option or '',
+        "warp_key": warp_key or ''
+    }
+    
+    cmd_args = [
+        'bash', Command.CONFIGURE_WARP.value,
+        options['all'],
+        options['popular_sites'],
+        options['domestic_sites'],
+        options['block_adult_sites'],
+        options['warp_option']
+    ]
+    
+    if options['warp_key']:
+        cmd_args.append(options['warp_key'])
+
+    run_cmd(cmd_args)
 
 @cli.command('telegram')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))

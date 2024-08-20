@@ -7,6 +7,8 @@ warp_configure_handler() {
     local popular_sites=$2
     local domestic_sites=$3
     local block_adult_sites=$4
+    local warp_option=$5
+    local warp_key=$6
 
     if [ "$all" == "true" ]; then
         if [ "$(jq -r 'if .acl.inline | index("warps(all)") then "WARP active" else "Direct" end' "$CONFIG_FILE")" == "WARP active" ]; then
@@ -50,7 +52,27 @@ warp_configure_handler() {
         fi
     fi
 
+    if [ "$warp_option" == "warp plus" ]; then
+        if [ -z "$warp_key" ]; then
+            echo "Error: WARP Plus key is required. Exiting."
+            exit 1
+        fi
+        cd /etc/warp/ || { echo "Failed to change directory to /etc/warp/"; exit 1; }
+        
+        WGCF_LICENSE_KEY="$warp_key" wgcf update
+        
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to update WARP Plus configuration."
+            exit 1
+        fi
+
+    elif [ "$warp_option" == "warp" ]; then
+        cd /etc/warp/ || { echo "Failed to change directory to /etc/warp/"; exit 1; }
+        rm wgcf-account.toml && yes | wgcf register
+        echo "WARP configured with a new account."
+    fi
+
     python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 }
 
-warp_configure_handler "$1" "$2" "$3" "$4"
+warp_configure_handler "$1" "$2" "$3" "$4" "$5" "$6"

@@ -263,7 +263,12 @@ warp_configure_handler() {
                 python3 $CLI_PATH configure-warp --warp-option "warp plus" --warp-key "$warp_key"
                 ;;
             6) python3 $CLI_PATH configure-warp --warp-option "warp" ;;
-            7) cd /etc/warp/ && wgcf status ;;
+            7) 
+            ip=$(curl -s --interface wgcf --connect-timeout 0.5 http://v4.ident.me)
+            cd /etc/warp/ && wgcf status
+            echo
+            echo -e "${yellow}Warp IP :${NC} ${cyan}$ip ${NC}" ;;
+            
             8)
                 old_ip=$(curl -s --interface wgcf --connect-timeout 0.5 http://v4.ident.me)
                 echo "Current IP address: $old_ip"

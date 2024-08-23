@@ -67,13 +67,13 @@ convert_blocked_status() {
     esac
 }
 
-# Function to get user info
+# Function to get user info from users.json
 get_user_info() {
     local username=$1
     python3 $CLI_PATH get-user -u "$username" -t
 }
 
-# Function to update user info in JSON
+# Function to update user info in users.json
 update_user_info() {
     local old_username=$1
     local new_username=$2
@@ -96,6 +96,12 @@ update_user_info() {
     fi
     echo "User exists."
 
+    # Get existing user data
+    existing_user_data=$(jq --arg username "$old_username" '.[$username]' "$USERS_FILE")
+    upload_bytes=$(echo "$existing_user_data" | jq -r '.upload_bytes // 0')
+    download_bytes=$(echo "$existing_user_data" | jq -r '.download_bytes // 0')
+    status=$(echo "$existing_user_data" | jq -r '.status // "Offline"')
+
     # Debugging output
     echo "Updating user:"
     echo "Username: $new_username"
@@ -113,6 +119,9 @@ update_user_info() {
     --argjson expiration_days "${new_expiration_days:-null}" \
     --arg account_creation_date "${new_creation_date:-null}" \
     --argjson blocked "$(convert_blocked_status "${new_blocked:-false}")" \
+    --argjson upload_bytes "$upload_bytes" \
+    --argjson download_bytes "$download_bytes" \
+    --arg status "$status" \
     '
     .[$new_username] = .[$old_username] |
     del(.[$old_username]) |
@@ -121,7 +130,10 @@ update_user_info() {
         .max_download_bytes = ($max_download_bytes // .max_download_bytes) |
         .expiration_days = ($expiration_days // .expiration_days) |
         .account_creation_date = ($account_creation_date // .account_creation_date) |
-        .blocked = $blocked
+        .blocked = $blocked |
+        .upload_bytes = $upload_bytes |
+        .download_bytes = $download_bytes |
+        .status = $status
     )' "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
 
     if [ $? -ne 0 ]; then
@@ -129,32 +141,11 @@ update_user_info() {
         return 1
     fi
 
-    # Only update traffic_data.json and restart service if the username has changed
-    if [ "$old_username" != "$new_username" ]; then
-        # Update username in traffic_data.json
-        if [ -f "$TRAFFIC_FILE" ]; then
-            jq --arg old_username "$old_username" \
-               --arg new_username "$new_username" \
-               '
-               .[$new_username] = .[$old_username] |
-               del(.[$old_username])
-               ' "$TRAFFIC_FILE" > tmp.$$.json && mv tmp.$$.json "$TRAFFIC_FILE"
+    python3 $CLI_PATH restart-hysteria2
 
-            if [ $? -ne 0 ]; then
-                echo "Error: Failed to update username in '$TRAFFIC_FILE'."
-                return 1
-            fi
-        else
-            echo "Warning: '$TRAFFIC_FILE' not found. Skipping traffic data update."
-        fi
-
-        # Restart Hysteria service after updating user information
-        python3 $CLI_PATH restart-hysteria2
-
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to restart Hysteria service."
-            return 1
-        fi
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to restart Hysteria service."
+        exit 1
     fi
 }
 
@@ -203,8 +194,6 @@ edit_user() {
     # Update user info in JSON file
     update_user_info "$username" "$new_username" "$new_password" "$new_traffic_limit" "$new_expiration_days" "$new_creation_date" "$new_blocked"
 
-    # Restart Hysteria service after updating user information
-    echo "Restarting Hysteria service..."
     python3 $CLI_PATH restart-hysteria2
 
     if [ $? -ne 0 ]; then

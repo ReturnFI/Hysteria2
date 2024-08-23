@@ -39,18 +39,9 @@ fi
 echo "$USER_INFO" | jq .
 
 if [ "$SHOW_TRAFFIC" = true ]; then
-  if [ ! -f "$TRAFFIC_FILE" ]; then
-    echo "No traffic data file found at $TRAFFIC_FILE. User might not have connected yet."
-    exit 0
-  fi
-
-  TRAFFIC_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' "$TRAFFIC_FILE")
-
-  if [ -z "$TRAFFIC_INFO" ]; then
-    echo "No traffic data found for user '$USERNAME' in $TRAFFIC_FILE. User might not have connected yet."
-  else
-    echo "$TRAFFIC_INFO" | jq .
-  fi
+  UPLOAD_BYTES=$(echo "$USER_INFO" | jq -r '.upload_bytes // "No upload data available"')
+  DOWNLOAD_BYTES=$(echo "$USER_INFO" | jq -r '.download_bytes // "No download data available"')
+  STATUS=$(echo "$USER_INFO" | jq -r '.status // "Status unavailable"')
 fi
 
 exit 0

@@ -50,7 +50,7 @@ echo "Online Users: $online_user_count"
 echo 
 echo "Total Traffic: "
 
-if [ -f "$TRAFFIC_FILE" ]; then
+if [ -f "$USERS_FILE" ]; then
     total_upload=0
     total_download=0
 
@@ -59,7 +59,7 @@ if [ -f "$TRAFFIC_FILE" ]; then
         download=$(echo $line | jq -r '.download_bytes')
         total_upload=$(echo "$total_upload + $upload" | bc)
         total_download=$(echo "$total_download + $download" | bc)
-    done <<< "$(jq -c '.[]' $TRAFFIC_FILE)"
+    done <<< "$(jq -c '.[]' $USERS_FILE)"
 
     total_upload_human=$(convert_bytes $total_upload)
     total_download_human=$(convert_bytes $total_download)

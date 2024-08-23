@@ -2,25 +2,20 @@
 
 source /etc/hysteria/core/scripts/path.sh
 
-SHOW_TRAFFIC=true
-
-while getopts ":u:t" opt; do
+while getopts ":u:" opt; do
   case ${opt} in
     u )
       USERNAME=$OPTARG
       ;;
-    t )
-      SHOW_TRAFFIC=false
-      ;;
     \? )
-      echo "Usage: $0 -u <username> [-t]"
+      echo "Usage: $0 -u <username>"
       exit 1
       ;;
   esac
 done
 
 if [ -z "$USERNAME" ]; then
-  echo "Usage: $0 -u <username> [-t]"
+  echo "Usage: $0 -u <username>"
   exit 1
 fi
 
@@ -38,19 +33,12 @@ fi
 
 echo "$USER_INFO" | jq .
 
-if [ "$SHOW_TRAFFIC" = true ]; then
-  if [ ! -f "$TRAFFIC_FILE" ]; then
-    echo "No traffic data file found at $TRAFFIC_FILE. User might not have connected yet."
-    exit 0
-  fi
+UPLOAD_BYTES=$(echo "$USER_INFO" | jq -r '.upload_bytes // "No upload data available"')
+DOWNLOAD_BYTES=$(echo "$USER_INFO" | jq -r '.download_bytes // "No download data available"')
+STATUS=$(echo "$USER_INFO" | jq -r '.status // "Status unavailable"')
 
-  TRAFFIC_INFO=$(jq -r --arg username "$USERNAME" '.[$username] // empty' "$TRAFFIC_FILE")
-
-  if [ -z "$TRAFFIC_INFO" ]; then
-    echo "No traffic data found for user '$USERNAME' in $TRAFFIC_FILE. User might not have connected yet."
-  else
-    echo "$TRAFFIC_INFO" | jq .
-  fi
-fi
+echo "Upload Bytes: $UPLOAD_BYTES"
+echo "Download Bytes: $DOWNLOAD_BYTES"
+echo "Status: $STATUS"
 
 exit 0

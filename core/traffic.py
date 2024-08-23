@@ -5,7 +5,7 @@ import os
 
 # Define static variables for paths and URLs
 CONFIG_FILE = '/etc/hysteria/config.json'
-TRAFFIC_FILE = '/etc/hysteria/traffic_data.json'
+USERS_FILE = '/etc/hysteria/users.json'
 TRAFFIC_API_URL = 'http://127.0.0.1:25413/traffic?clear=1'
 ONLINE_API_URL = 'http://127.0.0.1:25413/online'
 
@@ -47,40 +47,38 @@ def traffic_status():
     response_dict = json.loads(response)
     online_dict = json.loads(online_response)
 
-    traffic_data = {}
-
-    for user in response_dict.keys():
-        tx_bytes = response_dict[user].get('tx', 0)
-        rx_bytes = response_dict[user].get('rx', 0)
-        online = online_dict.get(user, 0)
-
-        traffic_data[user] = {
-            "upload_bytes": tx_bytes,
-            "download_bytes": rx_bytes,
-            "status": "Online" if online == 1 else "Offline"
-        }
-
-    existing_data = {}
-    if os.path.exists(TRAFFIC_FILE):
+    # Load the current users.json data
+    users_data = {}
+    if os.path.exists(USERS_FILE):
         try:
-            with open(TRAFFIC_FILE, 'r') as json_file:
-                existing_data = json.load(json_file)
+            with open(USERS_FILE, 'r') as users_file:
+                users_data = json.load(users_file)
         except json.JSONDecodeError:
-            print("Error: Failed to parse existing traffic data JSON file.")
+            print("Error: Failed to parse existing users data JSON file.")
             return
 
-    for user, data in traffic_data.items():
-        if user in existing_data:
-            existing_data[user]["upload_bytes"] += data["upload_bytes"]
-            existing_data[user]["download_bytes"] += data["download_bytes"]
-            existing_data[user]["status"] = data["status"]
+    # Update users.json with traffic data
+    for user, traffic_info in response_dict.items():
+        tx_bytes = traffic_info.get('tx', 0)
+        rx_bytes = traffic_info.get('rx', 0)
+        online_status = online_dict.get(user, 0)
+
+        if user in users_data:
+            users_data[user]["upload_bytes"] = users_data[user].get("upload_bytes", 0) + tx_bytes
+            users_data[user]["download_bytes"] = users_data[user].get("download_bytes", 0) + rx_bytes
+            users_data[user]["status"] = "Online" if online_status == 1 else "Offline"
         else:
-            existing_data[user] = data
+            users_data[user] = {
+                "upload_bytes": tx_bytes,
+                "download_bytes": rx_bytes,
+                "status": "Online" if online_status == 1 else "Offline"
+            }
 
-    with open(TRAFFIC_FILE, 'w') as json_file:
-        json.dump(existing_data, json_file, indent=4)
+    # Save the updated data back to users.json
+    with open(USERS_FILE, 'w') as users_file:
+        json.dump(users_data, users_file, indent=4)
 
-    display_traffic_data(existing_data, green, cyan, NC)
+    display_traffic_data(users_data, green, cyan, NC)
 
 def display_traffic_data(data, green, cyan, NC):
     if not data:
@@ -93,9 +91,9 @@ def display_traffic_data(data, green, cyan, NC):
     print("-------------------------------------------------")
 
     for user, entry in data.items():
-        upload_bytes = entry["upload_bytes"]
-        download_bytes = entry["download_bytes"]
-        status = entry["status"]
+        upload_bytes = entry.get("upload_bytes", 0)
+        download_bytes = entry.get("download_bytes", 0)
+        status = entry.get("status", "Offline")
 
         formatted_tx = format_bytes(upload_bytes)
         formatted_rx = format_bytes(download_bytes)
@@ -114,3 +112,6 @@ def format_bytes(bytes):
         return f"{bytes / 1073741824:.2f}GB"
     else:
         return f"{bytes / 1099511627776:.2f}TB"
+
+if __name__ == "__main__":
+    traffic_status()

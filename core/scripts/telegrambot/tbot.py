@@ -127,29 +127,26 @@ def process_show_user(message):
 
     command = f"python3 {CLI_PATH} get-user -u {actual_username}"
     user_result = run_cli_command(command)
-    
-    user_json_match = re.search(r'(\{.*?\})\n?(\{.*?\})?', user_result, re.DOTALL)
-    
-    if not user_json_match:
-        bot.reply_to(message, "Failed to parse user details. The command output format may be incorrect.")
-        return
-
-    user_json = user_json_match.group(1)
-    traffic_data_section = user_json_match.group(2)
 
     try:
-        user_details = json.loads(user_json)
+        user_details = json.loads(user_result)
         
-        if traffic_data_section:
-            traffic_data = json.loads(traffic_data_section)
+        upload_bytes = user_details.get('upload_bytes')
+        download_bytes = user_details.get('download_bytes')
+        status = user_details.get('status', 'Unknown')
+
+        if upload_bytes is None or download_bytes is None:
+            traffic_message = "**Traffic Data:**\nUser not active or no traffic data available."
+        else:
+            upload_gb = upload_bytes / (1024 ** 3)  # Convert bytes to GB
+            download_gb = download_bytes / (1024 ** 3)  # Convert bytes to GB
+            
             traffic_message = (
                 f"**Traffic Data:**\n"
-                f"Upload: {traffic_data.get('upload_bytes', 0) / (1024 ** 2):.2f} MB\n"
-                f"Download: {traffic_data.get('download_bytes', 0) / (1024 ** 2):.2f} MB\n"
-                f"Status: {traffic_data.get('status', 'Unknown')}"
+                f"Upload: {upload_gb:.2f} GB\n"
+                f"Download: {download_gb:.2f} GB\n"
+                f"Status: {status}"
             )
-        else:
-            traffic_message = "**Traffic Data:**\nNo traffic data available. The user might not have connected yet."
     except json.JSONDecodeError:
         bot.reply_to(message, "Failed to parse JSON data. The command output may be malformed.")
         return

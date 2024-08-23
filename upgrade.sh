@@ -1,4 +1,5 @@
 #!/bin/bash
+
 cd /root/
 
 TEMP_DIR=$(mktemp -d)
@@ -33,6 +34,16 @@ echo "Restoring backup files"
 for FILE in "${FILES[@]}"; do
     cp "$TEMP_DIR/$FILE" "$FILE"
 done
+
+echo "Merging traffic data into users.json"
+
+if [ -f /etc/hysteria/traffic_data.json ]; then
+    jq -s '.[0] * .[1]' /etc/hysteria/users.json /etc/hysteria/traffic_data.json > /etc/hysteria/users_temp.json
+    mv /etc/hysteria/users_temp.json /etc/hysteria/users.json
+    # rm /etc/hysteria/traffic_data.json
+else
+    echo "No traffic_data.json found to merge."
+fi
 
 echo "Setting ownership and permissions"
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt

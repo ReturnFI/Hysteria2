@@ -228,7 +228,7 @@ hysteria2_change_port_handler() {
 }
 
 hysteria_upgrade(){
-    bash /etc/hysteria/upgrade.sh
+    bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/Dev/upgrade.sh)
 }
 
 warp_configure_handler() {

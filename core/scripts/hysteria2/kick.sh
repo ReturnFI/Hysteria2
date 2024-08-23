@@ -15,7 +15,7 @@ for USERNAME in $(jq -r 'keys[]' "$USERS_FILE"); do
   MAX_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].max_download_bytes' "$USERS_FILE")
   EXPIRATION_DAYS=$(jq -r --arg user "$USERNAME" '.[$user].expiration_days' "$USERS_FILE")
   ACCOUNT_CREATION_DATE=$(jq -r --arg user "$USERNAME" '.[$user].account_creation_date' "$USERS_FILE")
-  CURRENT_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].download_bytes' "$TRAFFIC_FILE")
+  CURRENT_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].download_bytes' "$USERS_FILE")
   BLOCKED=$(jq -r --arg user "$USERNAME" '.[$user].blocked' "$USERS_FILE")
 
   CURRENT_DATE=$(date +%s)

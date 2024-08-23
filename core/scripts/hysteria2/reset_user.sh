@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /etc/hysteria/core/scripts/utils.sh
+# Source required scripts
 source /etc/hysteria/core/scripts/path.sh
 
 reset_user() {
@@ -21,8 +21,10 @@ reset_user() {
     jq --arg username "$username" \
        --arg today "$today" \
        '
-       .[$username].account_creation_date = $today |
-       .[$username].blocked = false
+       .[$username].upload_bytes = 0 |
+       .[$username].download_bytes = 0 |
+       .[$username].status = "Offline" |
+       .[$username].account_creation_date = $today
        ' "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
 
     if [ $? -ne 0 ]; then
@@ -30,25 +32,10 @@ reset_user() {
         return 1
     fi
 
-    if [ ! -f "$TRAFFIC_FILE" ]; then
-        echo "Warning: File '$TRAFFIC_FILE' not found. Skipping traffic data reset."
-    else
-        jq --arg username "$username" \
-           '
-           .[$username].upload_bytes = 0 |
-           .[$username].download_bytes = 0
-           ' "$TRAFFIC_FILE" > tmp.$$.json && mv tmp.$$.json "$TRAFFIC_FILE"
-
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to reset traffic data for user '$username' in '$TRAFFIC_FILE'."
-            return 1
-        fi
-    fi
-
     echo "User '$username' has been reset successfully."
 }
 
-if [ $# -eq 0 ]; then
+if [ $# -ne 1 ]; then
     echo "Usage: $0 <username>"
     exit 1
 fi

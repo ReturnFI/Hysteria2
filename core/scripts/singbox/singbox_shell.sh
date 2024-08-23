@@ -81,6 +81,7 @@ start_service() {
 stop_service() {
     systemctl stop singbox.service > /dev/null 2>&1
     systemctl disable singbox.service > /dev/null 2>&1
+    systemctl daemon-reload > /dev/null 2>&1
 
     rm -f /etc/hysteria/core/scripts/singbox/.env
     echo -e "\n"

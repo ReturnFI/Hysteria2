@@ -37,8 +37,4 @@ UPLOAD_BYTES=$(echo "$USER_INFO" | jq -r '.upload_bytes // "No upload data avail
 DOWNLOAD_BYTES=$(echo "$USER_INFO" | jq -r '.download_bytes // "No download data available"')
 STATUS=$(echo "$USER_INFO" | jq -r '.status // "Status unavailable"')
 
-echo "Upload Bytes: $UPLOAD_BYTES"
-echo "Download Bytes: $DOWNLOAD_BYTES"
-echo "Status: $STATUS"
-
 exit 0

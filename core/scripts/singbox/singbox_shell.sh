@@ -69,6 +69,7 @@ start_service() {
     systemctl daemon-reload
     systemctl enable singbox.service > /dev/null 2>&1
     systemctl start singbox.service > /dev/null 2>&1
+    systemctl daemon-reload > /dev/null 2>&1
 
     if systemctl is-active --quiet singbox.service; then
         echo -e "${green}Singbox service setup completed. The service is now running on port $port. ${NC}"

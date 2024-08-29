@@ -83,9 +83,10 @@ def process_add_user_step2(message, username):
 def process_add_user_step3(message, username, traffic_limit):
     try:
         expiration_days = int(message.text.strip())
+        lower_username = username.lower()
         command = f"python3 {CLI_PATH} add-user -u {username} -t {traffic_limit} -e {expiration_days}"
         result = run_cli_command(command)
-        qr_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4"
+        qr_command = f"python3 {CLI_PATH} show-user-uri -u {lower_username} -ip 4"
         qr_result = run_cli_command(qr_command)
         
         if qr_result.strip() == "":

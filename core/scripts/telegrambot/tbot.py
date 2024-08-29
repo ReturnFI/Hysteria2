@@ -293,7 +293,7 @@ def delete_user(message):
     bot.register_next_step_handler(msg, process_delete_user)
 
 def process_delete_user(message):
-    username = message.text.strip()
+    username = message.text.strip().lower()
     command = f"python3 {CLI_PATH} remove-user -u {username}"
     result = run_cli_command(command)
     bot.reply_to(message, result)

@@ -312,7 +312,7 @@ def handle_inline_query(query):
     results = []
     for username, details in users.items():
         if query_text in username.lower():
-            title = f"Username: {username}"
+            title = f"{username}"
             description = f"Traffic Limit: {details['max_download_bytes'] / (1024 ** 3):.2f} GB, Expiration Days: {details['expiration_days']}"
             results.append(types.InlineQueryResultArticle(
                 id=username,
@@ -327,7 +327,7 @@ def handle_inline_query(query):
                 )
             ))
 
-    bot.answer_inline_query(query.id, results)
+    bot.answer_inline_query(query.id, results, cache_time=0)
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)

@@ -4,6 +4,7 @@ import qrcode
 import io
 import json
 import os
+import shlex
 import re
 from dotenv import load_dotenv
 from telebot import types
@@ -17,7 +18,8 @@ bot = telebot.TeleBot(API_TOKEN)
 
 def run_cli_command(command):
     try:
-        result = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+        args = shlex.split(command)
+        result = subprocess.check_output(args, stderr=subprocess.STDOUT)
         return result.decode('utf-8').strip()
     except subprocess.CalledProcessError as e:
         return f'Error: {e.output.decode("utf-8")}'

@@ -4,6 +4,7 @@ import qrcode
 import io
 import json
 import os
+import shlex
 import re
 from dotenv import load_dotenv
 from telebot import types
@@ -17,7 +18,8 @@ bot = telebot.TeleBot(API_TOKEN)
 
 def run_cli_command(command):
     try:
-        result = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+        args = shlex.split(command)
+        result = subprocess.check_output(args, stderr=subprocess.STDOUT)
         return result.decode('utf-8').strip()
     except subprocess.CalledProcessError as e:
         return f'Error: {e.output.decode("utf-8")}'
@@ -83,9 +85,10 @@ def process_add_user_step2(message, username):
 def process_add_user_step3(message, username, traffic_limit):
     try:
         expiration_days = int(message.text.strip())
+        lower_username = username.lower()
         command = f"python3 {CLI_PATH} add-user -u {username} -t {traffic_limit} -e {expiration_days}"
         result = run_cli_command(command)
-        qr_command = f"python3 {CLI_PATH} show-user-uri -u {username} -ip 4"
+        qr_command = f"python3 {CLI_PATH} show-user-uri -u {lower_username} -ip 4"
         qr_result = run_cli_command(qr_command)
         
         if qr_result.strip() == "":
@@ -292,7 +295,7 @@ def delete_user(message):
     bot.register_next_step_handler(msg, process_delete_user)
 
 def process_delete_user(message):
-    username = message.text.strip()
+    username = message.text.strip().lower()
     command = f"python3 {CLI_PATH} remove-user -u {username}"
     result = run_cli_command(command)
     bot.reply_to(message, result)
@@ -311,7 +314,7 @@ def handle_inline_query(query):
     results = []
     for username, details in users.items():
         if query_text in username.lower():
-            title = f"Username: {username}"
+            title = f"{username}"
             description = f"Traffic Limit: {details['max_download_bytes'] / (1024 ** 3):.2f} GB, Expiration Days: {details['expiration_days']}"
             results.append(types.InlineQueryResultArticle(
                 id=username,
@@ -326,7 +329,7 @@ def handle_inline_query(query):
                 )
             ))
 
-    bot.answer_inline_query(query.id, results)
+    bot.answer_inline_query(query.id, results, cache_time=0)
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)

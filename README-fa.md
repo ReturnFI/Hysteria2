@@ -71,7 +71,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh
 ## پیش‌نیازها:
 اطمینان حاصل کنید که بسته‌های زیر نصب شده‌اند:
 
-- توزیع لینوکس مبتنی بر اوبونتو (تست شده بر روی اوبونتو)
+- توزیع لینوکس مبتنی بر اوبونتو (تست شده بر روی اوبونتو 22)
 - jq
 - qrencode
 - curl

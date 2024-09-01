@@ -72,7 +72,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh
 
 ## Support OS:
 
-- **Ubuntu 20+**
+- **Ubuntu 22+**
 - **Debian 11+**
 
 ## Prerequisites : 

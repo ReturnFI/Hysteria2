@@ -24,7 +24,8 @@ reset_user() {
        .[$username].upload_bytes = 0 |
        .[$username].download_bytes = 0 |
        .[$username].status = "Offline" |
-       .[$username].account_creation_date = $today
+       .[$username].account_creation_date = $today |
+       .[$username].blocked = false
        ' "$USERS_FILE" > tmp.$$.json && mv tmp.$$.json "$USERS_FILE"
 
     if [ $? -ne 0 ]; then

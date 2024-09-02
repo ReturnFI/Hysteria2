@@ -10,7 +10,7 @@ if ! command -v jq &> /dev/null || ! command -v git &> /dev/null || ! command -v
     echo "${yellow}Necessary packages are not installed. Please wait while they are being installed..."
     sleep 3
     echo 
-    apt update && apt upgrade -y && apt install jq qrencode curl pwgen uuid-runtime python3 python3-pip python3-venv git bc -y
+    apt update && apt upgrade -y && apt install jq qrencode curl pwgen uuid-runtime python3 python3-pip python3-venv git bc zip -y
 fi
 
 git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria

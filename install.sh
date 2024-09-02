@@ -6,13 +6,23 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 clear
+
+OS=$(grep '^ID=' /etc/os-release | awk -F= '{print $2}')
+VERSION_ID=$(grep '^VERSION_ID=' /etc/os-release | awk -F= '{print $2}' | tr -d '"')
+
 REQUIRED_PACKAGES="jq qrencode curl pwgen uuid-runtime python3 python3-pip python3-venv git bc zip"
 
 MISSING_PACKAGES=$(dpkg-query -W -f='${Package}\n' $REQUIRED_PACKAGES 2>&1 | grep -v "ok installed")
 if [ -n "$MISSING_PACKAGES" ]; then
     echo "The following packages are missing and will be installed: $MISSING_PACKAGES"
-    apt update && apt upgrade -y
-    apt install -y $MISSING_PACKAGES
+    
+    if [[ "$OS" == "ubuntu" || "$OS" == "debian" ]]; then
+        apt update && apt upgrade -y
+        apt install $MISSING_PACKAGES -y
+    else
+        echo "Unsupported OS: $OS"
+        exit 1
+    fi
 fi
 
 git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria

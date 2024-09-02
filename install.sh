@@ -11,7 +11,7 @@ REQUIRED_PACKAGES="jq qrencode curl pwgen uuid-runtime python3 python3-pip pytho
 MISSING_PACKAGES=$(dpkg-query -W -f='${Package}\n' $REQUIRED_PACKAGES 2>&1 | grep -v "ok installed")
 if [ -n "$MISSING_PACKAGES" ]; then
     echo "The following packages are missing and will be installed: $MISSING_PACKAGES"
-    apt update
+    apt update && apt upgrade -y
     apt install -y $MISSING_PACKAGES
 fi
 

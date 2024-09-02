@@ -1,28 +1,45 @@
-#!/bin/bash
+check_os_version() {
+    local os_name os_version
+
+    if [ -f /etc/os-release ]; then
+        os_name=$(grep '^ID=' /etc/os-release | cut -d= -f2)
+        os_version=$(grep '^VERSION_ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
+    else
+        echo "Unsupported OS or unable to determine OS version."
+        exit 1
+    fi
+
+    if [[ "$os_name" == "ubuntu" && $(echo "$os_version >= 22" | bc) -eq 1 ]] ||
+       [[ "$os_name" == "debian" && $(echo "$os_version >= 11" | bc) -eq 1 ]]; then
+        return 0
+    else
+        echo "This script is only supported on Ubuntu 22+ or Debian 11+."
+        exit 1
+    fi
+}
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "This script must be run as root."
     exit 1
 fi
 
-clear
+check_os_version
 
-OS=$(grep '^ID=' /etc/os-release | awk -F= '{print $2}')
-VERSION_ID=$(grep '^VERSION_ID=' /etc/os-release | awk -F= '{print $2}' | tr -d '"')
+REQUIRED_PACKAGES=("jq" "qrencode" "curl" "pwgen" "uuid-runtime" "python3" "python3-pip" "python3-venv" "git" "bc" "zip")
+MISSING_PACKAGES=()
 
-REQUIRED_PACKAGES="jq qrencode curl pwgen uuid-runtime python3 python3-pip python3-venv git bc zip"
-
-MISSING_PACKAGES=$(dpkg-query -W -f='${Package}\n' $REQUIRED_PACKAGES 2>&1 | grep -v "ok installed")
-if [ -n "$MISSING_PACKAGES" ]; then
-    echo "The following packages are missing and will be installed: $MISSING_PACKAGES"
-    
-    if [[ "$OS" == "ubuntu" || "$OS" == "debian" ]]; then
-        apt update && apt upgrade -y
-        apt install $MISSING_PACKAGES -y
-    else
-        echo "Unsupported OS: $OS"
-        exit 1
+for package in "${REQUIRED_PACKAGES[@]}"; do
+    if ! command -v "$package" &> /dev/null; then
+        MISSING_PACKAGES+=("$package")
     fi
+done
+
+if [ ${#MISSING_PACKAGES[@]} -ne 0 ]; then
+    echo "The following packages are missing and will be installed: ${MISSING_PACKAGES[@]}"
+    apt update && apt upgrade -y
+    apt install -y "${MISSING_PACKAGES[@]}"
+else
+    echo "All required packages are already installed."
 fi
 
 git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria

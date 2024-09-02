@@ -31,6 +31,7 @@ class Command(Enum):
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
+    BACKUP_HYSTERIA = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
     INSTALL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
@@ -224,6 +225,14 @@ def server_info():
     output = run_cmd(['bash', Command.SERVER_INFO.value])
     if output:
         print(output)
+
+@cli.command('backup-hysteria')
+def backup_hysteria():
+    try:
+        run_cmd(['bash', Command.BACKUP_HYSTERIA.value])
+    except subprocess.CalledProcessError as e:
+        click.echo(f"Backup failed: {e.output.decode()}", err=True)
+
 # endregion
 
 # region advanced menu

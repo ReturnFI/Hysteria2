@@ -1,3 +1,5 @@
+#!/bin/bash
+
 check_os_version() {
     local os_name os_version
 
@@ -10,7 +12,6 @@ check_os_version() {
     fi
 
     if ! command -v bc &> /dev/null; then
-        echo "The 'bc' command is required but not installed. Installing..."
         apt update && apt install -y bc
     fi
 

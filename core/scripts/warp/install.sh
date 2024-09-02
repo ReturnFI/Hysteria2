@@ -8,7 +8,7 @@ if systemctl is-active --quiet wg-quick@wgcf.service; then
     echo "WARP is already active. Skipping installation and configuration update."
 else
     echo "Installing WARP..."
-    bash <(curl -fsSL git.io/warp.sh) wgx
+    bash <(curl -fsSL https://raw.githubusercontent.com/ReturnFI/Warp/main/warp.sh) wgd
 
     # Check if the config file exists
     if [ -f "$CONFIG_FILE" ]; then

@@ -1,0 +1,46 @@
+# CODEOWNERS file for the Hysteria2 project
+
+# Global owner for all files in the repository
+* @ReturnFI
+
+# Specific ownership for key files and directories
+
+# Core scripts and Python files
+/core/cli.py @ReturnFI
+/core/traffic.py @ReturnFI
+/core/validator.py @ReturnFI
+
+# Hysteria2 bash scripts
+/core/scripts/hysteria2/* @ReturnFI
+
+# Singbox related files
+/core/scripts/singbox/* @ReturnFI
+
+# TCP-Brutal installation script
+/core/scripts/tcp-brutal/install.sh @ReturnFI
+
+# Telegram bot scripts
+/core/scripts/telegrambot/* @ReturnFI
+
+# Warp scripts
+/core/scripts/warp/* @ReturnFI
+
+# Utility script
+/core/scripts/utils.sh @ReturnFI
+
+# Root-level scripts and configuration
+/install.sh @ReturnFI
+/menu.sh @ReturnFI
+/requirements.txt @ReturnFI
+/upgrade.sh @ReturnFI
+/config.json @ReturnFI
+
+# Markdown files and versioning
+/README.md @ReturnFI
+/README-fa.md @ReturnFI
+/Hysteria2_CLI_Usage.md @ReturnFI
+/LICENSE @ReturnFI
+/VERSION @ReturnFI
+
+# Git ignore file
+/.gitignore @ReturnFI

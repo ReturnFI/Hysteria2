@@ -14,6 +14,7 @@ load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
 ADMIN_USER_IDS = json.loads(os.getenv('ADMIN_USER_IDS'))
 CLI_PATH = '/etc/hysteria/core/cli.py'
+BACKUP_DIRECTORY = '/opt/hysbackup'
 bot = telebot.TeleBot(API_TOKEN)
 
 def run_cli_command(command):
@@ -28,6 +29,7 @@ def create_main_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row('Add User', 'Show User')
     markup.row('Delete User', 'Server Info')
+    markup.row('Backup Server')
     return markup
 
 def is_admin(user_id):
@@ -299,6 +301,32 @@ def process_delete_user(message):
     command = f"python3 {CLI_PATH} remove-user -u {username}"
     result = run_cli_command(command)
     bot.reply_to(message, result)
+
+@bot.message_handler(func=lambda message: is_admin(message.from_user.id) and message.text == 'Backup Server')
+def backup_server(message):
+    bot.reply_to(message, "Starting backup. This may take a few moments...")
+    
+    backup_command = f"python3 {CLI_PATH} backup-hysteria"
+    result = run_cli_command(backup_command)
+
+    if "Error" in result:
+        bot.reply_to(message, f"Backup failed: {result}")
+        return
+    
+    try:
+        files = [f for f in os.listdir(BACKUP_DIRECTORY) if f.endswith('.zip')]
+        files.sort(key=lambda x: os.path.getctime(os.path.join(BACKUP_DIRECTORY, x)), reverse=True)
+        latest_backup_file = files[0] if files else None
+    except Exception as e:
+        bot.reply_to(message, f"Failed to locate the backup file: {str(e)}")
+        return
+    
+    if latest_backup_file:
+        backup_file_path = os.path.join(BACKUP_DIRECTORY, latest_backup_file)
+        with open(backup_file_path, 'rb') as f:
+            bot.send_document(message.chat.id, f, caption=f"Backup completed: {latest_backup_file}")
+    else:
+        bot.reply_to(message, "No backup file found after the backup process.")
 
 @bot.inline_handler(lambda query: is_admin(query.from_user.id))
 def handle_inline_query(query):

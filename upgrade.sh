@@ -2,6 +2,10 @@
 
 cd /root/
 
+if ! command -v zip &> /dev/null; then
+    apt install -y zip
+fi
+
 TEMP_DIR=$(mktemp -d)
 
 FILES=(

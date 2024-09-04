@@ -1,6 +1,6 @@
-pyTelegramBotAPI
-qrcode
-python-dotenv
-requests
-aiohttp
-click
+pyTelegramBotAPI==4.22.1
+qrcode==7.4.2
+python-dotenv==1.0.1
+requests==2.32.3
+aiohttp==3.10.5
+click==8.1.7

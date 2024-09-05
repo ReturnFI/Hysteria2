@@ -48,7 +48,7 @@ else
     echo "All required packages are already installed."
 fi
 
-git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria
+git clone -b Dev https://github.com/ReturnFI/Hysteria2 /etc/hysteria
 
 cd /etc/hysteria
 python3 -m venv hysteria2_venv

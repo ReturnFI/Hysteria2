@@ -26,7 +26,7 @@ hysteria2_install_handler() {
     
     python3 $CLI_PATH install-hysteria2 --port "$port" --sni "$sni"
 
-    cat <<EOF > /etc/hysteria/hysteria2.env
+    cat <<EOF > /etc/hysteria/.configs.env
 SNI=$sni
 EOF
 }

@@ -29,8 +29,6 @@ hysteria2_install_handler() {
     cat <<EOF > /etc/hysteria/hysteria2.env
 SNI=$sni
 EOF
-
-    echo "Installation complete."
 }
 
 hysteria2_add_user_handler() {

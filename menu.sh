@@ -235,6 +235,21 @@ hysteria2_change_port_handler() {
     python3 $CLI_PATH change-hysteria2-port --port "$port"
 }
 
+hysteria2_change_sni_handler() {
+    while true; do
+        read -p "Enter the new SNI (e.g., example.com): " sni
+
+        if [[ "$sni" =~ ^[a-zA-Z0-9.]+$ ]]; then
+            break
+        else
+            echo -e "${red}Error:${NC} SNI can only contain letters, numbers, and dots."
+        fi
+    done
+
+    python3 $CLI_PATH change-hysteria2-sni --sni "$sni"
+}
+
+
 hysteria_upgrade(){
     bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
 }
@@ -505,8 +520,9 @@ display_advance_menu() {
     echo -e "${green}[5] ${NC}↝ Telegram Bot"
     echo -e "${green}[6] ${NC}↝ SingBox SubLink"
     echo -e "${cyan}[7] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[8] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[9] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${cyan}[8] ${NC}↝ Change SNI Hysteria2"
+    echo -e "${cyan}[9] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[10] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -527,8 +543,9 @@ advance_menu() {
             5) telegram_bot_handler ;;
             6) singbox_handler ;;
             7) hysteria2_change_port_handler ;;
-            8) python3 $CLI_PATH update-hysteria2 ;;
-            9) python3 $CLI_PATH uninstall-hysteria2 ;;
+            8) hysteria2_change_sni_handler ;;
+            9) python3 $CLI_PATH update-hysteria2 ;;
+            10) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

@@ -247,6 +247,10 @@ hysteria2_change_sni_handler() {
     done
 
     python3 $CLI_PATH change-hysteria2-sni --sni "$sni"
+
+    if systemctl is-active --quiet singbox.service; then
+        systemctl restart singbox.service
+    fi
 }
 
 

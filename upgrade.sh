@@ -49,6 +49,13 @@ else
     echo "No traffic_data.json found to merge."
 fi
 
+if [ ! -f /etc/hysteria/.configs.env ]; then
+    echo ".configs.env not found, creating it with default SNI=bts.com"
+    echo "SNI=bts.com" > /etc/hysteria/.configs.env
+else
+    echo ".configs.env already exists."
+fi
+
 echo "Setting ownership and permissions"
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt

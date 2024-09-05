@@ -74,9 +74,13 @@ def cli():
 
 
 @cli.command('install-hysteria2')
-@click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int, callback=validator.validate_port)
-def install_hysteria2(port: int):
-    run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port)])
+@click.option('--port', '-p', required=True, help='Port for Hysteria2', type=int, callback=validator.validate_port)
+@click.option('--sni', '-s', required=False, default='bts.com', help='SNI for Hysteria2 (default: bts.com)', type=str)
+def install_hysteria2(port: int, sni: str):
+    """
+    Installs Hysteria2 on the given port and uses the provided or default SNI value.
+    """
+    run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port), sni])
 
 
 @cli.command('uninstall-hysteria2')

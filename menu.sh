@@ -12,7 +12,8 @@ hysteria2_install_handler() {
     fi
 
     while true; do
-        read -p "Enter the new port number you want to use: " port
+        read -p "Enter the SNI (default: bts.com): " sni
+        read -p "Enter the port number you want to use: " port
         if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
             echo "Invalid port number. Please enter a number between 1 and 65535."
         else
@@ -20,7 +21,7 @@ hysteria2_install_handler() {
         fi
     done
 
-    python3 $CLI_PATH install-hysteria2 --port "$port"
+    python3 $CLI_PATH install-hysteria2 --port "$port" --sni "$sni"
 }
 
 hysteria2_add_user_handler() {

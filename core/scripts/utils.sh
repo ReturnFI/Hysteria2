@@ -54,10 +54,10 @@ check_version() {
 
 
 load_hysteria2_env() {
-    if [ -f /etc/hysteria/hysteria2.env ]; then
-        export $(grep -v '^#' /etc/hysteria/hysteria2.env | xargs)
+    if [ -f /etc/hysteria/.configs.env ]; then
+        export $(grep -v '^#' /etc/hysteria/.configs.env| xargs)
     else
-        echo "Error: hysteria2.env file not found. Using default SNI 'bts.com'."
+        echo "Error: configs.env file not found. Using default SNI 'bts.com'."
         SNI="bts.com"
     fi
 }

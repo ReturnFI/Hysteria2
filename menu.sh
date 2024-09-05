@@ -12,7 +12,10 @@ hysteria2_install_handler() {
     fi
 
     while true; do
-        read -p "Enter the new port number you want to use: " port
+        read -p "Enter the SNI (default: bts.com): " sni
+        sni=${sni:-bts.com}
+        
+        read -p "Enter the port number you want to use: " port
         if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
             echo "Invalid port number. Please enter a number between 1 and 65535."
         else
@@ -20,7 +23,12 @@ hysteria2_install_handler() {
         fi
     done
 
-    python3 $CLI_PATH install-hysteria2 --port "$port"
+    
+    python3 $CLI_PATH install-hysteria2 --port "$port" --sni "$sni"
+
+    cat <<EOF > /etc/hysteria/.configs.env
+SNI=$sni
+EOF
 }
 
 hysteria2_add_user_handler() {
@@ -226,6 +234,25 @@ hysteria2_change_port_handler() {
     done
     python3 $CLI_PATH change-hysteria2-port --port "$port"
 }
+
+hysteria2_change_sni_handler() {
+    while true; do
+        read -p "Enter the new SNI (e.g., example.com): " sni
+
+        if [[ "$sni" =~ ^[a-zA-Z0-9.]+$ ]]; then
+            break
+        else
+            echo -e "${red}Error:${NC} SNI can only contain letters, numbers, and dots."
+        fi
+    done
+
+    python3 $CLI_PATH change-hysteria2-sni --sni "$sni"
+
+    if systemctl is-active --quiet singbox.service; then
+        systemctl restart singbox.service
+    fi
+}
+
 
 hysteria_upgrade(){
     bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
@@ -497,8 +524,9 @@ display_advance_menu() {
     echo -e "${green}[5] ${NC}↝ Telegram Bot"
     echo -e "${green}[6] ${NC}↝ SingBox SubLink"
     echo -e "${cyan}[7] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[8] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[9] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${cyan}[8] ${NC}↝ Change SNI Hysteria2"
+    echo -e "${cyan}[9] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[10] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -519,8 +547,9 @@ advance_menu() {
             5) telegram_bot_handler ;;
             6) singbox_handler ;;
             7) hysteria2_change_port_handler ;;
-            8) python3 $CLI_PATH update-hysteria2 ;;
-            9) python3 $CLI_PATH uninstall-hysteria2 ;;
+            8) hysteria2_change_sni_handler ;;
+            9) python3 $CLI_PATH update-hysteria2 ;;
+            10) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

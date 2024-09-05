@@ -22,6 +22,7 @@ class Command(Enum):
     UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.sh')
     RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.sh')
     CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.sh')
+    CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
     GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.sh')
     ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
@@ -74,9 +75,13 @@ def cli():
 
 
 @cli.command('install-hysteria2')
-@click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int, callback=validator.validate_port)
-def install_hysteria2(port: int):
-    run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port)])
+@click.option('--port', '-p', required=True, help='Port for Hysteria2', type=int, callback=validator.validate_port)
+@click.option('--sni', '-s', required=False, default='bts.com', help='SNI for Hysteria2 (default: bts.com)', type=str)
+def install_hysteria2(port: int, sni: str):
+    """
+    Installs Hysteria2 on the given port and uses the provided or default SNI value.
+    """
+    run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port), sni])
 
 
 @cli.command('uninstall-hysteria2')
@@ -98,6 +103,11 @@ def restart_hysteria2():
 @click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int, callback=validator.validate_port)
 def change_hysteria2_port(port: int):
     run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
+
+@cli.command('change-hysteria2-sni')
+@click.option('--sni', '-s', required=True, help='New SNI for Hysteria2', type=str)
+def change_hysteria2_sni(sni: str):
+    run_cmd(['bash', Command.CHANGE_SNI_HYSTERIA2.value, sni])
 
 @cli.command('get-user')
 @click.option('--username', '-u', required=True, help='Username for the user to get', type=str)

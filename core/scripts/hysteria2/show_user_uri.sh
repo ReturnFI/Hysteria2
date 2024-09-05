@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source /etc/hysteria/core/scripts/path.sh
+source /etc/hysteria/core/scripts/utils.sh
 
 get_singbox_domain_and_port() {
     if [ -f "$SINGBOX_ENV" ]; then
@@ -21,6 +22,8 @@ show_uri() {
             local ip_version=4
             local show_all=false
             local generate_singbox=false
+
+            load_hysteria2_env
 
             while [[ "$#" -gt 0 ]]; do
                 case $1 in
@@ -49,9 +52,9 @@ show_uri() {
                     local ip_version=$1
                     local ip=$2
                     if [ "$ip_version" -eq 4 ]; then
-                        echo "hy2://$username%3A$authpassword@$ip:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#$username-IPv4"
+                        echo "hy2://$username%3A$authpassword@$ip:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv4"
                     elif [ "$ip_version" -eq 6 ]; then
-                        echo "hy2://$username%3A$authpassword@[$ip]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=bts.com#$username-IPv6"
+                        echo "hy2://$username%3A$authpassword@[$ip]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv6"
                     fi
                 }
 

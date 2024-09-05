@@ -96,7 +96,7 @@
         "password": "{username}:{password}",
         "tls": {
           "enabled": true,
-          "server_name": "bts.com",
+          "server_name": "{sni}",
           "insecure": true
         }
       },

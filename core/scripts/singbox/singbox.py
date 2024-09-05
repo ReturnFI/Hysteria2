@@ -18,6 +18,20 @@ CERTFILE = os.getenv('HYSTERIA_CERTFILE')
 KEYFILE = os.getenv('HYSTERIA_KEYFILE')
 PORT = int(os.getenv('HYSTERIA_PORT', '3324'))
 
+def load_sni_from_env():
+    sni = "bts.com"
+    try:
+        with open('/etc/hysteria/.configs.env', 'r') as env_file:
+            for line in env_file:
+                if line.startswith('SNI='):
+                    sni = line.strip().split('=')[1]
+                    break
+    except FileNotFoundError:
+        print("Warning: /etc/hysteria/.configs.env not found. Using default SNI.")
+    return sni
+
+SNI = load_sni_from_env()
+
 RATE_LIMIT = 100
 RATE_LIMIT_WINDOW = 60
 
@@ -102,8 +116,7 @@ def generate_singbox_config(username, ip_version, fragment):
     config['outbounds'][2]['obfs']['password'] = components['obfs_password']
     config['outbounds'][2]['password'] = f"{username}:{components['password']}"
     
-    if fragment:
-        config['outbounds'][2]['tls']['server_name'] = fragment
+    config['outbounds'][2]['tls']['server_name'] = fragment if fragment else SNI
 
     config['outbounds'][0]['outbounds'] = ["auto", hysteria_tag]
     config['outbounds'][1]['outbounds'] = [hysteria_tag]

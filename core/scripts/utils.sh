@@ -9,11 +9,9 @@ define_colors() {
     NC='\033[0m' # No Color
 }
 
-# Function to get system information
 get_system_info() {
     OS=$(lsb_release -d | awk -F'\t' '{print $2}')
     ARCH=$(uname -m)
-    # Fetching detailed IP information in JSON format
     IP_API_DATA=$(curl -s https://ipapi.co/json/ -4)
     ISP=$(echo "$IP_API_DATA" | jq -r '.org')
     IP=$(echo "$IP_API_DATA" | jq -r '.ip')
@@ -51,5 +49,15 @@ check_version() {
         echo -e "Latest Version: ${cyan}$latest_version${NC}"
         echo -e "${red}Please update your panel.${NC}"
         echo -e "${cyan}Bug squashing party!${yellow} Update for the best invitation.${NC}"
+    fi
+}
+
+
+load_hysteria2_env() {
+    if [ -f /etc/hysteria/.configs.env ]; then
+        export $(grep -v '^#' /etc/hysteria/.configs.env | xargs)
+    else
+        echo "Error: configs.env file not found. Using default SNI 'bts.com'."
+        SNI="bts.com"
     fi
 }

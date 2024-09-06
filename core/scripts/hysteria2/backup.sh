@@ -12,6 +12,7 @@ FILES_TO_BACKUP=(
     "/etc/hysteria/ca.crt"
     "/etc/hysteria/users.json"
     "/etc/hysteria/config.json"
+    "/etc/hysteria/.configs.env"
 )
 
 zip -j "$BACKUP_FILE" "${FILES_TO_BACKUP[@]}" >/dev/null

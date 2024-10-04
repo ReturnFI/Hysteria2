@@ -33,17 +33,22 @@ check_os_version
 
 REQUIRED_PACKAGES=("jq" "qrencode" "curl" "pwgen" "uuid-runtime" "python3" "python3-pip" "python3-venv" "git" "bc" "zip" "cron" "lsof")
 MISSING_PACKAGES=()
+heavy_checkmark=$(printf "\xE2\x9C\x85")
 
 for package in "${REQUIRED_PACKAGES[@]}"; do
     if ! command -v "$package" &> /dev/null; then
         MISSING_PACKAGES+=("$package")
+    else
+        echo "Install $package $heavy_checkmark"
     fi
 done
 
 if [ ${#MISSING_PACKAGES[@]} -ne 0 ]; then
     echo "The following packages are missing and will be installed: ${MISSING_PACKAGES[@]}"
-    apt update && apt upgrade -y
-    apt install -y "${MISSING_PACKAGES[@]}"
+    apt update -qq && apt upgrade -y -qq
+    for package in "${MISSING_PACKAGES[@]}"; do
+        apt install -y -qq "$package" &> /dev/null && echo "Install $package $heavy_checkmark"
+    done
 else
     echo "All required packages are already installed."
 fi
@@ -53,13 +58,13 @@ git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria
 cd /etc/hysteria
 python3 -m venv hysteria2_venv
 source /etc/hysteria/hysteria2_venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt &> /dev/null && echo "Install Python requirements ✅"
 
 if ! grep -q "alias hys2='source /etc/hysteria/hysteria2_venv/bin/activate && /etc/hysteria/menu.sh'" ~/.bashrc; then
     echo "alias hys2='source /etc/hysteria/hysteria2_venv/bin/activate && /etc/hysteria/menu.sh'" >> ~/.bashrc
     source ~/.bashrc
 fi
-
+sleep 5
 cd /etc/hysteria
 chmod +x menu.sh
 ./menu.sh

@@ -413,6 +413,58 @@ singbox_handler() {
     done
 }
 
+normalsub_handler() {
+    while true; do
+        echo -e "${cyan}1.${NC} Start Normal-Sub service"
+        echo -e "${red}2.${NC} Stop Normal-Sub service"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+                if systemctl is-active --quiet normalsub.service; then
+                    echo "The normalsub.service is already active."
+                else
+                    while true; do
+                        read -e -p "Enter the domain name for the SSL certificate: " domain
+                        if [ -z "$domain" ]; then
+                            echo "Domain name cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -e -p "Enter the port number for the service: " port
+                        if [ -z "$port" ]; then
+                            echo "Port number cannot be empty. Please try again."
+                        elif ! [[ "$port" =~ ^[0-9]+$ ]]; then
+                            echo "Port must be a number. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    python3 $CLI_PATH normal-sub -a start -d "$domain" -p "$port"
+                fi
+                ;;
+            2)
+                if ! systemctl is-active --quiet normalsub.service; then
+                    echo "The normalsub.service is already inactive."
+                else
+                    python3 $CLI_PATH normal-sub -a stop
+                fi
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
+
 # Function to display the main menu
 display_main_menu() {
     clear
@@ -523,10 +575,11 @@ display_advance_menu() {
     echo -e "${red}[4] ${NC}↝ Uninstall WARP"
     echo -e "${green}[5] ${NC}↝ Telegram Bot"
     echo -e "${green}[6] ${NC}↝ SingBox SubLink"
-    echo -e "${cyan}[7] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[8] ${NC}↝ Change SNI Hysteria2"
-    echo -e "${cyan}[9] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[10] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${green}[7] ${NC}↝ Normal-SUB SubLink"
+    echo -e "${cyan}[8] ${NC}↝ Change Port Hysteria2"
+    echo -e "${cyan}[9] ${NC}↝ Change SNI Hysteria2"
+    echo -e "${cyan}[10] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[11] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -546,10 +599,11 @@ advance_menu() {
             4) python3 $CLI_PATH uninstall-warp ;;
             5) telegram_bot_handler ;;
             6) singbox_handler ;;
-            7) hysteria2_change_port_handler ;;
-            8) hysteria2_change_sni_handler ;;
-            9) python3 $CLI_PATH update-hysteria2 ;;
-            10) python3 $CLI_PATH uninstall-hysteria2 ;;
+            7) normalsub_handler ;;
+            8) hysteria2_change_port_handler ;;
+            9) hysteria2_change_sni_handler ;;
+            10) python3 $CLI_PATH update-hysteria2 ;;
+            11) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

@@ -14,6 +14,18 @@ get_singbox_domain_and_port() {
     fi
 }
 
+get_normalsub_domain_and_port() {
+    if [ -f "$NORMALSUB_ENV" ]; then
+        local domain port
+        domain=$(grep -E '^HYSTERIA_DOMAIN=' "$NORMALSUB_ENV" | cut -d'=' -f2)
+        port=$(grep -E '^HYSTERIA_PORT=' "$NORMALSUB_ENV" | cut -d'=' -f2)
+        echo "$domain" "$port"
+    else
+        echo ""
+    fi
+}
+
+
 show_uri() {
     if [ -f "$USERS_FILE" ]; then
         if systemctl is-active --quiet hysteria-server.service; then
@@ -22,6 +34,7 @@ show_uri() {
             local ip_version=4
             local show_all=false
             local generate_singbox=false
+            local generate_normalsub=false
 
             load_hysteria2_env
 
@@ -32,6 +45,7 @@ show_uri() {
                     -ip) ip_version="$2"; shift ;;
                     -a|--all) show_all=true ;;
                     -s|--singbox) generate_singbox=true ;;
+                    -n|--normalsub) generate_normalsub=true ;;
                     *) echo "Unknown parameter passed: $1"; exit 1 ;;
                 esac
                 shift
@@ -102,6 +116,12 @@ show_uri() {
                     read -r domain port < <(get_singbox_domain_and_port)
                     if [ -n "$domain" ] && [ -n "$port" ]; then
                         echo -e "\nSingbox Sublink:\nhttps://$domain:$port/sub/singbox/$username/$ip_version#$username\n"
+                    fi
+                fi
+                if [ "$generate_normalsub" = true ] && systemctl is-active --quiet normalsub.service; then
+                    read -r domain port < <(get_normalsub_domain_and_port)
+                    if [ -n "$domain" ] && [ -n "$port" ]; then
+                        echo -e "\nNormal-SUB Sublink:\nhttps://$domain:$port/sub/normal/$username#Hysteria2\n"
                     fi
                 fi
             else

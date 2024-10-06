@@ -16,6 +16,7 @@ FILES=(
     "/etc/hysteria/config.json"
     "/etc/hysteria/core/scripts/telegrambot/.env"
     "/etc/hysteria/core/scripts/singbox/.env"
+    "/etc/hysteria/core/scripts/normalsub/.env"
 )
 
 echo "Backing up files to $TEMP_DIR"

@@ -35,6 +35,7 @@ class Command(Enum):
     BACKUP_HYSTERIA = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
     INSTALL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
+    INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
@@ -207,7 +208,8 @@ def remove_user(username: str):
 @click.option('--ipv', '-ip', type=click.IntRange(4, 6), default=4, help='IP version (4 or 6)')
 @click.option('--all', '-a', is_flag=True, help='Show both IPv4 and IPv6 URIs and generate QR codes for both if requested')
 @click.option('--singbox', '-s', is_flag=True, help='Generate Singbox sublink if Singbox service is active')
-def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: bool):
+@click.option('--normalsub', '-n', is_flag=True, help='Generate Normal sublink if normalsub service is active')
+def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: bool, normalsub: bool):
     command_args = ['bash', Command.SHOW_USER_URI.value, '-u', username]
     if qrcode:
         command_args.append('-qr')
@@ -217,6 +219,8 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
         command_args.extend(['-ip', str(ipv)])
     if singbox:
         command_args.append('-s')
+    if normalsub:
+        command_args.append('-n')
 
     run_cmd(command_args)
 
@@ -324,6 +328,19 @@ def singbox(action: str, domain: str, port: int):
         run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'start', domain, str(port)])
     elif action == 'stop':
         run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'stop'])
+
+@cli.command('normal-sub')
+@click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
+@click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
+@click.option('--port', '-p', required=False, help='Port number for NormalSub service', type=int)
+def normalsub(action: str, domain: str, port: int):
+    if action == 'start':
+        if not domain or not port:
+            click.echo("Error: Both --domain and --port are required for the start action.")
+            return
+        run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'start', domain, str(port)])
+    elif action == 'stop':
+        run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'stop'])
 
 # endregion
 

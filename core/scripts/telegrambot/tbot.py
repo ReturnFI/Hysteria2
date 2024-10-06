@@ -90,7 +90,7 @@ def process_add_user_step3(message, username, traffic_limit):
         lower_username = username.lower()
         command = f"python3 {CLI_PATH} add-user -u {username} -t {traffic_limit} -e {expiration_days}"
         result = run_cli_command(command)
-
+        bot.send_chat_action(message.chat.id, 'typing')
         qr_command = f"python3 {CLI_PATH} show-user-uri -u {lower_username} -ip 4"
         qr_result = run_cli_command(qr_command).replace("IPv4:\n", "").strip()
 
@@ -115,6 +115,7 @@ def show_user(message):
 
 def process_show_user(message):
     username = message.text.strip().lower()
+    bot.send_chat_action(message.chat.id, 'typing')
     command = f"python3 {CLI_PATH} list-users"
     result = run_cli_command(command)
 
@@ -167,17 +168,31 @@ def process_show_user(message):
         f"{traffic_message}"
     )
 
-    combined_command = f"python3 {CLI_PATH} show-user-uri -u {actual_username} -ip 4 -s"
+    combined_command = f"python3 {CLI_PATH} show-user-uri -u {actual_username} -ip 4 -s -n"
     combined_result = run_cli_command(combined_command)
 
     if "Error" in combined_result or "Invalid" in combined_result:
         bot.reply_to(message, combined_result)
         return
 
-    result_lines = combined_result.split('\n')
-    uri_v4 = result_lines[1].strip()
+    result_lines = combined_result.strip().split('\n')
+    
+    uri_v4 = ""
+    singbox_sublink = ""
+    normal_sub_sublink = ""
 
-    singbox_sublink = result_lines[-1].strip() if "https://" in result_lines[-1] else None
+    for line in result_lines:
+        line = line.strip()
+        if line.startswith("hy2://"):
+            uri_v4 = line
+        elif line.startswith("Singbox Sublink:"):
+            singbox_sublink = result_lines[result_lines.index(line) + 1].strip()
+        elif line.startswith("Normal-SUB Sublink:"):
+            normal_sub_sublink = result_lines[result_lines.index(line) + 1].strip()
+
+    if not uri_v4:
+        bot.reply_to(message, "No valid URI found.")
+        return
 
     qr_v4 = qrcode.make(uri_v4)
     bio_v4 = io.BytesIO()
@@ -196,7 +211,9 @@ def process_show_user(message):
 
     caption = f"{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`"
     if singbox_sublink:
-        caption += f"\n\n\n**SingBox SUB:**\n{singbox_sublink}"
+        caption += f"\n\n**SingBox SUB:**\n{singbox_sublink}"
+    if normal_sub_sublink:
+        caption += f"\n\n**Normal SUB:**\n{normal_sub_sublink}"
 
     bot.send_photo(
         message.chat.id,
@@ -206,10 +223,12 @@ def process_show_user(message):
         parse_mode="Markdown"
     )
 
+
 @bot.message_handler(func=lambda message: is_admin(message.from_user.id) and message.text == 'Server Info')
 def server_info(message):
     command = f"python3 {CLI_PATH} server-info"
     result = run_cli_command(command)
+    bot.send_chat_action(message.chat.id, 'typing')
     bot.reply_to(message, result)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('edit_') or call.data.startswith('renew_') or call.data.startswith('block_') or call.data.startswith('reset_') or call.data.startswith('ipv6_'))
@@ -306,13 +325,16 @@ def process_delete_user(message):
 @bot.message_handler(func=lambda message: is_admin(message.from_user.id) and message.text == 'Backup Server')
 def backup_server(message):
     bot.reply_to(message, "Starting backup. This may take a few moments...")
+    bot.send_chat_action(message.chat.id, 'typing')
     
     backup_command = f"python3 {CLI_PATH} backup-hysteria"
     result = run_cli_command(backup_command)
 
     if "Error" in result:
         bot.reply_to(message, f"Backup failed: {result}")
-        return
+    else:
+        bot.reply_to(message, "Backup completed successfully!")
+
     
     try:
         files = [f for f in os.listdir(BACKUP_DIRECTORY) if f.endswith('.zip')]

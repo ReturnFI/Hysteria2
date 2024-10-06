@@ -208,7 +208,8 @@ def remove_user(username: str):
 @click.option('--ipv', '-ip', type=click.IntRange(4, 6), default=4, help='IP version (4 or 6)')
 @click.option('--all', '-a', is_flag=True, help='Show both IPv4 and IPv6 URIs and generate QR codes for both if requested')
 @click.option('--singbox', '-s', is_flag=True, help='Generate Singbox sublink if Singbox service is active')
-def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: bool):
+@click.option('--normalsub', '-n', is_flag=True, help='Generate Normal sublink if normalsub service is active')
+def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: bool, normalsub: bool):
     command_args = ['bash', Command.SHOW_USER_URI.value, '-u', username]
     if qrcode:
         command_args.append('-qr')
@@ -218,6 +219,8 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
         command_args.extend(['-ip', str(ipv)])
     if singbox:
         command_args.append('-s')
+    if normalsub:
+        command_args.append('-n')
 
     run_cmd(command_args)
 

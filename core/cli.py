@@ -29,7 +29,7 @@ class Command(Enum):
     RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
-    REMOVE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_obfs.sh')
+    MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
@@ -258,10 +258,10 @@ def manage_obfs(remove, generate):
         return
     elif remove:
         click.echo("Removing 'obfs' from config.json...")
-        run_cmd(['bash', Command.REMOVE_OBFS.value, '--remove'])
+        run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
     elif generate:
         click.echo("Generating 'obfs' in config.json...")
-        run_cmd(['bash', Command.REMOVE_OBFS.value, '--generate'])
+        run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
     else:
         click.echo("Error: Please specify either --remove or --generate.")
 

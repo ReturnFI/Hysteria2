@@ -503,6 +503,7 @@ display_main_menu() {
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
 
         check_version
+        check_services
         
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -e "${yellow}                   ☼ Main Menu ☼                   ${NC}"

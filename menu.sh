@@ -262,6 +262,7 @@ warp_configure_handler() {
     local service_name="wg-quick@wgcf.service"
 
     if systemctl is-active --quiet "$service_name"; then
+    python3 $CLI_PATH warp-status
         echo "Configure WARP Options:"
         echo "1. Use WARP for all traffic"
         echo "2. Use WARP for popular sites"
@@ -465,6 +466,31 @@ normalsub_handler() {
     done
 }
 
+
+obfs_handler() {
+    while true; do
+        echo -e "${cyan}1.${NC} Remove Obfs"
+        echo -e "${red}2.${NC} Generating new Obfs"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+            python3 $CLI_PATH manage_obfs -r
+                ;;
+            2)
+            python3 $CLI_PATH manage_obfs -g
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
+
 # Function to display the main menu
 display_main_menu() {
     clear
@@ -478,6 +504,7 @@ display_main_menu() {
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
 
         check_version
+        check_services
         
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -e "${yellow}                   ☼ Main Menu ☼                   ${NC}"
@@ -578,8 +605,10 @@ display_advance_menu() {
     echo -e "${green}[7] ${NC}↝ Normal-SUB SubLink"
     echo -e "${cyan}[8] ${NC}↝ Change Port Hysteria2"
     echo -e "${cyan}[9] ${NC}↝ Change SNI Hysteria2"
-    echo -e "${cyan}[10] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[11] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${cyan}[10] ${NC}↝ Manage OBFS"
+    echo -e "${cyan}[11] ${NC}↝ Restart Hysteria2"
+    echo -e "${cyan}[12] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[13] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -602,8 +631,10 @@ advance_menu() {
             7) normalsub_handler ;;
             8) hysteria2_change_port_handler ;;
             9) hysteria2_change_sni_handler ;;
-            10) python3 $CLI_PATH update-hysteria2 ;;
-            11) python3 $CLI_PATH uninstall-hysteria2 ;;
+            10) obfs_handler ;;
+            11) python3 $CLI_PATH RESTART_HYSTERIA2 ;;
+            12) python3 $CLI_PATH update-hysteria2 ;;
+            13) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

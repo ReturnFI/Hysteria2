@@ -61,3 +61,21 @@ load_hysteria2_env() {
         SNI="bts.com"
     fi
 }
+
+check_services() {
+    declare -A service_names=(
+        ["hysteria-server.service"]="Hysteria2"
+        ["normalsub.service"]="Normal Subscription"
+        ["singbox.service"]="Singbox Subscription"
+        ["hysteria-bot.service"]="Hysteria Telegram Bot"
+        ["wg-quick@wgcf.service"]="WireGuard (WARP)"
+    )
+
+    for service in "${!service_names[@]}"; do
+        if systemctl is-active --quiet "$service"; then
+            echo -e "${NC}${service_names[$service]}:${green} Active${NC}"
+        else
+            echo -e "${NC}${service_names[$service]}:${red} Inactive${NC}"
+        fi
+    done
+}

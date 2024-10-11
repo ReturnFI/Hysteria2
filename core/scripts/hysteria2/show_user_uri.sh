@@ -25,7 +25,6 @@ get_normalsub_domain_and_port() {
     fi
 }
 
-
 show_uri() {
     if [ -f "$USERS_FILE" ]; then
         if systemctl is-active --quiet hysteria-server.service; then
@@ -60,15 +59,23 @@ show_uri() {
                 authpassword=$(jq -r ".\"$username\".password" "$USERS_FILE")
                 port=$(jq -r '.listen' "$CONFIG_FILE" | cut -d':' -f2)
                 sha256=$(jq -r '.tls.pinSHA256' "$CONFIG_FILE")
-                obfspassword=$(jq -r '.obfs.salamander.password' "$CONFIG_FILE")
+                obfspassword=$(jq -r '.obfs.salamander.password // empty' "$CONFIG_FILE")
 
                 generate_uri() {
                     local ip_version=$1
                     local ip=$2
-                    if [ "$ip_version" -eq 4 ]; then
-                        echo "hy2://$username%3A$authpassword@$ip:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv4"
-                    elif [ "$ip_version" -eq 6 ]; then
-                        echo "hy2://$username%3A$authpassword@[$ip]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv6"
+                    if [ -n "$obfspassword" ]; then
+                        if [ "$ip_version" -eq 4 ]; then
+                            echo "hy2://$username%3A$authpassword@$ip:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv4"
+                        elif [ "$ip_version" -eq 6 ]; then
+                            echo "hy2://$username%3A$authpassword@[$ip]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv6"
+                        fi
+                    else
+                        if [ "$ip_version" -eq 4 ]; then
+                            echo "hy2://$username%3A$authpassword@$ip:$port?pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv4"
+                        elif [ "$ip_version" -eq 6 ]; then
+                            echo "hy2://$username%3A$authpassword@[$ip]:$port?pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv6"
+                        fi
                     fi
                 }
 

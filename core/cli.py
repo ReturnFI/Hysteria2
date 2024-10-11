@@ -29,6 +29,7 @@ class Command(Enum):
     RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
+    MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
@@ -40,6 +41,7 @@ class Command(Enum):
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
     CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
+    STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
 
 
 # region utils
@@ -247,6 +249,23 @@ def backup_hysteria():
     except subprocess.CalledProcessError as e:
         click.echo(f"Backup failed: {e.output.decode()}", err=True)
 
+@cli.command('manage_obfs')
+@click.option('--remove', '-r', is_flag=True, help="Remove 'obfs' from config.json.")
+@click.option('--generate', '-g', is_flag=True, help="Generate new 'obfs' in config.json.")
+def manage_obfs(remove, generate):
+    """Manage 'obfs' in Hysteria2 configuration."""
+    if remove and generate:
+        click.echo("Error: You cannot use both --remove and --generate at the same time.")
+        return
+    elif remove:
+        click.echo("Removing 'obfs' from config.json...")
+        run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
+    elif generate:
+        click.echo("Generating 'obfs' in config.json...")
+        run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
+    else:
+        click.echo("Error: Please specify either --remove or --generate.")
+
 # endregion
 
 # region advanced menu
@@ -301,6 +320,12 @@ def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_a
         cmd_args.append(options['warp_key'])
 
     run_cmd(cmd_args)
+
+@cli.command('warp-status')
+def warp_status():
+    output = run_cmd(['bash', Command.STATUS_WARP.value])
+    if output:
+        print(output)
 
 @cli.command('telegram')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))

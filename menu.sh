@@ -606,8 +606,9 @@ display_advance_menu() {
     echo -e "${cyan}[8] ${NC}↝ Change Port Hysteria2"
     echo -e "${cyan}[9] ${NC}↝ Change SNI Hysteria2"
     echo -e "${cyan}[10] ${NC}↝ Manage OBFS"
-    echo -e "${cyan}[11] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[12] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${cyan}[11] ${NC}↝ Restart Hysteria2"
+    echo -e "${cyan}[12] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[13] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -631,8 +632,9 @@ advance_menu() {
             8) hysteria2_change_port_handler ;;
             9) hysteria2_change_sni_handler ;;
             10) obfs_handler ;;
-            11) python3 $CLI_PATH update-hysteria2 ;;
-            12) python3 $CLI_PATH uninstall-hysteria2 ;;
+            11) python3 $CLI_PATH RESTART_HYSTERIA2 ;;
+            12) python3 $CLI_PATH update-hysteria2 ;;
+            13) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

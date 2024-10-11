@@ -632,7 +632,7 @@ advance_menu() {
             8) hysteria2_change_port_handler ;;
             9) hysteria2_change_sni_handler ;;
             10) obfs_handler ;;
-            11) python3 $CLI_PATH RESTART_HYSTERIA2 ;;
+            11) python3 $CLI_PATH restart-hysteria2 ;;
             12) python3 $CLI_PATH update-hysteria2 ;;
             13) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;

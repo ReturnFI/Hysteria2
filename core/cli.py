@@ -41,6 +41,7 @@ class Command(Enum):
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
     CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
+    STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
 
 
 # region utils
@@ -319,6 +320,12 @@ def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_a
         cmd_args.append(options['warp_key'])
 
     run_cmd(cmd_args)
+
+@cli.command('warp-status')
+def warp_status():
+    output = run_cmd(['bash', Command.STATUS_WARP.value])
+    if output:
+        print(output)
 
 @cli.command('telegram')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))

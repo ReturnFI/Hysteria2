@@ -75,7 +75,7 @@ check_services() {
         if systemctl is-active --quiet "$service"; then
             echo -e "${NC}${service_names[$service]}:${green} Active${NC}"
         else
-            echo -e "${NC}${service_names[$service]}:${red} Not Active${NC}"
+            echo -e "${NC}${service_names[$service]}:${red} Inactive${NC}"
         fi
     done
 }

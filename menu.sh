@@ -262,6 +262,7 @@ warp_configure_handler() {
     local service_name="wg-quick@wgcf.service"
 
     if systemctl is-active --quiet "$service_name"; then
+    python3 $CLI_PATH warp-status
         echo "Configure WARP Options:"
         echo "1. Use WARP for all traffic"
         echo "2. Use WARP for popular sites"

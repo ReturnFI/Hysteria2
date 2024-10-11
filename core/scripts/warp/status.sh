@@ -2,8 +2,8 @@ source /etc/hysteria/core/scripts/utils.sh
 source /etc/hysteria/core/scripts/path.sh
 
 check_warp_configuration() {
-    echo "${yellow}Current WARP Configuration:${NC}"
     echo "--------------------------------"
+    echo -e "${LPurple}Current WARP Configuration: ${NC}"
 
     if jq -e '.acl.inline[]? | select(test("warps\\(all\\)"))' "$CONFIG_FILE" > /dev/null; then
         echo -e "${cyan}All traffic:${NC} ${green}Active${NC}"

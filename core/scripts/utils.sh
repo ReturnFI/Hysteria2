@@ -64,7 +64,7 @@ load_hysteria2_env() {
 
 check_services() {
     declare -A service_names=(
-        ["hysteria-server.service"]="Hysteria"
+        ["hysteria-server.service"]="Hysteria2"
         ["normalsub.service"]="Normal Subscription"
         ["singbox.service"]="Singbox Subscription"
         ["hysteria-bot.service"]="Hysteria Telegram Bot"

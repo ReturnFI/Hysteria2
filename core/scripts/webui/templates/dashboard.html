@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>User Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.1.3/solar/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .user-card {
+      background-color: #1a1a2e;
+      color: #eee;
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .user-status {
+      font-weight: bold;
+      margin-right: 10px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      background-color: #444;
+    }
+    .user-status.offline {
+      color: #bbb;
+      background-color: #333;
+    }
+    .user-status.online {
+      color: #4caf50;
+    }
+    .username {
+      flex-grow: 1;
+      font-weight: bold;
+      color: #00d4ff;
+    }
+    .usage-bar {
+      background-color: #333;
+      border-radius: 5px;
+      height: 10px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 200px;
+      margin: 5px 0;
+    }
+    .usage-bar-fill {
+      background-color: #4caf50;
+      height: 100%;
+    }
+    .expiration {
+      background-color: #00d4ff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      color: #111;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    @media (max-width: 576px) {
+      .username {
+        font-size: 0.9rem;
+      }
+      .user-status, .expiration {
+        font-size: 0.7rem;
+      }
+      .usage-bar {
+        max-width: 150px;
+      }
+    }
+  </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const activeTab = urlParams.get('tab');
+      if (activeTab === 'users') {
+        $('.nav-pills a[href="#users"]').tab('show');
+      }
+    });
+  </script>
+  
+</head>
+<body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="container my-4">
+    <div class="row justify-content-between align-items-center mb-3">
+        <div class="col-lg-8 col-md-8 col-sm-12">
+            <h2 class="text-left">User Dashboard</h2>
+        </div>
+        <div class="col-auto">
+            <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+        </div>
+    </div>
+
+    <ul class="nav nav-pills justify-content-center mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#dashboard">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#users">
+                <i class="fas fa-users"></i> Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="dashboard" class="tab-pane fade show active">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5>Server Info</h5>
+                </div>
+                <div class="card-body">
+                    <pre>{{ server_info }}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="users" class="tab-pane fade">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5>User Info</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_list.error %}
+                        <p class="text-danger">{{ user_list.error }}</p>
+                    {% else %}
+                        <div class="row">
+                            {% for username, details in user_list.items() %}
+                                <div class="col-12">
+                                    <div class="user-card">
+                                        <span class="user-status {% if details.status == 'Online' %}online{% else %}offline{% endif %}">
+                                            {{ details.status }}
+                                        </span>
+        
+                                        <span class="username">{{ username }}</span>
+        
+                                        <span>{{ (details.download_bytes / (1024 ** 3)) | round(2) }} GB</span>
+                                        <div class="usage-bar">
+                                            <div class="usage-bar-fill" style="width: {{ (details.download_bytes / details.max_download_bytes) * 100 }}%;"></div>
+                                        </div>
+                                        <span>{{ (details.max_download_bytes / (1024 ** 3)) | round(2) }} GB</span>
+        
+                                        <span class="expiration">{{ details.day_use }}D / {{ details.expiration_days }}D</span>
+
+                                        <form action="/reset_user" method="POST" style="display: inline;">
+                                            <input type="hidden" name="username" value="{{ username }}">
+                                            <button type="submit" class="btn btn-warning btn-sm">Reset</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+        
+                        <nav aria-label="User pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if page > 1 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page - 1 }}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% for p in range(1, total_pages + 1) %}
+                                    <li class="page-item {% if page == p %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+                                    </li>
+                                {% endfor %}
+                                {% if page < total_pages %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page + 1 }}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div id="settings" class="tab-pane fade">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5>Settings</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="settingsTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="warp-tab" data-toggle="tab" href="#warp" role="tab" aria-controls="warp" aria-selected="true">Warp</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="subs-tab" data-toggle="tab" href="#subs" role="tab" aria-controls="subs" aria-selected="false">Subscriptions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="hysteria-tab" data-toggle="tab" href="#hysteria" role="tab" aria-controls="hysteria" aria-selected="false">Hysteria</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-3" id="settingsTabContent">
+                        <div class="tab-pane fade show active" id="warp" role="tabpanel" aria-labelledby="warp-tab">
+                            <p>Warp settings content goes here.</p>
+                        </div>
+                        <div class="tab-pane fade" id="subs" role="tabpanel" aria-labelledby="subs-tab">
+                            <p>Subscription management content goes here.</p>
+                        </div>
+                        <div class="tab-pane fade" id="hysteria" role="tabpanel" aria-labelledby="hysteria-tab">
+                            <p>Hysteria settings content goes here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+</body>
+</html>

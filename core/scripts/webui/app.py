@@ -115,7 +115,8 @@ def dashboard():
                                 server_info=server_info,
                                 user_list=paginated_users,
                                 page=page,
-                                total_pages=total_pages)
+                                total_pages=total_pages
+                              )
     
     return redirect('/login')
 

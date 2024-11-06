@@ -224,7 +224,7 @@
                                         <div class="usage-bar">
                                             <div class="usage-bar-fill" style="width: {{ (details.download_bytes / details.max_download_bytes) * 100 }}%;"></div>
                                         </div>
-                                        <span>{{ (details.get('download_bytes', 0) / (1024 ** 3)) | round(2) }} GB</span>&nbsp;&nbsp;
+                                        <span>{{ (details.get('max_download_bytes', 0) / (1024 ** 3)) | round(2) }} GB</span>&nbsp;&nbsp;
         
                                         <span class="expiration">{{ details.day_use }}D / {{ details.expiration_days }}D</span>
         

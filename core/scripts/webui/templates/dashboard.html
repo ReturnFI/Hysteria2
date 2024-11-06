@@ -110,6 +110,19 @@
             document.getElementById('qrCodeTextIPv6').textContent = "No IPv6 QR code available.";
         }
     }
+    function confirmReset(event) {
+        const confirmed = confirm("Are you sure you want to reset this user?");
+        if (!confirmed) {
+            event.preventDefault();
+        }
+    }
+
+    function confirmRemove(event) {
+        const confirmed = confirm("Are you sure you want to remove this user?");
+        if (!confirmed) {
+            event.preventDefault();
+        }
+    }
   </script>
   
 </head>
@@ -146,6 +159,11 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#adduser">
+                <i class="fas fa-cog"></i> Add-User
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#settings">
                 <i class="fas fa-cog"></i> Settings
             </a>
@@ -164,6 +182,7 @@
             </div>
         </div>
 
+        
         <div id="users" class="tab-pane fade">
             <div class="card mb-4">
                 <div class="card-header bg-success text-white">
@@ -182,23 +201,33 @@
                                         </span>
         
                                         <span class="username">{{ username }}</span>
-                                        <form action="/reset_user" method="POST" style="display: inline;">
+        
+                                        <!-- Reset Button Form -->
+                                        <form action="/reset_user" method="POST" style="display: inline;" onsubmit="confirmReset(event)">
                                             <input type="hidden" name="username" value="{{ username }}">
-                                            <button type="submit" class="btn btn-warning btn-sm">Reset</button>
+                                            <button type="submit" class="btn btn-warning btn-sm">Reset</button>&nbsp;&nbsp;
                                         </form>
+                                        <!-- Remove User Button Form -->
+                                        <form action="/remove_user" method="POST" style="display: inline;" onsubmit="confirmRemove(event)">
+                                            <input type="hidden" name="username" value="{{ username }}">
+                                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>&nbsp;&nbsp;
+                                        </form>
+        
+                                        <!-- Show QR Code Button -->
                                         <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#qrCodeModal" 
                                         onclick="generateQRCodes('{{ details.qr_data_ipv4 }}', '{{ details.qr_data_ipv6 }}')">
                                             Show QR Codes
-                                        </button>
-                                
-                                        <span>{{ (details.download_bytes / (1024 ** 3)) | round(2) }} GB</span>
+                                        </button>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        
+                                        <span>{{ (details.get('download_bytes', 0) / (1024 ** 3)) | round(2) }} GB</span>&nbsp;&nbsp;
+        
                                         <div class="usage-bar">
                                             <div class="usage-bar-fill" style="width: {{ (details.download_bytes / details.max_download_bytes) * 100 }}%;"></div>
                                         </div>
-                                        <span>{{ (details.max_download_bytes / (1024 ** 3)) | round(2) }} GB</span>
+                                        <span>{{ (details.get('download_bytes', 0) / (1024 ** 3)) | round(2) }} GB</span>&nbsp;&nbsp;
         
                                         <span class="expiration">{{ details.day_use }}D / {{ details.expiration_days }}D</span>
-
+        
                                     </div>
                                 </div>
                             {% endfor %}
@@ -232,6 +261,46 @@
             </div>
         </div>
         
+    
+        <div id="adduser" class="tab-pane fade">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5>Add User</h5>
+                </div>
+                <div class="card-body">
+                    <div class="container mt-4">
+                        <h2>Add User</h2>
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="traffic_limit">Traffic Limit (GB)</label>
+                                <input type="number" class="form-control" id="traffic_limit" name="traffic_limit" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expiration_days">Expiration Days</label>
+                                <input type="number" class="form-control" id="expiration_days" name="expiration_days" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add User</button>
+                        </form>
+                    </div>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+
+
         <div id="settings" class="tab-pane fade">
             <div class="card mb-4">
                 <div class="card-header bg-secondary text-white">
@@ -249,7 +318,6 @@
                             <a class="nav-link" id="hysteria-tab" data-toggle="tab" href="#hysteria" role="tab" aria-controls="hysteria" aria-selected="false">Hysteria</a>
                         </li>
                     </ul>
-
                     <div class="tab-content mt-3" id="settingsTabContent">
                         <div class="tab-pane fade show active" id="warp" role="tabpanel" aria-labelledby="warp-tab">
                             <p>Warp settings content goes here.</p>

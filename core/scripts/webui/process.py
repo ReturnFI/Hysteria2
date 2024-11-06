@@ -10,7 +10,8 @@ COMMANDS = {
     "add_user": f"python3 {CLI_PATH} add-user -u {{username}} -t {{traffic_limit}} -e {{expiration_days}}",
     "get_user": f"python3 {CLI_PATH} get-user -u {{actual_username}}",
     "reset_user": f"python3 {CLI_PATH} reset-user -u {{username}}",
-    "show_user_uri": f"python3 {CLI_PATH} show-user-uri -u {{username}} -a"
+    "show_user_uri": f"python3 {CLI_PATH} show-user-uri -u {{username}} -a",
+    "remove_user": f"python3 {CLI_PATH} remove-user -u {{username}}"
 }
 
 def run_cli_command(command):

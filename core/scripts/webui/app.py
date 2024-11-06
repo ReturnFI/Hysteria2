@@ -79,7 +79,7 @@ def login():
     return render_template('login.html', admin_exists=admin_exists())
 
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if 'email' in session:
         user = User.query.filter_by(email=session['email']).first()
@@ -96,6 +96,8 @@ def dashboard():
             day_use = (datetime.now() - account_creation_date).days
             details['day_use'] = day_use
 
+            details['download_bytes'] = details.get('download_bytes', 0)
+
             show_user_uri_output = run_cli_command(COMMANDS["show_user_uri"] + f" -u {username} -a")
 
             ipv4_match = re.search(r'IPv4:\s*(hy2://[^\s]+)', show_user_uri_output)
@@ -103,6 +105,23 @@ def dashboard():
 
             details['qr_data_ipv4'] = ipv4_match.group(1) if ipv4_match else None
             details['qr_data_ipv6'] = ipv6_match.group(1) if ipv6_match else None
+
+        if request.method == 'POST':
+            username = request.form.get('username')
+            if 'remove_user' in request.form:
+                remove_user_command = f"{COMMANDS['remove_user']} -u {username}"
+                remove_user_result = run_cli_command(remove_user_command)
+
+                flash(f"User {username} removed successfully!" if "success" in remove_user_result else f"Error: {remove_user_result}", 'success' if "success" in remove_user_result else 'error')
+
+            else:
+                traffic_limit = request.form['traffic_limit']
+                expiration_days = request.form['expiration_days']
+
+                add_user_command = f"{COMMANDS['add_user']} -u {username} -t {traffic_limit} -e {expiration_days}"
+                add_user_result = run_cli_command(add_user_command)
+
+                flash(f"User {username} added successfully!" if "success" in add_user_result else f"Error: {add_user_result}", 'success' if "success" in add_user_result else 'error')
 
         page = request.args.get('page', 1, type=int)
         per_page = 50
@@ -115,9 +134,21 @@ def dashboard():
                                 server_info=server_info,
                                 user_list=paginated_users,
                                 page=page,
-                                total_pages=total_pages
-                              )
-    
+                                total_pages=total_pages)
+
+    return redirect('/login')
+
+
+@app.route('/remove_user', methods=['POST'])
+def remove_user():
+    if 'email' in session:
+        username = request.form['username']
+        remove_user_command = f"{COMMANDS['remove_user']} -u {username}"
+        remove_user_result = run_cli_command(remove_user_command)
+
+        flash(f"User {username} removed successfully!" if "success" in remove_user_result else f"Error: {remove_user_result}", 'success' if "success" in remove_user_result else 'error')
+        return redirect('/dashboard')
+
     return redirect('/login')
 
 @app.route('/reset_user', methods=['POST'])
@@ -134,6 +165,7 @@ def reset_user():
         flash('Username not provided', 'error')
     
     return redirect(url_for('dashboard', tab='users'))
+
 
 @app.route('/logout')
 def logout():

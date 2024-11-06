@@ -95,7 +95,15 @@ def dashboard():
             account_creation_date = datetime.strptime(details['account_creation_date'], "%Y-%m-%d")
             day_use = (datetime.now() - account_creation_date).days
             details['day_use'] = day_use
-        
+
+            show_user_uri_output = run_cli_command(COMMANDS["show_user_uri"] + f" -u {username} -a")
+
+            ipv4_match = re.search(r'IPv4:\s*(hy2://[^\s]+)', show_user_uri_output)
+            ipv6_match = re.search(r'IPv6:\s*(hy2://[^\s]+)', show_user_uri_output)
+
+            details['qr_data_ipv4'] = ipv4_match.group(1) if ipv4_match else None
+            details['qr_data_ipv6'] = ipv6_match.group(1) if ipv6_match else None
+
         page = request.args.get('page', 1, type=int)
         per_page = 50
         total_users = len(user_list)
@@ -103,12 +111,11 @@ def dashboard():
         paginated_users = dict(list(user_list.items())[(page - 1) * per_page : page * per_page])
 
         return render_template('dashboard.html',
-                                user=user, 
-                                server_info=server_info, 
-                                user_list=paginated_users, 
-                                page=page, 
-                                total_pages=total_pages
-                                )
+                                user=user,
+                                server_info=server_info,
+                                user_list=paginated_users,
+                                page=page,
+                                total_pages=total_pages)
     
     return redirect('/login')
 

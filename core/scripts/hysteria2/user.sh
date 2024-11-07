@@ -16,10 +16,12 @@ BLOCKED=$(jq -r --arg user "$USERNAME" '.[$user].blocked' "$USERS_FILE")
 CURRENT_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].download_bytes' "$USERS_FILE")
 
 if [ "$BLOCKED" == "true" ]; then
+  sleep 20 
   exit 1
 fi
 
 if [ "$STORED_PASSWORD" != "$PASSWORD" ]; then
+  sleep 20
   exit 1
 fi
 

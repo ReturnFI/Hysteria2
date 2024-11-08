@@ -1,6 +1,8 @@
 import re
 from flask import flash, request, redirect, session, render_template, Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
+from functools import wraps
+from flask import redirect, session, url_for
 import bcrypt
 import json
 from datetime import datetime
@@ -31,6 +33,16 @@ with app.app_context():
 
 def admin_exists():
     return User.query.filter_by(is_admin=True).first() is not None
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'email' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 @app.route('/')
 def index():
@@ -80,6 +92,7 @@ def login():
 
 
 @app.route('/dashboard', methods=['GET', 'POST'])
+@login_required
 def dashboard():
     if 'email' in session:
         user = User.query.filter_by(email=session['email']).first()

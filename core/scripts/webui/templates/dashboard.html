@@ -75,6 +75,14 @@
         max-width: 150px;
       }
     }
+    #addUserForm {
+      display: none; /* Initially hidden */
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
   </style>
 
 <script>
@@ -123,8 +131,14 @@
             event.preventDefault();
         }
     }
+
   </script>
-  
+  <script>
+
+    function refreshUsers() {
+      window.location.href = "/dashboard?tab=users";
+    }
+  </script>
 </head>
 <body>
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -159,11 +173,6 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#adduser">
-                <i class="fas fa-cog"></i> Add-User
-            </a>
-        </li>
-        <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#settings">
                 <i class="fas fa-cog"></i> Settings
             </a>
@@ -185,8 +194,12 @@
         
         <div id="users" class="tab-pane fade">
             <div class="card mb-4">
-                <div class="card-header bg-success text-white">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <h5>User Info</h5>
+                    <div>
+                        <button id="refreshUserInfo" class="btn btn-light btn-sm" onclick="refreshUsers()">Refresh</button>
+                        <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addUserModal">Add User</button>
+                      </div>
                 </div>
                 <div class="card-body">
                     {% if user_list.error %}
@@ -222,6 +235,7 @@
                                         <span>{{ (details.get('download_bytes', 0) / (1024 ** 3)) | round(2) }} GB</span>&nbsp;&nbsp;
         
                                         <div class="usage-bar">
+                                            <!-- eslint-disable-next-line -->
                                             <div class="usage-bar-fill" style="width: {{ (details.download_bytes / details.max_download_bytes) * 100 }}%;"></div>
                                         </div>
                                         &nbsp;&nbsp;<span>{{ (details.get('max_download_bytes', 0) / (1024 ** 3)) | round(2) }} GB</span>&nbsp;&nbsp;
@@ -258,48 +272,39 @@
                         </nav>
                     {% endif %}
                 </div>
-            </div>
-        </div>
+          </div>
+      </div>
         
-    
-        <div id="adduser" class="tab-pane fade">
-            <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">
-                    <h5>Add User</h5>
-                </div>
-                <div class="card-body">
-                    <div class="container mt-4">
-                        <h2>Add User</h2>
-                        <form method="POST">
-                            <div class="form-group">
-                                <label for="username">Username</label>
-                                <input type="text" class="form-control" id="username" name="username" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="traffic_limit">Traffic Limit (GB)</label>
-                                <input type="number" class="form-control" id="traffic_limit" name="traffic_limit" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="expiration_days">Expiration Days</label>
-                                <input type="number" class="form-control" id="expiration_days" name="expiration_days" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add User</button>
-                        </form>
-                    </div>
 
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        <div class="alert-container">
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                        {% endfor %}
+      <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/dashboard">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
                         </div>
-                    {% endif %}
-                    {% endwith %}
+                        <div class="form-group">
+                            <label for="traffic_limit">Traffic Limit (GB)</label>
+                            <input type="number" class="form-control" id="traffic_limit" name="traffic_limit" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expiration_days">Expiration Days</label>
+                            <input type="number" class="form-control" id="expiration_days" name="expiration_days" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                    </form>
                 </div>
             </div>
         </div>
-
+    </div>
 
         <div id="settings" class="tab-pane fade">
             <div class="card mb-4">

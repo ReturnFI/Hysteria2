@@ -53,7 +53,18 @@ else
     echo "All required packages are already installed."
 fi
 
-git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria
+if [[ "$0" == *"install.sh" ]]; then
+    echo "Copying files to /etc/hysteria"
+    mkdir -p /etc/hysteria
+    cp -r "$(dirname "$0")"/* /etc/hysteria
+else
+    echo "Cloning repository to /etc/hysteria"
+    git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria
+    if [ $? -ne 0 ]; then
+        echo "Git clone failed"
+        exit 1
+    fi
+fi
 
 cd /etc/hysteria
 python3 -m venv hysteria2_venv

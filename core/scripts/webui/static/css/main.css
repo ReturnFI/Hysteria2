@@ -1,0 +1,71 @@
+.user-card {
+    background-color: #1a1a2e;
+    color: #eee;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .user-status {
+    font-weight: bold;
+    margin-right: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    background-color: #444;
+  }
+  .user-status.offline {
+    color: #bbb;
+    background-color: #333;
+  }
+  .user-status.online {
+    color: #4caf50;
+  }
+  .username {
+    flex-grow: 1;
+    font-weight: bold;
+    color: #00d4ff;
+  }
+  .usage-bar {
+    background-color: #333;
+    border-radius: 5px;
+    height: 10px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 200px;
+    margin: 5px 0;
+  }
+  .usage-bar-fill {
+    background-color: #4caf50;
+    height: 100%;
+  }
+  .expiration {
+    background-color: #00d4ff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    color: #111;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+  @media (max-width: 576px) {
+    .username {
+      font-size: 0.9rem;
+    }
+    .user-status, .expiration {
+      font-size: 0.7rem;
+    }
+    .usage-bar {
+      max-width: 150px;
+    }
+  }
+  #addUserForm {
+    display: none; /* Initially hidden */
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }

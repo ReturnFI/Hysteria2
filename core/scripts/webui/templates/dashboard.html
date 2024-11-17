@@ -4,141 +4,15 @@
   <title>Hysteria2 Dashboard</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.1.3/solar/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 
-  <style>
-    .user-card {
-      background-color: #1a1a2e;
-      color: #eee;
-      padding: 10px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-    .user-status {
-      font-weight: bold;
-      margin-right: 10px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.8rem;
-      background-color: #444;
-    }
-    .user-status.offline {
-      color: #bbb;
-      background-color: #333;
-    }
-    .user-status.online {
-      color: #4caf50;
-    }
-    .username {
-      flex-grow: 1;
-      font-weight: bold;
-      color: #00d4ff;
-    }
-    .usage-bar {
-      background-color: #333;
-      border-radius: 5px;
-      height: 10px;
-      overflow: hidden;
-      width: 100%;
-      max-width: 200px;
-      margin: 5px 0;
-    }
-    .usage-bar-fill {
-      background-color: #4caf50;
-      height: 100%;
-    }
-    .expiration {
-      background-color: #00d4ff;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.8rem;
-      color: #111;
-      font-weight: bold;
-      margin-top: 5px;
-    }
-    @media (max-width: 576px) {
-      .username {
-        font-size: 0.9rem;
-      }
-      .user-status, .expiration {
-        font-size: 0.7rem;
-      }
-      .usage-bar {
-        max-width: 150px;
-      }
-    }
-    #addUserForm {
-      display: none; /* Initially hidden */
-      margin-top: 20px;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-  </style>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const activeTab = urlParams.get('tab');
-      if (activeTab === 'users') {
-        $('.nav-pills a[href="#users"]').tab('show');
-      }
-    });
-    function generateQRCodes(qrDataIPv4, qrDataIPv6) {
-        if (qrDataIPv4) {
-            const qrCodeIPv4 = new QRious({
-                element: document.getElementById('qrCodeCanvasIPv4'),
-                value: qrDataIPv4,
-                size: 200
-            });
-            document.getElementById('qrCodeTextIPv4').textContent = qrDataIPv4;
-        } else {
-            document.getElementById('qrCodeCanvasIPv4').getContext('2d').clearRect(0, 0, 200, 200);
-            document.getElementById('qrCodeTextIPv4').textContent = "No IPv4 QR code available.";
-        }
-
-        if (qrDataIPv6) {
-            const qrCodeIPv6 = new QRious({
-                element: document.getElementById('qrCodeCanvasIPv6'),
-                value: qrDataIPv6,
-                size: 200
-            });
-            document.getElementById('qrCodeTextIPv6').textContent = qrDataIPv6;
-        } else {
-            document.getElementById('qrCodeCanvasIPv6').getContext('2d').clearRect(0, 0, 200, 200);
-            document.getElementById('qrCodeTextIPv6').textContent = "No IPv6 QR code available.";
-        }
-    }
-    function confirmReset(event) {
-        const confirmed = confirm("Are you sure you want to reset this user?");
-        if (!confirmed) {
-            event.preventDefault();
-        }
-    }
-
-    function confirmRemove(event) {
-        const confirmed = confirm("Are you sure you want to remove this user?");
-        if (!confirmed) {
-            event.preventDefault();
-        }
-    }
-
-  </script>
-  <script>
-
-    function refreshUsers() {
-      window.location.href = "/dashboard?tab=users";
-    }
-  </script>
 </head>
 <body>
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -172,11 +46,11 @@
                 <i class="fas fa-users"></i> Users
             </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#settings">
                 <i class="fas fa-cog"></i> Settings
             </a>
-        </li>
+        </li> -->
     </ul>
 
     <div class="tab-content">
@@ -306,7 +180,7 @@
         </div>
     </div>
 
-        <div id="settings" class="tab-pane fade">
+        <!-- <div id="settings" class="tab-pane fade">
             <div class="card mb-4">
                 <div class="card-header bg-secondary text-white">
                     <h5>Settings</h5>
@@ -336,11 +210,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
-
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
 <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

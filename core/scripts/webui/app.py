@@ -2,16 +2,18 @@ import re
 from flask import flash, request, redirect, session, render_template, Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from flask import redirect, session, url_for
 import bcrypt
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from process import run_cli_command, COMMANDS
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
-app.secret_key = 'm7fZJgadC6zenScAVDF28F50'
+app.secret_key = 'ATGE7hyJpcIOnMhrzJ5CaVM0POeEoqHxOplxm6p6IzkMkkxbufkzbz348cd9sUKe'
+app.permanent_session_lifetime = timedelta(minutes=30)
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
 
 
 class User(db.Model):
@@ -24,16 +26,16 @@ class User(db.Model):
         self.email = email
         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         self.is_admin = is_admin
-    
+
     def check_password(self, password):
         return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
+
 
 with app.app_context():
     db.create_all()
 
 def admin_exists():
     return User.query.filter_by(is_admin=True).first() is not None
-
 
 def login_required(f):
     @wraps(f)
@@ -48,21 +50,22 @@ def login_required(f):
 def index():
     return render_template('login.html', admin_exists=admin_exists())
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if admin_exists():
         return redirect('/login') 
-    
+
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
         new_user = User(email=email, password=password, is_admin=True)
         db.session.add(new_user)
         db.session.commit()
-        
         return redirect('/login')
 
     return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -83,7 +86,6 @@ def login():
 
         if user and user.check_password(password):
             session['email'] = user.email
-            print(f"User {user.email} logged in, session set") 
             return redirect('/dashboard')
         else:
             return render_template('login.html', error='Invalid email or password', admin_exists=admin_exists())
@@ -91,84 +93,80 @@ def login():
     return render_template('login.html', admin_exists=admin_exists())
 
 
-@app.route('/dashboard', methods=['GET', 'POST'])
+@app.route('/dashboard', methods=['GET'])
 @login_required
 def dashboard():
-    if 'email' in session:
-        user = User.query.filter_by(email=session['email']).first()
-        server_info = run_cli_command(COMMANDS["server_info"])
-        user_list_raw = run_cli_command(COMMANDS["list_users"])
+    user = User.query.filter_by(email=session['email']).first()
+    server_info = run_cli_command(COMMANDS["server_info"])
+    user_list_raw = run_cli_command(COMMANDS["list_users"])
 
-        try:
-            user_list = json.loads(user_list_raw)
-        except json.JSONDecodeError:
-            user_list = {"error": "Unable to parse user list"}
+    try:
+        user_list = json.loads(user_list_raw)
+    except json.JSONDecodeError:
+        user_list = {"error": "Unable to parse user list"}
 
-        for username, details in user_list.items():
-            account_creation_date = datetime.strptime(details['account_creation_date'], "%Y-%m-%d")
-            day_use = (datetime.now() - account_creation_date).days
-            details['day_use'] = day_use
+    for username, details in user_list.items():
+        account_creation_date = datetime.strptime(details['account_creation_date'], "%Y-%m-%d")
+        day_use = (datetime.now() - account_creation_date).days
+        details['day_use'] = day_use
+        details['download_bytes'] = details.get('download_bytes', 0)
 
-            details['download_bytes'] = details.get('download_bytes', 0)
+        show_user_uri_output = run_cli_command(COMMANDS["show_user_uri"] + f" -u {username} -a")
+        ipv4_match = re.search(r'IPv4:\s*(hy2://[^\s]+)', show_user_uri_output)
+        ipv6_match = re.search(r'IPv6:\s*(hy2://[^\s]+)', show_user_uri_output)
+        details['qr_data_ipv4'] = ipv4_match.group(1) if ipv4_match else None
+        details['qr_data_ipv6'] = ipv6_match.group(1) if ipv6_match else None
 
-            show_user_uri_output = run_cli_command(COMMANDS["show_user_uri"] + f" -u {username} -a")
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
+    total_users = len(user_list)
+    total_pages = (total_users + per_page - 1) // per_page
+    paginated_users = dict(list(user_list.items())[(page - 1) * per_page : page * per_page])
 
-            ipv4_match = re.search(r'IPv4:\s*(hy2://[^\s]+)', show_user_uri_output)
-            ipv6_match = re.search(r'IPv6:\s*(hy2://[^\s]+)', show_user_uri_output)
+    return render_template('dashboard.html',
+                           user=user,
+                           server_info=server_info,
+                           user_list=paginated_users,
+                           page=page,
+                           total_pages=total_pages)
 
-            details['qr_data_ipv4'] = ipv4_match.group(1) if ipv4_match else None
-            details['qr_data_ipv6'] = ipv6_match.group(1) if ipv6_match else None
 
-        if request.method == 'POST':
-            username = request.form.get('username')
-            if 'remove_user' in request.form:
-                remove_user_command = f"{COMMANDS['remove_user']} -u {username}"
-                remove_user_result = run_cli_command(remove_user_command)
+@app.route('/add_user', methods=['POST'])
+@login_required
+def add_user():
+    username = request.form.get('username')
+    traffic_limit = request.form.get('traffic_limit')
+    expiration_days = request.form.get('expiration_days')
 
-                flash(f"User {username} removed successfully!" if "success" in remove_user_result else f"Error: {remove_user_result}", 'success' if "success" in remove_user_result else 'error')
+    if not username or not traffic_limit or not expiration_days:
+        flash('All fields are required to add a user.', 'error')
+        return redirect(url_for('dashboard', tab='users'))
 
-            else:
-                traffic_limit = request.form['traffic_limit']
-                expiration_days = request.form['expiration_days']
+    add_user_command = f"{COMMANDS['add_user']} -u {username} -t {traffic_limit} -e {expiration_days}"
+    add_user_result = run_cli_command(add_user_command)
 
-                add_user_command = f"{COMMANDS['add_user']} -u {username} -t {traffic_limit} -e {expiration_days}"
-                add_user_result = run_cli_command(add_user_command)
+    flash(f"User {username} added successfully!" if "success" in add_user_result else f"Error adding user: {add_user_result}", 
+          'success' if "success" in add_user_result else 'error')
 
-                flash(f"User {username} added successfully!" if "success" in add_user_result else f"Error: {add_user_result}", 'success' if "success" in add_user_result else 'error')
-
-        page = request.args.get('page', 1, type=int)
-        per_page = 50
-        total_users = len(user_list)
-        total_pages = (total_users + per_page - 1) // per_page
-        paginated_users = dict(list(user_list.items())[(page - 1) * per_page : page * per_page])
-
-        return render_template('dashboard.html',
-                                user=user,
-                                server_info=server_info,
-                                user_list=paginated_users,
-                                page=page,
-                                total_pages=total_pages)
-
-    return redirect('/login')
+    return redirect(url_for('dashboard', tab='users'))
 
 
 @app.route('/remove_user', methods=['POST'])
+@login_required
 def remove_user():
-    if 'email' in session:
-        username = request.form['username']
-        remove_user_command = f"{COMMANDS['remove_user']} -u {username}"
-        remove_user_result = run_cli_command(remove_user_command)
+    username = request.form['username']
+    remove_user_command = f"{COMMANDS['remove_user']} -u {username}"
+    remove_user_result = run_cli_command(remove_user_command)
 
-        flash(f"User {username} removed successfully!" if "success" in remove_user_result else f"Error: {remove_user_result}", 'success' if "success" in remove_user_result else 'error')
-        return redirect('/dashboard')
+    flash(f"User {username} removed successfully!" if "success" in remove_user_result else f"Error: {remove_user_result}", 
+          'success' if "success" in remove_user_result else 'error')
 
-    return redirect('/login')
+    return redirect(url_for('dashboard', tab='users'))
 
 @app.route('/reset_user', methods=['POST'])
+@login_required
 def reset_user():
-    if 'email' not in session:
-        return redirect('/login')
-    
+
     username = request.form.get('username')
     if username:
         reset_command = COMMANDS["reset_user"].format(username=username)
@@ -176,15 +174,16 @@ def reset_user():
         flash(f'Reset user {username}: {reset_output}', 'success')
     else:
         flash('Username not provided', 'error')
-    
+
     return redirect(url_for('dashboard', tab='users'))
+
 
 
 @app.route('/logout')
 def logout():
     session.pop('email', None)
-    session.pop('is_admin', None)
     return redirect('/login')
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=9090)

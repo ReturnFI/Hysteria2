@@ -4,21 +4,10 @@ source /etc/hysteria/core/scripts/path.sh
 source /etc/hysteria/core/scripts/utils.sh
 define_colors
 
-install_hysteria() {
-    local port=$1
-
-    echo "Installing Hysteria2..."
-    bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
-    
-    mkdir -p /etc/hysteria && cd /etc/hysteria/
-    
+generate_ca_key_and_cert() {
     echo "Generating CA key and certificate..."
     openssl ecparam -genkey -name prime256v1 -out ca.key >/dev/null 2>&1
     openssl req -new -x509 -days 36500 -key ca.key -out ca.crt -subj "/CN=$sni" >/dev/null 2>&1
-    echo "Downloading geo data..."
-    wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
-    wget -O /etc/hysteria/geoip.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geoip.dat >/dev/null 2>&1
-    
     fingerprint=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s/://g')
     
     echo "Generating base64 encoded SHA-256 fingerprint..."
@@ -40,6 +29,25 @@ print('sha256/' + base64_encoded)
 EOF
 
     sha256=$(python3 generate.py)
+    
+    jq --arg sha256 "$sha256" \
+       '.tls.cert = "/etc/hysteria/ca.crt" |
+        .tls.key = "/etc/hysteria/ca.key" |
+        .tls.pinSHA256 = $sha256' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+}
+
+install_hysteria() {
+    local port=$1
+
+    echo "Installing Hysteria2..."
+    bash <(curl -fsSL https://get.hy2.sh/) >/dev/null 2>&1
+    
+    mkdir -p /etc/hysteria && cd /etc/hysteria/
+    
+    
+    echo "Downloading geo data..."
+    wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
+    wget -O /etc/hysteria/geoip.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geoip.dat >/dev/null 2>&1
     
     if [[ $port =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )); then
         if ss -tuln | grep -q ":$port\b"; then
@@ -71,12 +79,11 @@ EOF
        --arg UUID "$UUID" \
        --arg networkdef "$networkdef" \
        '.listen = ":\($port)" |
-        .tls.cert = "/etc/hysteria/ca.crt" |
-        .tls.key = "/etc/hysteria/ca.key" |
-        .tls.pinSHA256 = $sha256 |
         .obfs.salamander.password = $obfspassword |
         .trafficStats.secret = $UUID |
         .outbounds[0].direct.bindDevice = $networkdef' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+    generate_ca_key_and_cert
+
     
     echo "Updating hysteria-server.service to use config.json..."
     sed -i 's|(config.yaml)||' /etc/systemd/system/hysteria-server.service

@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+hysteria2_venv/
 
 # C extensions
 *.so

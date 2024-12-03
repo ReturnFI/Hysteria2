@@ -1,18 +1,12 @@
 #!/bin/bash
 
 cd /root/
-
-if ! command -v zip &> /dev/null; then
-    apt install -y zip
-fi
-
 TEMP_DIR=$(mktemp -d)
 
 FILES=(
     "/etc/hysteria/ca.key"
     "/etc/hysteria/ca.crt"
     "/etc/hysteria/users.json"
-    "/etc/hysteria/traffic_data.json"
     "/etc/hysteria/config.json"
     "/etc/hysteria/core/scripts/telegrambot/.env"
     "/etc/hysteria/core/scripts/singbox/.env"
@@ -39,16 +33,6 @@ echo "Restoring backup files"
 for FILE in "${FILES[@]}"; do
     cp "$TEMP_DIR/$FILE" "$FILE"
 done
-
-echo "Merging traffic data into users.json"
-
-if [ -f /etc/hysteria/traffic_data.json ]; then
-    jq -s '.[0] * .[1]' /etc/hysteria/users.json /etc/hysteria/traffic_data.json > /etc/hysteria/users_temp.json
-    mv /etc/hysteria/users_temp.json /etc/hysteria/users.json
-    # rm /etc/hysteria/traffic_data.json
-else
-    echo "No traffic_data.json found to merge."
-fi
 
 if [ ! -f /etc/hysteria/.configs.env ]; then
     echo ".configs.env not found, creating it with default SNI=bts.com"
@@ -82,6 +66,16 @@ if systemctl is-active --quiet hysteria-server.service; then
     echo "Upgrade completed successfully"
 else
     echo "Upgrade failed: hysteria-server.service is not active"
+fi
+
+CRON_JOB="0 3 */3 * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py restart-hysteria2' >/dev/null 2>&1"
+
+if crontab -l | grep -Fxq "$CRON_JOB"; then
+    echo "Cron job already exists."
+else
+    echo "Adding cron job."
+    (crontab -l; echo "$CRON_JOB") | crontab -
+    echo "Cron job added successfully."
 fi
 
 chmod +x menu.sh

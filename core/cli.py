@@ -29,6 +29,7 @@ class Command(Enum):
     RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
+    IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
@@ -265,6 +266,13 @@ def manage_obfs(remove, generate):
         run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
     else:
         click.echo("Error: Please specify either --remove or --generate.")
+
+@cli.command('ip-address')
+def run_ip_script():
+    try:
+        run_cmd(['bash', Command.IP_ADD.value])
+    except subprocess.CalledProcessError as e:
+        click.echo(f"Error while running IP script: {e.output.decode()}", err=True)
 
 # endregion
 

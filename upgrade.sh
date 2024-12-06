@@ -8,6 +8,7 @@ FILES=(
     "/etc/hysteria/ca.crt"
     "/etc/hysteria/users.json"
     "/etc/hysteria/config.json"
+    "/etc/hysteria/.configs.env"
     "/etc/hysteria/core/scripts/telegrambot/.env"
     "/etc/hysteria/core/scripts/singbox/.env"
     "/etc/hysteria/core/scripts/normalsub/.env"

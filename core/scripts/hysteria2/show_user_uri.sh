@@ -36,7 +36,8 @@ show_uri() {
             local generate_normalsub=false
 
             load_hysteria2_env
-
+            load_hysteria2_ips
+            
             while [[ "$#" -gt 0 ]]; do
                 case $1 in
                     -u|--username) username="$2"; shift ;;
@@ -80,19 +81,15 @@ show_uri() {
                 }
 
                 if [ "$show_all" = true ]; then
-                    IP=$(curl -s -4 ip.gs)
-                    URI=$(generate_uri 4 "$IP")
-                    IP6=$(curl -s -6 ip.gs)
+                    URI=$(generate_uri 4 "$IP4")
                     URI6=$(generate_uri 6 "$IP6")
                     echo -e "\nIPv4:\n$URI\n"
                     echo -e "\nIPv6:\n$URI6\n"
                 else
                     if [ "$ip_version" -eq 4 ]; then
-                        IP=$(curl -s -4 ip.gs)
-                        URI=$(generate_uri 4 "$IP")
+                        URI=$(generate_uri 4 "$IP4")
                         echo -e "\nIPv4:\n$URI\n"
                     elif [ "$ip_version" -eq 6 ]; then
-                        IP6=$(curl -s -6 ip.gs)
                         URI6=$(generate_uri 6 "$IP6")
                         echo -e "\nIPv6:\n$URI6\n"
                     else

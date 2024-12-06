@@ -62,6 +62,22 @@ load_hysteria2_env() {
     fi
 }
 
+load_hysteria2_ips() {
+    if [ -f /etc/hysteria/.configs.env ]; then
+        export $(grep -v '^#' /etc/hysteria/.configs.env | xargs)
+        
+        if [[ -z "$IP4" || -z "$IP6" ]]; then
+            echo "Warning: IP4 or IP6 is not set in configs.env. Defaulting to empty values."
+            IP4=""
+            IP6=""
+        fi
+    else
+        echo "Error: configs.env file not found. Using default empty IP values."
+        IP4=""
+        IP6=""
+    fi
+}
+
 check_services() {
     declare -A service_names=(
         ["hysteria-server.service"]="Hysteria2"

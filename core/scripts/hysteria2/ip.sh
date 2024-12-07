@@ -32,10 +32,9 @@ add_ips() {
   sed -i '/^IP6=/d' "$CONFIG_ENV" 2>/dev/null
   echo -e "\nIP4=${ipv4_address:-}" >> "$CONFIG_ENV"
   echo "IP6=${ipv6_address:-}" >> "$CONFIG_ENV"
-
-  echo "IPs have been added to $CONFIG_ENV:"
-  echo "IP4=${ipv4_address:-Not Found}"
-  echo "IP6=${ipv6_address:-Not Found}"
+  # echo "IPs have been added to $CONFIG_ENV:"
+  # echo "IP4=${ipv4_address:-Not Found}"
+  # echo "IP6=${ipv6_address:-Not Found}"
 }
 
 edit_ip() {

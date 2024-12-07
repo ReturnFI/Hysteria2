@@ -1,12 +1,12 @@
 #!/bin/bash
 source /etc/hysteria/core/scripts/path.sh
 
-ensure_config_env() {
-  if [ ! -f "$CONFIG_ENV" ]; then
-    echo ".configs.env not found. Creating it with default SNI=bts.com."
-    echo "SNI=bts.com" > "$CONFIG_ENV"
-  fi
-}
+# ensure_config_env() {
+#   if [ ! -f "$CONFIG_ENV" ]; then
+#     echo ".configs.env not found. Creating it with default SNI=bts.com."
+#     echo "SNI=bts.com" > "$CONFIG_ENV"
+#   fi
+# }
 
 add_ips() {
   ipv4_address=""
@@ -55,7 +55,7 @@ edit_ip() {
   fi
 }
 
-ensure_config_env
+# ensure_config_env
 case "$1" in
   add)
     add_ips

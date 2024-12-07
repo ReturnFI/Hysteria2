@@ -29,6 +29,7 @@ hysteria2_install_handler() {
     cat <<EOF > /etc/hysteria/.configs.env
 SNI=$sni
 EOF
+    python3 $CLI_PATH ip-address
 }
 
 hysteria2_add_user_handler() {

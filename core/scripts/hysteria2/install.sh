@@ -105,7 +105,6 @@ EOF
     (crontab -l ; echo "0 */6 * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria' >/dev/null 2>&1") | crontab -
     (crontab -l ; echo "*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1") | crontab -
 
-    python3 $CLI_PATH ip-address
 }
 
 if systemctl is-active --quiet hysteria-server.service; then

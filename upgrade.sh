@@ -8,6 +8,7 @@ FILES=(
     "/etc/hysteria/ca.crt"
     "/etc/hysteria/users.json"
     "/etc/hysteria/config.json"
+    "/etc/hysteria/.configs.env"
     "/etc/hysteria/core/scripts/telegrambot/.env"
     "/etc/hysteria/core/scripts/singbox/.env"
     "/etc/hysteria/core/scripts/normalsub/.env"
@@ -34,11 +35,26 @@ for FILE in "${FILES[@]}"; do
     cp "$TEMP_DIR/$FILE" "$FILE"
 done
 
-if [ ! -f /etc/hysteria/.configs.env ]; then
-    echo ".configs.env not found, creating it with default SNI=bts.com"
-    echo "SNI=bts.com" > /etc/hysteria/.configs.env
+CONFIG_ENV="/etc/hysteria/.configs.env"
+if [ ! -f "$CONFIG_ENV" ]; then
+    echo ".configs.env not found, creating it with default SNI=bts.com and IPs."
+    echo "SNI=bts.com" > "$CONFIG_ENV"
 else
     echo ".configs.env already exists."
+fi
+
+export $(grep -v '^#' "$CONFIG_ENV" | xargs 2>/dev/null)
+
+if [[ -z "$IP4" ]]; then
+    echo "IP4 not found, fetching from ip.gs..."
+    IP4=$(curl -s -4 ip.gs || echo "")
+    echo "IP4=${IP4:-}" >> "$CONFIG_ENV"
+fi
+
+if [[ -z "$IP6" ]]; then
+    echo "IP6 not found, fetching from ip.gs..."
+    IP6=$(curl -s -6 ip.gs || echo "")
+    echo "IP6=${IP6:-}" >> "$CONFIG_ENV"
 fi
 
 echo "Setting ownership and permissions"

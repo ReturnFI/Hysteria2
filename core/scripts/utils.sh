@@ -1,3 +1,4 @@
+source /etc/hysteria/core/scripts/path.sh
 
 # Function to define colors
 define_colors() {
@@ -54,11 +55,28 @@ check_version() {
 
 
 load_hysteria2_env() {
-    if [ -f /etc/hysteria/.configs.env ]; then
-        export $(grep -v '^#' /etc/hysteria/.configs.env | xargs)
+    if [ -f "$CONFIG_ENV" ]; then
+        export $(grep -v '^#' "$CONFIG_ENV" | xargs)
     else
         echo "Error: configs.env file not found. Using default SNI 'bts.com'."
         SNI="bts.com"
+    fi
+}
+
+load_hysteria2_ips() {
+    
+    if [ -f "$CONFIG_ENV" ]; then
+        export $(grep -v '^#' "$CONFIG_ENV" | xargs)
+
+        if [[ -z "$IP4" || -z "$IP6" ]]; then
+            echo "Warning: IP4 or IP6 is not set in configs.env. Fetching from ip.gs..."
+            IP4=$(curl -s -4 ip.gs)
+            IP6=$(curl -s -6 ip.gs)
+        fi
+    else
+        echo "Error: configs.env file not found. Fetching IPs from ip.gs..."
+        IP4=$(curl -s -4 ip.gs)
+        IP6=$(curl -s -6 ip.gs)
     fi
 }
 

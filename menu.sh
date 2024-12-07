@@ -29,6 +29,7 @@ hysteria2_install_handler() {
     cat <<EOF > /etc/hysteria/.configs.env
 SNI=$sni
 EOF
+    python3 $CLI_PATH ip-address
 }
 
 hysteria2_add_user_handler() {
@@ -253,6 +254,53 @@ hysteria2_change_sni_handler() {
     fi
 }
 
+edit_ips() {
+    while true; do
+        echo "======================================"
+        echo "          IP Address Manager          "
+        echo "======================================"
+        echo "1. Change IP4"
+        echo "2. Change IP6"
+        echo "0. Back"
+        echo "======================================"
+        read -p "Enter your choice [1-3]: " choice
+
+        case $choice in
+            1)
+                read -p "Enter the new IPv4 address: " new_ip4
+                if [[ $new_ip4 =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+                    if [[ $(echo "$new_ip4" | awk -F. '{for (i=1;i<=NF;i++) if ($i>255) exit 1}') ]]; then
+                        echo "Error: Invalid IPv4 address. Values must be between 0 and 255."
+                    else
+                        python3 "$CLI_PATH" ip-address --edit -4 "$new_ip4"
+                    fi
+                else
+                    echo "Error: Invalid IPv4 address format."
+                fi
+                break
+                ;;
+            2)
+                read -p "Enter the new IPv6 address: " new_ip6
+                if [[ $new_ip6 =~ ^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^(([0-9a-fA-F]{1,4}:){1,7}:)$|^(::([0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4})$ ]]; then
+                    python3 "$CLI_PATH" ip-address --edit -6 "$new_ip6"
+                    echo "IPv6 address has been updated to $new_ip6."
+                else
+                    echo "Error: Invalid IPv6 address format."
+                fi
+                break
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                break
+                ;;
+        esac
+        echo "======================================"
+        read -p "Press Enter to continue..."
+    done
+}
 
 hysteria_upgrade(){
     bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
@@ -606,9 +654,10 @@ display_advance_menu() {
     echo -e "${cyan}[8] ${NC}↝ Change Port Hysteria2"
     echo -e "${cyan}[9] ${NC}↝ Change SNI Hysteria2"
     echo -e "${cyan}[10] ${NC}↝ Manage OBFS"
-    echo -e "${cyan}[11] ${NC}↝ Restart Hysteria2"
-    echo -e "${cyan}[12] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[13] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${cyan}[11] ${NC}↝ Change IPs(4-6)"
+    echo -e "${cyan}[12] ${NC}↝ Restart Hysteria2"
+    echo -e "${cyan}[13] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[14] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -632,9 +681,10 @@ advance_menu() {
             8) hysteria2_change_port_handler ;;
             9) hysteria2_change_sni_handler ;;
             10) obfs_handler ;;
-            11) python3 $CLI_PATH restart-hysteria2 ;;
-            12) python3 $CLI_PATH update-hysteria2 ;;
-            13) python3 $CLI_PATH uninstall-hysteria2 ;;
+            11) edit_ips ;;
+            12) python3 $CLI_PATH restart-hysteria2 ;;
+            13) python3 $CLI_PATH update-hysteria2 ;;
+            14) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

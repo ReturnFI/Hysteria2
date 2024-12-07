@@ -268,11 +268,24 @@ def manage_obfs(remove, generate):
         click.echo("Error: Please specify either --remove or --generate.")
 
 @cli.command('ip-address')
-def run_ip_script():
-    try:
-        run_cmd(['bash', Command.IP_ADD.value])
-    except subprocess.CalledProcessError as e:
-        click.echo(f"Error while running IP script: {e.output.decode()}", err=True)
+@click.option('--edit', is_flag=True, help="Edit IP addresses manually.")
+@click.option('-4', '--ipv4', type=str, help="Specify the new IPv4 address.")
+@click.option('-6', '--ipv6', type=str, help="Specify the new IPv6 address.")
+def ip_address(edit, ipv4, ipv6):
+    """
+    Manage IP addresses in .configs.env.
+    - Use without options to add auto-detected IPs.
+    - Use --edit with -4 or -6 to manually update IPs.
+    """
+    if edit:
+        if ipv4:
+            run_cmd(['bash', Command.IP_ADD.value, 'edit', '-4', ipv4])
+        if ipv6:
+            run_cmd(['bash', Command.IP_ADD.value, 'edit', '-6', ipv6])
+        if not ipv4 and not ipv6:
+            click.echo("Error: --edit requires at least one of --ipv4 or --ipv6.")
+    else:
+        run_cmd(['bash', Command.IP_ADD.value, 'add'])
 
 # endregion
 

@@ -24,7 +24,7 @@ echo "Removing /etc/hysteria directory"
 rm -rf /etc/hysteria/
 
 echo "Cloning Hysteria2 repository"
-git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria
+git clone https://github.com/SeyedHashtag/Hysteria2 /etc/hysteria
 
 echo "Downloading geosite.dat and geoip.dat"
 wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1

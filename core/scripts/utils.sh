@@ -41,7 +41,7 @@ version_greater_equal() {
 
 check_version() {
     local_version=$(cat /etc/hysteria/VERSION)
-    latest_version=$(curl -s https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/VERSION)
+    latest_version=$(curl -s https://raw.githubusercontent.com/SeyedHashtag/Hysteria2/main/VERSION)
 
     if version_greater_equal "$local_version" "$latest_version"; then
         echo -e "Panel Version: ${cyan}$local_version${NC}"

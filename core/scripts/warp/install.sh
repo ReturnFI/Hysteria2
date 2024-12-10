@@ -6,7 +6,7 @@ if systemctl is-active --quiet wg-quick@wgcf.service; then
     echo "WARP is already active. Skipping installation and configuration update."
 else
     echo "Installing WARP..."
-    bash <(curl -fsSL https://raw.githubusercontent.com/ReturnFI/Warp/main/warp.sh) wgx
+    bash <(curl -fsSL https://raw.githubusercontent.com/SeyedHashtag/Warp/main/warp.sh) wgx
 
     if [ -f "$CONFIG_FILE" ]; then
         jq '.outbounds += [{"name": "warps", "type": "direct", "direct": {"mode": 4, "bindDevice": "wgcf"}}]' "$CONFIG_FILE" > /etc/hysteria/config_temp.json && mv /etc/hysteria/config_temp.json "$CONFIG_FILE"

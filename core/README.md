@@ -193,4 +193,4 @@ This will print the commands being executed.
 
 ## Contributing
 
-Feel free to contribute by creating issues or submitting pull requests on the [GitHub repository](https://github.com/ReturnFI/Hysteria2).
+Feel free to contribute by creating issues or submitting pull requests on the [GitHub repository](https://github.com/SeyedHashtag/Hysteria2).

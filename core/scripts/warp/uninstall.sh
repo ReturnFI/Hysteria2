@@ -4,7 +4,7 @@ source /etc/hysteria/core/scripts/path.sh
 
 if systemctl is-active --quiet wg-quick@wgcf.service; then
     echo "Uninstalling WARP..."
-    bash <(curl -fsSL https://raw.githubusercontent.com/ReturnFI/Warp/main/warp.sh) dwg
+    bash <(curl -fsSL https://raw.githubusercontent.com/SeyedHashtag/Warp/main/warp.sh) dwg
 
     if [ -f "$CONFIG_FILE" ]; then
         default_config='["reject(geosite:ir)", "reject(geoip:ir)", "reject(geosite:category-ads-all)", "reject(geoip:private)", "reject(geosite:google@ads)"]'

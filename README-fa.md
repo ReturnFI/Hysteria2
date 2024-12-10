@@ -8,7 +8,7 @@
 
 ### دستور نصب:
 ```shell
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
+bash <(curl https://raw.githubusercontent.com/SeyedHashtag/Hysteria2/main/install.sh)
 ```
 پس از نصب، فقط از دستور `hys2` برای اجرای اسکریپت Hysteria2 استفاده کنید.
 
@@ -16,7 +16,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh
 
 ### دستور ارتقاء:
 ```shell
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
+bash <(curl https://raw.githubusercontent.com/SeyedHashtag/Hysteria2/main/upgrade.sh)
 ```
 
 <br />

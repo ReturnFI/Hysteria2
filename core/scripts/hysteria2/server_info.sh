@@ -43,12 +43,12 @@ if [ "$online_user_count" == "null" ] || [ "$online_user_count" == "0" ]; then
     online_user_count=0
 fi
 
-echo "CPU Usage: $cpu_usage"
-echo "Total RAM: ${total_ram}MB"
-echo "Used RAM: ${used_ram}MB"
-echo "Online Users: $online_user_count"
+echo "📈 CPU Usage: $cpu_usage"
+echo "📋 Total RAM: ${total_ram}MB"
+echo "💻 Used RAM: ${used_ram}MB"
+echo "👥 Online Users: $online_user_count"
 echo 
-echo "Total Traffic: "
+echo "🚦Total Traffic: "
 
 if [ -f "$USERS_FILE" ]; then
     total_upload=0
@@ -64,7 +64,7 @@ if [ -f "$USERS_FILE" ]; then
     total_upload_human=$(convert_bytes $total_upload)
     total_download_human=$(convert_bytes $total_download)
 
-    echo "${total_upload_human} uploaded"
+    echo "🔼${total_upload_human} uploaded"
     
-    echo "${total_download_human} downloaded"
+    echo "🔽${total_download_human} downloaded"
 fi

@@ -42,14 +42,15 @@ version_greater_equal() {
 check_version() {
     local_version=$(cat /etc/hysteria/VERSION)
     latest_version=$(curl -s https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/VERSION)
+    latest_changelog=$(curl -s https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/changelog)
 
     if version_greater_equal "$local_version" "$latest_version"; then
         echo -e "Panel Version: ${cyan}$local_version${NC}"
     else
         echo -e "Panel Version: ${cyan}$local_version${NC}"
         echo -e "Latest Version: ${cyan}$latest_version${NC}"
-        echo -e "${red}Please update your panel.${NC}"
-        echo -e "${cyan}Bug squashing party!${yellow} Update for the best invitation.${NC}"
+        echo -e "${yellow}$latest_version Version Change Log:${NC}"
+        echo -e "${cyan}$latest_changelog ${NC}"
     fi
 }
 

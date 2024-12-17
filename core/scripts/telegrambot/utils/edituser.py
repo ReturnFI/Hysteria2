@@ -56,10 +56,12 @@ def process_show_user(message):
         else:
             upload_gb = upload_bytes / (1024 ** 3)  # Convert bytes to GB
             download_gb = download_bytes / (1024 ** 3)  # Convert bytes to GB
+            totalusage = upload_gb + download_gb
             
             traffic_message = (
                 f"🔼 Upload: {upload_gb:.2f} GB\n"
                 f"🔽 Download: {download_gb:.2f} GB\n"
+                f"📊 Total Usage: {totalusage:.2f} GB\n"
                 f"🌐 Status: {status}"
             )
     except json.JSONDecodeError:

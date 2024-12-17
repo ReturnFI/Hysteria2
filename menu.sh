@@ -212,17 +212,34 @@ hysteria2_reset_user_handler() {
 }
 
 hysteria2_show_user_uri_handler() {
+    check_service_active() {
+        systemctl is-active --quiet "$1"
+    }
+
     while true; do
         read -p "Enter the username: " username
-
         if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
             break
         else
             echo -e "${red}Error:${NC} Username can only contain letters and numbers."
         fi
     done
-    python3 $CLI_PATH show-user-uri --username "$username" -a -qr
+
+    flags=""
+    
+    if check_service_active "singbox.service"; then
+        flags+=" -s"
+    fi
+
+    if check_service_active "normalsub.service"; then
+        flags+=" -n"
+    fi
+
+    if [[ -n "$flags" ]]; then
+        python3 $CLI_PATH show-user-uri --username "$username" -a -qr $flags
+    fi
 }
+
 
 hysteria2_change_port_handler() {
     while true; do

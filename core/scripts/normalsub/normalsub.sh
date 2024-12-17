@@ -79,14 +79,24 @@ start_service() {
 }
 
 stop_service() {
+    if [ -f /etc/hysteria/core/scripts/normalsub/.env ]; then
+        source /etc/hysteria/core/scripts/normalsub/.env
+    fi
+
+    if [ -n "$HYSTERIA_DOMAIN" ]; then
+        echo -e "${yellow}Deleting SSL certificate for domain: $HYSTERIA_DOMAIN...${NC}"
+        sudo certbot delete --cert-name "$HYSTERIA_DOMAIN" --non-interactive > /dev/null 2>&1
+    else
+        echo -e "${red}HYSTERIA_DOMAIN not found in .env. Skipping certificate deletion.${NC}"
+    fi
+
     systemctl stop normalsub.service > /dev/null 2>&1
     systemctl disable normalsub.service > /dev/null 2>&1
     systemctl daemon-reload > /dev/null 2>&1
 
     rm -f /etc/hysteria/core/scripts/normalsub/.env
-    echo -e "\n"
 
-    echo -e "${yellow}normalsub service stopped and disabled. .env file removed. ${NC}"
+    echo -e "${yellow}normalsub service stopped and disabled. .env file removed.${NC}"
 }
 
 case "$1" in

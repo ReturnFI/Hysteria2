@@ -18,6 +18,7 @@ get_system_info() {
     IP=$(echo "$IP_API_DATA" | jq -r '.ip')
     CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4 "%"}')
     RAM=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')
+    HCVERSION=$(hysteria version | grep "^Version:" | awk '{print $2}')
 }
 
 version_greater_equal() {

@@ -1,0 +1,38 @@
+name: Create Release on Version Change
+
+on:
+  push:
+    paths:
+      - 'VERSION'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Read version from VERSION file
+      run: |
+        version=$(cat VERSION)
+        echo "version=${version}" >> $GITHUB_OUTPUT
+      id: get_version
+
+    - name: Read changelog for release description
+      run: |
+        changelog=$(cat changelog)
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$changelog" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+      id: get_changelog
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.get_version.outputs.version }}
+        name: "${{ steps.get_version.outputs.version }}"
+        body: ${{ steps.get_changelog.outputs.changelog }}
+        draft: false
+        prerelease: false

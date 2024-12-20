@@ -178,6 +178,10 @@ hysteria2_get_user_handler() {
     blocked=$(echo "$user_data" | jq -r '.blocked // false')
     status=$(echo "$user_data" | jq -r '.status // "N/A"')
     total_usage=$((upload_bytes + download_bytes))
+    max_download_gb=$(echo "scale=2; $max_download_bytes / 1073741824" | bc)
+    upload_gb=$(echo "scale=2; $upload_bytes / 1073741824" | bc)
+    download_gb=$(echo "scale=2; $download_bytes / 1073741824" | bc)
+    total_usage_gb=$(echo "scale=2; $total_usage / 1073741824" | bc)
     expiration_date=$(date -d "$account_creation_date + $expiration_days days" +"%Y-%m-%d")
     current_date=$(date +"%Y-%m-%d")
     used_days=$(( ( $(date -d "$current_date" +%s) - $(date -d "$account_creation_date" +%s) ) / 86400 ))
@@ -189,8 +193,8 @@ hysteria2_get_user_handler() {
     echo -e "${green}User Details:${NC}"
     echo -e "Username:         $username"
     echo -e "Password:         $password"
-    echo -e "Total Traffic:    $max_download_bytes bytes"
-    echo -e "Total Usage:      $total_usage bytes"
+    echo -e "Total Traffic:    $max_download_gb GB"
+    echo -e "Total Usage:      $total_usage_gb GB"
     echo -e "Time Expiration:  $expiration_date ($used_days/$expiration_days Days)"
     echo -e "Blocked:          $blocked"
     echo -e "Status:           $status"

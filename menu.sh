@@ -162,11 +162,38 @@ hysteria2_get_user_handler() {
         fi
     done
 
-    # Run the command and suppress error output
-    if ! python3 "$CLI_PATH" get-user --username "$username" 2>/dev/null; then
+    user_data=$(python3 "$CLI_PATH" get-user --username "$username" 2>/dev/null)
+
+    if [[ $? -ne 0 ]]; then
         echo -e "${red}Error:${NC} User '$username' not found."
         return 1
     fi
+
+    password=$(echo "$user_data" | jq -r '.password // "N/A"')
+    max_download_bytes=$(echo "$user_data" | jq -r '.max_download_bytes // 0')
+    upload_bytes=$(echo "$user_data" | jq -r '.upload_bytes // 0')
+    download_bytes=$(echo "$user_data" | jq -r '.download_bytes // 0')
+    account_creation_date=$(echo "$user_data" | jq -r '.account_creation_date // "N/A"')
+    expiration_days=$(echo "$user_data" | jq -r '.expiration_days // 0')
+    blocked=$(echo "$user_data" | jq -r '.blocked // false')
+    status=$(echo "$user_data" | jq -r '.status // "N/A"')
+    total_usage=$((upload_bytes + download_bytes))
+    expiration_date=$(date -d "$account_creation_date + $expiration_days days" +"%Y-%m-%d")
+    current_date=$(date +"%Y-%m-%d")
+    used_days=$(( ( $(date -d "$current_date" +%s) - $(date -d "$account_creation_date" +%s) ) / 86400 ))
+
+    if [[ $used_days -gt $expiration_days ]]; then
+        used_days=$expiration_days
+    fi
+
+    echo -e "${green}User Details:${NC}"
+    echo -e "Username:         $username"
+    echo -e "Password:         $password"
+    echo -e "Total Traffic:    $max_download_bytes bytes"
+    echo -e "Total Usage:      $total_usage bytes"
+    echo -e "Time Expiration:  $expiration_date ($used_days/$expiration_days Days)"
+    echo -e "Blocked:          $blocked"
+    echo -e "Status:           $status"
 }
 
 hysteria2_list_users_handler() {

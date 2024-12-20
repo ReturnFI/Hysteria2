@@ -594,7 +594,7 @@ display_main_menu() {
     echo -e "${green}• IP: ${NC}$IP                ${green}• RAM: ${NC}$RAM"
 
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
-        echo -e "Hysteria2 Core Version: ${cyan}$HCVERSION${NC}"
+        check_core_version
         check_version
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -e "${yellow}                   ☼ Services Status ☼                   ${NC}"

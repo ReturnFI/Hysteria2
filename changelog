@@ -1,4 +1,3 @@
-1. Add SSL certificate deletion
-2. Shows the URI with the -s and -n
-3. Refactored check_version function to use variables from path.sh
-4. Fixed some bugs
+1. Displays the data in a readable format
+2. Added Core Version(Menu)
+3. Added Total Usage(TelegramBOT)

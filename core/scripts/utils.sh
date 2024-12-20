@@ -42,6 +42,7 @@ version_greater_equal() {
 check_core_version() {
     if systemctl is-active --quiet hysteria-server.service; then
         HCVERSION=$(hysteria version | grep "^Version:" | awk '{print $2}')
+        echo -e "Hysteria2 Core Version: ${cyan}$HCVERSION${NC}"
     fi
 }
 

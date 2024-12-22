@@ -26,8 +26,8 @@
     "disablePathMTUDiscovery": false
   },
   "bandwidth": {
-    "up": "1 gbps",
-    "down": "1 gbps"
+    "up": "200 mbps",
+    "down": "200 mbps"
   },
   "ignoreClientBandwidth": false,
   "disableUDP": false,

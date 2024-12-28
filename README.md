@@ -1,9 +1,6 @@
 <div dir="ltr">
 
-
-
 [**![Lang_farsi](https://user-images.githubusercontent.com/125398461/234186932-52f1fa82-52c6-417f-8b37-08fe9250a55f.png) &nbsp;فارسی**](README-fa.md)
-
 
 # 🚀 Hysteria2 Management Shell Script 🚀
 
@@ -274,12 +271,14 @@ The interface uses colors for quick identification:
 
 ## 🔄 Client Compatibility
 
-| Client | Supported Versions | Features |
-|--------|-------------------|-----------|
-| Hysteria2 | 2.0+ | Full support |
-| SingBox | Latest | URI support |
-| V2rayN | 5.0+ | Basic features |
-| Shadowrocket | Latest | Mobile support |
+| Client        | Supported Versions             | Supported OS                                                              |
+|---------------|--------------------------------|---------------------------------------------------------------------------|
+| **SingBox**   | 1.10.5 (Dec 21, 2024)          | Windows, Linux, macOS, iOS, Android                                        |
+| **Hiddify**   | Latest                         | Windows, Linux, macOS, iOS, Android                                        |
+| **Sterisand** | Latest                         | iOS                                                                       |
+| **Nekobox**   | Latest                         | Android                                                                  |
+| **Nekoray**   | Latest                         | Windows, Linux                                                            |
+
 
 ## 🤝 Contributing
 

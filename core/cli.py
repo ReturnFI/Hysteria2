@@ -32,6 +32,7 @@ class Command(Enum):
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
+    UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
     BACKUP_HYSTERIA = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
@@ -286,6 +287,18 @@ def ip_address(edit, ipv4, ipv6):
             click.echo("Error: --edit requires at least one of --ipv4 or --ipv6.")
     else:
         run_cmd(['bash', Command.IP_ADD.value, 'add'])
+
+@cli.command('update-geo')
+def cli_update_geo():
+    script_path = Command.UPDATE_GEO.value
+    try:
+        subprocess.run(['python3', script_path], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to update geo files: {e}")
+    except FileNotFoundError:
+        print(f"Script not found: {script_path}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 # endregion
 

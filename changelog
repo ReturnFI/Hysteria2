@@ -1,3 +1,2 @@
-1. Displays the data in a readable format
-2. Added Core Version(Menu)
-3. Added Total Usage(TelegramBOT)
+1. Added update the geolocation files
+2. Enhance kick.sh: Add error handling and restore backup on critical errors

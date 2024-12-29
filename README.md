@@ -86,12 +86,6 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh
   - Core version management
 
 
-## 📋 Table of Contents
-- [Main Menu](#main-menu)
-- [Hysteria2 Menu](#hysteria2-menu)
-- [Advance Menu](#advance-menu)
-- [Usage Tips](#usage-tips)
-
 ## 🎯 Main Menu
 
 ### System Information Display

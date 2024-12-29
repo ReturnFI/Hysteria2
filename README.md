@@ -267,7 +267,7 @@ The interface uses colors for quick identification:
 
 | Client        | Supported Versions             | Supported OS                                                              |
 |---------------|--------------------------------|---------------------------------------------------------------------------|
-| **SingBox**   | 1.10.5 (Dec 21, 2024)          | Windows, Linux, macOS, iOS, Android                                        |
+| **SingBox**   | 1.10.5 (Dec 21, 2024)          | Linux, macOS, iOS, Android                                        |
 | **Hiddify**   | Latest                         | Windows, Linux, macOS, iOS, Android                                        |
 | **Sterisand** | Latest                         | iOS                                                                       |
 | **Nekobox**   | Latest                         | Android                                                                  |

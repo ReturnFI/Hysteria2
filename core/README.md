@@ -1,196 +1,208 @@
+
 # Hysteria2 CLI Tool
 
 ## Overview
 
-The Hysteria2 CLI Tool is a command-line utility for managing various aspects of Hysteria2 and related services on your system. It allows you to install, configure, and manage Hysteria2, as well as other services like Telegram bot, Singbox SubLink, TCP Brutal, and WARP.
+The Hysteria2 CLI Tool is a powerful command-line utility designed to manage Hysteria2 and associated services. With updated functionality, it now includes advanced SNI management, traffic monitoring, IP address configurations, and enhanced user management features.
 
-## Commands:
+---
+
+## Commands
 
 ### Hysteria2 Management
 
-- **Install Hysteria2**
+#### Install Hysteria2
+```bash
+python3 cli.py install-hysteria2 --port PORT --sni SNI
+```
+- `--port`, `-p`: **Required.** Port for the Hysteria2 server.
+- `--sni`, `-s`: Optional. SNI value (default: `bts.com`).
 
-  ```sh
-  cli.py install-hysteria2 --port <port>
-  ```
+#### Uninstall Hysteria2
+```bash
+python3 cli.py uninstall-hysteria2
+```
 
-  *Options:*
-  - `--port, -p`: New port for Hysteria2 (required)
+#### Update Hysteria2
+```bash
+python3 cli.py update-hysteria2
+```
 
-- **Uninstall Hysteria2**
+#### Restart Hysteria2
+```bash
+python3 cli.py restart-hysteria2
+```
 
-  ```sh
-  cli.py uninstall-hysteria2
-  ```
+#### Change Port
+```bash
+python3 cli.py change-hysteria2-port --port NEW_PORT
+```
+- `--port`, `-p`: **Required.** New port for the Hysteria2 server.
 
-- **Update Hysteria2**
+#### Change SNI
+```bash
+python3 cli.py change-hysteria2-sni --sni NEW_SNI
+```
+- `--sni`, `-s`: **Required.** New SNI value.
 
-  ```sh
-  cli.py update-hysteria2
-  ```
-
-- **Restart Hysteria2**
-
-  ```sh
-  cli.py restart-hysteria2
-  ```
-
-- **Change Hysteria2 Port**
-
-  ```sh
-  cli.py change-hysteria2-port --port <port>
-  ```
-
-  *Options:*
-  - `--port, -p`: New port for Hysteria2 (required)
+---
 
 ### User Management
 
-- **Get User Information**
+#### Add User
+```bash
+python3 cli.py add-user --username USERNAME --traffic-limit LIMIT --expiration-days DAYS [--password PASSWORD] [--creation-date DATE]
+```
+- `--username`, `-u`: **Required.** Username for the new user.
+- `--traffic-limit`, `-t`: **Required.** Traffic limit in GB.
+- `--expiration-days`, `-e`: **Required.** Number of days until expiration.
+- `--password`, `-p`: Optional. Custom password (auto-generated if not provided).
+- `--creation-date`, `-c`: Optional. Custom creation date (current date if not provided).
 
-  ```sh
-  cli.py get-user --username <username> [--no-traffic]
+#### Edit User
+```bash
+python3 cli.py edit-user --username USERNAME [OPTIONS]
+```
+- `--new-username`, `-nu`: New username.
+- `--new-traffic-limit`, `-nt`: New traffic limit in GB.
+- `--new-expiration-days`, `-ne`: New expiration days.
+- `--renew-password`, `-rp`: Generate a new password.
+- `--renew-creation-date`, `-rc`: Reset creation date.
+- `--blocked`, `-b`: Block/unblock the user.
+
+#### Show User URI
+```bash
+python3 cli.py show-user-uri --username USERNAME [OPTIONS]
+```
+- `--qrcode`, `-qr`: Generate a QR code.
+- `--ipv`, `-ip`: Specify IP version (4 or 6).
+- `--all`, `-a`: Show both IPv4 and IPv6 URIs.
+- `--singbox`, `-s`: Generate a Singbox sublink.
+- `--normalsub`, `-n`: Generate a Normal sublink.
+
+#### Other User Commands
+- Get User Info:
+  ```bash
+  python3 cli.py get-user --username USERNAME
+  ```
+- Reset User:
+  ```bash
+  python3 cli.py reset-user --username USERNAME
+  ```
+- Remove User:
+  ```bash
+  python3 cli.py remove-user --username USERNAME
+  ```
+- List Users:
+  ```bash
+  python3 cli.py list-users
   ```
 
-  *Options:*
-  - `--username, -u`: Username for the user (required)
-  - `--no-traffic, -t`: Do not display traffic information (optional)
+---
 
-- **Add User**
+### Traffic and System Management
 
-  ```sh
-  cli.py add-user --username <username> --traffic-limit <limit> --expiration-days <days> [--password <password>] [--creation-date <date>]
+#### Traffic Status
+```bash
+python3 cli.py traffic-status
+```
+
+#### Server Information
+```bash
+python3 cli.py server-info
+```
+
+#### Backup Configuration
+```bash
+python3 cli.py backup-hysteria
+```
+
+#### IP Address Management
+```bash
+python3 cli.py ip-address [OPTIONS]
+```
+- `--edit`: Edit IP addresses manually.
+- `--ipv4`: Specify a new IPv4 address.
+- `--ipv6`: Specify a new IPv6 address.
+
+#### Update Geo Files
+```bash
+python3 cli.py update-geo
+```
+
+---
+
+### Advanced Features
+
+#### OBFS Management
+```bash
+python3 cli.py manage-obfs [OPTIONS]
+```
+- `--remove`, `-r`: Remove OBFS from the configuration.
+- `--generate`, `-g`: Generate a new OBFS value.
+
+#### TCP Brutal
+```bash
+python3 cli.py install-tcp-brutal
+```
+
+#### WARP Management
+- Install WARP:
+  ```bash
+  python3 cli.py install-warp
+  ```
+- Uninstall WARP:
+  ```bash
+  python3 cli.py uninstall-warp
+  ```
+- Configure WARP:
+  ```bash
+  python3 cli.py configure-warp [OPTIONS]
+  ```
+  - `--all`, `-a`: Use WARP for all connections.
+  - `--popular-sites`, `-p`: Use WARP for popular sites.
+  - `--domestic-sites`, `-d`: Use WARP for domestic sites.
+  - `--block-adult-sites`, `-x`: Block adult content.
+  - `--warp-option`, `-w`: Choose between 'warp' or 'warp plus'.
+  - `--warp-key`, `-k`: Specify a WARP Plus key.
+
+- Check WARP Status:
+  ```bash
+  python3 cli.py warp-status
   ```
 
-  *Options:*
-  - `--username, -u`: Username for the new user (required)
-  - `--traffic-limit, -t`: Traffic limit in GB (required)
-  - `--expiration-days, -e`: Expiration days (required)
-  - `--password, -p`: Password (optional; will be generated if not provided)
-  - `--creation-date, -c`: Creation date (optional; defaults to current date)
+#### Telegram Bot Management
+```bash
+python3 cli.py telegram --action ACTION --token TOKEN --adminid ADMIN_ID
+```
+- `--action`, `-a`: Start or stop the bot.
+- `--token`, `-t`: Telegram bot token (required for `start`).
+- `--adminid`, `-aid`: Admin's Telegram ID.
 
-- **Edit User**
+#### Singbox Service Management
+```bash
+python3 cli.py singbox --action ACTION --domain DOMAIN --port PORT
+```
+- `--action`, `-a`: Start or stop the Singbox service.
+- `--domain`, `-d`: Domain name for SSL.
+- `--port`, `-p`: Port number.
 
-  ```sh
-  cli.py edit-user --username <username> [--new-username <new-username>] [--new-traffic-limit <limit>] [--new-expiration-days <days>] [--renew-password] [--renew-creation-date] [--blocked]
-  ```
+#### Normal SubLink Service
+```bash
+python3 cli.py normal-sub --action ACTION --domain DOMAIN --port PORT
+```
+- `--action`, `-a`: Start or stop the Normal sublink service.
+- `--domain`, `-d`: Domain name for SSL.
+- `--port`, `-p`: Port number.
 
-  *Options:*
-  - `--username, -u`: Username to edit (required)
-  - `--new-username, -nu`: New username (optional)
-  - `--new-traffic-limit, -nt`: New traffic limit in GB (optional)
-  - `--new-expiration-days, -ne`: New expiration days (optional)
-  - `--renew-password, -rp`: Renew password (optional)
-  - `--renew-creation-date, -rc`: Renew creation date (optional)
-  - `--blocked, -b`: Block the user (optional)
-
-- **Reset User**
-
-  ```sh
-  cli.py reset-user --username <username>
-  ```
-
-  *Options:*
-  - `--username, -u`: Username to reset (required)
-
-- **Remove User**
-
-  ```sh
-  cli.py remove-user --username <username>
-  ```
-
-  *Options:*
-  - `--username, -u`: Username to remove (required)
-
-- **Show User URI**
-
-  ```sh
-  cli.py show-user-uri --username <username> [--qrcode] [--ipv <4|6>] [--all] [--singbox]
-  ```
-
-  *Options:*
-  - `--username, -u`: Username for the user (required)
-  - `--qrcode, -qr`: Generate QR code for the URI (optional)
-  - `--ipv, -ip`: IP version (4 or 6; default is 4)
-  - `--all, -a`: Show both IPv4 and IPv6 URIs (optional)
-  - `--singbox, -s`: Generate Singbox sublink if Singbox service is active (optional)
-
-- **List Users**
-
-  ```sh
-  cli.py list-users
-  ```
-
-- **Server Info**
-
-  ```sh
-  cli.py server-info
-  ```
-
-### Advanced Commands
-
-- **Install TCP Brutal**
-
-  ```sh
-  cli.py install-tcp-brutal
-  ```
-
-- **Install WARP**
-
-  ```sh
-  cli.py install-warp
-  ```
-
-- **Uninstall WARP**
-
-  ```sh
-  cli.py uninstall-warp
-  ```
-
-- **Configure WARP**
-
-  ```sh
-  cli.py configure-warp [--all] [--popular-sites] [--domestic-sites] [--block-adult-sites]
-  ```
-
-  *Options:*
-  - `--all, -a`: Use WARP for all connections (optional)
-  - `--popular-sites, -p`: Use WARP for popular sites (optional)
-  - `--domestic-sites, -d`: Use WARP for domestic sites (optional)
-  - `--block-adult-sites, -x`: Block adult content (optional)
-
-- **Telegram Bot Management**
-
-  ```sh
-  cli.py telegram --action <start|stop> [--token <token>] [--adminid <adminid>]
-  ```
-
-  *Options:*
-  - `--action, -a`: Action to perform: `start` or `stop` (required)
-  - `--token, -t`: Token for the bot (required for `start`)
-  - `--adminid, -aid`: Telegram admin IDs (required for `start`)
-
-- **Singbox SubLink**
-
-  ```sh
-  cli.py singbox --action <start|stop> [--domain <domain>] [--port <port>]
-  ```
-
-  *Options:*
-  - `--action, -a`: Action to perform: `start` or `stop` (required)
-  - `--domain, -d`: Domain name for SSL (required for `start`)
-  - `--port, -p`: Port number for Singbox service (required for `start`)
+---
 
 ## Debugging
-
 To enable debugging, set the `DEBUG` variable to `True` in the script:
-
 ```python
 DEBUG = True
 ```
 
-This will print the commands being executed.
+This will print all commands being executed for easier troubleshooting.
 
-## Contributing
-
-Feel free to contribute by creating issues or submitting pull requests on the [GitHub repository](https://github.com/ReturnFI/Hysteria2).
+---

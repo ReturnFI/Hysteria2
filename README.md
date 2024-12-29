@@ -1,101 +1,315 @@
 <div dir="ltr">
 
-
-
 [**![Lang_farsi](https://user-images.githubusercontent.com/125398461/234186932-52f1fa82-52c6-417f-8b37-08fe9250a55f.png) &nbsp;فارسی**](README-fa.md)
 
+# 🚀 Hysteria2 Management Shell Script 🚀
 
-# Hysteria2 Management Shell Script
-
-This bash script provides a comprehensive menu-driven interface to manage the Hysteria2 server, user accounts, and various services. It supports installation, user management, traffic monitoring, and integration with additional tools like WARP, Singbox SubLink, and a Telegram bot.
+A powerful and user-friendly management panel for Hysteria2 proxy server. Features include complete user management, traffic monitoring, WARP integration, Telegram bot support, and multiple subscription formats. Simple installation with advanced configuration options for both beginners and experienced users.
 
 
-### Install command :
-```shell
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
+🛡️ Key features:
+- 🔐 Complete user lifecycle management
+- 📊 Real-time traffic monitoring
+- 🌐 WARP integration
+- 🤖 Telegram bot support
+- 🔄 Multiple subscription formats
+- 🚄 TCP Brutal optimization
+- 🌍 Geo-based routing
+- 🔒 OBFS (Obfuscation)
+- 📱 Mobile-friendly URIs
+
+
+## 📋 Quick Start Guide
+
+### One-Click Installation
+```bash
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
 ```
-After installation, simply use the command `hys2` to run the Hysteria2 script.
+After installation, use `hys2` to launch the management panel.
 
 There is no need to execute the installation command again.
 
-### Upgrade command :
-```shell
+### Upgrade to Latest Version
+```bash
 bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
 ```
+
 
 <br />
 <p align="center">
 <img src="https://github.com/user-attachments/assets/19282907-285a-4166-a916-0066acfa8a2c" width="600" height="400">
 <p/>
 
-## Features : 
+## 🔧 System Requirements
 
-- **Hysteria2 Installation & Configuration:**
-  - Install and configure Hysteria2 on your server.
-  - Manage user accounts (add, edit, reset, remove, list).
-  - Monitor traffic and display user URIs.
+| Component | Minimum Requirement |
+|-----------|-------------------|
+| OS | Debian 11+ / Ubuntu 22+ |
+| Architecture | x86_64, ARM64 |
+| RAM | 1GB |
+| Storage | 10GB free space |
+| Network | IPv4/IPv6 compatible |
+| Access | Root privileges required |
 
-- **Advanced Options:**
-  - Install and manage additional services like WARP and TCP Brutal.
-  - Start/Stop Singbox SubLink and Telegram bot services.
-  - Change the port number for Hysteria2.
-  - Update or uninstall Hysteria2.
+## ✨ Features
 
-- **Interactive Menus:**
-  - User-friendly menu-driven interface for easier navigation and management.
-  - Validations for user inputs and system checks to prevent misconfigurations.
+- **Core Features**
+  - Easy installation and configuration of Hysteria2 server
+  - Complete user management system
+  - Traffic monitoring and statistics
+  - Advanced WARP integration
+  - Multiple subscription formats support
+  - Telegram bot integration
+
+- **User Management**
+  - Add/Edit/Remove users
+  - Traffic quota management
+  - Account expiration control
+  - User traffic statistics
+  - Reset user data
+  - Block/Unblock users
+  - Generate user connection URIs
+
+- **System Features**
+  - TCP Brutal installation support
+  - WARP configuration and management
+  - SNI and port management
+  - IPv4/IPv6 address management
+  - OBFS (Obfuscation) management
+  - Subscription link generation (SingBox and Normal-SUB)
+
+- **Monitoring & Control**
+  - Service status monitoring
+  - Traffic status tracking
+  - System resource usage display
+  - Automated updates
+  - Core version management
 
 
-## Main Menu :
+## 📋 Table of Contents
+- [Main Menu](#main-menu)
+- [Hysteria2 Menu](#hysteria2-menu)
+- [Advance Menu](#advance-menu)
+- [Usage Tips](#usage-tips)
 
-- **Hysteria2 Menu:**
-  - **Install and Configure Hysteria2:** Set up Hysteria2 with your desired configuration.
-  - **Add User:** Add a new user with traffic limits and expiration days.
-  - **Edit User:** Modify user details like username, traffic limit, expiration days, password, etc.
-  - **Reset User:** Reset user statistics.
-  - **Remove User:** Remove a user from the system.
-  - **Get User:** Retrieve detailed information of a specific user.
-  - **List Users:** Display a list of all users.
-  - **Check Traffic Status:** View the current traffic status.
-  - **Show User URI:** Generate and display the URI for a user.
+## 🎯 Main Menu
 
-- **Advance Menu:**
-  - **Install TCP Brutal:** Install the TCP Brutal service.
-  - **Install WARP:** Install Cloudflare's WARP service.
-  - **Configure WARP:** Configure WARP for different traffic routes.
-  - **Uninstall WARP:** Remove WARP from the system.
-  - **Telegram Bot:** Start or stop the Telegram bot service.
-  - **Singbox SubLink:** Start or stop the Singbox service.
-  - **Change Port Hysteria2:** Change the port on which Hysteria2 listens.
-  - **Update Core Hysteria2:** Update Hysteria2 to the latest version.
-  - **Uninstall Hysteria2:** Remove Hysteria2 and its configuration.
+### System Information Display
+The main screen shows important system details:
+- OS and Architecture
+- ISP and CPU information
+- IP address
+- RAM usage
+- Hysteria2 Core Version
+- Current service status
 
-## Support OS:
+### Main Options
+| Option | Description |
+|--------|-------------|
+| `[1]` | Hysteria2 Menu - Core functionality management |
+| `[2]` | Advance Menu - Additional features and configurations |
+| `[3]` | Update Panel - Updates the management panel |
+| `[0]` | Exit |
 
-- **Ubuntu 22+**
-- **Debian 11+**
+## 🚀 Hysteria2 Menu
 
-## Prerequisites : 
-Ensure the following packages are installed:
+### Installation and Basic Management
+1. **Install and Configure Hysteria2**
+   - Initial setup and configuration
+   - Parameters:
+     - SNI (default: bts.com)
+     - Port number
 
-- jq
-- qrencode
-- curl
-- pwgen
-- uuid-runtime
-- bc
+2. **Add User**
+   - Create new user accounts
+   - Required information:
+     ```
+     - Username (alphanumeric only)
+     - Traffic limit (GB)
+     - Expiration days
+     ```
+   - System automatically generates a secure password
 
-If any of these are missing, the script will attempt to install them automatically.
+3. **Edit User**
+   - Modify existing accounts:
+     ```
+     - Username
+     - Traffic limit
+     - Expiration period
+     - Password (regenerate)
+     - Creation date (reset)
+     - Block status
+     ```
 
-## Contributing :
+4. **Reset User**
+   - Reset user traffic statistics
 
-Contributions are welcome! 
+5. **Remove User**
+   - Delete user accounts
 
-Feel free to contribute by creating issues or submitting pull requests 
+### User Information
+6. **Get User**
+   - Detailed user information:
+     ```
+     - Username & password
+     - Traffic allocation
+     - Current usage
+     - Creation date
+     - Expiration status
+     - Block status
+     ```
 
-Please fork the repository and submit a pull request with your improvements.
+7. **List Users**
+   - Complete user database in table format
+   - Shows:
+     ```
+     - Traffic limits
+     - Expiration dates
+     - Creation dates
+     ```
 
-## Disclaimer :
+8. **Check Traffic Status**
+   - Current traffic usage monitoring
 
-This script is provided for educational purposes only. The developer are not responsible for any misuse or consequences arising from its use. Please ensure you understand the implications of using Hysteria2 and related tools before deployment in a production environment.
+9. **Show User URI**
+   - Connection information
+   - QR code generation
 
+## ⚙️ Advance Menu
+
+### Network Optimization
+1. **TCP Brutal Installation**
+   - TCP optimization setup
+
+### WARP Management
+2. **Install WARP**
+   - WARP service installation
+
+3. **Configure WARP**
+   Options:
+   ```
+   - All traffic routing
+   - Popular sites routing
+   - Domestic sites routing
+   - Adult content blocking
+   - WARP Plus profile
+   - Normal profile
+   - Status check
+   - IP address change
+   ```
+
+4. **Uninstall WARP**
+   - Remove WARP service
+
+### Service Management
+5. **Telegram Bot**
+   ```
+   - Start/stop bot service
+   - Bot token configuration
+   - Admin ID settings
+   ```
+
+6. **SingBox SubLink**
+   ```
+   - Service start/stop
+   - Domain configuration
+   - Port settings
+   ```
+
+7. **Normal-SUB SubLink**
+   ```
+   - Service start/stop
+   - Domain configuration
+   - Port settings
+   ```
+
+### System Configuration
+8. **Change Port Hysteria2**
+   - Modify service port
+
+9. **Change SNI Hysteria2**
+   - Update SNI settings
+
+10. **Manage OBFS**
+    ```
+    - Remove OBFS
+    - Generate new OBFS
+    ```
+
+11. **Change IPs(4-6)**
+    - IPv4/IPv6 address modification
+
+12. **Update geo Files**
+    - Geolocation database update
+
+### System Maintenance
+13. **Restart Hysteria2**
+    - Service restart
+
+14. **Update Core Hysteria2**
+    - Core system update
+
+15. **Uninstall Hysteria2**
+    - Complete system removal
+
+## 💡 Usage Tips
+
+### Navigation
+- Use `[0]` to return to previous menu
+- Press `Enter` after operations to continue
+- Invalid inputs will prompt for correction
+- Service status visible in main menu
+
+### Color Coding
+The interface uses colors for quick identification:
+```
+🟢 Green: Installation options
+🔵 Cyan: Configuration options
+🔴 Red: Removal/exit options
+🟡 Yellow: Menu titles and prompts
+```
+
+## 🔄 Client Compatibility
+
+| Client        | Supported Versions             | Supported OS                                                              |
+|---------------|--------------------------------|---------------------------------------------------------------------------|
+| **SingBox**   | 1.10.5 (Dec 21, 2024)          | Windows, Linux, macOS, iOS, Android                                        |
+| **Hiddify**   | Latest                         | Windows, Linux, macOS, iOS, Android                                        |
+| **Sterisand** | Latest                         | iOS                                                                       |
+| **Nekobox**   | Latest                         | Android                                                                  |
+| **Nekoray**   | Latest                         | Windows, Linux                                                            |
+
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+
+## ⚠️ Disclaimer
+
+This tool is provided for educational and research purposes only. Users are responsible for:
+- Complying with local laws and regulations
+- Ensuring appropriate usage of proxy servers
+- Maintaining server security
+- Protecting user privacy
+
+## 🙏 Acknowledgments
+
+- [Hysteria2 Core Team ](https://github.com/apernet/hysteria)
+- Community Members
+- [@Iam54r1n4](https://github.com/Iam54r1n4)
+
+---
+
+<p align="center">Made with ❤️</p>
+<div align="center">
+  
+[![Latest Release](https://img.shields.io/github/v/release/ReturnFI/Hysteria2?style=flat-square)](https://github.com/ReturnFI/Hysteria2/releases)
+[![License](https://img.shields.io/github/license/ReturnFI/Hysteria2?style=flat-square)](LICENSE) 
+</div>

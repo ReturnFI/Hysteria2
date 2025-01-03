@@ -14,6 +14,10 @@ FILES=(
     "/etc/hysteria/core/scripts/normalsub/.env"
 )
 
+echo "Backing up and Stopping all cron jobs"
+crontab -l > /tmp/crontab_backup
+crontab -r
+
 echo "Backing up files to $TEMP_DIR"
 for FILE in "${FILES[@]}"; do
     mkdir -p "$TEMP_DIR/$(dirname "$FILE")"
@@ -84,15 +88,8 @@ else
     echo "Upgrade failed: hysteria-server.service is not active"
 fi
 
-CRON_JOB="0 3 */3 * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py restart-hysteria2' >/dev/null 2>&1"
-
-if crontab -l | grep -Fxq "$CRON_JOB"; then
-    echo "Cron job already exists."
-else
-    echo "Adding cron job."
-    (crontab -l; echo "$CRON_JOB") | crontab -
-    echo "Cron job added successfully."
-fi
+echo "Restoring cron jobs"
+crontab /tmp/crontab_backup
 
 chmod +x menu.sh
 ./menu.sh

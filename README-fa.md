@@ -22,7 +22,7 @@
 
 ### نصب با یک کلیک
 ```bash
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
 ```
 پس از نصب، از دستور `hys2` برای راه‌اندازی پنل مدیریت استفاده کنید.
 

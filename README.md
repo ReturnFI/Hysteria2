@@ -23,7 +23,7 @@ A powerful and user-friendly management panel for Hysteria2 proxy server. Featur
 
 ### One-Click Installation
 ```bash
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
 ```
 After installation, use `hys2` to launch the management panel.
 

@@ -267,7 +267,9 @@ hysteria2_show_user_uri_handler() {
     fi
 
     if [[ -n "$flags" ]]; then
-        python3 $CLI_PATH show-user-uri --username "$username" -a -qr $flags
+        python3 $CLI_PATH show-user-uri -u "$username" -a -qr $flags
+    else
+        python3 $CLI_PATH show-user-uri -u "$username" -a -qr
     fi
 }
 

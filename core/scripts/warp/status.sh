@@ -23,7 +23,7 @@ check_warp_configuration() {
         echo -e "${cyan}Domestic sites (geosite:ir, geoip:ir):${NC} ${red}Inactive${NC}"
     fi
 
-    if jq -e '.acl.inline[]? | select(test("reject\\(geosite:category-porn\\)"))' "$CONFIG_FILE" > /dev/null; then
+    if jq -e '.acl.inline[]? | select(test("reject\\(geosite:nsfw\\)"))' "$CONFIG_FILE" > /dev/null; then
         echo -e "${cyan}Block adult content:${NC} ${green}Active${NC}"
     else
         echo -e "${cyan}Block adult content:${NC} ${red}Inactive${NC}"

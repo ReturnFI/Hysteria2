@@ -41,12 +41,12 @@ warp_configure_handler() {
     fi
 
     if [ "$block_adult_sites" == "true" ]; then
-        if [ "$(jq -r 'if .acl.inline | index("reject(geosite:category-porn)") then "Blocked" else "Not blocked" end' "$CONFIG_FILE")" == "Blocked" ]; then
-            jq 'del(.acl.inline[] | select(. == "reject(geosite:category-porn)"))' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+        if [ "$(jq -r 'if .acl.inline | index("reject(geosite:nsfw)") then "Blocked" else "Not blocked" end' "$CONFIG_FILE")" == "Blocked" ]; then
+            jq 'del(.acl.inline[] | select(. == "reject(geosite:nsfw)"))' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
             jq '.resolver.tls.addr = "1.1.1.1:853"' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
             echo "Adult content blocking removed and resolver updated."
         else
-            jq '.acl.inline += ["reject(geosite:category-porn)"]' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
+            jq '.acl.inline += ["reject(geosite:nsfw)"]' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
             jq '.resolver.tls.addr = "1.1.1.3:853"' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
             echo "Adult content blocked and resolver updated."
         fi

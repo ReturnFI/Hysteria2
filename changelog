@@ -1,2 +1,2 @@
-1. Bugfix: hysteria2_show_user_uri_handler
-2. Docs: Fix typo in installation command (README)
+1. Fix: Changed geo category
+2. Reject(malware, phishing, cryptominers)

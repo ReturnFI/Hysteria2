@@ -33,10 +33,9 @@ def remove_file(file_path):
 
 def download_file(url, destination, chunk_size=8192):
     try:
-        # Ensure the destination directory exists
         destination_dir = os.path.dirname(destination)
         if destination_dir and not os.path.exists(destination_dir):
-            os.makedirs(destination_dir)  # Create the directory if it doesn't exist
+            os.makedirs(destination_dir)
 
         response = requests.get(url, stream=True)
         response.raise_for_status()

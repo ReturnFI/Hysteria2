@@ -3,4 +3,4 @@
 3. Add: GeoCountry(Iran, China, and Russia)
 4. Add: Geo Update flag --country option(cli)
 5. Add: CPU monitoring module(Telegram-Bot)
-6. Add: Search users by the 'blocked' status(Telegram-Bot)
+6. Add: Search users by the `blocked` status(Telegram-Bot)

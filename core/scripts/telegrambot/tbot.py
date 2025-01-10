@@ -7,6 +7,9 @@ from utils.deleteuser import *
 from utils.edituser import *
 from utils.search import *
 from utils.serverinfo import *
+from utils.cpu import *
+import threading
+import time
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -16,5 +19,12 @@ def send_welcome(message):
     else:
         bot.reply_to(message, "Unauthorized access. You do not have permission to use this bot.")
 
+def monitoring_thread():
+    while True:
+        monitor_system_resources()
+        time.sleep(60)
+
 if __name__ == '__main__':
+    monitor_thread = threading.Thread(target=monitoring_thread, daemon=True)
+    monitor_thread.start()
     bot.polling(none_stop=True)

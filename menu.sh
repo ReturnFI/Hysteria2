@@ -589,6 +589,57 @@ obfs_handler() {
     done
 }
 
+geo_update_handler() {
+    echo "Configure Geo Update Options:"
+    echo "1. Update Iran Geo Files"
+    echo "2. Update China Geo Files"
+    echo "3. Update Russia Geo Files"
+    echo "4. Check Current Geo Files"
+    echo "0. Cancel"
+
+    read -p "Select an option: " option
+
+    case $option in
+        1)
+            echo "Updating Iran Geo Files..."
+            python3 $CLI_PATH update-geo --country iran
+            ;;
+        2)
+            echo "Updating China Geo Files..."
+            python3 $CLI_PATH update-geo --country china
+            ;;
+        3)
+            echo "Updating Russia Geo Files..."
+            python3 $CLI_PATH update-geo --country russia
+            ;;
+        4)
+            echo "Current Geo Files Information:"
+            echo "--------------------------"
+            if [ -f "/etc/hysteria/geosite.dat" ]; then
+                echo "GeoSite File:"
+                ls -lh /etc/hysteria/geosite.dat
+                echo "Last modified: $(stat -c %y /etc/hysteria/geosite.dat)"
+            else
+                echo "GeoSite file not found!"
+            fi
+            echo
+            if [ -f "/etc/hysteria/geoip.dat" ]; then
+                echo "GeoIP File:"
+                ls -lh /etc/hysteria/geoip.dat
+                echo "Last modified: $(stat -c %y /etc/hysteria/geoip.dat)"
+            else
+                echo "GeoIP file not found!"
+            fi
+            ;;
+        0)
+            echo "Geo update configuration canceled."
+            ;;
+        *)
+            echo "Invalid option. Please try again."
+            ;;
+    esac
+}
+
 # Function to display the main menu
 display_main_menu() {
     clear
@@ -737,7 +788,7 @@ advance_menu() {
             9) hysteria2_change_sni_handler ;;
             10) obfs_handler ;;
             11) edit_ips ;;
-            12) python3 $CLI_PATH update-geo ;;
+            12) geo_update_handler ;;
             13) python3 $CLI_PATH restart-hysteria2 ;;
             14) python3 $CLI_PATH update-hysteria2 ;;
             15) python3 $CLI_PATH uninstall-hysteria2 ;;

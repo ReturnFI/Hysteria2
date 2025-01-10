@@ -289,10 +289,14 @@ def ip_address(edit, ipv4, ipv6):
         run_cmd(['bash', Command.IP_ADD.value, 'add'])
 
 @cli.command('update-geo')
-def cli_update_geo():
+@click.option('--country', '-c', 
+              type=click.Choice(['iran', 'china', 'russia'], case_sensitive=False),
+              default='iran',
+              help='Select country for geo files (default: iran)')
+def cli_update_geo(country):
     script_path = Command.UPDATE_GEO.value
     try:
-        subprocess.run(['python3', script_path], check=True)
+        subprocess.run(['python3', script_path, country.lower()], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Failed to update geo files: {e}")
     except FileNotFoundError:

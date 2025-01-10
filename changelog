@@ -1,4 +1,4 @@
-1. Fix: Changed geo category
+1. Fix: Changed geo category(block adult sites)
 2. Reject(malware, phishing, cryptominers)
 3. Add: GeoCountry(Iran, China, and Russia)
 4. Add: Geo Update flag --country option(cli)

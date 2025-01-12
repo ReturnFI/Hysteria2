@@ -31,7 +31,7 @@ def remove_file(file_path):
     except Exception as e:
         print(f"Error removing file {file_path}: {e}")
 
-def download_file(url, destination, chunk_size=8192):
+def download_file(url, destination, chunk_size=32768):
     try:
         destination_dir = os.path.dirname(destination)
         if destination_dir and not os.path.exists(destination_dir):

@@ -1,6 +1,3 @@
-1. Fix: Changed geo category(block adult sites)
-2. Reject(malware, phishing, cryptominers)
-3. Add: GeoCountry(Iran, China, and Russia)
-4. Add: Geo Update flag --country option(cli)
-5. Add: CPU monitoring module(Telegram-Bot)
-6. Add: Search users by the `blocked` status(Telegram-Bot)
+1. Fix: Block users based on total data usage
+2. Increasing the chunk size to 32768 bytes(GeoFiles)
+3. Update Requirements

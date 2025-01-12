@@ -14,6 +14,9 @@ EXPIRATION_DAYS=$(jq -r --arg user "$USERNAME" '.[$user].expiration_days' "$USER
 ACCOUNT_CREATION_DATE=$(jq -r --arg user "$USERNAME" '.[$user].account_creation_date' "$USERS_FILE")
 BLOCKED=$(jq -r --arg user "$USERNAME" '.[$user].blocked' "$USERS_FILE")
 CURRENT_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].download_bytes' "$USERS_FILE")
+CURRENT_UPLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].upload_bytes' "$USERS_FILE")
+
+TOTAL_BYTES=$((CURRENT_DOWNLOAD_BYTES + CURRENT_UPLOAD_BYTES))
 
 if [ "$BLOCKED" == "true" ]; then
   sleep 20 
@@ -33,7 +36,7 @@ if [ "$CURRENT_DATE" -ge "$EXPIRATION_DATE" ]; then
   exit 1
 fi
 
-if [ "$CURRENT_DOWNLOAD_BYTES" -ge "$MAX_DOWNLOAD_BYTES" ]; then
+if [ "$TOTAL_BYTES" -ge "$MAX_DOWNLOAD_BYTES" ]; then
   SECRET=$(jq -r '.trafficStats.secret' "$CONFIG_FILE")
   KICK_ENDPOINT="http://127.0.0.1:25413/kick"
   curl -s -H "Authorization: $SECRET" -X POST -d "[\"$USERNAME\"]" "$KICK_ENDPOINT"

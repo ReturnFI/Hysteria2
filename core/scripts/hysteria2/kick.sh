@@ -46,6 +46,9 @@ for USERNAME in $(jq -r 'keys[]' "$USERS_FILE"); do
   EXPIRATION_DAYS=$(jq -r --arg user "$USERNAME" '.[$user].expiration_days // 0' "$USERS_FILE")
   ACCOUNT_CREATION_DATE=$(jq -r --arg user "$USERNAME" '.[$user].account_creation_date' "$USERS_FILE")
   CURRENT_DOWNLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].download_bytes // 0' "$USERS_FILE")
+  CURRENT_UPLOAD_BYTES=$(jq -r --arg user "$USERNAME" '.[$user].upload_bytes // 0' "$USERS_FILE")
+
+  TOTAL_BYTES=$((CURRENT_DOWNLOAD_BYTES + CURRENT_UPLOAD_BYTES))
 
   if [ -z "$ACCOUNT_CREATION_DATE" ]; then
     echo "$(date): [INFO] Skipping $USERNAME due to missing account creation date." >> $LOGFILE
@@ -55,8 +58,8 @@ for USERNAME in $(jq -r 'keys[]' "$USERS_FILE"); do
   CURRENT_DATE=$(date +%s)
   EXPIRATION_DATE=$(date -d "$ACCOUNT_CREATION_DATE + $EXPIRATION_DAYS days" +%s)
 
-  if [ "$MAX_DOWNLOAD_BYTES" -gt 0 ] && [ "$CURRENT_DOWNLOAD_BYTES" -ge 0 ] && [ "$EXPIRATION_DAYS" -gt 0 ]; then
-    if [ "$CURRENT_DOWNLOAD_BYTES" -ge "$MAX_DOWNLOAD_BYTES" ] || [ "$CURRENT_DATE" -ge "$EXPIRATION_DATE" ]; then
+  if [ "$MAX_DOWNLOAD_BYTES" -gt 0 ] && [ "$EXPIRATION_DAYS" -gt 0 ]; then
+    if [ "$TOTAL_BYTES" -ge "$MAX_DOWNLOAD_BYTES" ] || [ "$CURRENT_DATE" -ge "$EXPIRATION_DATE" ]; then
       for i in {1..3}; do
         jq --arg user "$USERNAME" '.[$user].blocked = true' "$USERS_FILE" > temp.json && mv temp.json "$USERS_FILE" && break
         sleep 1

@@ -58,7 +58,7 @@ for USERNAME in $(jq -r 'keys[]' "$USERS_FILE"); do
   CURRENT_DATE=$(date +%s)
   EXPIRATION_DATE=$(date -d "$ACCOUNT_CREATION_DATE + $EXPIRATION_DAYS days" +%s)
 
-  if [ "$MAX_DOWNLOAD_BYTES" -gt 0 ] && [ "$EXPIRATION_DAYS" -gt 0 ]; then
+  if [ "$MAX_DOWNLOAD_BYTES" -gt 0 ] && [ "$TOTAL_BYTES" -ge 0 ] && [ "$EXPIRATION_DAYS" -gt 0 ]; then
     if [ "$TOTAL_BYTES" -ge "$MAX_DOWNLOAD_BYTES" ] || [ "$CURRENT_DATE" -ge "$EXPIRATION_DATE" ]; then
       for i in {1..3}; do
         jq --arg user "$USERNAME" '.[$user].blocked = true' "$USERS_FILE" > temp.json && mv temp.json "$USERS_FILE" && break

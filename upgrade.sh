@@ -90,6 +90,7 @@ fi
 
 echo "Restoring cron jobs"
 crontab /tmp/crontab_backup
+rm /tmp/crontab_backup
 
 chmod +x menu.sh
 ./menu.sh

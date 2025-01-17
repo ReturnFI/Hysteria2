@@ -20,6 +20,10 @@
 
 ## 📋 راهنمای شروع سریع
 
+برای آموزش های بیشتر به آدرس زیر مراجعه کنید
+
+https://returnfi.github.io/Hys2-docs
+
 ### نصب با یک کلیک
 ```bash
 bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)

@@ -15,11 +15,13 @@ function enable_masquerade() {
     url="https://$1"
     jq --arg url "$url" '. + {masquerade: {type: "proxy", proxy: {url: $url, rewriteHost: true}, listenHTTP: ":80", listenHTTPS: ":443", forceHTTPS: true}}' $CONFIG_FILE > tmp.json && mv tmp.json $CONFIG_FILE
     echo "Masquerade enabled with URL: $url"
+    python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 }
 
 function remove_masquerade() {
     jq 'del(.masquerade)' $CONFIG_FILE > tmp.json && mv tmp.json $CONFIG_FILE
     echo "Masquerade removed from config.json"
+    python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 }
 
 if [[ "$1" == "1" ]]; then

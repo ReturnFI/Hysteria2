@@ -31,6 +31,7 @@ class Command(Enum):
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
+    MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
@@ -304,6 +305,28 @@ def cli_update_geo(country):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
+
+@cli.command('masquerade')
+@click.option('--remove', '-r', is_flag=True, help="Remove 'masquerade' from config.json.")
+@click.option('--enable', '-e', metavar="<domain>", type=str, help="Enable 'masquerade' in config.json with the specified domain.")
+def masquerade(remove, enable):
+    """Manage 'masquerade' in Hysteria2 configuration."""
+    
+    if remove and enable:
+        click.echo("Error: You cannot use both --remove and --enable at the same time.")
+        return
+    elif remove:
+        click.echo("Removing 'masquerade' from config.json...")
+        run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '2'])
+    elif enable:
+        if not enable:
+            click.echo("Error: You must specify a domain with --enable.")
+            return
+        click.echo(f"Enabling 'masquerade' with URL: {enable}...")
+        run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '1', enable])
+    else:
+        click.echo("Error: Please specify either --remove or --enable.")
+        
 # endregion
 
 # region advanced menu

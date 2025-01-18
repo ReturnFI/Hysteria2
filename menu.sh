@@ -640,6 +640,36 @@ geo_update_handler() {
     esac
 }
 
+masquerade_handler() {
+    while true; do
+        echo -e "${cyan}1.${NC} Enable Masquerade"
+        echo -e "${red}2.${NC} Remove Masquerade"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+                read -p "Enter the URL for rewriteHost: " url
+                if [ -z "$url" ]; then
+                    echo "Error: URL cannot be empty. Please try again."
+                else
+                    python3 $CLI_PATH masquerade -e "$url"
+                fi
+                ;;
+            2)
+                python3 $CLI_PATH masquerade -r
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
+
+
 # Function to display the main menu
 display_main_menu() {
     clear
@@ -761,9 +791,10 @@ display_advance_menu() {
     echo -e "${cyan}[10] ${NC}↝ Manage OBFS"
     echo -e "${cyan}[11] ${NC}↝ Change IPs(4-6)"
     echo -e "${cyan}[12] ${NC}↝ Update geo Files"
-    echo -e "${cyan}[13] ${NC}↝ Restart Hysteria2"
-    echo -e "${cyan}[14] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[15] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${cyan}[13] ${NC}↝ Manage Masquerade"
+    echo -e "${cyan}[14] ${NC}↝ Restart Hysteria2"
+    echo -e "${cyan}[15] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[16] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -789,9 +820,10 @@ advance_menu() {
             10) obfs_handler ;;
             11) edit_ips ;;
             12) geo_update_handler ;;
-            13) python3 $CLI_PATH restart-hysteria2 ;;
-            14) python3 $CLI_PATH update-hysteria2 ;;
-            15) python3 $CLI_PATH uninstall-hysteria2 ;;
+            13) masquerade_handler ;;
+            14) python3 $CLI_PATH restart-hysteria2 ;;
+            15) python3 $CLI_PATH update-hysteria2 ;;
+            16) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

@@ -65,6 +65,9 @@ if [ -f "$USERS_FILE" ]; then
     total_download_human=$(convert_bytes $total_download)
 
     echo "🔼${total_upload_human} uploaded"
-    
     echo "🔽${total_download_human} downloaded"
+    
+    total_traffic=$((total_upload + total_download))
+    total_traffic_human=$(convert_bytes $total_traffic)
+    echo "📊 ${total_traffic_human} total traffic"
 fi

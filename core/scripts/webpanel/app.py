@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates

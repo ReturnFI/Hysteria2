@@ -33,8 +33,10 @@ generate_obfs() {
 }
 
 if [[ $1 == "--remove" || $1 == "-r" ]]; then
+    echo "Removing 'obfs' from config.json..."
     remove_obfs
 elif [[ $1 == "--generate" || $1 == "-g" ]]; then
+    echo "Generating 'obfs' in config.json..."
     generate_obfs
 else
     echo "Usage: $0 --remove|-r | --generate|-g"

@@ -27,8 +27,10 @@ function remove_masquerade() {
 }
 
 if [[ "$1" == "1" ]]; then
+    echo "Enabling 'masquerade' with URL: $2..."
     enable_masquerade "$2"
 elif [[ "$1" == "2" ]]; then
+    echo "Removing 'masquerade' from config.json..."
     remove_masquerade
 else
     echo "Usage: $0 {1|2} [domain]"

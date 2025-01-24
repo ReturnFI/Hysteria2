@@ -2,7 +2,7 @@ import os
 import subprocess
 from enum import Enum
 from datetime import datetime
-
+import json
 import traffic
 
 DEBUG = False
@@ -149,18 +149,20 @@ def backup_hysteria():
 # region User
 
 
-def list_users() -> str | None:
+def list_users() -> dict | None:
     """
     Lists all users.
     """
-    return run_cmd(['bash', Command.LIST_USERS.value])
+    if res := run_cmd(['bash', Command.LIST_USERS.value]):
+        return json.loads(res)
 
 
-def get_user(username: str) -> str | None:
+def get_user(username: str) -> dict | None:
     """
     Retrieves information about a specific user.
     """
-    return run_cmd(['bash', Command.GET_USER.value, '-u', str(username)])
+    if res := run_cmd(['bash', Command.GET_USER.value, '-u', str(username)]):
+        return json.loads(res)
 
 
 def add_user(username: str, traffic_limit: int, expiration_days: int, password: str, creation_date: str):

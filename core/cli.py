@@ -5,7 +5,6 @@ import click
 import cli_api
 import json
 
-
 def pretty_print(data: typing.Any):
     if isinstance(data, dict):
         print(json.dumps(data, indent=4))
@@ -13,13 +12,11 @@ def pretty_print(data: typing.Any):
 
     print(data)
 
-
 @click.group()
 def cli():
     pass
 
 # region Hysteria2
-
 
 @cli.command('install-hysteria2')
 @click.option('--port', '-p', required=True, help='Port for Hysteria2', type=int)
@@ -27,56 +24,57 @@ def cli():
 def install_hysteria2(port: int, sni: str):
     try:
         cli_api.install_hysteria2(port, sni)
+        click.echo(f"Hysteria2 installed successfully on port {port} with SNI {sni}.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('uninstall-hysteria2')
 def uninstall_hysteria2():
     try:
         cli_api.uninstall_hysteria2()
+        click.echo("Hysteria2 uninstalled successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('update-hysteria2')
 def update_hysteria2():
     try:
         cli_api.update_hysteria2()
+        click.echo("Hysteria2 updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('restart-hysteria2')
 def restart_hysteria2():
     try:
         cli_api.restart_hysteria2()
+        click.echo("Hysteria2 restarted successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('change-hysteria2-port')
 @click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int)
 def change_hysteria2_port(port: int):
     try:
         cli_api.change_hysteria2_port(port)
+        click.echo(f"Hysteria2 port changed to {port} successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('change-hysteria2-sni')
 @click.option('--sni', '-s', required=True, help='New SNI for Hysteria2', type=str)
 def change_hysteria2_sni(sni: str):
     try:
         cli_api.change_hysteria2_sni(sni)
+        click.echo(f"Hysteria2 SNI changed to {sni} successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('backup-hysteria')
 def backup_hysteria():
     try:
         cli_api.backup_hysteria()
+        click.echo("Hysteria configuration backed up successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -84,12 +82,14 @@ def backup_hysteria():
 
 # region User
 
-
 @ cli.command('list-users')
 def list_users():
     try:
-        if res := cli_api.list_users():
+        res = cli_api.list_users()
+        if res:
             pretty_print(res)
+        else:
+            click.echo("No users found.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -109,13 +109,13 @@ def get_user(username: str):
 @click.option('--traffic-limit', '-t', required=True, help='Traffic limit for the new user in GB', type=int)
 @click.option('--expiration-days', '-e', required=True, help='Expiration days for the new user', type=int)
 @click.option('--password', '-p', required=False, help='Password for the user', type=str)
-@click.option('--creation-date', '-c', required=False, help='Creation date for the user', type=str)
+@click.option('--creation-date', '-c', required=False, help='Creation date for the user (YYYY-MM-DD)', type=str)
 def add_user(username: str, traffic_limit: int, expiration_days: int, password: str, creation_date: str):
     try:
         cli_api.add_user(username, traffic_limit, expiration_days, password, creation_date)
+        click.echo(f"User '{username}' added successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('edit-user')
 @click.option('--username', '-u', required=True, help='Username for the user to edit', type=str)
@@ -129,27 +129,27 @@ def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expi
     try:
         cli_api.edit_user(username, new_username, new_traffic_limit, new_expiration_days,
                           renew_password, renew_creation_date, blocked)
+        click.echo(f"User '{username}' updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @ cli.command('reset-user')
 @ click.option('--username', '-u', required=True, help='Username for the user to Reset', type=str)
 def reset_user(username: str):
     try:
         cli_api.reset_user(username)
+        click.echo(f"User '{username}' reset successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @ cli.command('remove-user')
 @ click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
 def remove_user(username: str):
     try:
         cli_api.remove_user(username)
+        click.echo(f"User '{username}' removed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('show-user-uri')
 @click.option('--username', '-u', required=True, help='Username for the user to show the URI', type=str)
@@ -160,18 +160,22 @@ def remove_user(username: str):
 @click.option('--normalsub', '-n', is_flag=True, help='Generate Normal sublink if normalsub service is active')
 def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: bool, normalsub: bool):
     try:
-        cli_api.show_user_uri(username, qrcode, ipv, all, singbox, normalsub)
+        res = cli_api.show_user_uri(username, qrcode, ipv, all, singbox, normalsub)
+        if res:
+            click.echo(res)
+        else:
+            click.echo(f"URI for user '{username}' could not be generated.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 # endregion
 
-
 # region Server
 @ cli.command('traffic-status')
 def traffic_status():
-    cli_api.traffic_status()
-    # traffic.traffic_status()
-
+    try:
+        cli_api.traffic_status()
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 @cli.command('server-info')
 def server_info():
@@ -179,9 +183,10 @@ def server_info():
         res = cli_api.server_info()
         if res:
             pretty_print(res)
+        else:
+            click.echo("Server information not available.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('manage_obfs')
 @click.option('--remove', '-r', is_flag=True, help="Remove 'obfs' from config.json.")
@@ -189,9 +194,9 @@ def server_info():
 def manage_obfs(remove: bool, generate: bool):
     try:
         cli_api.manage_obfs(remove, generate)
+        click.echo("Obfs configuration updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('ip-address')
 @click.option('--edit', is_flag=True, help="Edit IP addresses manually.")
@@ -205,9 +210,9 @@ def ip_address(edit: bool, ipv4: str, ipv6: str):
     """
     try:
         cli_api.ip_address(edit, ipv4, ipv6)
+        click.echo("IP address configuration updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('update-geo')
 @click.option('--country', '-c',
@@ -217,9 +222,9 @@ def ip_address(edit: bool, ipv4: str, ipv6: str):
 def update_geo(country: str):
     try:
         cli_api.update_geo(country)
+        click.echo(f"Geo files for {country} updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('masquerade')
 @click.option('--remove', '-r', is_flag=True, help="Remove 'masquerade' from config.json.")
@@ -228,6 +233,7 @@ def masquerade(remove: bool, enable: str):
     """Manage 'masquerade' in Hysteria2 configuration."""
     try:
         cli_api.masquerade(remove, enable)
+        click.echo("Masquerade configuration updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -235,30 +241,29 @@ def masquerade(remove: bool, enable: str):
 
 # region Advanced Menu
 
-
 @ cli.command('install-tcp-brutal')
 def install_tcp_brutal():
     try:
         cli_api.install_tcp_brutal()
+        click.echo("TCP Brutal installed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @ cli.command('install-warp')
 def install_warp():
     try:
         cli_api.install_warp()
+        click.echo("WARP installed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @ cli.command('uninstall-warp')
 def uninstall_warp():
     try:
         cli_api.uninstall_warp()
+        click.echo("WARP uninstalled successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('configure-warp')
 @click.option('--all', '-a', is_flag=True, help='Use WARP for all connections')
@@ -270,9 +275,9 @@ def uninstall_warp():
 def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool, warp_option: str, warp_key: str):
     try:
         cli_api.configure_warp(all, popular_sites, domestic_sites, block_adult_sites, warp_option, warp_key)
+        click.echo("WARP configured successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('warp-status')
 def warp_status():
@@ -280,9 +285,10 @@ def warp_status():
         res = cli_api.warp_status()
         if res:
             pretty_print(res)
+        else:
+            click.echo("WARP status not available.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('telegram')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
@@ -290,12 +296,10 @@ def warp_status():
 @click.option('--adminid', '-aid', required=False, help='Telegram admins ID for running the telegram bot', type=str)
 def telegram(action: str, token: str, adminid: str):
     try:
-        res = cli_api.telegram(action, token, adminid)
-        if res:
-            pretty_print(res)
+        cli_api.telegram(action, token, adminid)
+        click.echo(f"Telegram bot {action}ed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('singbox')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
@@ -303,12 +307,10 @@ def telegram(action: str, token: str, adminid: str):
 @click.option('--port', '-p', required=False, help='Port number for Singbox service', type=int)
 def singbox(action: str, domain: str, port: int):
     try:
-        res = cli_api.singbox(action, domain, port)
-        if res:
-            pretty_print(res)
+        cli_api.singbox(action, domain, port)
+        click.echo(f"Singbox service {action}ed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('normal-sub')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
@@ -316,14 +318,12 @@ def singbox(action: str, domain: str, port: int):
 @click.option('--port', '-p', required=False, help='Port number for NormalSub service', type=int)
 def normalsub(action: str, domain: str, port: int):
     try:
-        res = cli_api.normalsub(action, domain, port)
-        if res:
-            pretty_print(res)
+        cli_api.normalsub(action, domain, port)
+        click.echo(f"NormalSub service {action}ed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 
 # endregion
-
 
 if __name__ == '__main__':
     cli()

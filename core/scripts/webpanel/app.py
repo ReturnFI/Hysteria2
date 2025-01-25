@@ -7,12 +7,12 @@ from fastapi import Request
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.staticfiles import StaticFiles
 
-import routers
 
-# Append directory of cli_api.py to be able to import it
-HYSTERIA_CORE_DIR = '/etc/hysteria/core/'
-sys.path.append(HYSTERIA_CORE_DIR)
-# Now we can do `import cli_api`
+HYSTERIA_CORE_DIR = '/etc/hysteria/core/'  # Append directory of cli_api.py to be able to import it
+sys.path.append(HYSTERIA_CORE_DIR)  # Now we can do `import cli_api`
+
+# This import should be after the sys.path modification, because it imports cli_api
+import routers  # noqa
 
 # region Setup App
 app = FastAPI(debug=True)

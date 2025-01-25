@@ -26,7 +26,7 @@ templates = Jinja2Templates(directory='templates')
 
 # region Routers
 # Add API version 1 router
-app.include_router(routers.api.v1.router, prefix='/api/v1', tags=['v1'])
+app.include_router(routers.api.v1.api_v1_router, prefix='/api/v1', tags=['v1'])
 
 
 # Add basic routes

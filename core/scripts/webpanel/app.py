@@ -9,35 +9,36 @@ from starlette.staticfiles import StaticFiles
 
 import routers
 
-# Append directory of cli.py to be able to import it
+# Append directory of cli_api.py to be able to import it
 HYSTERIA_CORE_DIR = '/etc/hysteria/core/'
 sys.path.append(HYSTERIA_CORE_DIR)
+# Now we can do `import cli_api`
 
-
-
-app = FastAPI()
-
-app.mount('/assets', StaticFiles(directory='asset'), name='assets')
-app.add_middleware(SessionMiddleware, secret_key='your-secret-key')
-
-
+# region Setup App
+app = FastAPI(debug=True)
+app.mount('/assets', StaticFiles(directory='assets'), name='assets')
 templates = Jinja2Templates(directory='templates')
+# TODO: fix this
+# app.add_middleware(SessionMiddleware, secret_key='your-secret-key')
 
-app.include_router(router=routers.user.router,prefix='/user')
-app.include_router(router=routers.hysteria.router,prefix='/settings/hysteria')
-app.include_router(router=routers.warp.router,prefix='/settings/warp')
-
-
+# endregion
 
 
+# region Routers
+# Add API version 1 router
+app.include_router(routers.api.v1.router, prefix='/api/v1', tags=['v1'])
+
+
+# Add basic routes
 @app.get('/')
 async def index(request: Request):
     return templates.TemplateResponse('index.html', {'request': request})
-    return templates.TemplateResponse('index.html', {'request': request})
+
 
 @app.get('/home')
 async def home(request: Request):
     return await index(request)
+# endregion
 
 
 if __name__ == '__main__':

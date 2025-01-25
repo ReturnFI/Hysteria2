@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 
-from datetime import datetime
+import typing
 import click
-import subprocess
-
-import validator
 import cli_api
+import json
+
+
+def pretty_print(data: typing.Any):
+    if isinstance(data, dict):
+        print(json.dumps(data, indent=4))
+        return
+
+    print(data)
 
 
 @click.group()
@@ -50,7 +56,7 @@ def restart_hysteria2():
 
 
 @cli.command('change-hysteria2-port')
-@click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int, callback=validator.validate_port)
+@click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int)
 def change_hysteria2_port(port: int):
     try:
         cli_api.change_hysteria2_port(port)
@@ -81,14 +87,19 @@ def backup_hysteria():
 
 @ cli.command('list-users')
 def list_users():
-    cli_api.list_users()
+    try:
+        if res := cli_api.list_users():
+            pretty_print(res)
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
 @cli.command('get-user')
 @click.option('--username', '-u', required=True, help='Username for the user to get', type=str)
 def get_user(username: str):
     try:
-        cli_api.get_user(username)
+        if res := cli_api.get_user(username):
+            pretty_print(res)
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -167,7 +178,7 @@ def server_info():
     try:
         res = cli_api.server_info()
         if res:
-            print(res)
+            pretty_print(res)
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -268,7 +279,7 @@ def warp_status():
     try:
         res = cli_api.warp_status()
         if res:
-            print(res)
+            pretty_print(res)
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -281,7 +292,7 @@ def telegram(action: str, token: str, adminid: str):
     try:
         res = cli_api.telegram(action, token, adminid)
         if res:
-            print(res)
+            pretty_print(res)
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -294,7 +305,7 @@ def singbox(action: str, domain: str, port: int):
     try:
         res = cli_api.singbox(action, domain, port)
         if res:
-            print(res)
+            pretty_print(res)
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -307,7 +318,7 @@ def normalsub(action: str, domain: str, port: int):
     try:
         res = cli_api.normalsub(action, domain, port)
         if res:
-            print(res)
+            pretty_print(res)
     except Exception as e:
         click.echo(f'{e}', err=True)
 

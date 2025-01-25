@@ -1,7 +1,6 @@
 from fastapi import APIRouter
+from . import user
 
-router = APIRouter()
+api_v1_router = APIRouter()
 
-
-# Import files so they are registered
-from . import user  # noqa
+api_v1_router.include_router(user.router, prefix='/users')

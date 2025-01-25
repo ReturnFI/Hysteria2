@@ -78,12 +78,15 @@ def run_cmd(command: list[str]) -> str | None:
     if (DEBUG) and not (Command.GET_USER.value in command or Command.LIST_USERS.value in command):
         print(' '.join(command))
     try:
-        result = subprocess.check_output(command, shell=False)
+        result = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=False)
         if result:
             result = result.decode().strip()
             return result
     except subprocess.CalledProcessError as e:
-        raise CommandExecutionError(f"Command execution failed: {e}")
+        if DEBUG:
+          raise CommandExecutionError(f"Command execution failed: {e}\nOutput: {e.output.decode()}")
+        else:
+          return None
     return None
 
 

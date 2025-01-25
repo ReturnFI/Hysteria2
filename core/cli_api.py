@@ -165,7 +165,7 @@ def get_user(username: str) -> dict | None:
         return json.loads(res)
 
 
-def add_user(username: str, traffic_limit: int, expiration_days: int, password: str, creation_date: str):
+def add_user(username: str, traffic_limit: int, expiration_days: int, password: str | None, creation_date: str | None):
     """
     Adds a new user with the given parameters.
     """
@@ -176,7 +176,7 @@ def add_user(username: str, traffic_limit: int, expiration_days: int, password: 
     run_cmd(['bash', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
 
 
-def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expiration_days: int, renew_password: bool, renew_creation_date: bool, blocked: bool):
+def edit_user(username: str, new_username: str | None, new_traffic_limit: int | None, new_expiration_days: int | None, renew_password: bool, renew_creation_date: bool, blocked: bool):
     """
     Edits an existing user's details.
     """

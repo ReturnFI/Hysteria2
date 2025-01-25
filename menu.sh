@@ -37,7 +37,7 @@ hysteria2_add_user_handler() {
         read -p "Enter the username: " username
 
         if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
-            if python3 $CLI_PATH get-user --username "$username" > /dev/null 2>&1; then
+            if [[ -n $(python3 $CLI_PATH get-user -u "$username") ]]; then
                 echo -e "${red}Error:${NC} Username already exists. Please choose another username."
             else
                 break
@@ -82,8 +82,9 @@ hysteria2_edit_user() {
     prompt_for_input "Enter the username you want to edit: " '^[a-zA-Z0-9]+$' '' username
 
     # Check if user exists
-    if ! python3 $CLI_PATH get-user --username "$username" > /dev/null 2>&1; then
-        echo -e "${red}Error:${NC} User '$username' not found."
+    user_exists_output=$(python3 $CLI_PATH get-user -u "$username" 2>&1)
+    if [[ -z "$user_exists_output" ]]; then
+        echo -e "${red}Error:${NC} User '$username' not found or an error occurred."
         return 1
     fi
 

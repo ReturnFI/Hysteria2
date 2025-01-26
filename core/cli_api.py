@@ -147,6 +147,16 @@ def backup_hysteria():
     '''Backups Hysteria configuration.'''
     run_cmd(['bash', Command.BACKUP_HYSTERIA.value])
 
+
+def generate_hysteria_obfs():
+    '''Generates 'obfs' in Hysteria2 configuration.'''
+    run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
+
+
+def remove_hysteria_obfs():
+    '''Removes 'obfs' from Hysteria2 configuration.'''
+    run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
+
 # endregion
 
 # region User
@@ -259,20 +269,6 @@ def traffic_status():
 def server_info() -> str | None:
     '''Retrieves server information.'''
     return run_cmd(['bash', Command.SERVER_INFO.value])
-
-
-def manage_obfs(remove: bool, generate: bool):
-    '''
-    Manages 'obfs' in Hysteria2 configuration.
-    '''
-    if remove and generate:
-        raise InvalidInputError('Error: You cannot use both --remove and --generate at the same time')
-    elif remove:
-        run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
-    elif generate:
-        run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
-    else:
-        raise InvalidInputError('Error: Please specify either --remove or --generate.')
 
 
 def ip_address(edit: bool, ipv4: str, ipv6: str):

@@ -16,7 +16,17 @@ async def server_status():
 
 
 def __parse_server_status(server_info: str) -> ServerStatusResponse:
-    data = {}
+    # Initial data with default values
+    data = {
+        'cpu_usage': '0%',
+        'total_ram': '0MB',
+        'ram_usage': '0MB',
+        'online_users': 0,
+        'uploaded_traffic': '0KB',
+        'downloaded_traffic': '0KB',
+        'total_traffic': '0KB'
+    }
+
     # Example output(server_info) from cli_api.server_info():
     # 📈 CPU Usage: 9.4%
     # 📋 Total RAM: 3815MB

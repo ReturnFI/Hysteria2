@@ -1,0 +1,94 @@
+{
+  "listen": ":$port",
+  "tls": {
+    "cert": "/path/to/ca.crt",
+    "key": "/path/to/ca.key",
+    "insecure": true,
+    "pinSHA256": "$sha256"
+  },
+  "obfs": {
+    "type": "salamander",
+    "salamander": {
+      "password": "$obfspassword"
+    }
+  },
+  "auth": {
+    "type": "command",
+    "command": "/etc/hysteria/core/scripts/hysteria2/user.sh"
+  },
+  "quic": {
+    "initStreamReceiveWindow": 8388608,
+    "maxStreamReceiveWindow": 8388608,
+    "initConnReceiveWindow": 20971520,
+    "maxConnReceiveWindow": 20971520,
+    "maxIdleTimeout": "20s",
+    "maxIncomingStreams": 1024,
+    "disablePathMTUDiscovery": false
+  },
+  "bandwidth": {
+    "up": "200 mbps",
+    "down": "200 mbps"
+  },
+  "ignoreClientBandwidth": false,
+  "disableUDP": false,
+  "speedTest": false,
+  "udpIdleTimeout": "20s",
+  "resolver": {
+    "type": "tls",
+    "tcp": {
+      "addr": "8.8.8.8:53",
+      "timeout": "4s"
+    },
+    "udp": {
+      "addr": "8.8.4.4:53",
+      "timeout": "4s"
+    },
+    "tls": {
+      "addr": "1.1.1.1:853",
+      "timeout": "10s",
+      "sni": "cloudflare-dns.com",
+      "insecure": false
+    },
+    "https": {
+      "addr": "1.1.1.1:443",
+      "timeout": "10s",
+      "sni": "cloudflare-dns.com",
+      "insecure": false
+    }
+  },
+  "outbounds": [
+    {
+      "name": "v4",
+      "type": "direct",
+      "direct": {
+        "mode": 4,
+        "bindDevice": "$networkdef"
+      }
+    }
+  ],
+  "acl": {
+    "inline": [
+      "reject(geosite:ir)",
+      "reject(geoip:ir)",
+      "reject(geoip:private)",
+      "reject(geoip:phishing)",
+      "reject(geoip:malware)",
+      "reject(geosite:category-ads-all)",
+      "reject(geosite:google@ads)",
+      "reject(geosite:malware)",
+      "reject(geosite:phishing)",
+      "reject(geosite:cryptominers)",
+      "reject(geosite:speedtest)",
+      "reject(10.0.0.0/8)",
+      "reject(172.16.0.0/12)",
+      "reject(192.168.0.0/16)",
+      "reject(fc00::/7)"
+    ],
+    "geoip": "/etc/hysteria/geoip.dat",
+    "geosite": "/etc/hysteria/geosite.dat"
+  },
+  "trafficStats": {
+    "listen": "127.0.0.1:25413",
+    "secret": "$UUID"
+  }
+}

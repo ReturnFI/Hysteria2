@@ -215,12 +215,13 @@ def manage_obfs(remove: bool, generate: bool):
             raise click.UsageError('Error: You must use either --remove or --generate')
         if remove and generate:
             raise click.UsageError('Error: You cannot use both --remove and --generate at the same time')
-        elif generate:
+
+        if generate:
             cli_api.enable_hysteria2_obfs()
-            click.echo("Obfs generated successfully.")
+            click.echo("Obfs enabled successfully.")
         elif remove:
             cli_api.disable_hysteria2_obfs()
-            click.echo("Obfs removed successfully.")
+            click.echo("Obfs disabled successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -261,8 +262,20 @@ def update_geo(country: str):
 def masquerade(remove: bool, enable: str):
     """Manage 'masquerade' in Hysteria2 configuration."""
     try:
-        cli_api.masquerade(remove, enable)
-        click.echo("Masquerade configuration updated successfully.")
+        if not remove and not enable:
+            raise click.UsageError('Error: You must use either --remove or --enable')
+        if remove and enable:
+            raise click.UsageError('Error: You cannot use both --remove and --enable at the same time')
+
+        if enable:
+            # NOT SURE THIS IS NEEDED
+            # if not enable.startswith("http://") and not enable.startswith("https://"):
+            #     enable = "https://" + enable
+            cli_api.enable_hysteria2_masquerade(enable)
+            click.echo("Masquerade enabled successfully.")
+        elif remove:
+            cli_api.disable_hysteria2_masquerade()
+            click.echo("Masquerade disabled successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 

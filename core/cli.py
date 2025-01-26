@@ -211,8 +211,16 @@ def server_info():
 @click.option('--generate', '-g', is_flag=True, help="Generate new 'obfs' in config.json.")
 def manage_obfs(remove: bool, generate: bool):
     try:
-        cli_api.manage_obfs(remove, generate)
-        click.echo("Obfs configuration updated successfully.")
+        if not remove and not generate:
+            raise click.UsageError('Error: You must use either --remove or --generate')
+        if remove and generate:
+            raise click.UsageError('Error: You cannot use both --remove and --generate at the same time')
+        elif generate:
+            cli_api.generate_hysteria_obfs()
+            click.echo("Obfs generated successfully.")
+        elif remove:
+            cli_api.remove_hysteria_obfs()
+            click.echo("Obfs removed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 

@@ -370,41 +370,35 @@ def warp_status() -> str | None:
     return run_cmd(['bash', Command.STATUS_WARP.value])
 
 
-def telegram(action: str, token: str, adminid: str):
-    '''
-    Manages the Telegram bot with start/stop actions.
-    '''
-    if action == 'start':
-        if not token or not adminid:
-            raise InvalidInputError('Error: Both --token and --adminid are required for the start action.')
-        admin_ids = f'{adminid}'
-        run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'start', token, admin_ids])
-    elif action == 'stop':
-        run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
+def start_telegram_bot(token: str, adminid: str):
+    '''Starts the Telegram bot.'''
+    if not token or not adminid:
+        raise InvalidInputError('Error: Both --token and --adminid are required for the start action.')
+    run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'start', token, adminid])
 
 
-def singbox(action: str, domain: str, port: int):
-    '''
-    Manages Singbox with start/stop actions.
-    '''
-    if action == 'start':
-        if not domain or not port:
-            raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
-        run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'start', domain, str(port)])
-    elif action == 'stop':
-        run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'stop'])
+def stop_telegram_bot():
+    '''Stops the Telegram bot.'''
+    run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
 
 
-def normalsub(action: str, domain: str, port: int):
-    '''
-    Manages Normalsub with start/stop actions.
-    '''
-    if action == 'start':
-        if not domain or not port:
-            raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
-        run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'start', domain, str(port)])
-    elif action == 'stop':
-        run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'stop'])
+def start_singbox(domain: str, port: int):
+    if not domain or not port:
+        raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
+    run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'start', domain, str(port)])
 
+
+def stop_singbox():
+    run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'stop'])
+
+
+def start_normalsub(domain: str, port: int):
+    if not domain or not port:
+        raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
+    run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'start', domain, str(port)])
+
+
+def stop_normalsub():
+    run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'stop'])
 # endregion
 # endregion

@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 
-from .schema.user import UserList, UserInfo, AddUserInputBody, EditUserInputBody
+from .schema.user import UserListResponse, UserInfoResponse, AddUserInputBody, EditUserInputBody
 from .schema.response import DetailResponse
 import cli_api
 
 router = APIRouter()
 
 
-@router.get('/', response_model=UserList)
+@router.get('/', response_model=UserListResponse)
 async def list_users():
     try:
         if res := cli_api.list_users():
@@ -17,7 +17,7 @@ async def list_users():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/{username}', response_model=UserInfo)
+@router.get('/{username}', response_model=UserInfoResponse)
 async def get_user(username: str):
     try:
         if res := cli_api.get_user(username):
@@ -46,6 +46,15 @@ async def edit_user(username: str, body: EditUserInputBody):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
+@router.delete('/{username}', response_model=DetailResponse)
+async def remove_user(username: str):
+    try:
+        cli_api.remove_user(username)
+        return DetailResponse(detail=f'User {username} has been removed.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
 @router.get('/{username}/reset', response_model=DetailResponse)
 async def reset_user(username: str):
     try:
@@ -54,11 +63,11 @@ async def reset_user(username: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
-
-@router.delete('/{username}', response_model=DetailResponse)
-async def remove_user(username: str):
-    try:
-        cli_api.remove_user(username)
-        return DetailResponse(detail=f'User {username} has been removed.')
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+# TODO implement show user uri endpoint
+# @router.get('/{username}/uri', response_model=TODO)
+# async def show_user_uri(username: str):
+#     try:
+#         res = cli_api.show_user_uri(username)
+#         return res
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')

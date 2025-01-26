@@ -6,7 +6,7 @@ from pydantic import BaseModel, RootModel
 # WHAT I'M SAYING IS THAT OUR CODE IN HERE WILL BE SPAGHETTI CODE IF WE WANT TO HAVE CONSISTENCY IN ALL RESPONSES OF THE APIs
 # THE MAIN PROBLEM IS IN THE CLI CODE NOT IN THE WEB PANEL CODE (HERE)
 
-class UserInfo(BaseModel):
+class UserInfoResponse(BaseModel):
     password: str
     max_download_bytes: int
     expiration_days: int
@@ -14,8 +14,8 @@ class UserInfo(BaseModel):
     blocked: bool
 
 
-class UserList(RootModel):
-    root: dict[str, UserInfo]
+class UserListResponse(RootModel):
+    root: dict[str, UserInfoResponse]
 
 
 class AddUserInputBody(BaseModel):

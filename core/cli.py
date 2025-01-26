@@ -323,8 +323,14 @@ def warp_status():
 @click.option('--adminid', '-aid', required=False, help='Telegram admins ID for running the telegram bot', type=str)
 def telegram(action: str, token: str, adminid: str):
     try:
-        cli_api.telegram(action, token, adminid)
-        click.echo(f"Telegram bot {action}ed successfully.")
+        if action == 'start':
+            if not token or not adminid:
+                raise click.UsageError('Error: Both --token and --adminid are required for the start action.')
+            cli_api.start_telegram_bot(token, adminid)
+            click.echo(f"Telegram bot started successfully.")
+        elif action == 'stop':
+            cli_api.stop_telegram_bot()
+            click.echo(f"Telegram bot stopped successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -335,8 +341,14 @@ def telegram(action: str, token: str, adminid: str):
 @click.option('--port', '-p', required=False, help='Port number for Singbox service', type=int)
 def singbox(action: str, domain: str, port: int):
     try:
-        cli_api.singbox(action, domain, port)
-        click.echo(f"Singbox service {action}ed successfully.")
+        if action == 'start':
+            if not domain or not port:
+                raise click.UsageError('Error: Both --domain and --port are required for the start action.')
+            cli_api.start_singbox(domain, port)
+            click.echo(f"Singbox started successfully.")
+        elif action == 'stop':
+            cli_api.stop_singbox()
+            click.echo(f"Singbox stopped successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -347,8 +359,14 @@ def singbox(action: str, domain: str, port: int):
 @click.option('--port', '-p', required=False, help='Port number for NormalSub service', type=int)
 def normalsub(action: str, domain: str, port: int):
     try:
-        cli_api.normalsub(action, domain, port)
-        click.echo(f"NormalSub service {action}ed successfully.")
+        if action == 'start':
+            if not domain or not port:
+                raise click.UsageError('Error: Both --domain and --port are required for the start action.')
+            cli_api.start_normalsub(domain, port)
+            click.echo(f"NormalSub started successfully.")
+        elif action == 'stop':
+            cli_api.stop_normalsub()
+            click.echo(f"NormalSub stopped successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 

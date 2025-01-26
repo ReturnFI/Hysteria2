@@ -17,6 +17,16 @@ async def server_status():
 
 def __parse_server_status(server_info: str) -> ServerStatusResponse:
     data = {}
+    # Example output(server_info) from cli_api.server_info():
+    # 📈 CPU Usage: 9.4%
+    # 📋 Total RAM: 3815MB
+    # 💻 Used RAM: 2007MB
+    # 👥 Online Users: 0
+    #
+    # 🔼 Uploaded Traffic: 0 KB
+    # 🔽 Downloaded Traffic: 0 KB
+    # 📊 Total Traffic: 0 KB
+
     for line in server_info.splitlines():
         key, _, value = line.partition(":")
         key = key.strip().lower()

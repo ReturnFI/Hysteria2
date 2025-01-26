@@ -6,8 +6,20 @@ import cli_api
 router = APIRouter()
 
 
-@router.get('/install', response_model=DetailResponse)
+@router.get('/install', response_model=DetailResponse, summary='Install Hysteria2')
 async def install(body: InstallInputBody):
+    """
+    Installs Hysteria2 on the given port and uses the provided or default SNI value.
+
+    Args:
+        body: An instance of InstallInputBody containing the new port and SNI value.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 installation was successful.
+
+    Raises:
+        HTTPException: if an error occurs while installing Hysteria2.
+    """
     try:
         cli_api.install_hysteria2(body.port, body.sni)
         return DetailResponse(detail=f'Hysteria2 installed successfully on port {body.port} with SNI {body.sni}.')
@@ -15,8 +27,17 @@ async def install(body: InstallInputBody):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/uninstall', response_model=DetailResponse)
+@router.get('/uninstall', response_model=DetailResponse, summary='Uninstall Hysteria2')
 async def uninstall():
+    """
+    Uninstalls Hysteria2.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 uninstallation was successful.
+
+    Raises:
+        HTTPException: if an error occurs while uninstalling Hysteria2.
+    """
     try:
         cli_api.uninstall_hysteria2()
         return DetailResponse(detail='Hysteria2 uninstalled successfully.')
@@ -24,8 +45,17 @@ async def uninstall():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/update', response_model=DetailResponse)
+@router.get('/update', response_model=DetailResponse, summary='Update Hysteria2')
 async def update():
+    """
+    Updates Hysteria2.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 update was successful.
+
+    Raises:
+        HTTPException: if an error occurs while updating Hysteria2.
+    """
     try:
         cli_api.update_hysteria2()
         return DetailResponse(detail='Hysteria2 updated successfully.')
@@ -33,8 +63,20 @@ async def update():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/set-port/{port}', response_model=DetailResponse)
+@router.get('/set-port/{port}', response_model=DetailResponse, summary='Set Hysteria2 port')
 async def set_port(port: int):
+    """
+    Sets the port for Hysteria2.
+
+    Args:
+        port: The new port value.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 port change was successful.
+
+    Raises:
+        HTTPException: if an error occurs while changing the Hysteria2 port.
+    """
     try:
         cli_api.change_hysteria2_port(port)
         return DetailResponse(detail=f'Hysteria2 port changed to {port} successfully.')
@@ -42,8 +84,20 @@ async def set_port(port: int):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/set-sni/{sni}', response_model=DetailResponse)
+@router.get('/set-sni/{sni}', response_model=DetailResponse, summary='Set Hysteria2 SNI')
 async def set_sni(sni: str):
+    """
+    Sets the SNI for Hysteria2.
+
+    Args:
+        sni: The new SNI value.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 SNI change was successful.
+
+    Raises:
+        HTTPException: if an error occurs while changing the Hysteria2 SNI.
+    """
     try:
         cli_api.change_hysteria2_sni(sni)
         return DetailResponse(detail=f'Hysteria2 SNI changed to {sni} successfully.')
@@ -51,8 +105,17 @@ async def set_sni(sni: str):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/backup', response_model=DetailResponse)
+@router.get('/backup', response_model=DetailResponse, summary='Backup Hysteria2 configuration')
 async def backup():
+    """
+    Backups the Hysteria2 configuration.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 configuration backup was successful.
+
+    Raises:
+        HTTPException: if an error occurs while backing up the Hysteria2 configuration.
+    """
     try:
         cli_api.backup_hysteria2()
         return DetailResponse(detail='Hysteria2 configuration backed up successfully.')
@@ -60,8 +123,17 @@ async def backup():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/enable-obfs', response_model=DetailResponse)
+@router.get('/enable-obfs', response_model=DetailResponse, summary='Enable Hysteria2 obfs')
 async def enable_obfs():
+    """
+    Enables Hysteria2 obfs.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 obfs was enabled successfully.
+
+    Raises:
+        HTTPException: if an error occurs while enabling Hysteria2 obfs.
+    """
     try:
         cli_api.enable_hysteria2_obfs()
         return DetailResponse(detail='Hysteria2 obfs enabled successfully.')
@@ -69,8 +141,17 @@ async def enable_obfs():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/disable-obfs', response_model=DetailResponse)
+@router.get('/disable-obfs', response_model=DetailResponse, summary='Disable Hysteria2 obfs')
 async def disable_obfs():
+    """
+    Disables Hysteria2 obfs.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 obfs was disabled successfully.
+
+    Raises:
+        HTTPException: if an error occurs while disabling Hysteria2 obfs.
+    """
     try:
         cli_api.disable_hysteria2_obfs()
         return DetailResponse(detail='Hysteria2 obfs disabled successfully.')
@@ -78,8 +159,20 @@ async def disable_obfs():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/enable-masquerade/{domain}', response_model=DetailResponse)
+@router.get('/enable-masquerade/{domain}', response_model=DetailResponse, summary='Enable Hysteria2 masquerade')
 async def enable_masquerade(domain: str):
+    """
+    Enables Hysteria2 masquerade for the given domain.
+
+    Args:
+        domain: The domain to enable Hysteria2 masquerade for.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 masquerade was enabled successfully.
+
+    Raises:
+        HTTPException: if an error occurs while enabling Hysteria2 masquerade.
+    """
     try:
         cli_api.enable_hysteria2_masquerade(domain)
         return DetailResponse(detail='Hysteria2 masquerade enabled successfully.')
@@ -87,8 +180,17 @@ async def enable_masquerade(domain: str):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/disable-masquerade', response_model=DetailResponse)
+@router.get('/disable-masquerade', response_model=DetailResponse, summary='Disable Hysteria2 masquerade')
 async def disable_masquerade():
+    """
+    Disables Hysteria2 masquerade.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 masquerade was disabled successfully.
+
+    Raises:
+        HTTPException: if an error occurs while disabling Hysteria2 masquerade.
+    """
     try:
         cli_api.disable_hysteria2_masquerade()
         return DetailResponse(detail='Hysteria2 masquerade disabled successfully.')

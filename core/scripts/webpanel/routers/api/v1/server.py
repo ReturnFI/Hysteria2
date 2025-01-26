@@ -7,6 +7,20 @@ router = APIRouter()
 
 @router.get('/status', response_model=ServerStatusResponse)
 async def server_status():
+    """
+    Retrieve the server status.
+
+    This endpoint provides information about the current server status,
+    including CPU usage, RAM usage, online users, and traffic statistics.
+
+    Returns:
+        ServerStatusResponse: A response model containing server status details.
+
+    Raises:
+        HTTPException: If the server information is not available (404) or
+                       if there is an error processing the request (400).
+    """
+
     try:
         if res := cli_api.server_info():
             return __parse_server_status(res)
@@ -17,6 +31,19 @@ async def server_status():
 
 def __parse_server_status(server_info: str) -> ServerStatusResponse:
     # Initial data with default values
+    """
+    Parse the server information provided by cli_api.server_info()
+    and return a ServerStatusResponse instance.
+
+    Args:
+        server_info (str): The output of cli_api.server_info() as a string.
+
+    Returns:
+        ServerStatusResponse: A response model containing server status details.
+
+    Raises:
+        ValueError: If the server information is invalid or incomplete.
+    """
     data = {
         'cpu_usage': '0%',
         'total_ram': '0MB',

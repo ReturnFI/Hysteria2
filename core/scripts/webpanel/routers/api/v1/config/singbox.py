@@ -8,6 +8,17 @@ router = APIRouter()
 
 @router.get('/start', response_model=DetailResponse)
 async def start(body: StartInputBody):
+    """
+    Start the Singbox service.
+
+    This endpoint starts the Singbox service if it is currently not running.
+
+    Args:
+        body (StartInputBody): The domain name and port number for the service.
+
+    Returns:
+        DetailResponse: The response with the result of the command.
+    """
     try:
         cli_api.start_singbox(body.domain, body.port)
         return DetailResponse(detail='Singbox started successfully.')
@@ -17,6 +28,18 @@ async def start(body: StartInputBody):
 
 @router.get('/stop', response_model=DetailResponse)
 async def stop():
+    """
+    Stop the Singbox service.
+
+    This endpoint stops the Singbox service if it is currently running.
+
+    Returns:
+        DetailResponse: A response model indicating the stop status of the Singbox service.
+
+    Raises:
+        HTTPException: If there is an error stopping the Singbox service (400).
+    """
+
     try:
         cli_api.stop_singbox()
         return DetailResponse(detail='Singbox stopped successfully.')

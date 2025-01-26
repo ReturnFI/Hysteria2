@@ -80,9 +80,9 @@ def change_hysteria2_sni(sni: str):
 
 
 @cli.command('backup-hysteria')
-def backup_hysteria():
+def backup_hysteria2():
     try:
-        cli_api.backup_hysteria()
+        cli_api.backup_hysteria2()
         click.echo("Hysteria configuration backed up successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
@@ -216,10 +216,10 @@ def manage_obfs(remove: bool, generate: bool):
         if remove and generate:
             raise click.UsageError('Error: You cannot use both --remove and --generate at the same time')
         elif generate:
-            cli_api.generate_hysteria_obfs()
+            cli_api.enable_hysteria2_obfs()
             click.echo("Obfs generated successfully.")
         elif remove:
-            cli_api.remove_hysteria_obfs()
+            cli_api.disable_hysteria2_obfs()
             click.echo("Obfs removed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)

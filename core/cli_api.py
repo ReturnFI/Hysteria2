@@ -30,7 +30,7 @@ class Command(Enum):
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
-    BACKUP_HYSTERIA = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
+    BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
     INSTALL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
@@ -143,17 +143,17 @@ def change_hysteria2_sni(sni: str):
     run_cmd(['bash', Command.CHANGE_SNI_HYSTERIA2.value, sni])
 
 
-def backup_hysteria():
+def backup_hysteria2():
     '''Backups Hysteria configuration.'''
-    run_cmd(['bash', Command.BACKUP_HYSTERIA.value])
+    run_cmd(['bash', Command.BACKUP_HYSTERIA2.value])
 
 
-def generate_hysteria_obfs():
+def enable_hysteria2_obfs():
     '''Generates 'obfs' in Hysteria2 configuration.'''
     run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
 
 
-def remove_hysteria_obfs():
+def disable_hysteria2_obfs():
     '''Removes 'obfs' from Hysteria2 configuration.'''
     run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
 

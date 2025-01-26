@@ -157,6 +157,15 @@ def disable_hysteria2_obfs():
     '''Removes 'obfs' from Hysteria2 configuration.'''
     run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
 
+
+def enable_hysteria2_masquerade(domain: str):
+    '''Enables masquerade for Hysteria2.'''
+    run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '1', domain])
+
+
+def disable_hysteria2_masquerade():
+    '''Disables masquerade for Hysteria2.'''
+    run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '2'])
 # endregion
 
 # region User
@@ -300,19 +309,6 @@ def update_geo(country: str):
     except Exception as e:
         raise HysteriaError(f'An unexpected error occurred: {e}')
 
-
-def masquerade(remove: bool, enable: str):
-    '''
-    Configures masquerade settings.
-    '''
-    if remove and enable:
-        raise InvalidInputError('Error: You cannot use both --remove and --enable at the same time.')
-    if remove:
-        run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '2'])
-    elif enable:
-        run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '1', enable])
-    else:
-        raise InvalidInputError('Error: Please specify either --remove or --enable.')
 
 # endregion
 

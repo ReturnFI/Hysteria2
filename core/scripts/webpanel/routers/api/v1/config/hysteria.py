@@ -76,3 +76,21 @@ async def disable_obfs():
         return DetailResponse(detail='Hysteria2 obfs disabled successfully.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
+@router.get('/enable-masquerade/{domain}', response_model=DetailResponse)
+async def enable_masquerade(domain: str):
+    try:
+        cli_api.enable_hysteria2_masquerade(domain)
+        return DetailResponse(detail='Hysteria2 masquerade enabled successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
+@router.get('/disable-masquerade', response_model=DetailResponse)
+async def disable_masquerade():
+    try:
+        cli_api.disable_hysteria2_masquerade()
+        return DetailResponse(detail='Hysteria2 masquerade disabled successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')

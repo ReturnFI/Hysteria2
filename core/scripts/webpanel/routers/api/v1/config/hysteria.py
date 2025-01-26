@@ -54,7 +54,25 @@ async def set_sni(sni: str):
 @router.get('/backup', response_model=DetailResponse)
 async def backup():
     try:
-        cli_api.backup_hysteria()
+        cli_api.backup_hysteria2()
         return DetailResponse(detail='Hysteria2 configuration backed up successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
+@router.get('/enable-obfs', response_model=DetailResponse)
+async def enable_obfs():
+    try:
+        cli_api.enable_hysteria2_obfs()
+        return DetailResponse(detail='Hysteria2 obfs enabled successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
+@router.get('/disable-obfs', response_model=DetailResponse)
+async def disable_obfs():
+    try:
+        cli_api.disable_hysteria2_obfs()
+        return DetailResponse(detail='Hysteria2 obfs disabled successfully.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')

@@ -5,6 +5,7 @@ import click
 import cli_api
 import json
 
+
 def pretty_print(data: typing.Any):
     if isinstance(data, dict):
         print(json.dumps(data, indent=4))
@@ -12,11 +13,13 @@ def pretty_print(data: typing.Any):
 
     print(data)
 
+
 @click.group()
 def cli():
     pass
 
 # region Hysteria2
+
 
 @cli.command('install-hysteria2')
 @click.option('--port', '-p', required=True, help='Port for Hysteria2', type=int)
@@ -28,6 +31,7 @@ def install_hysteria2(port: int, sni: str):
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @cli.command('uninstall-hysteria2')
 def uninstall_hysteria2():
     try:
@@ -35,6 +39,7 @@ def uninstall_hysteria2():
         click.echo("Hysteria2 uninstalled successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('update-hysteria2')
 def update_hysteria2():
@@ -44,6 +49,7 @@ def update_hysteria2():
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @cli.command('restart-hysteria2')
 def restart_hysteria2():
     try:
@@ -51,6 +57,7 @@ def restart_hysteria2():
         click.echo("Hysteria2 restarted successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('change-hysteria2-port')
 @click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int)
@@ -61,6 +68,7 @@ def change_hysteria2_port(port: int):
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @cli.command('change-hysteria2-sni')
 @click.option('--sni', '-s', required=True, help='New SNI for Hysteria2', type=str)
 def change_hysteria2_sni(sni: str):
@@ -69,6 +77,7 @@ def change_hysteria2_sni(sni: str):
         click.echo(f"Hysteria2 SNI changed to {sni} successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('backup-hysteria')
 def backup_hysteria():
@@ -81,6 +90,7 @@ def backup_hysteria():
 # endregion
 
 # region User
+
 
 @ cli.command('list-users')
 def list_users():
@@ -117,6 +127,7 @@ def add_user(username: str, traffic_limit: int, expiration_days: int, password: 
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @cli.command('edit-user')
 @click.option('--username', '-u', required=True, help='Username for the user to edit', type=str)
 @click.option('--new-username', '-nu', required=False, help='New username for the user', type=str)
@@ -133,6 +144,7 @@ def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expi
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @ cli.command('reset-user')
 @ click.option('--username', '-u', required=True, help='Username for the user to Reset', type=str)
 def reset_user(username: str):
@@ -142,6 +154,7 @@ def reset_user(username: str):
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @ cli.command('remove-user')
 @ click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
 def remove_user(username: str):
@@ -150,6 +163,7 @@ def remove_user(username: str):
         click.echo(f"User '{username}' removed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('show-user-uri')
 @click.option('--username', '-u', required=True, help='Username for the user to show the URI', type=str)
@@ -170,12 +184,15 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
 # endregion
 
 # region Server
+
+
 @ cli.command('traffic-status')
 def traffic_status():
     try:
         cli_api.traffic_status()
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('server-info')
 def server_info():
@@ -188,6 +205,7 @@ def server_info():
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @cli.command('manage_obfs')
 @click.option('--remove', '-r', is_flag=True, help="Remove 'obfs' from config.json.")
 @click.option('--generate', '-g', is_flag=True, help="Generate new 'obfs' in config.json.")
@@ -197,6 +215,7 @@ def manage_obfs(remove: bool, generate: bool):
         click.echo("Obfs configuration updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('ip-address')
 @click.option('--edit', is_flag=True, help="Edit IP addresses manually.")
@@ -214,6 +233,7 @@ def ip_address(edit: bool, ipv4: str, ipv6: str):
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @cli.command('update-geo')
 @click.option('--country', '-c',
               type=click.Choice(['iran', 'china', 'russia'], case_sensitive=False),
@@ -225,6 +245,7 @@ def update_geo(country: str):
         click.echo(f"Geo files for {country} updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('masquerade')
 @click.option('--remove', '-r', is_flag=True, help="Remove 'masquerade' from config.json.")
@@ -241,6 +262,7 @@ def masquerade(remove: bool, enable: str):
 
 # region Advanced Menu
 
+
 @ cli.command('install-tcp-brutal')
 def install_tcp_brutal():
     try:
@@ -248,6 +270,7 @@ def install_tcp_brutal():
         click.echo("TCP Brutal installed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @ cli.command('install-warp')
 def install_warp():
@@ -257,6 +280,7 @@ def install_warp():
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @ cli.command('uninstall-warp')
 def uninstall_warp():
     try:
@@ -264,6 +288,7 @@ def uninstall_warp():
         click.echo("WARP uninstalled successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('configure-warp')
 @click.option('--all', '-a', is_flag=True, help='Use WARP for all connections')
@@ -279,6 +304,7 @@ def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_a
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @cli.command('warp-status')
 def warp_status():
     try:
@@ -289,6 +315,7 @@ def warp_status():
             click.echo("WARP status not available.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('telegram')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
@@ -301,6 +328,7 @@ def telegram(action: str, token: str, adminid: str):
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
 @cli.command('singbox')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
 @click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
@@ -311,6 +339,7 @@ def singbox(action: str, domain: str, port: int):
         click.echo(f"Singbox service {action}ed successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
 
 @cli.command('normal-sub')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
@@ -324,6 +353,7 @@ def normalsub(action: str, domain: str, port: int):
         click.echo(f'{e}', err=True)
 
 # endregion
+
 
 if __name__ == '__main__':
     cli()

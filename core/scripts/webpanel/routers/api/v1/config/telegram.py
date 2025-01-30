@@ -6,7 +6,7 @@ import cli_api
 router = APIRouter()
 
 
-@router.get('/start', response_model=DetailResponse)
+@router.post('/start', response_model=DetailResponse, summary='Start Telegram Bot')
 async def start(body: StartInputBody):
     """
     Starts the Telegram bot.
@@ -24,7 +24,7 @@ async def start(body: StartInputBody):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/stop', response_model=DetailResponse)
+@router.delete('/stop', response_model=DetailResponse, summary='Stop Telegram Bot')
 async def stop():
     """
     Stops the Telegram bot.

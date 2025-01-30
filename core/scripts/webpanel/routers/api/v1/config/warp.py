@@ -8,10 +8,11 @@ import cli_api
 router = APIRouter()
 
 
-@router.get('/install', response_model=DetailResponse)
+@router.post('/install', response_model=DetailResponse, summary='Install WARP')
 async def install():
     """
     Installs WARP.
+    It's post method because keeping backward compatibility if we need to add parameters in the future.
 
     Returns:
         DetailResponse: A response indicating the success of the installation.
@@ -26,7 +27,7 @@ async def install():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/uninstall', response_model=DetailResponse)
+@router.delete('/uninstall', response_model=DetailResponse, summary='Uninstall WARP')
 async def uninstall():
     """
     Uninstalls WARP.
@@ -44,7 +45,7 @@ async def uninstall():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/configure', response_model=DetailResponse)
+@router.post('/configure', response_model=DetailResponse, summary='Configure WARP')
 async def configure(body: ConfigureInputBody):
     """
     Configures WARP with the given options.
@@ -66,7 +67,7 @@ async def configure(body: ConfigureInputBody):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/status', response_model=StatusResponse)
+@router.get('/status', response_model=StatusResponse, summary='Get WARP Status')
 async def status():
     """
     Retrieves the current status of WARP.
@@ -99,7 +100,6 @@ def __parse_status(status: str) -> StatusResponse:
         ValueError: If the WARP status is invalid or incomplete.
     """
 
-    data = {}
     # Example output(status) from cli_api.warp_status():
     # --------------------------------
     # Current WARP Configuration:
@@ -108,6 +108,7 @@ def __parse_status(status: str) -> StatusResponse:
     # Domestic sites (geosite:ir, geoip:ir): Inactive
     # Block adult content: Inactive
     # --------------------------------
+    data = {}
 
     # Remove ANSI escape sequences(colors) (e.g., \x1b[1;35m)
     clean_status = re.sub(r'\x1b\[[0-9;]*m', '', status)

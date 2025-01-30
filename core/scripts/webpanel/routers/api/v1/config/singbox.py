@@ -6,7 +6,7 @@ import cli_api
 router = APIRouter()
 
 
-@router.get('/start', response_model=DetailResponse)
+@router.post('/start', response_model=DetailResponse, summary='Start Singbox')
 async def start(body: StartInputBody):
     """
     Start the Singbox service.
@@ -26,8 +26,8 @@ async def start(body: StartInputBody):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/stop', response_model=DetailResponse)
-async def stop():
+@router.get('/stop', response_model=DetailResponse, summary='Stop Singbox')
+async def delete():
     """
     Stop the Singbox service.
 

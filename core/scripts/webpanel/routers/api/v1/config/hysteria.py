@@ -6,7 +6,7 @@ import cli_api
 router = APIRouter()
 
 
-@router.get('/install', response_model=DetailResponse, summary='Install Hysteria2')
+@router.post('/install', response_model=DetailResponse, summary='Install Hysteria2')
 async def install(body: InstallInputBody):
     """
     Installs Hysteria2 on the given port and uses the provided or default SNI value.
@@ -27,7 +27,7 @@ async def install(body: InstallInputBody):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/uninstall', response_model=DetailResponse, summary='Uninstall Hysteria2')
+@router.delete('/uninstall', response_model=DetailResponse, summary='Uninstall Hysteria2')
 async def uninstall():
     """
     Uninstalls Hysteria2.
@@ -45,7 +45,7 @@ async def uninstall():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/update', response_model=DetailResponse, summary='Update Hysteria2')
+@router.patch('/update', response_model=DetailResponse, summary='Update Hysteria2')
 async def update():
     """
     Updates Hysteria2.

@@ -69,7 +69,7 @@ async def add_user(body: AddUserInputBody):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.patch('{username}', response_model=DetailResponse)
+@router.patch('/{username}', response_model=DetailResponse)
 async def edit_user(username: str, body: EditUserInputBody):
     """
     Edit a user's details.

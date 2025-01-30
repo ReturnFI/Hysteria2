@@ -5,10 +5,11 @@ import cli_api
 router = APIRouter()
 
 
-@router.get('/install-tcp-brutal', response_model=DetailResponse)
+@router.post('/install-tcp-brutal', response_model=DetailResponse, summary='Install TCP Brutal')
 async def install_tcp_brutal():
     """
     Endpoint to install TCP Brutal service.
+    It's post method because keeping backward compatibility if we need to add parameters in the future.
 
     Returns:
         DetailResponse: A response object indicating the success of the installation.
@@ -23,7 +24,7 @@ async def install_tcp_brutal():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/update-geo/{country}', response_model=DetailResponse)
+@router.get('/update-geo/{country}', response_model=DetailResponse, summary='Update Geo files')
 async def update_geo(country: str):
     """
     Endpoint to update geographic data files based on the specified country.

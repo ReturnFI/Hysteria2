@@ -1,0 +1,9 @@
+/* Center the qrcodesContainer */
+#qrcodesContainer {
+    text-align: center;
+  }
+  
+  /* Style the config type text */
+  .config-type-text {
+    font-weight: 600;
+  }

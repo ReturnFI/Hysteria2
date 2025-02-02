@@ -1,0 +1,553 @@
+{% extends "base.html" %}
+
+{% block title %}Users{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Users</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">User List</h3>
+                <div class="card-tools d-flex align-items-center">
+                    <!-- Search Form -->
+                    <div class="input-group input-group-sm" style="width: 100px;">
+                        <input type="text" id="searchInput" class="form-control float-right" placeholder="Search">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-default" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Add User Button -->
+                    <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#addUserModal">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-bordered table-hover" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Username</th>
+                            <th>Quota</th>
+                            <th>Used</th>
+                            <th class="text-nowrap">Expiry Date</th>
+                            <th class="text-nowrap">Expiry Days</th>
+                            <th>Enable</th>
+                            <th class="text-nowrap">Configs</th>
+                            <th class="text-nowrap">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                {% if user['status'] == "Online" %}
+                                <i class="fas fa-circle text-success"></i> Online
+                                {% elif user['status'] == "Offline" %}
+                                <i class="fas fa-circle text-secondary"></i> Offline
+                                {% else %}
+                                <i class="fas fa-circle text-danger"></i> {{ user['status'] }}
+                                {% endif %}
+                            </td>
+                            <td data-username="{{ user.username }}">{{ user.username }}</td>
+                            <td>{{ user.quota }}</td>
+                            <td>{{ user.traffic_used }}</td>
+                            <td>{{ user.expiry_date }}</td>
+                            <td>{{ user.expiry_days }}</td>
+                            <td>
+                                {% if user.enable == "enabled" %}
+                                <i class="fas fa-check-circle text-success"></i>
+                                {% else %}
+                                <i class="fas fa-times-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-nowrap">
+                                <a href="#" class="config-link" data-toggle="modal" data-target="#qrcodeModal" data-username="{{ user.username }}">
+                                    <i class="fas fa-qrcode"></i>
+                                </a>
+                                <div id="userConfigs-{{ user.username }}" style="display: none;">
+                                    {% for config in user.configs %}
+                                    <div class="config-container" data-link="{{ config.link }}">
+                                        <span class="config-type">{{ config.type }}:</span>
+                                        {% if config.type == "Singbox" or config.type == "Normal-SUB" %}
+                                        <span class="config-link-text">{{ config.link }}</span>
+                                        {% else %}
+                                        <span class="config-link-text">{{ config.link }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="text-nowrap">
+                                <button type="button" class="btn btn-sm btn-info edit-user" data-user='{{ user.username }}' data-toggle="modal" data-target="#editUserModal">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-warning reset-user" data-user='{{ user.username }}'>
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger delete-user" data-user='{{ user.username }}'>
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="row mt-3">
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_simple_numbers" id="userTable_paginate">
+                            {# {{ pagination.links }} #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label for="addUsername">Username</label>
+                        <input type="text" class="form-control" id="addUsername" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTrafficLimit">Traffic Limit (GB)</label>
+                        <input type="number" class="form-control" id="addTrafficLimit" name="traffic_limit" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addExpirationDays">Expiration Days</label>
+                        <input type="number" class="form-control" id="addExpirationDays" name="expiration_days" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <div class="form-group">
+                        <label for="editUsername">Username</label>
+                        <input type="text" class="form-control" id="editUsername" name="new_username">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTrafficLimit">Traffic Limit (GB)</label>
+                        <input type="number" class="form-control" id="editTrafficLimit" name="new_traffic_limit">
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpirationDays">Expiration Days</label>
+                        <input type="number" class="form-control" id="editExpirationDays" name="new_expiration_days">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="editBlocked" name="blocked" value="true">
+                        <label class="form-check-label" for="editBlocked">Blocked</label>
+                    </div>
+                    <input type="hidden" id="originalUsername" name="username">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrcodeModal" tabindex="-1" role="dialog" aria-labelledby="qrcodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrcodeModalLabel">QR Codes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="qrcodesContainer" class="mx-auto"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<!-- Include qr-code-styling library -->
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling/lib/qr-code-styling.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(function () {
+        // Add User Form Submit
+        $("#addUserForm").on("submit", function (e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+            $.ajax({
+                url: "{{ url_for('add_user') }}",
+                method: "POST",
+                data: formData,
+                success: function (response) {
+                    if (response.message) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonText: "OK",
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.error || "Failed to add user",
+                            icon: "error",
+                            confirmButtonText: "OK",
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "An error occurred while adding user",
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+                }
+            });
+        });
+
+        // Edit User Form Populate and Submit
+        $(document).on("click", ".edit-user", function () {
+            const username = $(this).data("user");
+            const row = $(this).closest("tr");
+            const quota = row.find("td:eq(2)").text().trim();
+            const expiry = row.find("td:eq(4)").text().trim(); // Get expiry from the table
+            const expiry_days = row.find("td:eq(5)").text().trim();
+            const blocked = row.find("td:eq(6)").text().trim().toLowerCase() === 'disabled'; // Check if 'disabled'
+
+            // Extract numeric values from quota and expiry strings
+            const quotaValue = parseFloat(quota);
+            const expiryValue = parseInt(expiry); // Parse expiry as integer
+
+            // Populate the modal fields
+            $("#originalUsername").val(username);
+            $("#editUsername").val(username);
+            $("#editTrafficLimit").val(quotaValue);
+            $("#editExpirationDays").val(expiry_days);
+            $("#editBlocked").prop("checked", blocked);
+        });
+
+        $("#editUserForm").on("submit", function (e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+            $.ajax({
+                url: "{{ url_for('edit_user') }}",
+                method: "POST",
+                data: formData,
+                success: function (response) {
+                    if (typeof response === 'string' && response.includes("User updated successfully")) {
+                        const username = $("#originalUsername").val();
+                        const row = $(`td[data-username='${username}']`).closest("tr");
+                        row.find("td:eq(1)").text($("#editUsername").val());
+                        row.find("td:eq(2)").text($("#editTrafficLimit").val() + " GB");
+                        row.find("td:eq(5)").text($("#editExpirationDays").val());
+                        row.find("td:eq(6) i")
+                            .removeClass()
+                            .addClass(
+                                $("#editBlocked").prop("checked")
+                                    ? "fas fa-times-circle text-danger"
+                                    : "fas fa-check-circle text-success"
+                            );
+                        // Hide the modal
+                        $("#editUserModal").modal("hide");
+                        Swal.fire({
+                            title: "Success!",
+                            text: "User updated successfully!",
+                            icon: "success",
+                            confirmButtonText: "OK",
+                        });
+                    }
+                    else if (response && response.message) {
+                        const username = $("#originalUsername").val();
+                        const row = $(`td[data-username='${username}']`).closest("tr");
+                        row.find("td:eq(1)").text($("#editUsername").val());
+                        row.find("td:eq(2)").text($("#editTrafficLimit").val() + " GB");
+                        row.find("td:eq(5)").text($("#editExpirationDays").val());
+                        row.find("td:eq(6) i")
+                            .removeClass()
+                            .addClass(
+                                $("#editBlocked").prop("checked")
+                                    ? "fas fa-times-circle text-danger"
+                                    : "fas fa-check-circle text-success"
+                            );
+                        // Hide the modal
+                        $("#editUserModal").modal("hide");
+
+                        // Show a success message
+                        Swal.fire({
+                            title: "Success!",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonText: "OK",
+                        });
+                    } else {
+                        $("#editUserModal").modal("hide");
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.error || "An error occurred.",
+                            icon: "error",
+                            confirmButtonText: "OK",
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                    Swal.fire({
+                        title: "Error!",
+                        text: "An error occurred while updating user",
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+                }
+            });
+        });
+
+        // Prevent click event on the submit button from triggering form submission
+        $("#editUserForm button[type='submit']").on("click", function (e) {
+            e.preventDefault();
+            $(this).closest("form").submit();
+        });
+
+        // Reset User Button Click
+        $("#userTable").on("click", ".reset-user", function () {
+            const username = $(this).data("user");
+
+            Swal.fire({
+                title: "Are you sure?",
+                html: `This will reset <b>${username}</b>'s data.<br>This action cannot be undone!`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, reset it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url_for('reset_user') }}",
+                        method: "POST",
+                        data: { username: username },
+                        success: function (response) {
+                            if (response.message) {
+                                Swal.fire({
+                                    title: "Success!",
+                                    text: response.message,
+                                    icon: "success",
+                                    confirmButtonText: "OK",
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: response.error || "Failed to reset user",
+                                    icon: "error",
+                                    confirmButtonText: "OK",
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "An error occurred while resetting user",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // Delete User Button Click
+        $("#userTable").on("click", ".delete-user", function () {
+            const username = $(this).data("user");
+
+            Swal.fire({
+                title: "Are you sure?",
+                html: `This will delete the user <b>${username}</b>.<br>This action cannot be undone!`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url_for('delete_user') }}",
+                        method: "POST",
+                        data: { username: username },
+                        success: function (response) {
+                            if (response.message) {
+                                Swal.fire({
+                                    title: "Success!",
+                                    text: response.message,
+                                    icon: "success",
+                                    confirmButtonText: "OK",
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: response.error || "Failed to delete user",
+                                    icon: "error",
+                                    confirmButtonText: "OK",
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "An error occurred while deleting user",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // QR Code Modal
+        $("#qrcodeModal").on("show.bs.modal", function (event) {
+            const button = $(event.relatedTarget);
+            const username = button.data("username");
+            const configContainer = $(`#userConfigs-${username}`);
+            const qrcodesContainer = $("#qrcodesContainer");
+            qrcodesContainer.empty();
+
+            configContainer.find(".config-container").each(function () {
+                const configLink = $(this).data("link");
+                const configType = $(this).find(".config-type").text().replace(":", "");
+
+                // Create a card for each QR code
+                const card = $(`
+                    <div class="card d-inline-block mx-2 my-2" style="width: 180px;">
+                        <div class="card-body">
+                            <div id="qrcode-${configType}" class="mx-auto cursor-pointer"></div>
+                            <div class="config-type-text mt-2 text-center">${configType}</div>
+                        </div>
+                     </div>
+                `);
+
+                qrcodesContainer.append(card);
+
+                const qrCodeStyling = new QRCodeStyling({
+                    width: 150,
+                    height: 150,
+                    data: configLink,
+                    dotsOptions: {
+                        color: "#212121",
+                        type: "square"
+                    },
+                    cornersSquareOptions: {
+                        color: "#212121",
+                        type: "square"
+                    },
+                    backgroundOptions: {
+                        color: "#FAFAFA",
+                    },
+                    imageOptions: {
+                        hideBackgroundDots: true,
+                    }
+                });
+
+                qrCodeStyling.append(document.getElementById(`qrcode-${configType}`));
+
+                // Add click to copy functionality to the card
+                card.on("click", function () {
+                    navigator.clipboard.writeText(configLink)
+                        .then(() => {
+                            Swal.fire({
+                                icon: "success",
+                                title: configType + " link copied!",
+                                showConfirmButton: false,
+                                timer: 1500,
+                            });
+                        })
+                        .catch(err => {
+                            console.error("Failed to copy link: ", err);
+                            Swal.fire({
+                                icon: "error",
+                                title: "Failed to copy link",
+                                text: "Please copy manually.",
+                            });
+                        });
+                });
+            });
+        });
+
+        // Prevent modal from closing when clicking inside
+        $("#qrcodeModal .modal-content").on("click", function (e) {
+            e.stopPropagation();
+        });
+
+        // Clear the QR code when the modal is hidden
+        $("#qrcodeModal").on("hidden.bs.modal", function () {
+            $("#qrcodesContainer").empty();
+        });
+
+        $("#qrcodeModal .close").on("click", function () {
+            $("#qrcodeModal").modal("hide");
+        });
+
+        // Search Functionality
+        function filterUsers() {
+            const searchText = $("#searchInput").val().toLowerCase();
+
+            $("#userTable tbody tr").each(function () {
+                const username = $(this).find("td:eq(1)").text().toLowerCase();
+                if (username.includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        $("#searchButton").on("click", filterUsers);
+        $("#searchInput").on("keyup", filterUsers);
+
+    });
+</script>
+{% endblock %}

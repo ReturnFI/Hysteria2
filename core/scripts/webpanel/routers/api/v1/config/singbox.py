@@ -26,8 +26,8 @@ async def start(body: StartInputBody):
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.get('/stop', response_model=DetailResponse, summary='Stop Singbox')
-async def delete():
+@router.delete('/stop', response_model=DetailResponse, summary='Stop Singbox')
+async def stop():
     """
     Stop the Singbox service.
 

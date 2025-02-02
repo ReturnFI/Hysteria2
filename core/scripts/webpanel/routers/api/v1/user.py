@@ -25,6 +25,28 @@ async def list_users():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
+@router.post('/', response_model=DetailResponse)
+async def add_user(body: AddUserInputBody):
+    """
+    Add a new user to the system.
+
+    Args:
+        body: An instance of AddUserInputBody containing the user's details.
+
+    Returns:
+        A DetailResponse with a message indicating the user has been added.
+
+    Raises:
+        HTTPException: if an error occurs while adding the user.
+    """
+
+    try:
+        cli_api.add_user(body.username, body.traffic_limit, body.expiration_days, body.password, body.creation_date)
+        return DetailResponse(detail=f'User {body.username} has been added.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
 @router.get('/{username}', response_model=UserInfoResponse)
 async def get_user(username: str):
     """
@@ -43,28 +65,6 @@ async def get_user(username: str):
         if res := cli_api.get_user(username):
             return res
         raise HTTPException(status_code=404, detail=f'User {username} not found.')
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
-
-
-@router.post('', response_model=DetailResponse)
-async def add_user(body: AddUserInputBody):
-    """
-    Add a new user to the system.
-
-    Args:
-        body: An instance of AddUserInputBody containing the user's details.
-
-    Returns:
-        A DetailResponse with a message indicating the user has been added.
-
-    Raises:
-        HTTPException: if an error occurs while adding the user.
-    """
-
-    try:
-        cli_api.add_user(body.username, body.traffic_limit, body.expiration_days, body.password, body.creation_date)
-        return DetailResponse(detail=f'User {body.username} has been added.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 

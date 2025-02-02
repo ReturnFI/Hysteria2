@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.get('/status', response_model=ServerStatusResponse)
-async def server_status():
+async def server_status_api():
     """
     Retrieve the server status.
 

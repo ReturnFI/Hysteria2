@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get('/', response_model=UserListResponse)
-async def list_users():
+async def list_users_api():
     """
     Get a list of all users.
 
@@ -26,7 +26,7 @@ async def list_users():
 
 
 @router.post('/', response_model=DetailResponse)
-async def add_user(body: AddUserInputBody):
+async def add_user_api(body: AddUserInputBody):
     """
     Add a new user to the system.
 
@@ -48,7 +48,7 @@ async def add_user(body: AddUserInputBody):
 
 
 @router.get('/{username}', response_model=UserInfoResponse)
-async def get_user(username: str):
+async def get_user_api(username: str):
     """
     Get the details of a user.
 
@@ -70,7 +70,7 @@ async def get_user(username: str):
 
 
 @router.patch('/{username}', response_model=DetailResponse)
-async def edit_user(username: str, body: EditUserInputBody):
+async def edit_user_api(username: str, body: EditUserInputBody):
     """
     Edit a user's details.
 
@@ -93,7 +93,7 @@ async def edit_user(username: str, body: EditUserInputBody):
 
 
 @router.delete('/{username}', response_model=DetailResponse)
-async def remove_user(username: str):
+async def remove_user_api(username: str):
     """
     Remove a user.
 
@@ -114,7 +114,7 @@ async def remove_user(username: str):
 
 
 @router.get('/{username}/reset', response_model=DetailResponse)
-async def reset_user(username: str):
+async def reset_user_api(username: str):
     """
     Resets a user.
 

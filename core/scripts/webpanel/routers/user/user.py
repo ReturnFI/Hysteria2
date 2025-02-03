@@ -20,11 +20,10 @@ templates = Jinja2Templates(directory='templates')
 @router.get('/')
 async def users(request: Request):
     try:
-        dict_users = cli_api.list_users()
-        if not dict_users:
-            raise HTTPException(status_code=404, detail='No users found.')
-
-        users: list[User] = [User.from_dict(key, value) for key, value in dict_users.items()]
+        dict_users = cli_api.list_users()  # type: ignore
+        users: list[User] = []
+        if dict_users:
+            users: list[User] = [User.from_dict(key, value) for key, value in dict_users.items()]  # type: ignore
 
         return templates.TemplateResponse('users.html', {'users': users, 'request': request})
     except Exception as e:

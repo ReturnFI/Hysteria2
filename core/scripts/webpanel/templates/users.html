@@ -35,6 +35,11 @@
                 </div>
             </div>
             <div class="card-body table-responsive p-0">
+                {% if users|length == 0 %}
+                <div class="alert alert-warning" role="alert">
+                    No users found.
+                </div>
+                {% else %}
                 <table class="table table-bordered table-hover" id="userTable">
                     <thead>
                         <tr>
@@ -105,6 +110,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% endif %}
                 <div class="row mt-3">
                     <div class="col-sm-12 col-md-7">
                         <div class="dataTables_paginate paging_simple_numbers" id="userTable_paginate">
@@ -115,8 +121,8 @@
             </div>
         </div>
     </div>
-    </div>
 </section>
+
 
 <!-- Add User Modal -->
 <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">

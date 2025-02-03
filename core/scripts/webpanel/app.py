@@ -5,10 +5,11 @@ from fastapi import FastAPI, Depends
 from fastapi import Request
 from starlette.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import PlainTextResponse
 
 
 from config import CONFIGS  # Loads the configuration from .env
-from authentication.auth import AuthMiddleware  # Defines authentication middleware
+from middleware import AuthMiddleware  # Defines authentication middleware
 from dependency import get_templates, get_session_manager  # Defines dependencies across routers
 from exception_handler import setup_exception_handler  # Defines exception handlers
 
@@ -61,6 +62,10 @@ async def index(request: Request, templates: Jinja2Templates = Depends(get_templ
 async def home(request: Request):
     return await index(request)
 
+
+@app.get('/robots.txt')
+async def robots_txt(request: Request):
+    return PlainTextResponse('User-agent: *\nDisallow: /')
 
 if __name__ == '__main__':
     import uvicorn

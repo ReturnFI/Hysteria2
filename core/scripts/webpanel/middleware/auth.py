@@ -5,7 +5,7 @@ from starlette.types import ASGIApp
 from typing import Awaitable, Callable
 from datetime import datetime, timezone
 
-from .session import SessionManager
+from session import SessionManager
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -43,13 +43,13 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return RedirectResponse(url='/login', status_code=302)
 
         session_data = self.__session_manager.get_session(session_id)
-        
+
         if not session_data:
             if is_api_request:
                 raise HTTPException(status_code=401, detail="The session is invalid.")
 
             return RedirectResponse(url='/login', status_code=302)
-        
+
         if session_data.expires_at < datetime.now(timezone.utc):
             if is_api_request:
                 raise HTTPException(status_code=401, detail="The session has expired.")

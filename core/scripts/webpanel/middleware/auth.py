@@ -20,6 +20,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         '''Handles session authentication.'''
         public_routes = [
             '/login',
+            '/robots.txt'
         ]
         if request.url.path in public_routes:
             return await call_next(request)

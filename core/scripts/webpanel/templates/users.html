@@ -67,7 +67,7 @@
                             <td>{{ user.expiry_date }}</td>
                             <td>{{ user.expiry_days }}</td>
                             <td>
-                                {% if user.enable == "enabled" %}
+                                {% if user.enable %}
                                 <i class="fas fa-check-circle text-success"></i>
                                 {% else %}
                                 <i class="fas fa-times-circle text-danger"></i>
@@ -211,22 +211,31 @@
         // Add User Form Submit
         $("#addUserForm").on("submit", function (e) {
             e.preventDefault();
-            const formData = $(this).serialize();
+
+            const formData = $(this).serializeArray();
+            const jsonData = {};
+            formData.forEach(field => {
+                jsonData[field.name] = field.value;
+            });
+
             $.ajax({
-                url: "{{ url_for('add_user') }}",
+                url: " {{ url_for('add_user_api') }} ",
                 method: "POST",
-                data: formData,
+                contentType: "application/json",
+                data: JSON.stringify(jsonData),
                 success: function (response) {
-                    if (response.message) {
+                    debugger;
+                    if (response.detail) {
                         Swal.fire({
                             title: "Success!",
-                            text: response.message,
+                            text: response.detail,
                             icon: "success",
                             confirmButtonText: "OK",
                         }).then(() => {
                             location.reload();
                         });
                     } else {
+                        debugger;
                         Swal.fire({
                             title: "Error!",
                             text: response.error || "Failed to add user",
@@ -269,11 +278,21 @@
 
         $("#editUserForm").on("submit", function (e) {
             e.preventDefault();
-            const formData = $(this).serialize();
+
+            const formData = $(this).serializeArray();
+            const jsonData = {};
+            formData.forEach(field => {
+                jsonData[field.name] = field.value;
+            });
+
+            const editUserUrl = "{{ url_for('edit_user_api', username='USERNAME_PLACEHOLDER') }}";
+            const url = editUserUrl.replace("USERNAME_PLACEHOLDER", encodeURIComponent($("#originalUsername").val()));
+
             $.ajax({
-                url: "{{ url_for('edit_user') }}",
-                method: "POST",
-                data: formData,
+                url: url,
+                method: "PATCH",
+                contentType: "application/json",
+                data: JSON.stringify(jsonData),
                 success: function (response) {
                     if (typeof response === 'string' && response.includes("User updated successfully")) {
                         const username = $("#originalUsername").val();
@@ -297,7 +316,7 @@
                             confirmButtonText: "OK",
                         });
                     }
-                    else if (response && response.message) {
+                    else if (response && response.detail) {
                         const username = $("#originalUsername").val();
                         const row = $(`td[data-username='${username}']`).closest("tr");
                         row.find("td:eq(1)").text($("#editUsername").val());
@@ -316,7 +335,7 @@
                         // Show a success message
                         Swal.fire({
                             title: "Success!",
-                            text: response.message,
+                            text: response.detail,
                             icon: "success",
                             confirmButtonText: "OK",
                         });
@@ -362,15 +381,18 @@
                 confirmButtonText: "Yes, reset it!",
             }).then((result) => {
                 if (result.isConfirmed) {
+                    const resetUserUrl = "{{ url_for('reset_user_api', username='USERNAME_PLACEHOLDER') }}";
+                    const url = resetUserUrl.replace("USERNAME_PLACEHOLDER", encodeURIComponent(username));
                     $.ajax({
-                        url: "{{ url_for('reset_user') }}",
-                        method: "POST",
-                        data: { username: username },
+                        url: url,
+                        method: "GET",
+                        contentType: "application/json",
+                        data: JSON.stringify({ username: username }),
                         success: function (response) {
-                            if (response.message) {
+                            if (response.detail) {
                                 Swal.fire({
                                     title: "Success!",
-                                    text: response.message,
+                                    text: response.detail,
                                     icon: "success",
                                     confirmButtonText: "OK",
                                 }).then(() => {
@@ -412,15 +434,18 @@
                 confirmButtonText: "Yes, delete it!",
             }).then((result) => {
                 if (result.isConfirmed) {
+                    const removeUserUrl = "{{ url_for('remove_user_api', username='USERNAME_PLACEHOLDER') }}";
+                    const url = removeUserUrl.replace("USERNAME_PLACEHOLDER", encodeURIComponent(username));
                     $.ajax({
-                        url: "{{ url_for('delete_user') }}",
-                        method: "POST",
-                        data: { username: username },
+                        url: url,
+                        method: "DELETE",
+                        contentType: "application/json",
+                        data: JSON.stringify({ username: username }),
                         success: function (response) {
-                            if (response.message) {
+                            if (response.detail) {
                                 Swal.fire({
                                     title: "Success!",
-                                    text: response.message,
+                                    text: response.detail,
                                     icon: "success",
                                     confirmButtonText: "OK",
                                 }).then(() => {

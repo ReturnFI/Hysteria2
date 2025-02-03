@@ -1,6 +1,6 @@
 from fastapi.templating import Jinja2Templates
 
-from authentication.session import SessionStorage, SessionManager
+from session import SessionStorage, SessionManager
 from config import CONFIGS
 
 __TEMPLATES = Jinja2Templates(directory='templates')

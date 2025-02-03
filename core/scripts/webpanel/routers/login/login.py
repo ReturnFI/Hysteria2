@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from dependency import get_templates, get_session_manager
-from authentication.session import SessionManager
+from session import SessionManager
 from config import CONFIGS
 
 router = APIRouter()

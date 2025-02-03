@@ -10,6 +10,7 @@ from fastapi.responses import PlainTextResponse
 
 from config import CONFIGS  # Loads the configuration from .env
 from middleware import AuthMiddleware  # Defines authentication middleware
+from middleware import AfterRequestMiddleware  # Defines after request middleware
 from dependency import get_templates, get_session_manager  # Defines dependencies across routers
 from exception_handler import setup_exception_handler  # Defines exception handlers
 
@@ -41,6 +42,8 @@ def create_app() -> FastAPI:
 
     # Set up authentication middleware
     app.add_middleware(AuthMiddleware, session_manager=get_session_manager(), api_token=CONFIGS.API_TOKEN)
+    # Set up after request middleware
+    app.add_middleware(AfterRequestMiddleware)
 
     # Set up Routers
     app.include_router(routers.login.router, prefix='', tags=['authentication'])  # Add authentication router

@@ -1,24 +1,17 @@
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
-from typing import Annotated
 
-from pydantic import BaseModel
-
-from ..api.v1.schema.user import AddUserInputBody, EditUserInputBody
+from dependency import get_templates
 from .viewmodel import User
 import cli_api
 
 
 router = APIRouter()
 
-# TODO: Make this singleton or something
-templates = Jinja2Templates(directory='templates')
-
 
 @router.get('/')
-async def users(request: Request):
+async def users(request: Request, templates: Jinja2Templates = Depends(get_templates)):
     try:
         dict_users = cli_api.list_users()  # type: ignore
         users: list[User] = []

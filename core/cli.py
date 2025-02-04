@@ -391,6 +391,37 @@ def normalsub(action: str, domain: str, port: int):
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+
+@cli.command('webpanel')
+@click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
+@click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
+@click.option('--port', '-p', required=False, help='Port number for WebPanel service', type=int)
+@click.option('--admin-username', '-u', required=False, help='Admin username for WebPanel', type=str)
+@click.option('--admin-password', '-p', required=False, help='Admin password for WebPanel', type=str)
+@click.option('--expiration-minutes', '-e', required=False, help='Expiration minutes for WebPanel', type=int, default=20)
+@click.option('--debug', '-d', is_flag=True, help='Enable debug mode for WebPanel', default=False)
+def webpanel(action: str, domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool):
+    try:
+        if action == 'start':
+            if not domain or not port or not admin_username or not admin_password:
+                raise click.UsageError('Error: Both --domain and --port are required for the start action.')
+            cli_api.start_webpanel(domain, port, admin_username, admin_password, expiration_minutes, debug)
+            url = cli_api.get_webpanel_url()
+            click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
+        elif action == 'stop':
+            cli_api.stop_webpanel()
+            click.echo(f"WebPanel stopped successfully.")
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+
+@cli.command('get-webpanel-url')
+def get_web_panel_url():
+    try:
+        url = cli_api.get_webpanel_url()
+        click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 # endregion
 
 

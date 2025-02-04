@@ -32,7 +32,7 @@ Description=Singbox Python Service
 After=network.target
 
 [Service]
-ExecStart=/bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && /etc/hysteria/hysteria2_venv/bin/python /etc/hysteria/core/scripts/singbox/singbox.py'
+ExecStart=/bin/bash -c 'source /etc/hysteria/hysteria_venv/bin/activate && /etc/hysteria/hysteria2_venv/bin/python /etc/hysteria/core/scripts/singbox/singbox.py'
 WorkingDirectory=/etc/hysteria/core/scripts/singbox
 EnvironmentFile=/etc/hysteria/core/scripts/singbox/.env
 Restart=always

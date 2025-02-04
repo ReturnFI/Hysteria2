@@ -396,10 +396,10 @@ def normalsub(action: str, domain: str, port: int):
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
 @click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
 @click.option('--port', '-p', required=False, help='Port number for WebPanel service', type=int)
-@click.option('--admin-username', '-u', required=False, help='Admin username for WebPanel', type=str)
-@click.option('--admin-password', '-p', required=False, help='Admin password for WebPanel', type=str)
+@click.option('--admin-username', '-au', required=False, help='Admin username for WebPanel', type=str)
+@click.option('--admin-password', '-ap', required=False, help='Admin password for WebPanel', type=str)
 @click.option('--expiration-minutes', '-e', required=False, help='Expiration minutes for WebPanel', type=int, default=20)
-@click.option('--debug', '-d', is_flag=True, help='Enable debug mode for WebPanel', default=False)
+@click.option('--debug', '-g', is_flag=True, help='Enable debug mode for WebPanel', default=False)
 def webpanel(action: str, domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool):
     try:
         if action == 'start':

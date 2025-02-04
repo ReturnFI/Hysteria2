@@ -230,7 +230,6 @@
                 contentType: "application/json",
                 data: JSON.stringify(jsonData),
                 success: function (response) {
-                    debugger;
                     if (response.detail) {
                         Swal.fire({
                             title: "Success!",
@@ -241,7 +240,6 @@
                             location.reload();
                         });
                     } else {
-                        debugger;
                         Swal.fire({
                             title: "Error!",
                             text: response.error || "Failed to add user",

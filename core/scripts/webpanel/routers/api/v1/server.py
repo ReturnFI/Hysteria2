@@ -95,6 +95,6 @@ def __parse_server_status(server_info: str) -> ServerStatusResponse:
 
     # Validate required fields
     try:
-        return ServerStatusResponse(**data)
+        return ServerStatusResponse(**data)  # type: ignore
     except Exception as e:
         raise ValueError(f'Invalid or incomplete server info: {e}')

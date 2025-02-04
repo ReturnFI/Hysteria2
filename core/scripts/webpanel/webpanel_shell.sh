@@ -82,7 +82,7 @@ After=network.target
 [Service]
 WorkingDirectory=/etc/hysteria/core/scripts/webpanel
 EnvironmentFile=/etc/hysteria/core/scripts/webpanel/.env
-ExecStart=/bin/bash -c 'source /etc/hysteria/hysteria_venv/bin/activate && /etc/hysteria/hysteria_venv/bin/python /etc/hysteria/core/scripts/webpanel/app.py'
+ExecStart=/bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && /etc/hysteria/hysteria2_venv/bin/python /etc/hysteria/core/scripts/webpanel/app.py'
 #Restart=always
 User=root
 Group=root

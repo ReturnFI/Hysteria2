@@ -32,7 +32,8 @@ class Command(Enum):
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
     BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
-    INSTALL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
+    SHELL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
+    SHELL_WEBPANEL = os.path.join(SCRIPT_DIR, 'webpanel', 'webpanel_shell.sh')
     INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
@@ -377,11 +378,11 @@ def stop_telegram_bot():
 def start_singbox(domain: str, port: int):
     if not domain or not port:
         raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
-    run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'start', domain, str(port)])
+    run_cmd(['bash', Command.SHELL_SINGBOX.value, 'start', domain, str(port)])
 
 
 def stop_singbox():
-    run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'stop'])
+    run_cmd(['bash', Command.SHELL_SINGBOX.value, 'stop'])
 
 
 def start_normalsub(domain: str, port: int):
@@ -392,5 +393,22 @@ def start_normalsub(domain: str, port: int):
 
 def stop_normalsub():
     run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'stop'])
+
+
+def start_webpanel(domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool):
+    if not domain or not port or not admin_username or not admin_password or not expiration_minutes:
+        raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
+    run_cmd(
+        ['bash', Command.SHELL_WEBPANEL.value, 'start',
+         domain, str(port), admin_username, admin_password, str(expiration_minutes), str(debug).lower()]
+    )
+
+
+def stop_webpanel():
+    run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stop'])
+
+
+def get_webpanel_url():
+    return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'url'])
 # endregion
 # endregion

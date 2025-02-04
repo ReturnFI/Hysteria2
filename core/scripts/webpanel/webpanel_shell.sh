@@ -16,7 +16,7 @@ install_dependencies() {
     # Update package index again with Caddy repo
     sudo apt update -y > /dev/null 2>&1
 
-    apt install libnss3-tools > /dev/null 2>&1
+    apt install libnss3-tools -y > /dev/null 2>&1
 
     # Install Caddy
     sudo apt install -y caddy

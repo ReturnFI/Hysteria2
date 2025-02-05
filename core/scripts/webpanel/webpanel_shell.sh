@@ -63,6 +63,15 @@ update_caddy_file() {
 
     # Update the Caddyfile without the email directive
     cat <<EOL > "$config_file"
+# Global configuration
+{
+    # Disable admin panel of the Caddy
+    admin off
+    # Disable automatic HTTP to HTTPS redirects so the Caddy won't listen on port 80 (We need this port for other parts of the project)
+    auto_https disable_redirects
+}
+
+# Listen for incoming requests on the specified domain and port
 $DOMAIN:$PORT {
     # Define a route to handle all requests starting with ROOT_PATH('/$ROOT_PATH/')
     route /$ROOT_PATH/* {

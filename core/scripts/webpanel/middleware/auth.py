@@ -6,6 +6,7 @@ from typing import Awaitable, Callable
 from datetime import datetime, timezone
 
 from session import SessionManager
+from config import CONFIGS
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -19,8 +20,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]):
         '''Handles session authentication.'''
         public_routes = [
-            '/login',
-            '/robots.txt'
+            f'/{CONFIGS.ROOT_PATH}/login',
+            f'/{CONFIGS.ROOT_PATH}/robots.txt'
         ]
         if request.url.path in public_routes:
             return await call_next(request)

@@ -422,6 +422,15 @@ def get_web_panel_url():
         click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
     except Exception as e:
         click.echo(f'{e}', err=True)
+
+
+@cli.command('get-webpanel-api-token')
+def get_web_panel_api_token():
+    try:
+        token = cli_api.get_webpanel_api_token()
+        click.echo(f'WebPanel API token: {token}')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 # endregion
 
 

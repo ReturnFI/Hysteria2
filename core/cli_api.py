@@ -3,6 +3,8 @@ import subprocess
 from enum import Enum
 from datetime import datetime
 import json
+from typing import Any
+
 import traffic
 
 DEBUG = False
@@ -172,7 +174,7 @@ def disable_hysteria2_masquerade():
 # region User
 
 
-def list_users() -> dict | None:
+def list_users() -> dict[str, dict[str, Any]] | None:
     '''
     Lists all users.
     '''
@@ -180,7 +182,7 @@ def list_users() -> dict | None:
         return json.loads(res)
 
 
-def get_user(username: str) -> dict | None:
+def get_user(username: str) -> dict[str, Any] | None:
     '''
     Retrieves information about a specific user.
     '''
@@ -205,7 +207,7 @@ def edit_user(username: str, new_username: str | None, new_traffic_limit: int | 
     '''
     if not username:
         raise InvalidInputError('Error: username is required')
-    if not any([new_username, new_traffic_limit, new_expiration_days, renew_password, renew_creation_date, blocked is not None]):
+    if not any([new_username, new_traffic_limit, new_expiration_days, renew_password, renew_creation_date, blocked is not None]):  # type: ignore
         raise InvalidInputError('Error: at least one option is required')
     if new_traffic_limit is not None and new_traffic_limit <= 0:
         raise InvalidInputError('Error: traffic limit must be greater than 0')
@@ -410,5 +412,9 @@ def stop_webpanel():
 
 def get_webpanel_url():
     return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'url'])
+
+
+def get_webpanel_api_token():
+    return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'api-token'])
 # endregion
 # endregion

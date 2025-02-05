@@ -169,6 +169,11 @@ show_webpanel_url() {
     echo "$webpanel_url"
 }
 
+show_webpanel_api_token() {
+    source /etc/hysteria/core/scripts/webpanel/.env
+    echo "$API_TOKEN"
+}
+
 stop_service() {
     echo "Stopping Caddy..."
     systemctl disable caddy.service
@@ -194,6 +199,9 @@ case "$1" in
         ;;
     url)
         show_webpanel_url
+        ;;
+    api-token)
+        show_webpanel_api_token
         ;;
     *)
         echo -e "${red}Usage: $0 {start|stop} <DOMAIN> <PORT> ${NC}"

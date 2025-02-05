@@ -64,10 +64,23 @@ update_caddy_file() {
     # Update the Caddyfile without the email directive
     cat <<EOL > "$config_file"
 $DOMAIN:$PORT {
+    # Define a route to handle all requests starting with ROOT_PATH('/$ROOT_PATH/')
     route /$ROOT_PATH/* {
-        uri strip_prefix /$ROOT_PATH
+        # We don't strip the ROOT_PATH('/$ROOT_PATH/') from the request
+        # uri strip_prefix /$ROOT_PATH
+
+        # We are proxying all requests under the ROOT_PATH to FastAPI at 127.0.0.1:8080
+        # FastAPI handles these requests because we set the 'root_path' parameter in the FastAPI instance.
         reverse_proxy http://127.0.0.1:8080
     }
+    
+    # Any request that doesn't start with the ROOT_PATH('/$ROOT_PATH/') will be blocked and no response will be sent to the client
+    @blocked {
+        not path /fd31b4edc70619d5d39edf3c2da97e2c/*
+    }
+    
+    # Abort the request, effectively dropping the connection without a response for invalid paths
+    abort @blocked
 }
 EOL
 }

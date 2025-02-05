@@ -5,7 +5,6 @@ from starlette.types import ASGIApp
 from typing import Awaitable, Callable
 from datetime import datetime, timezone
 
-from dependency import url_for
 from session import SessionManager
 
 
@@ -16,7 +15,6 @@ class AuthMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.__session_manager = session_manager
         self.__api_token = api_token
-        self.__url_for = url_for
 
     async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]):
         '''Handles session authentication.'''
@@ -43,7 +41,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         if not session_id:
             if is_api_request:
                 raise HTTPException(status_code=401, detail="Unauthorized")
-            return RedirectResponse(url=self.__url_for(context={'request': request}, name='login'), status_code=302)
+            return RedirectResponse(url=request.url_for('login'), status_code=302)
 
         session_data = self.__session_manager.get_session(session_id)
 
@@ -51,12 +49,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
             if is_api_request:
                 raise HTTPException(status_code=401, detail="The session is invalid.")
 
-            return RedirectResponse(url=self.__url_for(context={'request': request}, name='login'), status_code=302)
+            return RedirectResponse(url=request.url_for('login'), status_code=302)
 
         if session_data.expires_at < datetime.now(timezone.utc):
             if is_api_request:
                 raise HTTPException(status_code=401, detail="The session has expired.")
 
-            return RedirectResponse(url=self.__url_for(context={'request': request}, name='login'), status_code=302)
+            return RedirectResponse(url=request.url_for('login'), status_code=302)
 
         return await call_next(request)

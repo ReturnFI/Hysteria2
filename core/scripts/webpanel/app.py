@@ -29,7 +29,11 @@ def create_app() -> FastAPI:
         title='Hysteria Webpanel',
         description='Webpanel for Hysteria',
         version='0.1.0',
+        contact={
+            'github': 'https://github.com/ReturnFI/Hysteria2'
+        },
         debug=CONFIGS.DEBUG,
+        root_path=f'/{CONFIGS.ROOT_PATH}',
     )
 
     # Set up static files
@@ -44,10 +48,10 @@ def create_app() -> FastAPI:
     app.add_middleware(AfterRequestMiddleware)
 
     # Set up Routers
-    app.include_router(routers.basic.router, prefix='', tags=['basic'])  # Add basic router
-    app.include_router(routers.login.router, prefix='', tags=['authentication'])  # Add authentication router
-    app.include_router(routers.user.router, prefix='/users', tags=['users'])  # Add user router
-    app.include_router(routers.api.v1.api_v1_router, prefix='/api/v1', tags=['v1'])  # Add API version 1 router
+    app.include_router(routers.basic.router, prefix='', tags=['Basic Routes[Web]'])  # Add basic router
+    app.include_router(routers.login.router, prefix='', tags=['Authentication[Web]'])  # Add authentication router
+    app.include_router(routers.user.router, prefix='/users', tags=['User Management[Web]'])  # Add user router
+    app.include_router(routers.api.v1.api_v1_router, prefix='/api/v1', tags=['API Version 1'])  # Add API version 1 router
 
     return app
 

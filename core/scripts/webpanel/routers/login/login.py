@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from dependency import get_templates, get_session_manager, url_for
+from dependency import get_templates, get_session_manager
 from session import SessionManager
 from config import CONFIGS
 
@@ -28,7 +28,7 @@ async def login_post(
 
     session_id = session_manager.set_session(username)
 
-    res = RedirectResponse(url=url_for(context={'request': request}, name='index'), status_code=302)
+    res = RedirectResponse(url=request.url_for('index'), status_code=302)
     res.set_cookie(key='session_id', value=session_id)
 
     return res
@@ -40,6 +40,6 @@ async def logout(request: Request, session_manager: SessionManager = Depends(get
     if session_id:
         session_manager.revoke_session(session_id)
 
-    res = RedirectResponse(url=url_for(context={'request': request}, name='index'), status_code=302)
+    res = RedirectResponse(url=request.url_for('index'), status_code=302)
     res.delete_cookie('session_id')
     return res

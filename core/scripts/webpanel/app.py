@@ -5,11 +5,11 @@ import asyncio
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
-
 from config import CONFIGS  # Loads the configuration from .env
 from middleware import AuthMiddleware  # Defines authentication middleware
 from middleware import AfterRequestMiddleware  # Defines after request middleware
 from dependency import get_session_manager  # Defines dependencies across routers
+from openapi import setup_openapi_schema   # Adds authorization header to openapi schema
 from exception_handler import setup_exception_handler  # Defines exception handlers
 
 # Append directory of cli_api.py to be able to import it
@@ -43,6 +43,7 @@ def create_app() -> FastAPI:
     setup_exception_handler(app)
 
     # Set up authentication middleware
+
     app.add_middleware(AuthMiddleware, session_manager=get_session_manager(), api_token=CONFIGS.API_TOKEN)
     # Set up after request middleware
     app.add_middleware(AfterRequestMiddleware)
@@ -51,7 +52,10 @@ def create_app() -> FastAPI:
     app.include_router(routers.basic.router, prefix='', tags=['Basic Routes[Web]'])  # Add basic router
     app.include_router(routers.login.router, prefix='', tags=['Authentication[Web]'])  # Add authentication router
     app.include_router(routers.user.router, prefix='/users', tags=['User Management[Web]'])  # Add user router
-    app.include_router(routers.api.v1.api_v1_router, prefix='/api/v1', tags=['API Version 1'])  # Add API version 1 router
+    app.include_router(routers.api.v1.api_v1_router, prefix='/api/v1', tags=['API Version 1'])  # Add API version 1 router # type: ignore
+
+    # Document that the API requires an API key
+    setup_openapi_schema(app)
 
     return app
 

@@ -404,7 +404,7 @@ def webpanel(action: str, domain: str, port: int, admin_username: str, admin_pas
     try:
         if action == 'start':
             if not domain or not port or not admin_username or not admin_password:
-                raise click.UsageError('Error: Both --domain and --port are required for the start action.')
+                raise click.UsageError('Error: the --domain, --port, --admin-username, and --admin-password are required for the start action.')
             cli_api.start_webpanel(domain, port, admin_username, admin_password, expiration_minutes, debug)
             url = cli_api.get_webpanel_url()
             click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')

@@ -18,8 +18,11 @@ async def login(request: Request, templates: Jinja2Templates = Depends(get_templ
 async def login_post(
     request: Request,
     templates: Jinja2Templates = Depends(get_templates), session_manager: SessionManager = Depends(get_session_manager),
-    username: str = Form(), password: str = Form()
+    username: str = Form(), password: str = Form(), next_url: str = Form(default='/')
 ):
+    '''
+    Handles login form submission.
+    '''
     ADMIN_USERNAME = CONFIGS.ADMIN_USERNAME
     ADMIN_PASSWORD = CONFIGS.ADMIN_PASSWORD
 
@@ -28,7 +31,13 @@ async def login_post(
 
     session_id = session_manager.set_session(username)
 
-    res = RedirectResponse(url=request.url_for('index'), status_code=302)
+    # Redirect to the index page if there is no next query parameter in the URL
+    if next_url == '/':
+        redirect_url = request.url_for('index')
+    else:
+        redirect_url = next_url
+
+    res = RedirectResponse(url=redirect_url, status_code=302)
     res.set_cookie(key='session_id', value=session_id)
 
     return res

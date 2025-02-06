@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,6 +15,7 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
 </head>
+
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
@@ -29,6 +31,7 @@
                 {% endif %}
 
                 <form action="{{ url_for('login') }}" method="post">
+                    <input type="hidden" name="next_url" value="{{ request.query_params.get('next_url', '/') }}">
                     <div class="input-group mb-3">
                         <input type="text" name="username" class="form-control" placeholder="Username" required>
                         <div class="input-group-append">
@@ -64,4 +67,5 @@
     <!-- AdminLTE App -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
 </body>
+
 </html>

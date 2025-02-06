@@ -56,7 +56,7 @@ hysteria2_add_user_handler() {
     python3 $CLI_PATH add-user --username "$username" --traffic-limit "$traffic_limit_GB" --expiration-days "$expiration_days" --password "$password" --creation-date "$creation_date"
 }
 
-hysteria2_edit_user() {
+hysteria2_edit_user_handler() {
     # Function to prompt for user input with validation
     prompt_for_input() {
         local prompt_message="$1"
@@ -565,6 +565,76 @@ normalsub_handler() {
     done
 }
 
+webpanel_handler() {
+    while true; do
+        echo -e "${cyan}1.${NC} Start WebPanel service"
+        echo -e "${red}2.${NC} Stop WebPanel service"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+                if systemctl is-active --quiet webpanel.service; then
+                    echo "The webpanel.service is already active."
+                else
+                    while true; do
+                        read -e -p "Enter the domain name for the SSL certificate: " domain
+                        if [ -z "$domain" ]; then
+                            echo "Domain name cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -e -p "Enter the port number for the service: " port
+                        if [ -z "$port" ]; then
+                            echo "Port number cannot be empty. Please try again."
+                        elif ! [[ "$port" =~ ^[0-9]+$ ]]; then
+                            echo "Port must be a number. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -e -p "Enter the admin username: " admin_username
+                        if [ -z "$admin_username" ]; then
+                            echo "Admin username cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -e -p "Enter the admin password: " admin_password
+                        if [ -z "$admin_password" ]; then
+                            echo "Admin password cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    python3 $CLI_PATH webpanel -a start -d "$domain" -p "$port" -au "$admin_username" -ap "$admin_password"
+                fi
+                ;;
+            2)
+                if ! systemctl is-active --quiet webpanel.service; then
+                    echo "The webpanel.service is already inactive."
+                else
+                    python3 $CLI_PATH webpanel -a stop
+                fi
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
+
 
 obfs_handler() {
     while true; do
@@ -759,7 +829,7 @@ hysteria2_menu() {
         case $choice in
             1) hysteria2_install_handler ;;
             2) hysteria2_add_user_handler ;;
-            3) hysteria2_edit_user ;;
+            3) hysteria2_edit_user_handler ;;
             4) hysteria2_reset_user_handler ;;
             5) hysteria2_remove_user_handler  ;;
             6) hysteria2_get_user_handler ;;
@@ -787,15 +857,16 @@ display_advance_menu() {
     echo -e "${green}[5] ${NC}↝ Telegram Bot"
     echo -e "${green}[6] ${NC}↝ SingBox SubLink"
     echo -e "${green}[7] ${NC}↝ Normal-SUB SubLink"
-    echo -e "${cyan}[8] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[9] ${NC}↝ Change SNI Hysteria2"
-    echo -e "${cyan}[10] ${NC}↝ Manage OBFS"
-    echo -e "${cyan}[11] ${NC}↝ Change IPs(4-6)"
-    echo -e "${cyan}[12] ${NC}↝ Update geo Files"
-    echo -e "${cyan}[13] ${NC}↝ Manage Masquerade"
-    echo -e "${cyan}[14] ${NC}↝ Restart Hysteria2"
-    echo -e "${cyan}[15] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[16] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${green}[8] ${NC}↝ Web Panel"
+    echo -e "${cyan}[9] ${NC}↝ Change Port Hysteria2"
+    echo -e "${cyan}[10] ${NC}↝ Change SNI Hysteria2"
+    echo -e "${cyan}[11] ${NC}↝ Manage OBFS"
+    echo -e "${cyan}[12] ${NC}↝ Change IPs(4-6)"
+    echo -e "${cyan}[13] ${NC}↝ Update geo Files"
+    echo -e "${cyan}[14] ${NC}↝ Manage Masquerade"
+    echo -e "${cyan}[15] ${NC}↝ Restart Hysteria2"
+    echo -e "${cyan}[16] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[17] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -816,15 +887,16 @@ advance_menu() {
             5) telegram_bot_handler ;;
             6) singbox_handler ;;
             7) normalsub_handler ;;
-            8) hysteria2_change_port_handler ;;
-            9) hysteria2_change_sni_handler ;;
-            10) obfs_handler ;;
-            11) edit_ips ;;
-            12) geo_update_handler ;;
-            13) masquerade_handler ;;
-            14) python3 $CLI_PATH restart-hysteria2 ;;
-            15) python3 $CLI_PATH update-hysteria2 ;;
-            16) python3 $CLI_PATH uninstall-hysteria2 ;;
+            8) webpanel_handler ;;
+            9) hysteria2_change_port_handler ;;
+            10) hysteria2_change_sni_handler ;;
+            11) obfs_handler ;;
+            12) edit_ips ;;
+            13) geo_update_handler ;;
+            14) masquerade_handler ;;
+            15) python3 $CLI_PATH restart-hysteria2 ;;
+            16) python3 $CLI_PATH update-hysteria2 ;;
+            17) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

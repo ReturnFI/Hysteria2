@@ -1,48 +1,49 @@
 from fastapi import APIRouter, HTTPException
 from ..schema.response import DetailResponse
-from ..schema.config.hysteria import InstallInputBody
+# from ..schema.config.hysteria import InstallInputBody
 import cli_api
 
 router = APIRouter()
 
 
-@router.post('/install', response_model=DetailResponse, summary='Install Hysteria2')
-async def install(body: InstallInputBody):
-    """
-    Installs Hysteria2 on the given port and uses the provided or default SNI value.
+# Change: Installing and uninstalling Hysteria2 is possible only through the CLI
+# @router.post('/install', response_model=DetailResponse, summary='Install Hysteria2')
+# async def install(body: InstallInputBody):
+#     """
+#     Installs Hysteria2 on the given port and uses the provided or default SNI value.
 
-    Args:
-        body: An instance of InstallInputBody containing the new port and SNI value.
+#     Args:
+#         body: An instance of InstallInputBody containing the new port and SNI value.
 
-    Returns:
-        A DetailResponse with a message indicating the Hysteria2 installation was successful.
+#     Returns:
+#         A DetailResponse with a message indicating the Hysteria2 installation was successful.
 
-    Raises:
-        HTTPException: if an error occurs while installing Hysteria2.
-    """
-    try:
-        cli_api.install_hysteria2(body.port, body.sni)
-        return DetailResponse(detail=f'Hysteria2 installed successfully on port {body.port} with SNI {body.sni}.')
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+#     Raises:
+#         HTTPException: if an error occurs while installing Hysteria2.
+#     """
+#     try:
+#         cli_api.install_hysteria2(body.port, body.sni)
+#         return DetailResponse(detail=f'Hysteria2 installed successfully on port {body.port} with SNI {body.sni}.')
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.delete('/uninstall', response_model=DetailResponse, summary='Uninstall Hysteria2')
-async def uninstall():
-    """
-    Uninstalls Hysteria2.
+# @router.delete('/uninstall', response_model=DetailResponse, summary='Uninstall Hysteria2')
+# async def uninstall():
+#     """
+#     Uninstalls Hysteria2.
 
-    Returns:
-        A DetailResponse with a message indicating the Hysteria2 uninstallation was successful.
+#     Returns:
+#         A DetailResponse with a message indicating the Hysteria2 uninstallation was successful.
 
-    Raises:
-        HTTPException: if an error occurs while uninstalling Hysteria2.
-    """
-    try:
-        cli_api.uninstall_hysteria2()
-        return DetailResponse(detail='Hysteria2 uninstalled successfully.')
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+#     Raises:
+#         HTTPException: if an error occurs while uninstalling Hysteria2.
+#     """
+#     try:
+#         cli_api.uninstall_hysteria2()
+#         return DetailResponse(detail='Hysteria2 uninstalled successfully.')
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
 @router.patch('/update', response_model=DetailResponse, summary='Update Hysteria2')

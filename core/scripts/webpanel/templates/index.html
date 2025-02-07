@@ -136,10 +136,11 @@
         fetch('{{ url_for("server_services_status_api") }}')
             .then(response => response.json())
             .then(data => {
+
                 updateServiceBox('hysteria2', data.hysteria_server);
-                updateServiceBox('telegrambot', data.hysteria_telegram);
+                updateServiceBox('telegrambot', data.hysteria_telegram_bot);
                 updateServiceBox('singbox', data.hysteria_singbox);
-                updateServiceBox('normalsub', data.hysetria_normal_sub);
+                updateServiceBox('normalsub', data.hysteria_normal_sub);
             })
             .catch(error => console.error('Error fetching service statuses:', error));
     }
@@ -148,7 +149,7 @@
         const statusElement = document.getElementById(serviceName + '-status');
         const statusBox = document.getElementById(serviceName + '-status-box');
 
-        if (status === 'active') {
+        if (status === true) {
             statusElement.textContent = 'Active';
             statusBox.classList.remove('bg-danger');
             statusBox.classList.add('bg-success');     // Add green

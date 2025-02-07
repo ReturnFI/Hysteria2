@@ -1,4 +1,5 @@
 source /etc/hysteria/core/scripts/path.sh
+source /etc/hysteria/core/scripts/services_status.sh
 
 # Function to define colors
 define_colors() {
@@ -89,18 +90,12 @@ load_hysteria2_ips() {
 }
 
 check_services() {
-    declare -a service_order=(
-        "hysteria-server.service|Hysteria2"
-        "webpanel.service|Web Panel"
-        "hysteria-bot.service|Telegram Bot"
-        "normalsub.service|Normal Subscription"
-        "singbox.service|Singbox Subscription"
-        "wg-quick@wgcf.service|WireGuard (WARP)"
-    )
+    
+    for service in "${services[@]}"; do
+        service_base_name=$(basename "$service" .service)
 
-    for service_info in "${service_order[@]}"; do
-        IFS="|" read -r service display_name <<< "$service_info"
-        
+        display_name=$(echo "$service_base_name" | sed -E 's/([^-]+)-?/\u\1/g') 
+
         if systemctl is-active --quiet "$service"; then
             echo -e "${NC}${display_name}:${green} Active${NC}"
         else

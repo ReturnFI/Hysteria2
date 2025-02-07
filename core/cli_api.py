@@ -378,26 +378,31 @@ def stop_telegram_bot():
 
 
 def start_singbox(domain: str, port: int):
+    '''Starts Singbox.'''
     if not domain or not port:
         raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
     run_cmd(['bash', Command.SHELL_SINGBOX.value, 'start', domain, str(port)])
 
 
 def stop_singbox():
+    '''Stops Singbox.'''
     run_cmd(['bash', Command.SHELL_SINGBOX.value, 'stop'])
 
 
 def start_normalsub(domain: str, port: int):
+    '''Starts NormalSub.'''
     if not domain or not port:
         raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
     run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'start', domain, str(port)])
 
 
 def stop_normalsub():
+    '''Stops NormalSub.'''
     run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'stop'])
 
 
 def start_webpanel(domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool):
+    '''Starts WebPanel.'''
     if not domain or not port or not admin_username or not admin_password or not expiration_minutes:
         raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
     run_cmd(
@@ -407,14 +412,23 @@ def start_webpanel(domain: str, port: int, admin_username: str, admin_password: 
 
 
 def stop_webpanel():
+    '''Stops WebPanel.'''
     run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stop'])
 
 
 def get_webpanel_url():
+    '''Gets the URL of WebPanel.'''
     return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'url'])
 
 
 def get_webpanel_api_token():
+    '''Gets the API token of WebPanel.'''
     return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'api-token'])
+
+
+def get_webpanel_services_status() -> dict[str, bool] | None:
+    '''Gets the status of WebPanel services.'''
+    if res := run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'status']):
+        return json.loads(res)
 # endregion
 # endregion

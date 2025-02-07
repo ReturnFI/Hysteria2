@@ -566,9 +566,16 @@ normalsub_handler() {
 }
 
 webpanel_handler() {
+    service_status=$(python3 $CLI_PATH get-webpanel-services-status)
+    echo -e "${cyan}Services Status:${NC}"
+    echo "$service_status"
+    echo ""
+
     while true; do
         echo -e "${cyan}1.${NC} Start WebPanel service"
         echo -e "${red}2.${NC} Stop WebPanel service"
+        echo -e "${cyan}3.${NC} Get WebPanel URL"
+        echo -e "${cyan}4.${NC} Show API Token"
         echo "0. Back"
         read -p "Choose an option: " option
 
@@ -624,6 +631,18 @@ webpanel_handler() {
                 else
                     python3 $CLI_PATH webpanel -a stop
                 fi
+                ;;
+            3)
+                url=$(python3 $CLI_PATH get-webpanel-url)
+                echo "-------------------------------"
+                echo "$url"
+                echo "-------------------------------"
+                ;;
+            4)
+                api_token=$(python3 $CLI_PATH get-webpanel-api-token)
+                echo "-------------------------------"
+                echo "$api_token"
+                echo "-------------------------------"
                 ;;
             0)
                 break

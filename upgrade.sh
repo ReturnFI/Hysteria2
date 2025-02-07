@@ -12,6 +12,7 @@ FILES=(
     "/etc/hysteria/core/scripts/telegrambot/.env"
     "/etc/hysteria/core/scripts/singbox/.env"
     "/etc/hysteria/core/scripts/normalsub/.env"
+    "/etc/hysteria/core/scripts/webpanel/.env"
 )
 
 echo "Backing up and Stopping all cron jobs"
@@ -80,6 +81,7 @@ echo "Restarting hysteria services"
 systemctl restart hysteria-server.service
 systemctl restart hysteria-bot.service
 systemctl restart singbox.service
+systemctl restart webpanel.service
 
 echo "Checking hysteria-server.service status"
 if systemctl is-active --quiet hysteria-server.service; then

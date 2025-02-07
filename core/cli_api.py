@@ -9,6 +9,7 @@ import traffic
 
 DEBUG = False
 SCRIPT_DIR = '/etc/hysteria/core/scripts'
+CONFIG_FILE = '/etc/hysteria/config.json'
 
 
 class Command(Enum):
@@ -169,6 +170,18 @@ def enable_hysteria2_masquerade(domain: str):
 def disable_hysteria2_masquerade():
     '''Disables masquerade for Hysteria2.'''
     run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '2'])
+
+
+def get_hysteria2_config_file() -> dict[str, Any]:
+    with open(CONFIG_FILE, 'r') as f:
+        return json.loads(f.read())
+
+
+def set_hysteria2_config_file(data: dict[str, Any]):
+    content = json.dumps(data, indent=4)
+
+    with open(CONFIG_FILE, 'w') as f:
+        f.write(content)
 # endregion
 
 # region User

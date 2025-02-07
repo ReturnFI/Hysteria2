@@ -43,6 +43,7 @@ class Command(Enum):
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
     CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
     STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
+    SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
 
 # region Custom Exceptions
 
@@ -463,9 +464,9 @@ def get_webpanel_api_token() -> str | None:
     return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'api-token'])
 
 
-def get_webpanel_services_status() -> dict[str, bool] | None:
-    '''Gets the status of WebPanel services.'''
-    if res := run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'status']):
+def get_services_status() -> dict[str, bool] | None:
+    '''Gets the status of all project services.'''
+    if res := run_cmd(['bash', Command.SERVICES_STATUS.value]):
         return json.loads(res)
 # endregion
 # endregion

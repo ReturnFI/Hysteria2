@@ -122,13 +122,13 @@ show_uri() {
                     fi
                 fi
 
-                if [ "$generate_singbox" = true ] && systemctl is-active --quiet singbox.service; then
+                if [ "$generate_singbox" = true ] && systemctl is-active --quiet hysteria-singbox.service; then
                     read -r domain port < <(get_singbox_domain_and_port)
                     if [ -n "$domain" ] && [ -n "$port" ]; then
                         echo -e "\nSingbox Sublink:\nhttps://$domain:$port/sub/singbox/$username/$ip_version#$username\n"
                     fi
                 fi
-                if [ "$generate_normalsub" = true ] && systemctl is-active --quiet normalsub.service; then
+                if [ "$generate_normalsub" = true ] && systemctl is-active --quiet hysteria-normal-sub.service; then
                     read -r domain port < <(get_normalsub_domain_and_port)
                     if [ -n "$domain" ] && [ -n "$port" ]; then
                         echo -e "\nNormal-SUB Sublink:\nhttps://$domain:$port/sub/normal/$username#Hysteria2\n"

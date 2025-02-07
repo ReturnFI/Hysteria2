@@ -32,12 +32,12 @@ echo "Removing alias 'hys2' from .bashrc..."
 sed -i '/alias hys2=.*\/etc\/hysteria\/menu.sh/d' ~/.bashrc
 
 echo "Stop/Disabling Hysteria TelegramBOT Service..."
-systemctl stop hysteria-bot.service > /dev/null 2>&1
-systemctl disable hysteria-bot.service > /dev/null 2>&1
+systemctl stop hysteria-telegram-bot.service > /dev/null 2>&1
+systemctl disable hysteria-telegram-bot.service > /dev/null 2>&1
 
 echo "Stop/Disabling Singbox SubLink Service..."
-systemctl stop singbox.service > /dev/null 2>&1
-systemctl disable singbox.service > /dev/null 2>&1
+systemctl stop hysteria-singbox.service > /dev/null 2>&1
+systemctl disable hysteria-singbox.service > /dev/null 2>&1
 
 
 echo "Hysteria2 uninstalled!"

@@ -26,7 +26,7 @@ EOL
 }
 
 create_service_file() {
-    cat <<EOL > /etc/systemd/system/singbox.service
+    cat <<EOL > /etc/systemd/system/hysteria-singbox.service
 [Unit]
 Description=Singbox Python Service
 After=network.target
@@ -48,8 +48,8 @@ start_service() {
     local domain=$1
     local port=$2
 
-    if systemctl is-active --quiet singbox.service; then
-        echo "The singbox.service is already running."
+    if systemctl is-active --quiet hysteria-singbox.service; then
+        echo "The hysteria-singbox.service is already running."
         return
     fi
 
@@ -67,11 +67,11 @@ start_service() {
     chown -R hysteria:hysteria "/etc/letsencrypt/live/$domain"
     chown -R hysteria:hysteria /etc/hysteria/core/scripts/singbox
     systemctl daemon-reload
-    systemctl enable singbox.service > /dev/null 2>&1
-    systemctl start singbox.service > /dev/null 2>&1
+    systemctl enable hysteria-singbox.service > /dev/null 2>&1
+    systemctl start hysteria-singbox.service > /dev/null 2>&1
     systemctl daemon-reload > /dev/null 2>&1
 
-    if systemctl is-active --quiet singbox.service; then
+    if systemctl is-active --quiet hysteria-singbox.service; then
         echo -e "${green}Singbox service setup completed. The service is now running on port $port. ${NC}"
     else
         echo -e "${red}Singbox setup completed. The service failed to start. ${NC}"
@@ -90,8 +90,8 @@ stop_service() {
         echo -e "${red}HYSTERIA_DOMAIN not found in .env. Skipping certificate deletion.${NC}"
     fi
 
-    systemctl stop singbox.service > /dev/null 2>&1
-    systemctl disable singbox.service > /dev/null 2>&1
+    systemctl stop hysteria-singbox.service > /dev/null 2>&1
+    systemctl disable hysteria-singbox.service > /dev/null 2>&1
     systemctl daemon-reload > /dev/null 2>&1
 
     rm -f /etc/hysteria/core/scripts/singbox/.env

@@ -97,7 +97,7 @@ EOL
 
 
 create_webpanel_service_file() {
-    cat <<EOL > /etc/systemd/system/webpanel.service
+    cat <<EOL > /etc/systemd/system/hysteria-webpanel.service
 [Unit]
 Description=Hysteria2 Web Panel
 After=network.target
@@ -125,7 +125,7 @@ start_service() {
 
     # MAYBE I WANT TO CHANGE CONFIGS WITHOUT RESTARTING THE SERVICE MYSELF
     # # Check if the services are already active
-    # if systemctl is-active --quiet webpanel.service && systemctl is-active --quiet caddy.service; then
+    # if systemctl is-active --quiet hysteria-webpanel.service && systemctl is-active --quiet caddy.service; then
     #     echo -e "${green}Hysteria web panel is already running with Caddy.${NC}"
     #     source /etc/hysteria/core/scripts/webpanel/.env
     #     echo -e "${yellow}The web panel is accessible at: http://$domain:$port/$ROOT_PATH${NC}"
@@ -151,11 +151,11 @@ start_service() {
 
     # Reload systemd and enable webpanel service
     systemctl daemon-reload
-    systemctl enable webpanel.service > /dev/null 2>&1
-    systemctl start webpanel.service > /dev/null 2>&1
+    systemctl enable hysteria-webpanel.service > /dev/null 2>&1
+    systemctl start hysteria-webpanel.service > /dev/null 2>&1
 
     # Check if the web panel is running
-    if systemctl is-active --quiet webpanel.service; then
+    if systemctl is-active --quiet hysteria-webpanel.service; then
         echo -e "${green}Hysteria web panel setup completed. The web panel is running locally on: http://127.0.0.1:8080/${NC}"
     else
         echo -e "${red}Error: Hysteria web panel service failed to start.${NC}"
@@ -177,7 +177,7 @@ start_service() {
     fi
 
     # Check if the web panel is still running after Caddy restart
-    if systemctl is-active --quiet webpanel.service; then
+    if systemctl is-active --quiet hysteria-webpanel.service; then
         source /etc/hysteria/core/scripts/webpanel/.env
         local webpanel_url="http://$domain:$port/$ROOT_PATH/"
         echo -e "${green}Hysteria web panel is now running. The service is accessible on: $webpanel_url ${NC}"
@@ -204,8 +204,8 @@ stop_service() {
     echo "Caddy stopped."
     
     echo "Stopping Hysteria web panel..."
-    systemctl disable webpanel.service
-    systemctl stop webpanel.service
+    systemctl disable hysteria-webpanel.service
+    systemctl stop hysteria-webpanel.service
     echo "Hysteria web panel stopped."
 }
 

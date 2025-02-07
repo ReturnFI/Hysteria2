@@ -259,11 +259,11 @@ hysteria2_show_user_uri_handler() {
 
     flags=""
     
-    if check_service_active "singbox.service"; then
+    if check_service_active "hysteria-singbox.service"; then
         flags+=" -s"
     fi
 
-    if check_service_active "normalsub.service"; then
+    if check_service_active "hysteria-normal-sub.service"; then
         flags+=" -n"
     fi
 
@@ -300,8 +300,8 @@ hysteria2_change_sni_handler() {
 
     python3 $CLI_PATH change-hysteria2-sni --sni "$sni"
 
-    if systemctl is-active --quiet singbox.service; then
-        systemctl restart singbox.service
+    if systemctl is-active --quiet hysteria-singbox.service; then
+        systemctl restart hysteria-singbox.service
     fi
 }
 
@@ -422,8 +422,8 @@ telegram_bot_handler() {
 
         case $option in
             1)
-                if systemctl is-active --quiet hysteria-bot.service; then
-                    echo "The hysteria-bot.service is already active."
+                if systemctl is-active --quiet hysteria-telegram-bot.service; then
+                    echo "The hysteria-telegram-bot.service is already active."
                 else
                     while true; do
                         read -e -p "Enter the Telegram bot token: " token
@@ -470,8 +470,8 @@ singbox_handler() {
 
         case $option in
             1)
-                if systemctl is-active --quiet singbox.service; then
-                    echo "The singbox.service is already active."
+                if systemctl is-active --quiet hysteria-singbox.service; then
+                    echo "The hysteria-singbox.service is already active."
                 else
                     while true; do
                         read -e -p "Enter the domain name for the SSL certificate: " domain
@@ -497,8 +497,8 @@ singbox_handler() {
                 fi
                 ;;
             2)
-                if ! systemctl is-active --quiet singbox.service; then
-                    echo "The singbox.service is already inactive."
+                if ! systemctl is-active --quiet hysteria-singbox.service; then
+                    echo "The hysteria-singbox.service is already inactive."
                 else
                     python3 $CLI_PATH singbox -a stop
                 fi
@@ -522,8 +522,8 @@ normalsub_handler() {
 
         case $option in
             1)
-                if systemctl is-active --quiet normalsub.service; then
-                    echo "The normalsub.service is already active."
+                if systemctl is-active --quiet hysteria-normal-sub.service; then
+                    echo "The hysteria-normal-sub.service is already active."
                 else
                     while true; do
                         read -e -p "Enter the domain name for the SSL certificate: " domain
@@ -549,8 +549,8 @@ normalsub_handler() {
                 fi
                 ;;
             2)
-                if ! systemctl is-active --quiet normalsub.service; then
-                    echo "The normalsub.service is already inactive."
+                if ! systemctl is-active --quiet hysteria-normal-sub.service; then
+                    echo "The hysteria-normal-sub.service is already inactive."
                 else
                     python3 $CLI_PATH normal-sub -a stop
                 fi
@@ -581,8 +581,8 @@ webpanel_handler() {
 
         case $option in
             1)
-                if systemctl is-active --quiet webpanel.service; then
-                    echo "The webpanel.service is already active."
+                if systemctl is-active --quiet hysteria-webpanel.service; then
+                    echo "The hysteria-webpanel.service is already active."
                 else
                     while true; do
                         read -e -p "Enter the domain name for the SSL certificate: " domain
@@ -626,8 +626,8 @@ webpanel_handler() {
                 fi
                 ;;
             2)
-                if ! systemctl is-active --quiet webpanel.service; then
-                    echo "The webpanel.service is already inactive."
+                if ! systemctl is-active --quiet hysteria-webpanel.service; then
+                    echo "The hysteria-webpanel.service is already inactive."
                 else
                     python3 $CLI_PATH webpanel -a stop
                 fi

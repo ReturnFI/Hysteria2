@@ -3,9 +3,9 @@
 declare -a services=(
     "hysteria-server.service"
     "webpanel.service"
-    "hysteria-bot.service"
-    "normalsub.service"
-    "singbox.service"
+    "hysteria-telegram-bot.service"
+    "hysteria-normal-sub.service"
+    "hysteria-singbox.service"
     "wg-quick@wgcf.service"
 )
 

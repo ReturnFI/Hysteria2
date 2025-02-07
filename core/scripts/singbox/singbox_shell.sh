@@ -64,6 +64,10 @@ start_service() {
 
     update_env_file "$domain" "$port"
     create_service_file
+    if [ $? -ne 0 ]; then
+        echo -e "${red}Error: Failed to create the service file. ${NC}"
+        exit 1
+    fi
     chown -R hysteria:hysteria "/etc/letsencrypt/live/$domain"
     chown -R hysteria:hysteria /etc/hysteria/core/scripts/singbox
     systemctl daemon-reload

@@ -68,7 +68,7 @@
 
         <div class="row">
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-primary" id="hysteria2-status-box">
+                <div class="small-box" id="hysteria2-status-box">
                     <div class="inner">
                         <h3 id="hysteria2-status">--</h3>
                         <p>Hysteria2</p>
@@ -79,7 +79,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-info" id="telegrambot-status-box">
+                <div class="small-box" id="telegrambot-status-box">
                     <div class="inner">
                         <h3 id="telegrambot-status">--</h3>
                         <p>Telegram Bot</p>
@@ -90,7 +90,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-6">
-                 <div class="small-box bg-warning" id="singbox-status-box">
+                 <div class="small-box" id="singbox-status-box">
                     <div class="inner">
                         <h3 id="singbox-status">--</h3>
                         <p>Singbox</p>
@@ -101,7 +101,7 @@
                 </div>
             </div>
              <div class="col-lg-3 col-6">
-                <div class="small-box bg-danger" id="normalsub-status-box">
+                <div class="small-box" id="normalsub-status-box">
                     <div class="inner">
                         <h3 id="normalsub-status">--</h3>
                         <p>Normalsub</p>
@@ -122,7 +122,6 @@
         fetch('{{ url_for("server_status_api") }}')
             .then(response => response.json())
             .then(data => {
-                // Update extended info from CLI
                 document.getElementById('cpu-usage').textContent = data.cpu_usage;
                 document.getElementById('ram-usage').textContent = data.ram_usage;
                 document.getElementById('online-users').textContent = data.online_users;
@@ -137,7 +136,6 @@
         fetch('')
             .then(response => response.json())
             .then(data => {
-                // Update service statuses
                 updateServiceBox('hysteria2', data.hysteria2);
                 updateServiceBox('telegrambot', data.telegrambot);
                 updateServiceBox('singbox', data.singbox);
@@ -167,7 +165,6 @@
     updateServiceStatuses();
 
     setInterval(updateServerInfo, 5000);
-    setInterval(updateServiceStatuses, 5000);
 </script>
 
 {% endblock %}

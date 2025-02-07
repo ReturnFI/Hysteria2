@@ -415,17 +415,16 @@ def webpanel(action: str, domain: str, port: int, admin_username: str, admin_pas
                 raise click.UsageError('Error: the --domain, --port, --admin-username, and --admin-password are required for the start action.')
 
             cli_api.start_webpanel(domain, port, admin_username, admin_password, expiration_minutes, debug)
+
             services_status = cli_api.get_services_status()
             if not services_status:
                 raise click.Abort('Error: WebPanel services status not available.')
-
-            if not services_status.get('hysteria-webpanel'):
+            if not services_status.get('hysteria-webpanel.service'):
                 raise click.Abort('Error: hysteria-webpanel.service service is not running.')
-
-            if not services_status.get('hysteria-caddy'):
+            if not services_status.get('hysteria-caddy.service'):
                 raise click.Abort('Error: hysteria-caddy.service service is not running.')
 
-            url = cli_api.get_webpanel_url()
+            # url = cli_api.get_webpanel_url()
             click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
         elif action == 'stop':
             cli_api.stop_webpanel()
@@ -456,8 +455,8 @@ def get_web_panel_api_token():
 def get_web_panel_services_status():
     try:
         if services_status := cli_api.get_services_status():
-            webpanel_status = services_status.get('hysteria-webpanel', False)
-            caddy_status = services_status.get('hysteria-caddy', False)
+            webpanel_status = services_status.get('hysteria-webpanel.service', False)
+            caddy_status = services_status.get('hysteria-caddy.service', False)
             print(f"hysteria-webpanel.service: {'Active' if webpanel_status else 'Inactive'}")
             print(f"hysteria-caddy.service: {'Active' if caddy_status else 'Inactive'}")
         else:

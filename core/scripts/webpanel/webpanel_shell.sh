@@ -5,7 +5,7 @@ define_colors
 CADDY_CONFIG_FILE="/etc/hysteria/core/scripts/webpanel/Caddyfile"
 
 install_dependencies() {
-   # Update system
+    # Update system
     sudo apt update -y > /dev/null 2>&1
 
     # Install dependencies

@@ -67,7 +67,9 @@
         </div>
     </div>
 </section>
+{% endblock %}
 
+{% block javascripts %}
 <script>
     function updateServerInfo() {
         fetch('{{ url_for('server_status_api') }}')
@@ -88,4 +90,5 @@
     // Update every 10 seconds (adjust as needed)
     setInterval(updateServerInfo, 5000);
 </script>
+
 {% endblock %}

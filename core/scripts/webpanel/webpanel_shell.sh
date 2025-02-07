@@ -32,6 +32,7 @@ update_env_file() {
     local port=$2
     local admin_username=$3
     local admin_password=$4
+    local admin_password_hash=$(echo -n "$admin_password" | sha256sum | cut -d' ' -f1) # hash the password
     local expiration_minutes=$5
     local debug=$6
 
@@ -45,7 +46,7 @@ PORT=$port
 ROOT_PATH=$root_path
 API_TOKEN=$api_token
 ADMIN_USERNAME=$admin_username
-ADMIN_PASSWORD=$admin_password
+ADMIN_PASSWORD=$admin_password_hash
 EXPIRATION_MINUTES=$expiration_minutes
 EOL
 }

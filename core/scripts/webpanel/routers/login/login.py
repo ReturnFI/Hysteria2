@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+from hashlib import sha256
 
 from dependency import get_templates, get_session_manager
 from session import SessionManager
-from config import CONFIGS
+from config import CONFIGS  # type: ignore
 
 router = APIRouter()
 
@@ -23,10 +24,8 @@ async def login_post(
     '''
     Handles login form submission.
     '''
-    ADMIN_USERNAME = CONFIGS.ADMIN_USERNAME
-    ADMIN_PASSWORD = CONFIGS.ADMIN_PASSWORD
-
-    if not username == ADMIN_USERNAME or not password == ADMIN_PASSWORD:
+    password_hash = sha256(password.encode()).hexdigest()
+    if not username == CONFIGS.ADMIN_USERNAME or not password_hash == CONFIGS.ADMIN_PASSWORD:  # type: ignore
         return templates.TemplateResponse('login.html', {'request': request, 'error': 'Invalid username or password'})
 
     session_id = session_manager.set_session(username)

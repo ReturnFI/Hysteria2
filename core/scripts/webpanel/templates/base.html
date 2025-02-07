@@ -68,15 +68,15 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('config') }}" class="nav-link {% if request.path == url_for('config') %}active{% endif %}">
-                                <i class="nav-icon fas fa-cog"></i>
-                                <p>Config</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="{{ url_for('settings') }}" class="nav-link {% if request.path == url_for('settings') %}active{% endif %}">
                                 <i class="nav-icon fas fa-tools"></i>
                                 <p>settings</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('config') }}" class="nav-link {% if request.path == url_for('config') %}active{% endif %}">
+                                <i class="nav-icon fas fa-cog"></i>
+                                <p>Config</p>
                             </a>
                         </li>
                     </ul>

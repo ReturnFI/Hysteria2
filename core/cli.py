@@ -27,7 +27,7 @@ def cli():
 def install_hysteria2(port: int, sni: str):
     try:
         cli_api.install_hysteria2(port, sni)
-        click.echo(f"Hysteria2 installed successfully on port {port} with SNI {sni}.")
+        click.echo(f'Hysteria2 installed successfully on port {port} with SNI {sni}.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -36,7 +36,7 @@ def install_hysteria2(port: int, sni: str):
 def uninstall_hysteria2():
     try:
         cli_api.uninstall_hysteria2()
-        click.echo("Hysteria2 uninstalled successfully.")
+        click.echo('Hysteria2 uninstalled successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -45,7 +45,7 @@ def uninstall_hysteria2():
 def update_hysteria2():
     try:
         cli_api.update_hysteria2()
-        click.echo("Hysteria2 updated successfully.")
+        click.echo('Hysteria2 updated successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -54,7 +54,7 @@ def update_hysteria2():
 def restart_hysteria2():
     try:
         cli_api.restart_hysteria2()
-        click.echo("Hysteria2 restarted successfully.")
+        click.echo('Hysteria2 restarted successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -64,7 +64,7 @@ def restart_hysteria2():
 def change_hysteria2_port(port: int):
     try:
         cli_api.change_hysteria2_port(port)
-        click.echo(f"Hysteria2 port changed to {port} successfully.")
+        click.echo(f'Hysteria2 port changed to {port} successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -74,7 +74,7 @@ def change_hysteria2_port(port: int):
 def change_hysteria2_sni(sni: str):
     try:
         cli_api.change_hysteria2_sni(sni)
-        click.echo(f"Hysteria2 SNI changed to {sni} successfully.")
+        click.echo(f'Hysteria2 SNI changed to {sni} successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -83,7 +83,7 @@ def change_hysteria2_sni(sni: str):
 def backup_hysteria2():
     try:
         cli_api.backup_hysteria2()
-        click.echo("Hysteria configuration backed up successfully.")
+        click.echo('Hysteria configuration backed up successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -99,7 +99,7 @@ def list_users():
         if res:
             pretty_print(res)
         else:
-            click.echo("No users found.")
+            click.echo('No users found.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -201,7 +201,7 @@ def server_info():
         if res:
             pretty_print(res)
         else:
-            click.echo("Server information not available.")
+            click.echo('Server information not available.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -218,35 +218,35 @@ def manage_obfs(remove: bool, generate: bool):
 
         if generate:
             cli_api.enable_hysteria2_obfs()
-            click.echo("Obfs enabled successfully.")
+            click.echo('Obfs enabled successfully.')
         elif remove:
             cli_api.disable_hysteria2_obfs()
-            click.echo("Obfs disabled successfully.")
+            click.echo('Obfs disabled successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
 
 @cli.command('ip-address')
-@click.option('--edit', is_flag=True, help="Edit IP addresses manually.")
-@click.option('-4', '--ipv4', type=str, help="Specify the new IPv4 address.")
-@click.option('-6', '--ipv6', type=str, help="Specify the new IPv6 address.")
+@click.option('--edit', is_flag=True, help='Edit IP addresses manually.')
+@click.option('-4', '--ipv4', type=str, help='Specify the new IPv4 address.')
+@click.option('-6', '--ipv6', type=str, help='Specify the new IPv6 address.')
 def ip_address(edit: bool, ipv4: str, ipv6: str):
-    """
+    '''
     Manage IP addresses in .configs.env.
     - Use without options to add auto-detected IPs.
     - Use --edit with -4 or -6 to manually update IPs.
-    """
+    '''
     try:
         if not edit:
             cli_api.add_ip_address()
-            click.echo("IP addresses added successfully.")
+            click.echo('IP addresses added successfully.')
             return
 
         if not ipv4 and not ipv6:
             raise click.UsageError('Error: You must specify either -4 or -6')
 
         cli_api.edit_ip_address(ipv4, ipv6)
-        click.echo("IP address configuration updated successfully.")
+        click.echo('IP address configuration updated successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -259,16 +259,16 @@ def ip_address(edit: bool, ipv4: str, ipv6: str):
 def update_geo(country: str):
     try:
         cli_api.update_geo(country)
-        click.echo(f"Geo files for {country} updated successfully.")
+        click.echo(f'Geo files for {country} updated successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
 
 @cli.command('masquerade')
 @click.option('--remove', '-r', is_flag=True, help="Remove 'masquerade' from config.json.")
-@click.option('--enable', '-e', metavar="<domain>", type=str, help="Enable 'masquerade' in config.json with the specified domain.")
+@click.option('--enable', '-e', metavar='<domain>', type=str, help="Enable 'masquerade' in config.json with the specified domain.")
 def masquerade(remove: bool, enable: str):
-    """Manage 'masquerade' in Hysteria2 configuration."""
+    '''Manage 'masquerade' in Hysteria2 configuration.'''
     try:
         if not remove and not enable:
             raise click.UsageError('Error: You must use either --remove or --enable')
@@ -277,13 +277,13 @@ def masquerade(remove: bool, enable: str):
 
         if enable:
             # NOT SURE THIS IS NEEDED
-            # if not enable.startswith("http://") and not enable.startswith("https://"):
-            #     enable = "https://" + enable
+            # if not enable.startswith('http://') and not enable.startswith('https://'):
+            #     enable = 'https://' + enable
             cli_api.enable_hysteria2_masquerade(enable)
-            click.echo("Masquerade enabled successfully.")
+            click.echo('Masquerade enabled successfully.')
         elif remove:
             cli_api.disable_hysteria2_masquerade()
-            click.echo("Masquerade disabled successfully.")
+            click.echo('Masquerade disabled successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -296,7 +296,7 @@ def masquerade(remove: bool, enable: str):
 def install_tcp_brutal():
     try:
         cli_api.install_tcp_brutal()
-        click.echo("TCP Brutal installed successfully.")
+        click.echo('TCP Brutal installed successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -305,7 +305,7 @@ def install_tcp_brutal():
 def install_warp():
     try:
         cli_api.install_warp()
-        click.echo("WARP installed successfully.")
+        click.echo('WARP installed successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -314,7 +314,7 @@ def install_warp():
 def uninstall_warp():
     try:
         cli_api.uninstall_warp()
-        click.echo("WARP uninstalled successfully.")
+        click.echo('WARP uninstalled successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -325,11 +325,11 @@ def uninstall_warp():
 @click.option('--domestic-sites', '-d', is_flag=True, help='Use WARP for Iran domestic sites')
 @click.option('--block-adult-sites', '-x', is_flag=True, help='Block adult content (porn)')
 @click.option('--warp-option', '-w', type=click.Choice(['warp', 'warp plus'], case_sensitive=False), help='Specify whether to use WARP or WARP Plus')
-@click.option('--warp-key', '-k', help='WARP Plus key (required if warp-option is "warp plus")')
+@click.option('--warp-key', '-k', help="WARP Plus key (required if warp-option is 'warp plus')")
 def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool, warp_option: str, warp_key: str):
     try:
         cli_api.configure_warp(all, popular_sites, domestic_sites, block_adult_sites, warp_option, warp_key)
-        click.echo("WARP configured successfully.")
+        click.echo('WARP configured successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -341,7 +341,7 @@ def warp_status():
         if res:
             pretty_print(res)
         else:
-            click.echo("WARP status not available.")
+            click.echo('WARP status not available.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -356,10 +356,10 @@ def telegram(action: str, token: str, adminid: str):
             if not token or not adminid:
                 raise click.UsageError('Error: Both --token and --adminid are required for the start action.')
             cli_api.start_telegram_bot(token, adminid)
-            click.echo(f"Telegram bot started successfully.")
+            click.echo(f'Telegram bot started successfully.')
         elif action == 'stop':
             cli_api.stop_telegram_bot()
-            click.echo(f"Telegram bot stopped successfully.")
+            click.echo(f'Telegram bot stopped successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -374,10 +374,10 @@ def singbox(action: str, domain: str, port: int):
             if not domain or not port:
                 raise click.UsageError('Error: Both --domain and --port are required for the start action.')
             cli_api.start_singbox(domain, port)
-            click.echo(f"Singbox started successfully.")
+            click.echo(f'Singbox started successfully.')
         elif action == 'stop':
             cli_api.stop_singbox()
-            click.echo(f"Singbox stopped successfully.")
+            click.echo(f'Singbox stopped successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -392,10 +392,10 @@ def normalsub(action: str, domain: str, port: int):
             if not domain or not port:
                 raise click.UsageError('Error: Both --domain and --port are required for the start action.')
             cli_api.start_normalsub(domain, port)
-            click.echo(f"NormalSub started successfully.")
+            click.echo(f'NormalSub started successfully.')
         elif action == 'stop':
             cli_api.stop_normalsub()
-            click.echo(f"NormalSub stopped successfully.")
+            click.echo(f'NormalSub stopped successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -429,7 +429,7 @@ def webpanel(action: str, domain: str, port: int, admin_username: str, admin_pas
             click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
         elif action == 'stop':
             cli_api.stop_webpanel()
-            click.echo(f"WebPanel stopped successfully.")
+            click.echo(f'WebPanel stopped successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 

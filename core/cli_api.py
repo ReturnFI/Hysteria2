@@ -306,13 +306,13 @@ def add_ip_address():
 
 
 def edit_ip_address(ipv4: str, ipv6: str):
-    """
+    '''
     Edits the IP address configuration based on provided IPv4 and/or IPv6 addresses.
 
     :param ipv4: The new IPv4 address to be configured. If provided, the IPv4 address will be updated.
     :param ipv6: The new IPv6 address to be configured. If provided, the IPv6 address will be updated.
     :raises InvalidInputError: If neither ipv4 nor ipv6 is provided.
-    """
+    '''
 
     if not ipv4 and not ipv6:
         raise InvalidInputError('Error: --edit requires at least one of --ipv4 or --ipv6.')

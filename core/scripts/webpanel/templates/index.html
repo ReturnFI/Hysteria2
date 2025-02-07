@@ -72,7 +72,7 @@
 {% block javascripts %}
 <script>
     function updateServerInfo() {
-        fetch('{{ url_for('server_status_api') }}')
+        fetch('{{ url_for("server_status_api") }}')
             .then(response => response.json())
             .then(data => {
                 // Update extended info from CLI

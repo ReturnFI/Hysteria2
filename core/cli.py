@@ -419,11 +419,11 @@ def webpanel(action: str, domain: str, port: int, admin_username: str, admin_pas
             if not services_status:
                 raise click.Abort('Error: WebPanel services status not available.')
 
-            if not services_status.get('webpanel'):
+            if not services_status.get('hysteria-webpanel'):
                 raise click.Abort('Error: hysteria-webpanel.service service is not running.')
 
-            if not services_status.get('caddy'):
-                raise click.Abort('Error: caddy.service service is not running.')
+            if not services_status.get('hysteria-caddy'):
+                raise click.Abort('Error: hysteria-caddy.service service is not running.')
 
             url = cli_api.get_webpanel_url()
             click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
@@ -456,10 +456,10 @@ def get_web_panel_api_token():
 def get_web_panel_services_status():
     try:
         if services_status := cli_api.get_services_status():
-            webpanel_status = services_status.get('webpanel', False)
-            caddy_status = services_status.get('caddy', False)
+            webpanel_status = services_status.get('hysteria-webpanel', False)
+            caddy_status = services_status.get('hysteria-caddy', False)
             print(f"hysteria-webpanel.service: {'Active' if webpanel_status else 'Inactive'}")
-            print(f"caddy.service: {'Active' if caddy_status else 'Inactive'}")
+            print(f"hysteria-caddy.service: {'Active' if caddy_status else 'Inactive'}")
         else:
             click.echo('Error: Services status not available.')
     except Exception as e:

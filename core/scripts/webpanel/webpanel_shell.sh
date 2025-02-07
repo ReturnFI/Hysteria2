@@ -2,6 +2,8 @@
 source /etc/hysteria/core/scripts/utils.sh
 define_colors
 
+CADDY_CONFIG_FILE="/etc/hysteria/core/scripts/webpanel/Caddyfile"
+
 install_dependencies() {
    # Update system
     sudo apt update -y > /dev/null 2>&1
@@ -52,8 +54,6 @@ EOL
 }
 
 update_caddy_file() {
-    local config_file="/etc/caddy/Caddyfile"
-    
     source /etc/hysteria/core/scripts/webpanel/.env
     
     # Ensure all required variables are set
@@ -63,7 +63,7 @@ update_caddy_file() {
     fi
 
     # Update the Caddyfile without the email directive
-    cat <<EOL > "$config_file"
+    cat <<EOL > "$CADDY_CONFIG_FILE"
 # Global configuration
 {
     # Disable admin panel of the Caddy
@@ -115,6 +115,27 @@ WantedBy=multi-user.target
 EOL
 }
 
+create_caddy_service_file() {
+    cat <<EOL > /etc/systemd/system/hysteria-caddy.service
+[Unit]
+Description=Hysteria2 Caddy
+After=network.target
+
+[Service]
+WorkingDirectory=/etc/caddy
+ExecStart=/usr/bin/caddy run --environ --config $CADDY_CONFIG_FILE
+ExecReload=/usr/bin/caddy reload --config $CADDY_CONFIG_FILE --force
+TimeoutStopSec=5s
+LimitNOFILE=1048576
+PrivateTmp=true
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+EOL
+}
+
 start_service() {
     local domain=$1
     local port=$2
@@ -125,7 +146,7 @@ start_service() {
 
     # MAYBE I WANT TO CHANGE CONFIGS WITHOUT RESTARTING THE SERVICE MYSELF
     # # Check if the services are already active
-    # if systemctl is-active --quiet hysteria-webpanel.service && systemctl is-active --quiet caddy.service; then
+    # if systemctl is-active --quiet hysteria-webpanel.service && systemctl is-active --quiet hysteria-caddy.service; then
     #     echo -e "${green}Hysteria web panel is already running with Caddy.${NC}"
     #     source /etc/hysteria/core/scripts/webpanel/.env
     #     echo -e "${yellow}The web panel is accessible at: http://$domain:$port/$ROOT_PATH${NC}"
@@ -169,8 +190,14 @@ start_service() {
         return 1
     fi
 
+    create_caddy_service_file
+    if [ $? -ne 0 ]; then
+        echo -e "${red}Error: Failed to create the Caddy service file.${NC}"
+        return 1
+    fi
+
     # Restart Caddy service
-    systemctl restart caddy.service
+    systemctl restart hysteria-caddy.service
     if [ $? -ne 0 ]; then
         echo -e "${red}Error: Failed to restart Caddy.${NC}"
         return 1
@@ -199,8 +226,8 @@ show_webpanel_api_token() {
 
 stop_service() {
     echo "Stopping Caddy..."
-    systemctl disable caddy.service
-    systemctl stop caddy.service
+    systemctl disable hysteria-caddy.service
+    systemctl stop hysteria-caddy.service
     echo "Caddy stopped."
     
     echo "Stopping Hysteria web panel..."

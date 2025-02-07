@@ -92,7 +92,7 @@ def backup_hysteria2():
 # region User
 
 
-@ cli.command('list-users')
+@cli.command('list-users')
 def list_users():
     try:
         res = cli_api.list_users()
@@ -145,8 +145,8 @@ def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expi
         click.echo(f'{e}', err=True)
 
 
-@ cli.command('reset-user')
-@ click.option('--username', '-u', required=True, help='Username for the user to Reset', type=str)
+@cli.command('reset-user')
+@click.option('--username', '-u', required=True, help='Username for the user to Reset', type=str)
 def reset_user(username: str):
     try:
         cli_api.reset_user(username)
@@ -155,8 +155,8 @@ def reset_user(username: str):
         click.echo(f'{e}', err=True)
 
 
-@ cli.command('remove-user')
-@ click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
+@cli.command('remove-user')
+@click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
 def remove_user(username: str):
     try:
         cli_api.remove_user(username)
@@ -186,7 +186,7 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
 # region Server
 
 
-@ cli.command('traffic-status')
+@cli.command('traffic-status')
 def traffic_status():
     try:
         cli_api.traffic_status()
@@ -292,7 +292,7 @@ def masquerade(remove: bool, enable: str):
 # region Advanced Menu
 
 
-@ cli.command('install-tcp-brutal')
+@cli.command('install-tcp-brutal')
 def install_tcp_brutal():
     try:
         cli_api.install_tcp_brutal()
@@ -301,7 +301,7 @@ def install_tcp_brutal():
         click.echo(f'{e}', err=True)
 
 
-@ cli.command('install-warp')
+@cli.command('install-warp')
 def install_warp():
     try:
         cli_api.install_warp()
@@ -310,7 +310,7 @@ def install_warp():
         click.echo(f'{e}', err=True)
 
 
-@ cli.command('uninstall-warp')
+@cli.command('uninstall-warp')
 def uninstall_warp():
     try:
         cli_api.uninstall_warp()
@@ -455,11 +455,25 @@ def get_web_panel_api_token():
 @cli.command('get-webpanel-services-status')
 def get_web_panel_services_status():
     try:
-        if services_status := cli_api.get_webpanel_services_status():
-            for service, status in services_status.items():
-                click.echo(f"{service}.service: {'Active' if status else 'Inactive'}")
+        if services_status := cli_api.get_services_status():
+            webpanel_status = services_status.get('webpanel', False)
+            caddy_status = services_status.get('caddy', False)
+            print(f"webpanel.service: {'Active' if webpanel_status else 'Inactive'}")
+            print(f"caddy.service: {'Active' if caddy_status else 'Inactive'}")
         else:
-            click.echo('Error: WebPanel services status not available.')
+            click.echo('Error: Services status not available.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+
+@cli.command('get-services-status')
+def get_services_status():
+    try:
+        if services_status := cli_api.get_services_status():
+            for service, status in services_status.items():
+                click.echo(f"{service}: {'Active' if status else 'Inactive'}")
+        else:
+            click.echo('Error: Services status not available.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 # endregion

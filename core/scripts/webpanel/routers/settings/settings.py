@@ -5,7 +5,11 @@ from dependency import get_templates
 router = APIRouter()
 
 
-@router.get('/')
+@router.get('/config')
+async def config(request: Request, templates: Jinja2Templates = Depends(get_templates)):
+    return templates.TemplateResponse('config.html', {'request': request})
+
+
+@router.get('/settings')
 async def settings(request: Request, templates: Jinja2Templates = Depends(get_templates)):
     return templates.TemplateResponse('settings.html', {'request': request})
-

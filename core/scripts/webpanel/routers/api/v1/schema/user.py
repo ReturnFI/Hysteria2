@@ -14,7 +14,7 @@ class UserInfoResponse(BaseModel):
     blocked: bool
 
 
-class UserListResponse(RootModel):
+class UserListResponse(RootModel):  # type: ignore
     root: dict[str, UserInfoResponse]
 
 

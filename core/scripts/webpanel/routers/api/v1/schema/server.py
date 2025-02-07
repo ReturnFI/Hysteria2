@@ -14,3 +14,12 @@ class ServerStatusResponse(BaseModel):
     uploaded_traffic: str
     downloaded_traffic: str
     total_traffic: str
+
+
+class ServerServicesStatusResponse(BaseModel):
+    hysteria_server: bool
+    hysteria_webpanel: bool
+    hysteria_singbox: bool
+    hysteria_normal_sub: bool
+    hysteria_telegram_bot: bool
+    hysteria_warp: bool

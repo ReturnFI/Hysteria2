@@ -195,6 +195,20 @@ show_webpanel_api_token() {
     source /etc/hysteria/core/scripts/webpanel/.env
     echo "$API_TOKEN"
 }
+show_webpanel_services_status() {
+    # Return both services' statuses in JSON format as true (if active) or false (otherwise)
+
+    local webpanel_status=$(systemctl is-active webpanel.service)
+    local caddy_status=$(systemctl is-active caddy.service)
+
+    local webpanel_active=false
+    local caddy_active=false
+
+    [[ "$webpanel_status" == "active" ]] && webpanel_active=true
+    [[ "$caddy_status" == "active" ]] && caddy_active=true
+
+    echo -e "{\"webpanel\": $webpanel_active, \"caddy\": $caddy_active}"
+}
 
 stop_service() {
     echo "Stopping Caddy..."
@@ -224,6 +238,9 @@ case "$1" in
         ;;
     api-token)
         show_webpanel_api_token
+        ;;
+    status)
+        show_webpanel_services_status
         ;;
     *)
         echo -e "${red}Usage: $0 {start|stop} <DOMAIN> <PORT> ${NC}"

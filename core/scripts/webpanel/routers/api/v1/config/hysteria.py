@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from ..schema.config.hysteria import ConfigFile
 from ..schema.response import DetailResponse
 # from ..schema.config.hysteria import InstallInputBody
 import cli_api
@@ -195,5 +196,46 @@ async def disable_masquerade():
     try:
         cli_api.disable_hysteria2_masquerade()
         return DetailResponse(detail='Hysteria2 masquerade disabled successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
+@router.get('/file', response_model=ConfigFile, summary='Get Hysteria2 configuration file')
+async def get_file():
+    """
+    Gets the Hysteria2 configuration file.
+
+    Returns:
+        A JSONResponse containing the Hysteria2 configuration file.
+
+    Raises:
+        HTTPException: if an error occurs while getting the Hysteria2 configuration file.
+    """
+    try:
+        if config_file := cli_api.get_hysteria2_config_file():
+            return ConfigFile(root=config_file)
+        else:
+            raise HTTPException(status_code=404, detail='Hysteria2 configuration file not found.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
+@router.post('/file', response_model=DetailResponse, summary='Update Hysteria2 configuration file')
+async def set_file(body: ConfigFile):
+    """
+    Updates the Hysteria2 configuration file.
+
+    Args:
+        file: The Hysteria2 configuration file to update.
+
+    Returns:
+        A DetailResponse with a message indicating the Hysteria2 configuration file was updated successfully.
+
+    Raises:
+        HTTPException: if an error occurs while updating the Hysteria2 configuration file.
+    """
+    try:
+        cli_api.set_hysteria2_config_file(body.root)
+        return DetailResponse(detail='Hysteria2 configuration file updated successfully.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')

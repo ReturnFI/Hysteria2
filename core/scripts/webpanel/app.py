@@ -54,6 +54,7 @@ def create_app() -> FastAPI:
     app.include_router(routers.config.router, prefix='/config', tags=['Config Management[Web]'])  # Add config router
     app.include_router(routers.user.router, prefix='/users', tags=['User Management[Web]'])  # Add user router
     app.include_router(routers.api.v1.api_v1_router, prefix='/api/v1', tags=['API Version 1'])  # Add API version 1 router # type: ignore
+    app.include_router(routers.settings.router, prefix='/settings', tags=['Settings[Web]']) # Add settings router
 
     # Document that the API requires an API key
     setup_openapi_schema(app)

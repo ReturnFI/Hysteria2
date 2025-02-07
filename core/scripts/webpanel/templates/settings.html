@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Settings</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-primary card-outline card-tabs">
+                    <div class="card-header p-0 pt-1 border-bottom-0">
+                        <ul class="nav nav-pills" id="custom-tabs-three-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="telegram-tab" data-toggle="pill" href="#telegram"
+                                    role="tab" aria-controls="telegram" aria-selected="true">Telegram Bot</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="subs-tab" data-toggle="pill" href="#subs" role="tab"
+                                    aria-controls="subs" aria-selected="false">Subscriptions</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="sni-tab" data-toggle="pill" href="#sni" role="tab"
+                                    aria-controls="sni" aria-selected="false">SNI</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="ip-tab" data-toggle="pill" href="#change_ip" role="tab"
+                                    aria-controls="change_ip" aria-selected="false">Change IP</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="custom-tabs-three-tabContent">
+
+                            <!-- Telegram Bot Tab -->
+                            <div class="tab-pane fade show active" id="telegram" role="tabpanel"
+                                aria-labelledby="telegram-tab">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="telegram_api_token">API Token:</label>
+                                        <input type="text" class="form-control" id="telegram_api_token"
+                                            placeholder="Enter API Token">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="telegram_admin_id">Admin ID:</label>
+                                        <input type="text" class="form-control" id="telegram_admin_id"
+                                            placeholder="Enter Admin ID">
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Accept</button>
+                                    <button type="button" class="btn btn-danger">Remove</button>
+                                </form>
+                            </div>
+
+                            <!-- Subscriptions Tab -->
+                            <div class="tab-pane fade" id="subs" role="tabpanel" aria-labelledby="subs-tab">
+                                <ul class="nav nav-tabs" id="subs-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="singbox-tab" data-toggle="tab" href="#singbox"
+                                            role="tab" aria-controls="singbox" aria-selected="true">SingBox</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="normal-tab" data-toggle="tab" href="#normal" role="tab"
+                                            aria-controls="normal" aria-selected="false">Normal</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="subs-tabs-content">
+
+                                    <!-- SingBox Sub Tab -->
+                                    <div class="tab-pane fade show active" id="singbox" role="tabpanel"
+                                        aria-labelledby="singbox-tab">
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="singbox_domain">Domain:</label>
+                                                <input type="text" class="form-control" id="singbox_domain"
+                                                    placeholder="Enter Domain">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="singbox_port">Port:</label>
+                                                <input type="text" class="form-control" id="singbox_port"
+                                                    placeholder="Enter Port">
+                                            </div>
+                                            <button type="submit" class="btn btn-success">Accept</button>
+                                            <button type="button" class="btn btn-danger">Remove</button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Normal Sub Tab -->
+                                    <div class="tab-pane fade" id="normal" role="tabpanel" aria-labelledby="normal-tab">
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="normal_domain">Domain:</label>
+                                                <input type="text" class="form-control" id="normal_domain"
+                                                    placeholder="Enter Domain">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="normal_port">Port:</label>
+                                                <input type="text" class="form-control" id="normal_port"
+                                                    placeholder="Enter Port">
+                                            </div>
+                                            <button type="submit" class="btn btn-success">Accept</button>
+                                            <button type="button" class="btn btn-danger">Remove</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SNI Tab -->
+                            <div class="tab-pane fade" id="sni" role="tabpanel" aria-labelledby="sni-tab">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="sni_domain">Domain:</label>
+                                        <input type="text" class="form-control" id="sni_domain"
+                                            placeholder="Enter Domain">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Change</button>
+                                </form>
+                            </div>
+
+                            <!-- Change IP Tab -->
+                            <div class="tab-pane fade" id="change_ip" role="tabpanel" aria-labelledby="ip-tab">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="ipv4">IPv4:</label>
+                                        <input type="text" class="form-control" id="ipv4" placeholder="Enter IPv4">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ipv6">IPv6:</label>
+                                        <input type="text" class="form-control" id="ipv6" placeholder="Enter IPv6">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

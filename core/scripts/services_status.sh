@@ -2,7 +2,7 @@
 
 declare -a services=(
     "hysteria-server.service"
-    "webpanel.service"
+    "hysteria-webpanel.service"
     "hysteria-telegram-bot.service"
     "hysteria-normal-sub.service"
     "hysteria-singbox.service"

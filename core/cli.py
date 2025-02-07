@@ -237,7 +237,15 @@ def ip_address(edit: bool, ipv4: str, ipv6: str):
     - Use --edit with -4 or -6 to manually update IPs.
     """
     try:
-        cli_api.ip_address(edit, ipv4, ipv6)
+        if not edit:
+            cli_api.add_ip_address()
+            click.echo("IP addresses added successfully.")
+            return
+
+        if not ipv4 and not ipv6:
+            raise click.UsageError('Error: You must specify either -4 or -6')
+
+        cli_api.edit_ip_address(ipv4, ipv6)
         click.echo("IP address configuration updated successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)

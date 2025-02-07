@@ -298,6 +298,30 @@ def ip_address(edit: bool, ipv4: str, ipv6: str):
         run_cmd(['bash', Command.IP_ADD.value, 'add'])
 
 
+def add_ip_address():
+    '''
+    Adds IP addresses from the environment to the .configs.env file.
+    '''
+    run_cmd(['bash', Command.IP_ADD.value, 'add'])
+
+
+def edit_ip_address(ipv4: str, ipv6: str):
+    """
+    Edits the IP address configuration based on provided IPv4 and/or IPv6 addresses.
+
+    :param ipv4: The new IPv4 address to be configured. If provided, the IPv4 address will be updated.
+    :param ipv6: The new IPv6 address to be configured. If provided, the IPv6 address will be updated.
+    :raises InvalidInputError: If neither ipv4 nor ipv6 is provided.
+    """
+
+    if not ipv4 and not ipv6:
+        raise InvalidInputError('Error: --edit requires at least one of --ipv4 or --ipv6.')
+    if ipv4:
+        run_cmd(['bash', Command.IP_ADD.value, 'edit', '-4', ipv4])
+    if ipv6:
+        run_cmd(['bash', Command.IP_ADD.value, 'edit', '-6', ipv6])
+
+
 def update_geo(country: str):
     '''
     Updates geographic data files based on the specified country.

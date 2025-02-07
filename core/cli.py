@@ -424,7 +424,7 @@ def webpanel(action: str, domain: str, port: int, admin_username: str, admin_pas
             if not services_status.get('hysteria-caddy.service'):
                 raise click.Abort('Error: hysteria-caddy.service service is not running.')
 
-            # url = cli_api.get_webpanel_url()
+            url = cli_api.get_webpanel_url()
             click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
         elif action == 'stop':
             cli_api.stop_webpanel()

@@ -6,32 +6,69 @@
 <br>
 <div class="" style="margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
     <div class="flex justify mb-4 space-x-2">
-        <button onclick="restoreJson()" class="px-4 py-2 bg-blue text-black rounded-lg ">Restore JSON</button>
-        <button onclick="saveJson()" class="px-4 py-2 bg-green text-black rounded-lg duration-200">Save JSON</button>
+        <button id="restore-button" onclick="restoreJson()" class="px-4 py-2 bg-blue text-black rounded-lg">Restore JSON</button>
+        <button id="save-button" onclick="saveJson()" class="px-4 py-2 bg-green text-black rounded-lg duration-200">Save JSON</button>
     </div>
 
-    <div id="jsoneditor" class="border rounded-lg shadow-lg" style="height: 700px; width: 100%;"></div>
+    <div id="jsoneditor" class="border rounded-lg shadow-lg" style="height: 750px; width: 100%;"></div>
 </div>
 {% endblock %}
 
-{% block javascripts%}
+{% block javascripts %}
 <script src="https://cdn.jsdelivr.net/npm/jsoneditor@9.1.0/dist/jsoneditor.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsoneditor@9.1.0/dist/jsoneditor.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    const saveButton = document.getElementById("save-button");
     const container = document.getElementById("jsoneditor");
+
     const editor = new JSONEditor(container, {
         mode: "code",
-        modes: ["code", "tree"]
+        modes: ["code", "tree"],
+        onChange: validateJson
     });
 
-    // Function to load JSON
-    function restoreJson() {
-        fetch("{{ url_for('get_file') }}")
-            .then(response => response.json())
-            .then(json => editor.set(json))
-            .catch(error => console.error("Error loading JSON:", error));
+    // Function to validate the JSON and update UI elements
+    function validateJson() {
+        try {
+            editor.get(); // Validate the JSON
+            updateSaveButton(true);
+            hideErrorMessage();
+        } catch (error) {
+            updateSaveButton(false);
+            showErrorMessage("Invalid JSON! Please correct the errors.");
+        }
+    }
+
+    // Function to update save button based on JSON validity
+    function updateSaveButton(isValid) {
+        saveButton.disabled = !isValid;
+        saveButton.style.cursor = isValid ? "pointer" : "not-allowed";
+
+        saveButton.style.setProperty('background-color', isValid ? "#28a745" : "#ccc", 'important');
+        saveButton.style.setProperty('color', isValid ? "#fff" : "#666", 'important');
+        //saveButton.style.setProperty('border-color', isValid ? "#28a745" : "#ccc", 'important');
+    }
+
+    // Function to show error message with SweetAlert2
+    function showErrorMessage(message) {
+        Swal.fire({
+            title: "Error",
+            text: message,
+            icon: "error",
+            showConfirmButton: false,
+            timer: 5000,
+            position: 'top-right',
+            toast: true,
+            showClass: { popup: 'animate__animated animate__fadeInDown' },
+            hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+        });
+    }
+
+    // Function to hide error message if JSON is fixed
+    function hideErrorMessage() {
+        Swal.close();
     }
 
     // Function to ask the user before saving and save the JSON if confirmed
@@ -46,30 +83,30 @@
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                // If user confirms, save the JSON data
                 fetch("{{ url_for('set_file') }}", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(editor.get())
-                }).then(() => {
-                    Swal.fire(
-                        'Saved!',
-                        'Your changes have been saved.',
-                        'success'
-                    );
-                }).catch(error => {
-                    Swal.fire(
-                        'Error!',
-                        'There was an error saving your data.',
-                        'error'
-                    );
-                    console.error("Error saving JSON:", error);
-                });
+                })
+                    .then(() => {
+                        Swal.fire('Saved!', 'Your changes have been saved.', 'success');
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', 'There was an error saving your data.', 'error');
+                        console.error("Error saving JSON:", error);
+                    });
             }
         });
     }
 
-    // Load JSON data when the page loads
-    restoreJson();
+    // Function to load JSON from the server
+    function restoreJson() {
+        fetch("{{ url_for('get_file') }}")
+            .then(response => response.json())
+            .then(json => editor.set(json))
+            .catch(error => console.error("Error loading JSON:", error));
+    }
+
+    restoreJson(); // Initial JSON load
 </script>
 {% endblock %}

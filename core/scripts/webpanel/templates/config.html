@@ -17,28 +17,59 @@
 {% block javascripts%}
 <script src="https://cdn.jsdelivr.net/npm/jsoneditor@9.1.0/dist/jsoneditor.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsoneditor@9.1.0/dist/jsoneditor.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     const container = document.getElementById("jsoneditor");
     const editor = new JSONEditor(container, {
-        mode: "tree",
+        mode: "code",
         modes: ["code", "tree"]
     });
 
-
+    // Function to load JSON
     function restoreJson() {
-        fetch("/api/json-file")
+        fetch("{{ url_for('get_file') }}")
             .then(response => response.json())
             .then(json => editor.set(json))
             .catch(error => console.error("Error loading JSON:", error));
     }
 
+    // Function to ask the user before saving and save the JSON if confirmed
     function saveJson() {
-        fetch("/api/json-file", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(editor.get())
-        }).then(() => alert("Saved successfully!"))
-            .catch(error => console.error("Error saving JSON:", error));
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to save the changes?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If user confirms, save the JSON data
+                fetch("{{ url_for('set_file') }}", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(editor.get())
+                }).then(() => {
+                    Swal.fire(
+                        'Saved!',
+                        'Your changes have been saved.',
+                        'success'
+                    );
+                }).catch(error => {
+                    Swal.fire(
+                        'Error!',
+                        'There was an error saving your data.',
+                        'error'
+                    );
+                    console.error("Error saving JSON:", error);
+                });
+            }
+        });
     }
+
+    // Load JSON data when the page loads
+    restoreJson();
 </script>
 {% endblock %}

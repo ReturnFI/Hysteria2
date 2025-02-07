@@ -405,7 +405,18 @@ def webpanel(action: str, domain: str, port: int, admin_username: str, admin_pas
         if action == 'start':
             if not domain or not port or not admin_username or not admin_password:
                 raise click.UsageError('Error: the --domain, --port, --admin-username, and --admin-password are required for the start action.')
+
             cli_api.start_webpanel(domain, port, admin_username, admin_password, expiration_minutes, debug)
+            services_status = cli_api.get_webpanel_services_status()
+            if not services_status:
+                raise click.Abort('Error: WebPanel services status not available.')
+
+            if not services_status.get('webpanel'):
+                raise click.Abort('Error: webpanel.service service is not running.')
+
+            if not services_status.get('caddy'):
+                raise click.Abort('Error: caddy.service service is not running.')
+
             url = cli_api.get_webpanel_url()
             click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
         elif action == 'stop':
@@ -429,6 +440,18 @@ def get_web_panel_api_token():
     try:
         token = cli_api.get_webpanel_api_token()
         click.echo(f'WebPanel API token: {token}')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+
+@cli.command('get-webpanel-services-status')
+def get_web_panel_services_status():
+    try:
+        if services_status := cli_api.get_webpanel_services_status():
+            for service, status in services_status.items():
+                click.echo(f"{service}.service: {'Active' if status else 'Inactive'}")
+        else:
+            click.echo('Error: WebPanel services status not available.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 # endregion

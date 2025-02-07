@@ -416,12 +416,12 @@ def stop_webpanel():
     run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stop'])
 
 
-def get_webpanel_url():
+def get_webpanel_url() -> str | None:
     '''Gets the URL of WebPanel.'''
     return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'url'])
 
 
-def get_webpanel_api_token():
+def get_webpanel_api_token() -> str | None:
     '''Gets the API token of WebPanel.'''
     return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'api-token'])
 

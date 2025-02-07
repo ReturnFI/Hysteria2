@@ -65,6 +65,53 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-primary" id="hysteria2-status-box">
+                    <div class="inner">
+                        <h3 id="hysteria2-status">--</h3>
+                        <p>Hysteria2</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info" id="telegrambot-status-box">
+                    <div class="inner">
+                        <h3 id="telegrambot-status">--</h3>
+                        <p>Telegram Bot</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                 <div class="small-box bg-warning" id="singbox-status-box">
+                    <div class="inner">
+                        <h3 id="singbox-status">--</h3>
+                        <p>Singbox</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                </div>
+            </div>
+             <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger" id="normalsub-status-box">
+                    <div class="inner">
+                        <h3 id="normalsub-status">--</h3>
+                        <p>Normalsub</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-rss"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}
@@ -84,11 +131,43 @@
             .catch(error => console.error('Error fetching server info:', error));
     }
 
-    // Initial update
-    updateServerInfo();
 
-    // Update every 10 seconds (adjust as needed)
+    function updateServiceStatuses() {
+        // Add services api in fetch
+        fetch('')
+            .then(response => response.json())
+            .then(data => {
+                // Update service statuses
+                updateServiceBox('hysteria2', data.hysteria2);
+                updateServiceBox('telegrambot', data.telegrambot);
+                updateServiceBox('singbox', data.singbox);
+                updateServiceBox('normalsub', data.normalsub);
+            })
+            .catch(error => console.error('Error fetching service statuses:', error));
+    }
+
+    function updateServiceBox(serviceName, status) {
+        const statusElement = document.getElementById(serviceName + '-status');
+        const statusBox = document.getElementById(serviceName + '-status-box');
+
+        if (status === 'active') {
+            statusElement.textContent = 'Active';
+            statusBox.classList.remove('bg-danger');
+            statusBox.classList.add('bg-success');     // Add green
+        } else {
+            statusElement.textContent = 'Inactive';
+            statusBox.classList.remove('bg-success');
+            statusBox.classList.add('bg-danger');      // Add red
+        }
+    }
+
+
+
+    updateServerInfo();
+    updateServiceStatuses();
+
     setInterval(updateServerInfo, 5000);
+    setInterval(updateServiceStatuses, 5000);
 </script>
 
 {% endblock %}

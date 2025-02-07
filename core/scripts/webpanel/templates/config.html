@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Config Editor{% endblock %}
+
+{% block content %}
+<br>
+<div class="" style="margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
+    <div class="flex justify mb-4 space-x-2">
+        <button onclick="restoreJson()" class="px-4 py-2 bg-blue text-black rounded-lg ">Restore JSON</button>
+        <button onclick="saveJson()" class="px-4 py-2 bg-green text-black rounded-lg duration-200">Save JSON</button>
+    </div>
+
+    <div id="jsoneditor" class="border rounded-lg shadow-lg" style="height: 700px; width: 100%;"></div>
+</div>
+{% endblock %}
+
+{% block javascripts%}
+<script src="https://cdn.jsdelivr.net/npm/jsoneditor@9.1.0/dist/jsoneditor.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsoneditor@9.1.0/dist/jsoneditor.min.css" />
+<script>
+    const container = document.getElementById("jsoneditor");
+    const editor = new JSONEditor(container, {
+        mode: "tree",
+        modes: ["code", "tree"]
+    });
+
+
+    function restoreJson() {
+        fetch("/api/json-file")
+            .then(response => response.json())
+            .then(json => editor.set(json))
+            .catch(error => console.error("Error loading JSON:", error));
+    }
+
+    function saveJson() {
+        fetch("/api/json-file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(editor.get())
+        }).then(() => alert("Saved successfully!"))
+            .catch(error => console.error("Error saving JSON:", error));
+    }
+</script>
+{% endblock %}

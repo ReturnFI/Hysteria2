@@ -67,6 +67,12 @@
                                 <p>Users</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('config') }}" class="nav-link {% if request.path == url_for('config') %}active{% endif %}">
+                                <i class="nav-icon fas fa-cog"></i>
+                                <p>Config</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>

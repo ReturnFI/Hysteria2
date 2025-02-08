@@ -1,4 +1,5 @@
 source /etc/hysteria/core/scripts/path.sh
+source /etc/hysteria/core/scripts/services_status.sh
 
 # Function to define colors
 define_colors() {
@@ -89,7 +90,7 @@ load_hysteria2_ips() {
 }
 
 check_services() {
-    source /etc/hysteria/core/scripts/services_status.sh
+    # source /etc/hysteria/core/scripts/services_status.sh
     for service in "${services[@]}"; do
         service_base_name=$(basename "$service" .service)
 

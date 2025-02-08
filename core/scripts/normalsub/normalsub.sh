@@ -85,7 +85,7 @@ stop_service() {
 
     if [ -n "$HYSTERIA_DOMAIN" ]; then
         echo -e "${yellow}Deleting SSL certificate for domain: $HYSTERIA_DOMAIN...${NC}"
-        sudo certbot delete --cert-name "$HYSTERIA_DOMAIN" --non-interactive > /dev/null 2>&1
+        certbot delete --cert-name "$HYSTERIA_DOMAIN" --non-interactive > /dev/null 2>&1
     else
         echo -e "${red}HYSTERIA_DOMAIN not found in .env. Skipping certificate deletion.${NC}"
     fi

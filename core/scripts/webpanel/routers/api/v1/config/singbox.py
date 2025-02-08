@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.post('/start', response_model=DetailResponse, summary='Start Singbox')
-async def start(body: StartInputBody):
+async def singbox_start_api(body: StartInputBody):
     """
     Start the Singbox service.
 
@@ -27,7 +27,7 @@ async def start(body: StartInputBody):
 
 
 @router.delete('/stop', response_model=DetailResponse, summary='Stop Singbox')
-async def stop():
+async def singbox_stop_api():
     """
     Stop the Singbox service.
 

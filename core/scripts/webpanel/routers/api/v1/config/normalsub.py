@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.post('/start', response_model=DetailResponse, summary='Start NormalSub')
-async def start(body: StartInputBody):
+async def normal_sub_start_api(body: StartInputBody):
     """
     Starts the NormalSub service using the provided domain and port.
 
@@ -32,7 +32,7 @@ async def start(body: StartInputBody):
 
 
 @router.delete('/stop', response_model=DetailResponse, summary='Stop NormalSub')
-async def stop():
+async def normal_sub_stop_api():
     """
     Stops the NormalSub service.
 

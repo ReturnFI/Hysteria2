@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.post('/start', response_model=DetailResponse, summary='Start Telegram Bot')
-async def start(body: StartInputBody):
+async def telegram_start_api(body: StartInputBody):
     """
     Starts the Telegram bot.
 
@@ -25,7 +25,7 @@ async def start(body: StartInputBody):
 
 
 @router.delete('/stop', response_model=DetailResponse, summary='Stop Telegram Bot')
-async def stop():
+async def telegram_stop_api():
     """
     Stops the Telegram bot.
 

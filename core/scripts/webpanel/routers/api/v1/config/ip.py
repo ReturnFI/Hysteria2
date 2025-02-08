@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get('/add')
-async def add():
+async def add_ip_api():
     try:
         cli_api.add_ip_address()
         return DetailResponse(detail='IP addresses added successfully.')
@@ -18,7 +18,7 @@ async def add():
 
 
 @router.post('/edit', response_model=DetailResponse)
-async def edit(body: EditInputBody):
+async def edit_ip_api(body: EditInputBody):
     try:
         if not body.ipv4 and not body.ipv6:
             raise HTTPException(status_code=400, detail='Error: You must specify either ipv4 or ipv6')

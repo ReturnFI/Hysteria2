@@ -2,6 +2,21 @@
 
 source /etc/hysteria/core/scripts/utils.sh
 source /etc/hysteria/core/scripts/path.sh
+source /etc/hysteria/core/scripts/services_status.sh
+
+check_services() {
+    for service in "${services[@]}"; do
+        service_base_name=$(basename "$service" .service)
+
+        display_name=$(echo "$service_base_name" | sed -E 's/([^-]+)-?/\u\1/g') 
+
+        if systemctl is-active --quiet "$service"; then
+            echo -e "${NC}${display_name}:${green} Active${NC}"
+        else
+            echo -e "${NC}${display_name}:${red} Inactive${NC}"
+        fi
+    done
+}
 
 # OPTION HANDLERS (ONLY NEEDED ONE)
 hysteria2_install_handler() {

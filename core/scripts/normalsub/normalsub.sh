@@ -2,15 +2,15 @@
 source /etc/hysteria/core/scripts/utils.sh
 define_colors
 
-install_dependencies() {
-    echo "Installing necessary dependencies..."
-    apt-get install certbot -y > /dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        echo -e "${red}Error: Failed to install certbot. ${NC}"
-        exit 1
-    fi
-    echo -e "${green}Certbot installed successfully. ${NC}"
-}
+# install_dependencies() {
+#     echo "Installing necessary dependencies..."
+#     apt-get install certbot -y > /dev/null 2>&1
+#     if [ $? -ne 0 ]; then
+#         echo -e "${red}Error: Failed to install certbot. ${NC}"
+#         exit 1
+#     fi
+#     echo -e "${green}Certbot installed successfully. ${NC}"
+# }
 
 update_env_file() {
     local domain=$1
@@ -53,7 +53,7 @@ start_service() {
         return
     fi
 
-    install_dependencies
+    # install_dependencies
 
     echo "Generating SSL certificates for $domain..."
     certbot certonly --standalone --agree-tos --register-unsafely-without-email -d "$domain"

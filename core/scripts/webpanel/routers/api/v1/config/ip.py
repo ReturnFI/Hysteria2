@@ -2,13 +2,34 @@ from fastapi import APIRouter, HTTPException
 from ..schema.response import DetailResponse
 
 
-from ..schema.config.ip import EditInputBody
+from ..schema.config.ip import EditInputBody, StatusResponse
 import cli_api
 
 router = APIRouter()
 
 
-@router.get('/add')
+@router.get('/get', response_model=StatusResponse, summary='Get IP Status')
+async def get_ip_api():
+    """
+    Retrieves the current status of IP addresses.
+
+    Returns:
+        StatusResponse: A response model containing the current IP address details.
+
+    Raises:
+        HTTPException: If the IP status is not available (404) or if there is an error processing the request (400).
+    """
+    try:
+
+        ipv4, ipv6 = cli_api.get_ip_address()
+        if ipv4 or ipv6:
+            return StatusResponse(ipv4=ipv4, ipv6=ipv6)  # type: ignore
+        raise HTTPException(status_code=404, detail='IP status not available.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
+@router.get('/add', response_model=DetailResponse, summary='Add IP')
 async def add_ip_api():
     """
     Adds the auto-detected IP addresses to the .configs.env file.
@@ -26,7 +47,7 @@ async def add_ip_api():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.post('/edit', response_model=DetailResponse)
+@router.post('/edit', response_model=DetailResponse, summary='Edit IP')
 async def edit_ip_api(body: EditInputBody):
     """
     Edits the IP addresses in the .configs.env file.

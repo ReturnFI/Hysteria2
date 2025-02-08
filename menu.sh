@@ -2,7 +2,7 @@
 
 source /etc/hysteria/core/scripts/utils.sh
 source /etc/hysteria/core/scripts/path.sh
-source /etc/hysteria/core/scripts/services_status.sh
+source /etc/hysteria/core/scripts/services_status.sh >/dev/null 2>&1
 
 check_services() {
     for service in "${services[@]}"; do

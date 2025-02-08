@@ -176,10 +176,7 @@
                 if (isRunning) {
                     $(selector + " input, " + selector + " label").remove();
                     $(selector + " .btn-success").remove();
-                    // First check if alert already exists
-                    if ($(".alert-info").length == 0) {
-                        $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
-                    }
+                    $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
                     $(selector + " .btn-danger").show();
                 } else {
                     $(selector + " input, " + selector + " label").show();
@@ -240,7 +237,7 @@
                 sendRequest(
                     "{{ url_for('telegram_start_api') }}",
                     "POST",
-                    { token: apiToken, adminid: adminId },
+                    { token: apiToken, admin_id: adminId },
                     "Telegram bot started successfully!"
                 );
             });

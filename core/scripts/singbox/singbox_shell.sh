@@ -54,6 +54,7 @@ start_service() {
     fi
 
     # install_dependencies
+    systemctl stop caddy.service > /dev/null 2>&1
 
     echo "Generating SSL certificates for $domain..."
     certbot certonly --standalone --agree-tos --register-unsafely-without-email -d "$domain"
@@ -73,6 +74,7 @@ start_service() {
     systemctl daemon-reload
     systemctl enable hysteria-singbox.service > /dev/null 2>&1
     systemctl start hysteria-singbox.service > /dev/null 2>&1
+    systemctl restart caddy.service > /dev/null 2>&1
     systemctl daemon-reload > /dev/null 2>&1
 
     if systemctl is-active --quiet hysteria-singbox.service; then

@@ -15,7 +15,7 @@ FILES=(
     "/etc/hysteria/core/scripts/webpanel/.env"
 )
 
-echo "Backing up and Stopping all cron jobs"
+echo "Backing up and stopping all cron jobs"
 crontab -l > /tmp/crontab_backup
 crontab -r
 
@@ -23,6 +23,28 @@ echo "Backing up files to $TEMP_DIR"
 for FILE in "${FILES[@]}"; do
     mkdir -p "$TEMP_DIR/$(dirname "$FILE")"
     cp "$FILE" "$TEMP_DIR/$FILE"
+done
+
+echo "Checking and renaming old systemd service files"
+declare -A SERVICE_MAP=(
+    ["/etc/systemd/system/hysteria-bot.service"]="hysteria-telegram-bot.service"
+    ["/etc/systemd/system/singbox.service"]="hysteria-singbox.service"
+    ["/etc/systemd/system/normalsub.service"]="hysteria-normal-sub.service"
+)
+
+for OLD_SERVICE in "${!SERVICE_MAP[@]}"; do
+    NEW_SERVICE="/etc/systemd/system/${SERVICE_MAP[$OLD_SERVICE]}"
+    
+    if [[ -f "$OLD_SERVICE" ]]; then
+        echo "Stopping old service: $(basename "$OLD_SERVICE")"
+        systemctl stop "$(basename "$OLD_SERVICE")" 2>/dev/null
+        
+        echo "Renaming $OLD_SERVICE to $NEW_SERVICE"
+        mv "$OLD_SERVICE" "$NEW_SERVICE"
+        
+        echo "Reloading systemd daemon"
+        systemctl daemon-reload
+    fi
 done
 
 echo "Removing /etc/hysteria directory"
@@ -42,10 +64,8 @@ done
 
 CONFIG_ENV="/etc/hysteria/.configs.env"
 if [ ! -f "$CONFIG_ENV" ]; then
-    echo ".configs.env not found, creating it with default SNI=bts.com and IPs."
+    echo ".configs.env not found, creating it with default values."
     echo "SNI=bts.com" > "$CONFIG_ENV"
-else
-    echo ".configs.env already exists."
 fi
 
 export $(grep -v '^#' "$CONFIG_ENV" | xargs 2>/dev/null)
@@ -81,7 +101,7 @@ echo "Restarting hysteria services"
 systemctl restart hysteria-server.service
 systemctl restart hysteria-telegram-bot.service
 systemctl restart hysteria-singbox.service
-systemctl restart hysteria-webpanel.service
+systemctl restart hysteria-normal-sub.service
 
 echo "Checking hysteria-server.service status"
 if systemctl is-active --quiet hysteria-server.service; then

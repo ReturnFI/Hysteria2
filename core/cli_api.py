@@ -4,6 +4,7 @@ from enum import Enum
 from datetime import datetime
 import json
 from typing import Any
+from dotenv import dotenv_values
 
 import traffic
 
@@ -297,19 +298,15 @@ def server_info() -> str | None:
     return run_cmd(['bash', Command.SERVER_INFO.value])
 
 
-def ip_address(edit: bool, ipv4: str, ipv6: str):
+def get_ip_address() -> tuple[str | None, str | None]:
     '''
-    Manages IP address configuration with edit options.
+    Retrieves the IP address from the .configs.env file.
     '''
-    if edit:
-        if ipv4:
-            run_cmd(['bash', Command.IP_ADD.value, 'edit', '-4', ipv4])
-        if ipv6:
-            run_cmd(['bash', Command.IP_ADD.value, 'edit', '-6', ipv6])
-        if not ipv4 and not ipv6:
-            raise InvalidInputError('Error: --edit requires at least one of --ipv4 or --ipv6.')
-    else:
-        run_cmd(['bash', Command.IP_ADD.value, 'add'])
+
+    env_file_path = os.path.join(SCRIPT_DIR, '..', '..', '.configs.env')
+    env_vars = dotenv_values(env_file_path)
+
+    return env_vars.get('IP4'), env_vars.get('IP6')
 
 
 def add_ip_address():

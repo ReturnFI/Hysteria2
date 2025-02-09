@@ -123,11 +123,11 @@
                                 <form>
                                     <div class='form-group'>
                                         <label for='ipv4'>IPv4:</label>
-                                        <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4'>
+                                        <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4' value="{{ ipv4 or '' }}">
                                     </div>
                                     <div class='form-group'>
                                         <label for='ipv6'>IPv6:</label>
-                                        <input type='text' class='form-control' id='ipv6' placeholder='Enter IPv6'>
+                                        <input type='text' class='form-control' id='ipv6' placeholder='Enter IPv6' value="{{ ipv6 or '' }}">
                                     </div>
                                     <button id="ip_change" type='button' class='btn btn-primary'>Save</button>
                                 </form>
@@ -338,6 +338,25 @@
         $("#normal_stop").on("click", stopNormal);
         $("#sni_change").on("click", changeSNI);
         $("#ip_change").on("click", saveIP);
+
+        $.ajax({
+            url: "{{ url_for('get_ip_api') }}",
+            type: "GET",
+            success: function (data) {
+                $("#ipv4").val(data.ipv4 || "");
+                $("#ipv6").val(data.ipv6 || "");
+
+                $("#ipv4").attr("placeholder", "Enter IPv4");
+                $("#ipv6").attr("placeholder", "Enter IPv6");
+
+
+            },
+            error: function () {
+                console.error("Failed to fetch IP addresses.");
+                $("#ipv4").attr("placeholder", "Enter IPv4");
+                $("#ipv6").attr("placeholder", "Enter IPv6");
+            }
+        });
     });
 </script>
 

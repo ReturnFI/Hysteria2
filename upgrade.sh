@@ -102,6 +102,7 @@ systemctl restart hysteria-server.service
 systemctl restart hysteria-telegram-bot.service
 systemctl restart hysteria-singbox.service
 systemctl restart hysteria-normal-sub.service
+systemctl restart hysteria-webpanel.service
 
 echo "Checking hysteria-server.service status"
 if systemctl is-active --quiet hysteria-server.service; then

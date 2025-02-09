@@ -11,6 +11,7 @@ import traffic
 DEBUG = False
 SCRIPT_DIR = '/etc/hysteria/core/scripts'
 CONFIG_FILE = '/etc/hysteria/config.json'
+CONFIG_ENV_FILE = '/etc/hysteria/.configs.env'
 
 
 class Command(Enum):
@@ -135,11 +136,31 @@ def restart_hysteria2():
     run_cmd(['bash', Command.RESTART_HYSTERIA2.value])
 
 
+def get_hysteria2_port() -> int | None:
+    '''
+    Retrieves the port for Hysteria2.
+    '''
+    # read json config file and return port, example valaue of 'listen' field: '127.0.0.1:8080'
+    config = get_hysteria2_config_file()
+    port = config['listen'].split(':')
+    if len(port) > 1:
+        return int(port[1])
+    return None
+
+
 def change_hysteria2_port(port: int):
     '''
     Changes the port for Hysteria2.
     '''
     run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
+
+
+def get_hysteria2_sni() -> str | None:
+    '''
+    Retrieves the SNI for Hysteria2.
+    '''
+    env_vars = dotenv_values(CONFIG_ENV_FILE)
+    return env_vars.get('SNI')
 
 
 def change_hysteria2_sni(sni: str):
@@ -302,9 +323,7 @@ def get_ip_address() -> tuple[str | None, str | None]:
     '''
     Retrieves the IP address from the .configs.env file.
     '''
-
-    env_file_path = os.path.join(SCRIPT_DIR, '..', '..', '.configs.env')
-    env_vars = dotenv_values(env_file_path)
+    env_vars = dotenv_values(CONFIG_ENV_FILE)
 
     return env_vars.get('IP4'), env_vars.get('IP6')
 

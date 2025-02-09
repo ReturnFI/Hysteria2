@@ -13,7 +13,7 @@ EOL
 }
 
 create_service_file() {
-    cat <<EOL > /etc/systemd/system/hysteria-bot.service
+    cat <<EOL > /etc/systemd/system/hysteria-telegram-bot.service
 [Unit]
 Description=Hysteria Telegram Bot
 After=network.target
@@ -32,8 +32,8 @@ start_service() {
     local api_token=$1
     local admin_user_ids=$2
 
-    if systemctl is-active --quiet hysteria-bot.service; then
-        echo "The hysteria-bot.service is already running."
+    if systemctl is-active --quiet hysteria-telegram-bot.service; then
+        echo "The hysteria-telegram-bot.service is already running."
         return
     fi
 
@@ -41,10 +41,10 @@ start_service() {
     create_service_file
 
     systemctl daemon-reload
-    systemctl enable hysteria-bot.service > /dev/null 2>&1
-    systemctl start hysteria-bot.service > /dev/null 2>&1
+    systemctl enable hysteria-telegram-bot.service > /dev/null 2>&1
+    systemctl start hysteria-telegram-bot.service > /dev/null 2>&1
 
-    if systemctl is-active --quiet hysteria-bot.service; then
+    if systemctl is-active --quiet hysteria-telegram-bot.service; then
         echo -e "${green}Hysteria bot setup completed. The service is now running. ${NC}"
         echo -e "\n\n"
     else
@@ -53,8 +53,8 @@ start_service() {
 }
 
 stop_service() {
-    systemctl stop hysteria-bot.service > /dev/null 2>&1
-    systemctl disable hysteria-bot.service > /dev/null 2>&1
+    systemctl stop hysteria-telegram-bot.service > /dev/null 2>&1
+    systemctl disable hysteria-telegram-bot.service > /dev/null 2>&1
 
     rm -f /etc/hysteria/core/scripts/telegrambot/.env
     echo -e "\n"

@@ -59,25 +59,31 @@ show_uri() {
             if jq -e "has(\"$username\")" "$USERS_FILE" > /dev/null; then
                 authpassword=$(jq -r ".\"$username\".password" "$USERS_FILE")
                 port=$(jq -r '.listen' "$CONFIG_FILE" | cut -d':' -f2)
-                sha256=$(jq -r '.tls.pinSHA256' "$CONFIG_FILE")
+                sha256=$(jq -r '.tls.pinSHA256 // empty' "$CONFIG_FILE")
                 obfspassword=$(jq -r '.obfs.salamander.password // empty' "$CONFIG_FILE")
 
                 generate_uri() {
                     local ip_version=$1
                     local ip=$2
-                    if [ -n "$obfspassword" ]; then
-                        if [ "$ip_version" -eq 4 ]; then
-                            echo "hy2://$username%3A$authpassword@$ip:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv4"
-                        elif [ "$ip_version" -eq 6 ]; then
-                            echo "hy2://$username%3A$authpassword@[$ip]:$port?obfs=salamander&obfs-password=$obfspassword&pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv6"
-                        fi
-                    else
-                        if [ "$ip_version" -eq 4 ]; then
-                            echo "hy2://$username%3A$authpassword@$ip:$port?pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv4"
-                        elif [ "$ip_version" -eq 6 ]; then
-                            echo "hy2://$username%3A$authpassword@[$ip]:$port?pinSHA256=$sha256&insecure=1&sni=$SNI#$username-IPv6"
-                        fi
+                    local uri_base="hy2://$username%3A$authpassword@$ip:$port"
+
+                    if [ "$ip_version" -eq 6 ]; then
+                        uri_base="hy2://$username%3A$authpassword@[$ip]:$port"
                     fi
+
+                    local params=""
+                    
+                    if [ -n "$obfspassword" ]; then
+                        params+="obfs=salamander&obfs-password=$obfspassword&"
+                    fi
+
+                    if [ -n "$sha256" ]; then
+                        params+="pinSHA256=$sha256&"
+                    fi
+
+                    params+="insecure=1&sni=$SNI"
+
+                    echo "$uri_base?$params#$username-IPv$ip_version"
                 }
 
                 if [ "$show_all" = true ]; then
@@ -116,13 +122,13 @@ show_uri() {
                     fi
                 fi
 
-                if [ "$generate_singbox" = true ] && systemctl is-active --quiet singbox.service; then
+                if [ "$generate_singbox" = true ] && systemctl is-active --quiet hysteria-singbox.service; then
                     read -r domain port < <(get_singbox_domain_and_port)
                     if [ -n "$domain" ] && [ -n "$port" ]; then
                         echo -e "\nSingbox Sublink:\nhttps://$domain:$port/sub/singbox/$username/$ip_version#$username\n"
                     fi
                 fi
-                if [ "$generate_normalsub" = true ] && systemctl is-active --quiet normalsub.service; then
+                if [ "$generate_normalsub" = true ] && systemctl is-active --quiet hysteria-normal-sub.service; then
                     read -r domain port < <(get_normalsub_domain_and_port)
                     if [ -n "$domain" ] && [ -n "$port" ]; then
                         echo -e "\nNormal-SUB Sublink:\nhttps://$domain:$port/sub/normal/$username#Hysteria2\n"

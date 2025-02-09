@@ -31,6 +31,8 @@ convert_bytes() {
     fi
 }
 
+# iT'S BETTER TO PRINT BYTES ITSELF AND NOT HUMAN READABLE FORMAT BECAUSE THE CALLER SHOULD DECIDE WHAT TO PRINT
+
 cpu_usage=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}')
 total_ram=$(free -m | awk '/Mem:/ {print $2}')
 used_ram=$(free -m | awk '/Mem:/ {print $3}')
@@ -48,7 +50,7 @@ echo "📋 Total RAM: ${total_ram}MB"
 echo "💻 Used RAM: ${used_ram}MB"
 echo "👥 Online Users: $online_user_count"
 echo 
-echo "🚦Total Traffic: "
+#echo "🚦Total Traffic: "
 
 if [ -f "$USERS_FILE" ]; then
     total_upload=0
@@ -64,10 +66,10 @@ if [ -f "$USERS_FILE" ]; then
     total_upload_human=$(convert_bytes $total_upload)
     total_download_human=$(convert_bytes $total_download)
 
-    echo "🔼${total_upload_human} uploaded"
-    echo "🔽${total_download_human} downloaded"
+    echo "🔼 Uploaded Traffic: ${total_upload_human}"
+    echo "🔽 Downloaded Traffic: ${total_download_human}"
     
     total_traffic=$((total_upload + total_download))
     total_traffic_human=$(convert_bytes $total_traffic)
-    echo "📊 ${total_traffic_human} total traffic"
+    echo "📊 Total Traffic: ${total_traffic_human}"
 fi

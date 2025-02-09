@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Dashboard</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3 id="cpu-usage">--<sup style="font-size: 20px">%</sup></h3>
+                        <p>CPU Usage</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3 id="ram-usage">--</h3>
+                        <p>RAM Usage</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-memory"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-secondary">
+                    <div class="inner">
+                        <h3 id="total-traffic">--</h3>
+                        <p>Total Traffic</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3 id="online-users">--</h3>
+                        <p>Online Users</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box" id="hysteria2-status-box">
+                    <div class="inner">
+                        <h3 id="hysteria2-status">--</h3>
+                        <p>Hysteria2</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box" id="telegrambot-status-box">
+                    <div class="inner">
+                        <h3 id="telegrambot-status">--</h3>
+                        <p>Telegram Bot</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box" id="singbox-status-box">
+                    <div class="inner">
+                        <h3 id="singbox-status">--</h3>
+                        <p>Singbox</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box" id="normalsub-status-box">
+                    <div class="inner">
+                        <h3 id="normalsub-status">--</h3>
+                        <p>Normalsub</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-rss"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    function updateServerInfo() {
+        fetch('{{ url_for("server_status_api") }}')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('cpu-usage').textContent = data.cpu_usage;
+                document.getElementById('ram-usage').textContent = data.ram_usage;
+                document.getElementById('online-users').textContent = data.online_users;
+                document.getElementById('total-traffic').textContent = data.total_traffic;
+            })
+            .catch(error => console.error('Error fetching server info:', error));
+    }
+
+
+    function updateServiceStatuses() {
+        // Add services api in fetch
+        fetch('{{ url_for("server_services_status_api") }}')
+            .then(response => response.json())
+            .then(data => {
+
+                updateServiceBox('hysteria2', data.hysteria_server);
+                updateServiceBox('telegrambot', data.hysteria_telegram_bot);
+                updateServiceBox('singbox', data.hysteria_singbox);
+                updateServiceBox('normalsub', data.hysteria_normal_sub);
+            })
+            .catch(error => console.error('Error fetching service statuses:', error));
+    }
+
+    function updateServiceBox(serviceName, status) {
+        const statusElement = document.getElementById(serviceName + '-status');
+        const statusBox = document.getElementById(serviceName + '-status-box');
+
+        if (status === true) {
+            statusElement.textContent = 'Active';
+            statusBox.classList.remove('bg-danger');
+            statusBox.classList.add('bg-success');     // Add green
+        } else {
+            statusElement.textContent = 'Inactive';
+            statusBox.classList.remove('bg-success');
+            statusBox.classList.add('bg-danger');      // Add red
+        }
+    }
+
+
+
+    updateServerInfo();
+    updateServiceStatuses();
+
+    setInterval(updateServerInfo, 5000);
+</script>
+
+{% endblock %}

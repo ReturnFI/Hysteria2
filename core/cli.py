@@ -1,146 +1,132 @@
 #!/usr/bin/env python3
 
-from datetime import datetime
-import os
-import io
+import typing
 import click
-import subprocess
-from enum import Enum
-
-import traffic
-import validator
+import cli_api
+import json
 
 
-SCRIPT_DIR = '/etc/hysteria/core/scripts'
-DEBUG = False
+def pretty_print(data: typing.Any):
+    if isinstance(data, dict):
+        print(json.dumps(data, indent=4))
+        return
 
-
-class Command(Enum):
-    '''Constais path to command's script'''
-    INSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'install.sh')
-    UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'uninstall.sh')
-    UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.sh')
-    RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.sh')
-    CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.sh')
-    CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
-    GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.sh')
-    ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
-    EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
-    RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
-    REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
-    SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
-    IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
-    MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
-    MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
-    TRAFFIC_STATUS = 'traffic.py'  # won't be call directly (it's a python module)
-    UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
-    LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
-    SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
-    BACKUP_HYSTERIA = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
-    INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
-    INSTALL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
-    INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
-    INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
-    INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
-    UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
-    CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
-    STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
-
-
-# region utils
-def run_cmd(command: list[str]):
-    '''
-    Runs a command and returns the output.
-    Could raise subprocess.CalledProcessError
-    '''
-
-    # if the command is GET_USER or LIST_USERS we don't print the debug-command and just print the output
-    if DEBUG and not (Command.GET_USER.value in command or Command.LIST_USERS.value in command):
-        print(' '.join(command))
-
-    result = subprocess.check_output(command, shell=False)
-
-    print(result.decode().strip())
-
-
-def generate_password() -> str:
-    '''
-    Generates a random password using pwgen for user.
-    Could raise subprocess.CalledProcessError
-    '''
-    return subprocess.check_output(['pwgen', '-s', '32', '1'], shell=False).decode().strip()
-
-# endregion
+    print(data)
 
 
 @click.group()
 def cli():
     pass
 
-# region hysteria2 menu options
+# region Hysteria2
 
 
 @cli.command('install-hysteria2')
-@click.option('--port', '-p', required=True, help='Port for Hysteria2', type=int, callback=validator.validate_port)
+@click.option('--port', '-p', required=True, help='Port for Hysteria2', type=int)
 @click.option('--sni', '-s', required=False, default='bts.com', help='SNI for Hysteria2 (default: bts.com)', type=str)
 def install_hysteria2(port: int, sni: str):
-    """
-    Installs Hysteria2 on the given port and uses the provided or default SNI value.
-    """
-    run_cmd(['bash', Command.INSTALL_HYSTERIA2.value, str(port), sni])
+    try:
+        cli_api.install_hysteria2(port, sni)
+        click.echo(f'Hysteria2 installed successfully on port {port} with SNI {sni}.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
 @cli.command('uninstall-hysteria2')
 def uninstall_hysteria2():
-    run_cmd(['bash', Command.UNINSTALL_HYSTERIA2.value])
+    try:
+        cli_api.uninstall_hysteria2()
+        click.echo('Hysteria2 uninstalled successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
 @cli.command('update-hysteria2')
 def update_hysteria2():
-    run_cmd(['bash', Command.UPDATE_HYSTERIA2.value])
+    try:
+        cli_api.update_hysteria2()
+        click.echo('Hysteria2 updated successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
 @cli.command('restart-hysteria2')
 def restart_hysteria2():
-    run_cmd(['bash', Command.RESTART_HYSTERIA2.value])
+    try:
+        cli_api.restart_hysteria2()
+        click.echo('Hysteria2 restarted successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
 @cli.command('change-hysteria2-port')
-@click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int, callback=validator.validate_port)
+@click.option('--port', '-p', required=True, help='New port for Hysteria2', type=int)
 def change_hysteria2_port(port: int):
-    run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
+    try:
+        cli_api.change_hysteria2_port(port)
+        click.echo(f'Hysteria2 port changed to {port} successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('change-hysteria2-sni')
 @click.option('--sni', '-s', required=True, help='New SNI for Hysteria2', type=str)
 def change_hysteria2_sni(sni: str):
-    run_cmd(['bash', Command.CHANGE_SNI_HYSTERIA2.value, sni])
+    try:
+        cli_api.change_hysteria2_sni(sni)
+        click.echo(f'Hysteria2 SNI changed to {sni} successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+
+@cli.command('backup-hysteria')
+def backup_hysteria2():
+    try:
+        cli_api.backup_hysteria2()
+        click.echo('Hysteria configuration backed up successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+# endregion
+
+# region User
+
+
+@cli.command('list-users')
+def list_users():
+    try:
+        res = cli_api.list_users()
+        if res:
+            pretty_print(res)
+        else:
+            click.echo('No users found.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('get-user')
 @click.option('--username', '-u', required=True, help='Username for the user to get', type=str)
 def get_user(username: str):
-    cmd = ['bash', Command.GET_USER.value, '-u', str(username)]
-    run_cmd(cmd)
+    try:
+        if res := cli_api.get_user(username):
+            pretty_print(res)
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('add-user')
 @click.option('--username', '-u', required=True, help='Username for the new user', type=str)
 @click.option('--traffic-limit', '-t', required=True, help='Traffic limit for the new user in GB', type=int)
 @click.option('--expiration-days', '-e', required=True, help='Expiration days for the new user', type=int)
 @click.option('--password', '-p', required=False, help='Password for the user', type=str)
-@click.option('--creation-date', '-c', required=False, help='Creation date for the user', type=str)
+@click.option('--creation-date', '-c', required=False, help='Creation date for the user (YYYY-MM-DD)', type=str)
 def add_user(username: str, traffic_limit: int, expiration_days: int, password: str, creation_date: str):
-    if not password:
-        try:
-            password = generate_password()
-        except subprocess.CalledProcessError as e:
-            print(f'Error: failed to generate password\n{e}')
-            exit(1)
-    if not creation_date:
-        creation_date = datetime.now().strftime('%Y-%m-%d')
     try:
-        run_cmd(['bash', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
-    except subprocess.CalledProcessError as e:
-        click.echo(f"{e.output.decode()}", err=True)
-        exit(1)
+        cli_api.add_user(username, traffic_limit, expiration_days, password, creation_date)
+        click.echo(f"User '{username}' added successfully.")
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('edit-user')
 @click.option('--username', '-u', required=True, help='Username for the user to edit', type=str)
@@ -151,61 +137,33 @@ def add_user(username: str, traffic_limit: int, expiration_days: int, password: 
 @click.option('--renew-creation-date', '-rc', is_flag=True, help='Renew creation date for the user')
 @click.option('--blocked', '-b', is_flag=True, help='Block the user')
 def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expiration_days: int, renew_password: bool, renew_creation_date: bool, blocked: bool):
-    if not username:
-        print('Error: username is required')
-        exit(1)
+    try:
+        cli_api.edit_user(username, new_username, new_traffic_limit, new_expiration_days,
+                          renew_password, renew_creation_date, blocked)
+        click.echo(f"User '{username}' updated successfully.")
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
-    if not any([new_username, new_traffic_limit, new_expiration_days, renew_password, renew_creation_date, blocked is not None]):
-        print('Error: at least one option is required')
-        exit(1)
 
-    if new_traffic_limit is not None and new_traffic_limit <= 0:
-        print('Error: traffic limit must be greater than 0')
-        exit(1)
-
-    if new_expiration_days is not None and new_expiration_days <= 0:
-        print('Error: expiration days must be greater than 0')
-        exit(1)
-
-    # Handle renewing password and creation date
-    if renew_password:
-        try:
-            password = generate_password()
-        except subprocess.CalledProcessError as e:
-            print(f'Error: failed to generate password\n{e}')
-            exit(1)
-    else:
-        password = ""
-
-    if renew_creation_date:
-        creation_date = datetime.now().strftime('%Y-%m-%d')
-    else:
-        creation_date = ""
-
-    # Prepare arguments for the command
-    command_args = [
-        'bash',
-        Command.EDIT_USER.value,
-        username,
-        new_username or '',
-        str(new_traffic_limit) if new_traffic_limit is not None else '',
-        str(new_expiration_days) if new_expiration_days is not None else '',
-        password,
-        creation_date,
-        'true' if blocked else 'false'
-    ]
-
-    run_cmd(command_args)
-
-@ cli.command('reset-user')
-@ click.option('--username', '-u', required=True, help='Username for the user to Reset', type=str)
+@cli.command('reset-user')
+@click.option('--username', '-u', required=True, help='Username for the user to Reset', type=str)
 def reset_user(username: str):
-    run_cmd(['bash', Command.RESET_USER.value, username])
+    try:
+        cli_api.reset_user(username)
+        click.echo(f"User '{username}' reset successfully.")
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
-@ cli.command('remove-user')
-@ click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
+
+@cli.command('remove-user')
+@click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
 def remove_user(username: str):
-    run_cmd(['bash', Command.REMOVE_USER.value, username])
+    try:
+        cli_api.remove_user(username)
+        click.echo(f"User '{username}' removed successfully.")
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('show-user-uri')
 @click.option('--username', '-u', required=True, help='Username for the user to show the URI', type=str)
@@ -215,136 +173,150 @@ def remove_user(username: str):
 @click.option('--singbox', '-s', is_flag=True, help='Generate Singbox sublink if Singbox service is active')
 @click.option('--normalsub', '-n', is_flag=True, help='Generate Normal sublink if normalsub service is active')
 def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: bool, normalsub: bool):
-    command_args = ['bash', Command.SHOW_USER_URI.value, '-u', username]
-    if qrcode:
-        command_args.append('-qr')
-    if all:
-        command_args.append('-a')
-    else:
-        command_args.extend(['-ip', str(ipv)])
-    if singbox:
-        command_args.append('-s')
-    if normalsub:
-        command_args.append('-n')
+    try:
+        res = cli_api.show_user_uri(username, qrcode, ipv, all, singbox, normalsub)
+        if res:
+            click.echo(res)
+        else:
+            click.echo(f"URI for user '{username}' could not be generated.")
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+# endregion
 
-    run_cmd(command_args)
+# region Server
 
-@ cli.command('traffic-status')
+
+@cli.command('traffic-status')
 def traffic_status():
-    traffic.traffic_status()
-
-
-@ cli.command('list-users')
-def list_users():
-    run_cmd(['bash', Command.LIST_USERS.value])
+    try:
+        cli_api.traffic_status()
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
 @cli.command('server-info')
 def server_info():
-    output = run_cmd(['bash', Command.SERVER_INFO.value])
-    if output:
-        print(output)
-
-@cli.command('backup-hysteria')
-def backup_hysteria():
     try:
-        run_cmd(['bash', Command.BACKUP_HYSTERIA.value])
-    except subprocess.CalledProcessError as e:
-        click.echo(f"Backup failed: {e.output.decode()}", err=True)
+        res = cli_api.server_info()
+        if res:
+            pretty_print(res)
+        else:
+            click.echo('Server information not available.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('manage_obfs')
 @click.option('--remove', '-r', is_flag=True, help="Remove 'obfs' from config.json.")
 @click.option('--generate', '-g', is_flag=True, help="Generate new 'obfs' in config.json.")
-def manage_obfs(remove, generate):
-    """Manage 'obfs' in Hysteria2 configuration."""
-    if remove and generate:
-        click.echo("Error: You cannot use both --remove and --generate at the same time.")
-        return
-    elif remove:
-        click.echo("Removing 'obfs' from config.json...")
-        run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
-    elif generate:
-        click.echo("Generating 'obfs' in config.json...")
-        run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
-    else:
-        click.echo("Error: Please specify either --remove or --generate.")
+def manage_obfs(remove: bool, generate: bool):
+    try:
+        if not remove and not generate:
+            raise click.UsageError('Error: You must use either --remove or --generate')
+        if remove and generate:
+            raise click.UsageError('Error: You cannot use both --remove and --generate at the same time')
+
+        if generate:
+            cli_api.enable_hysteria2_obfs()
+            click.echo('Obfs enabled successfully.')
+        elif remove:
+            cli_api.disable_hysteria2_obfs()
+            click.echo('Obfs disabled successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('ip-address')
-@click.option('--edit', is_flag=True, help="Edit IP addresses manually.")
-@click.option('-4', '--ipv4', type=str, help="Specify the new IPv4 address.")
-@click.option('-6', '--ipv6', type=str, help="Specify the new IPv6 address.")
-def ip_address(edit, ipv4, ipv6):
-    """
+@click.option('--edit', is_flag=True, help='Edit IP addresses manually.')
+@click.option('-4', '--ipv4', type=str, help='Specify the new IPv4 address.')
+@click.option('-6', '--ipv6', type=str, help='Specify the new IPv6 address.')
+def ip_address(edit: bool, ipv4: str, ipv6: str):
+    '''
     Manage IP addresses in .configs.env.
     - Use without options to add auto-detected IPs.
     - Use --edit with -4 or -6 to manually update IPs.
-    """
-    if edit:
-        if ipv4:
-            run_cmd(['bash', Command.IP_ADD.value, 'edit', '-4', ipv4])
-        if ipv6:
-            run_cmd(['bash', Command.IP_ADD.value, 'edit', '-6', ipv6])
+    '''
+    try:
+        if not edit:
+            cli_api.add_ip_address()
+            click.echo('IP addresses added successfully.')
+            return
+
         if not ipv4 and not ipv6:
-            click.echo("Error: --edit requires at least one of --ipv4 or --ipv6.")
-    else:
-        run_cmd(['bash', Command.IP_ADD.value, 'add'])
+            raise click.UsageError('Error: You must specify either -4 or -6')
+
+        cli_api.edit_ip_address(ipv4, ipv6)
+        click.echo('IP address configuration updated successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('update-geo')
-@click.option('--country', '-c', 
+@click.option('--country', '-c',
               type=click.Choice(['iran', 'china', 'russia'], case_sensitive=False),
               default='iran',
               help='Select country for geo files (default: iran)')
-def cli_update_geo(country):
-    script_path = Command.UPDATE_GEO.value
+def update_geo(country: str):
     try:
-        subprocess.run(['python3', script_path, country.lower()], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to update geo files: {e}")
-    except FileNotFoundError:
-        print(f"Script not found: {script_path}")
+        cli_api.update_geo(country)
+        click.echo(f'Geo files for {country} updated successfully.')
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        click.echo(f'{e}', err=True)
 
 
 @cli.command('masquerade')
 @click.option('--remove', '-r', is_flag=True, help="Remove 'masquerade' from config.json.")
-@click.option('--enable', '-e', metavar="<domain>", type=str, help="Enable 'masquerade' in config.json with the specified domain.")
-def masquerade(remove, enable):
-    """Manage 'masquerade' in Hysteria2 configuration."""
-    
-    if remove and enable:
-        click.echo("Error: You cannot use both --remove and --enable at the same time.")
-        return
-    elif remove:
-        click.echo("Removing 'masquerade' from config.json...")
-        run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '2'])
-    elif enable:
-        if not enable:
-            click.echo("Error: You must specify a domain with --enable.")
-            return
-        click.echo(f"Enabling 'masquerade' with URL: {enable}...")
-        run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '1', enable])
-    else:
-        click.echo("Error: Please specify either --remove or --enable.")
-        
+@click.option('--enable', '-e', metavar='<domain>', type=str, help="Enable 'masquerade' in config.json with the specified domain.")
+def masquerade(remove: bool, enable: str):
+    '''Manage 'masquerade' in Hysteria2 configuration.'''
+    try:
+        if not remove and not enable:
+            raise click.UsageError('Error: You must use either --remove or --enable')
+        if remove and enable:
+            raise click.UsageError('Error: You cannot use both --remove and --enable at the same time')
+
+        if enable:
+            # NOT SURE THIS IS NEEDED
+            # if not enable.startswith('http://') and not enable.startswith('https://'):
+            #     enable = 'https://' + enable
+            cli_api.enable_hysteria2_masquerade(enable)
+            click.echo('Masquerade enabled successfully.')
+        elif remove:
+            cli_api.disable_hysteria2_masquerade()
+            click.echo('Masquerade disabled successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 # endregion
 
-# region advanced menu
+# region Advanced Menu
 
 
-@ cli.command('install-tcp-brutal')
+@cli.command('install-tcp-brutal')
 def install_tcp_brutal():
-    run_cmd(['bash', Command.INSTALL_TCP_BRUTAL.value])
+    try:
+        cli_api.install_tcp_brutal()
+        click.echo('TCP Brutal installed successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
-@ cli.command('install-warp')
+@cli.command('install-warp')
 def install_warp():
-    run_cmd(['bash', Command.INSTALL_WARP.value])
+    try:
+        cli_api.install_warp()
+        click.echo('WARP installed successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
-@ cli.command('uninstall-warp')
+@cli.command('uninstall-warp')
 def uninstall_warp():
-    run_cmd(['bash', Command.UNINSTALL_WARP.value])
+    try:
+        cli_api.uninstall_warp()
+        click.echo('WARP uninstalled successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 
 @cli.command('configure-warp')
@@ -353,81 +325,156 @@ def uninstall_warp():
 @click.option('--domestic-sites', '-d', is_flag=True, help='Use WARP for Iran domestic sites')
 @click.option('--block-adult-sites', '-x', is_flag=True, help='Block adult content (porn)')
 @click.option('--warp-option', '-w', type=click.Choice(['warp', 'warp plus'], case_sensitive=False), help='Specify whether to use WARP or WARP Plus')
-@click.option('--warp-key', '-k', help='WARP Plus key (required if warp-option is "warp plus")')
+@click.option('--warp-key', '-k', help="WARP Plus key (required if warp-option is 'warp plus')")
 def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool, warp_option: str, warp_key: str):
-    if warp_option == 'warp plus' and not warp_key:
-        print("Error: WARP Plus key is required when 'warp plus' is selected.")
-        return
+    try:
+        cli_api.configure_warp(all, popular_sites, domestic_sites, block_adult_sites, warp_option, warp_key)
+        click.echo('WARP configured successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
-    options = {
-        "all": 'true' if all else 'false',
-        "popular_sites": 'true' if popular_sites else 'false',
-        "domestic_sites": 'true' if domestic_sites else 'false',
-        "block_adult_sites": 'true' if block_adult_sites else 'false',
-        "warp_option": warp_option or '',
-        "warp_key": warp_key or ''
-    }
-    
-    cmd_args = [
-        'bash', Command.CONFIGURE_WARP.value,
-        options['all'],
-        options['popular_sites'],
-        options['domestic_sites'],
-        options['block_adult_sites'],
-        options['warp_option']
-    ]
-    
-    if options['warp_key']:
-        cmd_args.append(options['warp_key'])
-
-    run_cmd(cmd_args)
 
 @cli.command('warp-status')
 def warp_status():
-    output = run_cmd(['bash', Command.STATUS_WARP.value])
-    if output:
-        print(output)
+    try:
+        res = cli_api.warp_status()
+        if res:
+            pretty_print(res)
+        else:
+            click.echo('WARP status not available.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('telegram')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
 @click.option('--token', '-t', required=False, help='Token for running the telegram bot', type=str)
 @click.option('--adminid', '-aid', required=False, help='Telegram admins ID for running the telegram bot', type=str)
 def telegram(action: str, token: str, adminid: str):
-    if action == 'start':
-        if not token or not adminid:
-            print("Error: Both --token and --adminid are required for the start action.")
-            return
-        admin_ids = f'{adminid}'
-        run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'start', token, admin_ids])
-    elif action == 'stop':
-        run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
+    try:
+        if action == 'start':
+            if not token or not adminid:
+                raise click.UsageError('Error: Both --token and --adminid are required for the start action.')
+            cli_api.start_telegram_bot(token, adminid)
+            click.echo(f'Telegram bot started successfully.')
+        elif action == 'stop':
+            cli_api.stop_telegram_bot()
+            click.echo(f'Telegram bot stopped successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('singbox')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
 @click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
 @click.option('--port', '-p', required=False, help='Port number for Singbox service', type=int)
 def singbox(action: str, domain: str, port: int):
-    if action == 'start':
-        if not domain or not port:
-            click.echo("Error: Both --domain and --port are required for the start action.")
-            return
-        run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'start', domain, str(port)])
-    elif action == 'stop':
-        run_cmd(['bash', Command.INSTALL_SINGBOX.value, 'stop'])
+    try:
+        if action == 'start':
+            if not domain or not port:
+                raise click.UsageError('Error: Both --domain and --port are required for the start action.')
+            cli_api.start_singbox(domain, port)
+            click.echo(f'Singbox started successfully.')
+        elif action == 'stop':
+            cli_api.stop_singbox()
+            click.echo(f'Singbox stopped successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('normal-sub')
 @click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
 @click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
 @click.option('--port', '-p', required=False, help='Port number for NormalSub service', type=int)
 def normalsub(action: str, domain: str, port: int):
-    if action == 'start':
-        if not domain or not port:
-            click.echo("Error: Both --domain and --port are required for the start action.")
-            return
-        run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'start', domain, str(port)])
-    elif action == 'stop':
-        run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'stop'])
+    try:
+        if action == 'start':
+            if not domain or not port:
+                raise click.UsageError('Error: Both --domain and --port are required for the start action.')
+            cli_api.start_normalsub(domain, port)
+            click.echo(f'NormalSub started successfully.')
+        elif action == 'stop':
+            cli_api.stop_normalsub()
+            click.echo(f'NormalSub stopped successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
+
+@cli.command('webpanel')
+@click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
+@click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
+@click.option('--port', '-p', required=False, help='Port number for WebPanel service', type=int)
+@click.option('--admin-username', '-au', required=False, help='Admin username for WebPanel', type=str)
+@click.option('--admin-password', '-ap', required=False, help='Admin password for WebPanel', type=str)
+@click.option('--expiration-minutes', '-e', required=False, help='Expiration minutes for WebPanel', type=int, default=20)
+@click.option('--debug', '-g', is_flag=True, help='Enable debug mode for WebPanel', default=False)
+def webpanel(action: str, domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool):
+    try:
+        if action == 'start':
+            if not domain or not port or not admin_username or not admin_password:
+                raise click.UsageError('Error: the --domain, --port, --admin-username, and --admin-password are required for the start action.')
+
+            cli_api.start_webpanel(domain, port, admin_username, admin_password, expiration_minutes, debug)
+
+            services_status = cli_api.get_services_status()
+            if not services_status:
+                raise click.Abort('Error: WebPanel services status not available.')
+            if not services_status.get('hysteria-webpanel.service'):
+                raise click.Abort('Error: hysteria-webpanel.service service is not running.')
+            if not services_status.get('hysteria-caddy.service'):
+                raise click.Abort('Error: hysteria-caddy.service service is not running.')
+
+            url = cli_api.get_webpanel_url()
+            click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
+        elif action == 'stop':
+            cli_api.stop_webpanel()
+            click.echo(f'WebPanel stopped successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+
+@cli.command('get-webpanel-url')
+def get_web_panel_url():
+    try:
+        url = cli_api.get_webpanel_url()
+        click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+
+@cli.command('get-webpanel-api-token')
+def get_web_panel_api_token():
+    try:
+        token = cli_api.get_webpanel_api_token()
+        click.echo(f'WebPanel API token: {token}')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+
+@cli.command('get-webpanel-services-status')
+def get_web_panel_services_status():
+    try:
+        if services_status := cli_api.get_services_status():
+            webpanel_status = services_status.get('hysteria-webpanel.service', False)
+            caddy_status = services_status.get('hysteria-caddy.service', False)
+            print(f"hysteria-webpanel.service: {'Active' if webpanel_status else 'Inactive'}")
+            print(f"hysteria-caddy.service: {'Active' if caddy_status else 'Inactive'}")
+        else:
+            click.echo('Error: Services status not available.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+
+@cli.command('get-services-status')
+def get_services_status():
+    try:
+        if services_status := cli_api.get_services_status():
+            for service, status in services_status.items():
+                click.echo(f"{service}: {'Active' if status else 'Inactive'}")
+        else:
+            click.echo('Error: Services status not available.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 # endregion
 
 

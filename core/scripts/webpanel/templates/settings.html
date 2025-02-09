@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class='content-header'>
+    <div class='container-fluid'>
+        <div class='row mb-2'>
+            <div class='col-sm-6'>
+                <h1 class='m-0'>Settings</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='content'>
+    <div class='container-fluid'>
+        <div class='row'>
+            <div class='col-lg-12'>
+                <div class='card card-primary card-outline card-tabs'>
+                    <div class='card-header p-0 pt-1 border-bottom-0'>
+                        <ul class='nav nav-pills' id='custom-tabs-three-tab' role='tablist' style="margin-left: 20px; margin-top: 10px;">
+                            <li class='nav-item'>
+                                <a class='nav-link active' id='subs-tab' data-toggle='pill' href='#subs' role='tab' aria-controls='subs' aria-selected='false'>Subscriptions</a>
+                            </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' id='telegram-tab' data-toggle='pill' href='#telegram' role='tab' aria-controls='telegram' aria-selected='true'>Telegram
+                                    Bot</a>
+                            </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' id='sni-tab' data-toggle='pill' href='#sni' role='tab' aria-controls='sni' aria-selected='false'>Change SNI</a>
+                            </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' id='ip-tab' data-toggle='pill' href='#change_ip' role='tab' aria-controls='change_ip' aria-selected='false'>Change IP</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class='card-body' style="margin-left: 25px;">
+                        <div class='tab-content' id='custom-tabs-three-tabContent'>
+
+                            <!-- Subscriptions Tab -->
+                            <div class='tab-pane fade show active' id='subs' role='tabpanel' aria-labelledby='subs-tab'>
+                                <ul class='nav nav-tabs' id='subs-tabs' role='tablist'>
+                                    <li class='nav-item'>
+                                        <a class='nav-link active' id='singbox-tab' data-toggle='tab' href='#singbox' role='tab' aria-controls='singbox'
+                                            aria-selected='true'><strong>SingBox</strong></a>
+                                    </li>
+                                    <li class='nav-item'>
+                                        <a class='nav-link' id='normal-tab' data-toggle='tab' href='#normal' role='tab' aria-controls='normal'
+                                            aria-selected='false'><strong>Normal</strong></a>
+                                    </li>
+                                </ul>
+                                <div class='tab-content' id='subs-tabs-content'>
+                                    <br>
+                                    <!-- SingBox Sub Tab -->
+                                    <div class='tab-pane fade show active' id='singbox' role='tabpanel' aria-labelledby='singbox-tab'>
+                                        <form>
+                                            <div class='form-group'>
+                                                <label for='singbox_domain'>Domain:</label>
+                                                <input type='text' class='form-control' id='singbox_domain' placeholder='Enter Domain'>
+                                            </div>
+                                            <div class='form-group'>
+                                                <label for='singbox_port'>Port:</label>
+                                                <input type='text' class='form-control' id='singbox_port' placeholder='Enter Port'>
+                                            </div>
+                                            <button id="singbox_start" type='button' class='btn btn-success'>Start</button>
+                                            <button id="singbox_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
+
+                                        </form>
+                                    </div>
+
+                                    <!-- Normal Sub Tab -->
+                                    <div class='tab-pane fade' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
+                                        <form>
+                                            <div class='form-group'>
+                                                <label for='normal_domain'>Domain:</label>
+                                                <input type='text' class='form-control' id='normal_domain' placeholder='Enter Domain'>
+                                            </div>
+                                            <div class='form-group'>
+                                                <label for='normal_port'>Port:</label>
+                                                <input type='text' class='form-control' id='normal_port' placeholder='Enter Port'>
+                                            </div>
+                                            <button id="normal_start" type='button' class='btn btn-success'>Start</button>
+                                            <button id="normal_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Telegram Bot Tab -->
+                            <div class='tab-pane fade show' id='telegram' role='tabpanel' aria-labelledby='telegram-tab'>
+                                <form>
+                                    <div class='form-group'>
+                                        <label for='telegram_api_token'>API Token:</label>
+                                        <input type='text' class='form-control' id='telegram_api_token' placeholder='Enter API Token'>
+                                    </div>
+                                    <div class='form-group'>
+                                        <label for='telegram_admin_id'>Admin ID:</label>
+                                        <input type='text' class='form-control' id='telegram_admin_id' placeholder='Enter Admin ID'>
+                                    </div>
+                                    <button id="telegram_start" type='button' class='btn btn-success'>Start</button>
+                                    <button id="telegram_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
+
+                                </form>
+                            </div>
+
+                            <!-- SNI Tab -->
+                            <div class='tab-pane fade' id='sni' role='tabpanel' aria-labelledby='sni-tab'>
+
+                                <form>
+                                    <div class='form-group'>
+                                        <label for='sni_domain'>Domain:</label>
+                                        <input type='text' class='form-control' id='sni_domain' placeholder='Enter Domain'>
+                                    </div>
+                                    <button id="sni_change" type='button' class='btn btn-primary'>Save</button>
+                                </form>
+                            </div>
+
+                            <!-- Change IP Tab -->
+                            <div class='tab-pane fade' id='change_ip' role='tabpanel' aria-labelledby='ip-tab'>
+                                <form>
+                                    <div class='form-group'>
+                                        <label for='ipv4'>IPv4:</label>
+                                        <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4' value="{{ ipv4 or '' }}">
+                                    </div>
+                                    <div class='form-group'>
+                                        <label for='ipv6'>IPv6:</label>
+                                        <input type='text' class='form-control' id='ipv6' placeholder='Enter IPv6' value="{{ ipv6 or '' }}">
+                                    </div>
+                                    <button id="ip_change" type='button' class='btn btn-primary'>Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    function initUI() {
+        // Fetch service status on page load
+        $.ajax({
+            url: "{{ url_for('server_services_status_api') }}",
+            type: "GET",
+            success: function (data) {
+                updateServiceUI(data);
+            },
+            error: function () {
+                console.error("Failed to fetch service status.");
+            }
+        });
+
+        // Update UI based on service status
+        function updateServiceUI(data) {
+            const servicesMap = {
+                "hysteria_telegram_bot": "#telegram",
+                "hysteria_singbox": "#singbox",
+                "hysteria_normal_sub": "#normal"
+            };
+
+            Object.keys(servicesMap).forEach(service => {
+                let selector = servicesMap[service];
+                let isRunning = data[service];
+
+                if (isRunning) {
+                    $(selector + " input, " + selector + " label").remove();
+                    $(selector + " .btn-success").remove();
+                    $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
+                    $(selector + " .btn-danger").show();
+                } else {
+                    $(selector + " input, " + selector + " label").show();
+                    $(selector + " .btn-success").show();
+                    $(selector + " .btn-danger").hide();
+                    $(selector + " .alert-info").remove();
+                }
+            });
+        }
+    }
+    $(document).ready(function () {
+        // Init UI
+        initUI();
+
+        // Function to show confirmation before executing API calls
+        function confirmAction(actionName, callback) {
+            Swal.fire({
+                title: `Are you sure?`,
+                text: `Do you really want to ${actionName}?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, proceed!",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    callback();
+                }
+            });
+        }
+
+        // Function to handle AJAX requests
+        function sendRequest(url, type, data, successMessage) {
+            $.ajax({
+                url: url,
+                type: type,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    Swal.fire("Success!", successMessage, "success").then(() => {
+                        location.reload();
+                    });
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire("Error!", "Something went wrong. Check the console for details.", "error");
+                    console.error(error);
+                }
+            });
+        }
+
+        // Telegram Bot Start
+        function startTelegram() {
+            const apiToken = $("#telegram_api_token").val();
+            const adminId = $("#telegram_admin_id").val();
+            confirmAction("start the Telegram bot", function () {
+                sendRequest(
+                    "{{ url_for('telegram_start_api') }}",
+                    "POST",
+                    { token: apiToken, admin_id: adminId },
+                    "Telegram bot started successfully!"
+                );
+            });
+        }
+
+        // Telegram Bot Stop
+        function stopTelegram() {
+            confirmAction("stop the Telegram bot", function () {
+                sendRequest(
+                    "{{ url_for('telegram_stop_api') }}",
+                    "DELETE",
+                    null,
+                    "Telegram bot stopped successfully!"
+                );
+            });
+        }
+
+        // SingBox Start
+        function startSingbox() {
+            const domain = $("#singbox_domain").val();
+            const port = $("#singbox_port").val();
+            confirmAction("start SingBox", function () {
+                sendRequest(
+                    "{{ url_for('singbox_start_api') }}",
+                    "POST",
+                    { domain: domain, port: port },
+                    "SingBox started successfully!"
+                );
+            });
+        }
+
+        // SingBox Stop
+        function stopSingbox() {
+            confirmAction("stop SingBox", function () {
+                sendRequest(
+                    "{{ url_for('singbox_stop_api') }}",
+                    "DELETE",
+                    null,
+                    "SingBox stopped successfully!"
+                );
+            });
+        }
+
+        // Normal Subscription Start
+        function startNormal() {
+            const domain = $("#normal_domain").val();
+            const port = $("#normal_port").val();
+            confirmAction("start the normal subscription", function () {
+                sendRequest(
+                    "{{ url_for('normal_sub_start_api') }}",
+                    "POST",
+                    { domain: domain, port: port },
+                    "Normal subscription started successfully!"
+                );
+            });
+        }
+
+        // Normal Subscription Stop
+        function stopNormal() {
+            confirmAction("stop the normal subscription", function () {
+                sendRequest(
+                    "{{ url_for('normal_sub_stop_api') }}",
+                    "DELETE",
+                    null,
+                    "Normal subscription stopped successfully!"
+                );
+            });
+        }
+
+        // Change SNI
+        function changeSNI() {
+            const domain = $("#sni_domain").val();
+            const baseUrl = "{{ url_for('set_sni', sni='SNI_PLACEHOLDER') }}";
+            const url = baseUrl.replace("SNI_PLACEHOLDER", domain);
+            confirmAction("change the SNI", function () {
+                sendRequest(url, "GET", null, "SNI changed successfully!");
+            });
+        }
+
+        // Save IP
+        function saveIP() {
+            confirmAction("save the new IP", function () {
+                sendRequest(
+                    "{{ url_for('edit_ip_api') }}",
+                    "POST",
+                    { ipv4: $("#ipv4").val(), ipv6: $("#ipv6").val() },
+                    "New IP saved successfully!"
+                );
+            });
+        }
+
+        // Attach event listeners
+        $("#telegram_start").on("click", startTelegram);
+        $("#telegram_stop").on("click", stopTelegram);
+        $("#singbox_start").on("click", startSingbox);
+        $("#singbox_stop").on("click", stopSingbox);
+        $("#normal_start").on("click", startNormal);
+        $("#normal_stop").on("click", stopNormal);
+        $("#sni_change").on("click", changeSNI);
+        $("#ip_change").on("click", saveIP);
+
+        $.ajax({
+            url: "{{ url_for('get_ip_api') }}",
+            type: "GET",
+            success: function (data) {
+                $("#ipv4").val(data.ipv4 || "");
+                $("#ipv6").val(data.ipv6 || "");
+
+                $("#ipv4").attr("placeholder", "Enter IPv4");
+                $("#ipv6").attr("placeholder", "Enter IPv6");
+
+
+            },
+            error: function () {
+                console.error("Failed to fetch IP addresses.");
+                $("#ipv4").attr("placeholder", "Enter IPv4");
+                $("#ipv6").attr("placeholder", "Enter IPv6");
+            }
+        });
+    });
+</script>
+
+
+
+
+{% endblock %}

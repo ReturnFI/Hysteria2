@@ -1,4 +1,5 @@
 source /etc/hysteria/core/scripts/path.sh
+# source /etc/hysteria/core/scripts/services_status.sh
 
 # Function to define colors
 define_colors() {
@@ -88,20 +89,17 @@ load_hysteria2_ips() {
     fi
 }
 
-check_services() {
-    declare -A service_names=(
-        ["hysteria-server.service"]="Hysteria2"
-        ["normalsub.service"]="Normal Subscription"
-        ["singbox.service"]="Singbox Subscription"
-        ["hysteria-bot.service"]="Hysteria Telegram Bot"
-        ["wg-quick@wgcf.service"]="WireGuard (WARP)"
-    )
+# check_services() {
+#     # source /etc/hysteria/core/scripts/services_status.sh
+#     for service in "${services[@]}"; do
+#         service_base_name=$(basename "$service" .service)
 
-    for service in "${!service_names[@]}"; do
-        if systemctl is-active --quiet "$service"; then
-            echo -e "${NC}${service_names[$service]}:${green} Active${NC}"
-        else
-            echo -e "${NC}${service_names[$service]}:${red} Inactive${NC}"
-        fi
-    done
-}
+#         display_name=$(echo "$service_base_name" | sed -E 's/([^-]+)-?/\u\1/g') 
+
+#         if systemctl is-active --quiet "$service"; then
+#             echo -e "${NC}${display_name}:${green} Active${NC}"
+#         else
+#             echo -e "${NC}${display_name}:${red} Inactive${NC}"
+#         fi
+#     done
+# }

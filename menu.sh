@@ -2,6 +2,21 @@
 
 source /etc/hysteria/core/scripts/utils.sh
 source /etc/hysteria/core/scripts/path.sh
+source /etc/hysteria/core/scripts/services_status.sh >/dev/null 2>&1
+
+check_services() {
+    for service in "${services[@]}"; do
+        service_base_name=$(basename "$service" .service)
+
+        display_name=$(echo "$service_base_name" | sed -E 's/([^-]+)-?/\u\1/g') 
+
+        if systemctl is-active --quiet "$service"; then
+            echo -e "${NC}${display_name}:${green} Active${NC}"
+        else
+            echo -e "${NC}${display_name}:${red} Inactive${NC}"
+        fi
+    done
+}
 
 # OPTION HANDLERS (ONLY NEEDED ONE)
 hysteria2_install_handler() {
@@ -37,7 +52,7 @@ hysteria2_add_user_handler() {
         read -p "Enter the username: " username
 
         if [[ "$username" =~ ^[a-zA-Z0-9]+$ ]]; then
-            if python3 $CLI_PATH get-user --username "$username" > /dev/null 2>&1; then
+            if [[ -n $(python3 $CLI_PATH get-user -u "$username") ]]; then
                 echo -e "${red}Error:${NC} Username already exists. Please choose another username."
             else
                 break
@@ -56,7 +71,7 @@ hysteria2_add_user_handler() {
     python3 $CLI_PATH add-user --username "$username" --traffic-limit "$traffic_limit_GB" --expiration-days "$expiration_days" --password "$password" --creation-date "$creation_date"
 }
 
-hysteria2_edit_user() {
+hysteria2_edit_user_handler() {
     # Function to prompt for user input with validation
     prompt_for_input() {
         local prompt_message="$1"
@@ -82,8 +97,9 @@ hysteria2_edit_user() {
     prompt_for_input "Enter the username you want to edit: " '^[a-zA-Z0-9]+$' '' username
 
     # Check if user exists
-    if ! python3 $CLI_PATH get-user --username "$username" > /dev/null 2>&1; then
-        echo -e "${red}Error:${NC} User '$username' not found."
+    user_exists_output=$(python3 $CLI_PATH get-user -u "$username" 2>&1)
+    if [[ -z "$user_exists_output" ]]; then
+        echo -e "${red}Error:${NC} User '$username' not found or an error occurred."
         return 1
     fi
 
@@ -258,11 +274,11 @@ hysteria2_show_user_uri_handler() {
 
     flags=""
     
-    if check_service_active "singbox.service"; then
+    if check_service_active "hysteria-singbox.service"; then
         flags+=" -s"
     fi
 
-    if check_service_active "normalsub.service"; then
+    if check_service_active "hysteria-normal-sub.service"; then
         flags+=" -n"
     fi
 
@@ -299,8 +315,8 @@ hysteria2_change_sni_handler() {
 
     python3 $CLI_PATH change-hysteria2-sni --sni "$sni"
 
-    if systemctl is-active --quiet singbox.service; then
-        systemctl restart singbox.service
+    if systemctl is-active --quiet hysteria-singbox.service; then
+        systemctl restart hysteria-singbox.service
     fi
 }
 
@@ -421,8 +437,8 @@ telegram_bot_handler() {
 
         case $option in
             1)
-                if systemctl is-active --quiet hysteria-bot.service; then
-                    echo "The hysteria-bot.service is already active."
+                if systemctl is-active --quiet hysteria-telegram-bot.service; then
+                    echo "The hysteria-telegram-bot.service is already active."
                 else
                     while true; do
                         read -e -p "Enter the Telegram bot token: " token
@@ -469,8 +485,8 @@ singbox_handler() {
 
         case $option in
             1)
-                if systemctl is-active --quiet singbox.service; then
-                    echo "The singbox.service is already active."
+                if systemctl is-active --quiet hysteria-singbox.service; then
+                    echo "The hysteria-singbox.service is already active."
                 else
                     while true; do
                         read -e -p "Enter the domain name for the SSL certificate: " domain
@@ -496,8 +512,8 @@ singbox_handler() {
                 fi
                 ;;
             2)
-                if ! systemctl is-active --quiet singbox.service; then
-                    echo "The singbox.service is already inactive."
+                if ! systemctl is-active --quiet hysteria-singbox.service; then
+                    echo "The hysteria-singbox.service is already inactive."
                 else
                     python3 $CLI_PATH singbox -a stop
                 fi
@@ -521,8 +537,8 @@ normalsub_handler() {
 
         case $option in
             1)
-                if systemctl is-active --quiet normalsub.service; then
-                    echo "The normalsub.service is already active."
+                if systemctl is-active --quiet hysteria-normal-sub.service; then
+                    echo "The hysteria-normal-sub.service is already active."
                 else
                     while true; do
                         read -e -p "Enter the domain name for the SSL certificate: " domain
@@ -548,11 +564,100 @@ normalsub_handler() {
                 fi
                 ;;
             2)
-                if ! systemctl is-active --quiet normalsub.service; then
-                    echo "The normalsub.service is already inactive."
+                if ! systemctl is-active --quiet hysteria-normal-sub.service; then
+                    echo "The hysteria-normal-sub.service is already inactive."
                 else
                     python3 $CLI_PATH normal-sub -a stop
                 fi
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
+
+webpanel_handler() {
+    service_status=$(python3 $CLI_PATH get-webpanel-services-status)
+    echo -e "${cyan}Services Status:${NC}"
+    echo "$service_status"
+    echo ""
+
+    while true; do
+        echo -e "${cyan}1.${NC} Start WebPanel service"
+        echo -e "${red}2.${NC} Stop WebPanel service"
+        echo -e "${cyan}3.${NC} Get WebPanel URL"
+        echo -e "${cyan}4.${NC} Show API Token"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+                if systemctl is-active --quiet hysteria-webpanel.service; then
+                    echo "The hysteria-webpanel.service is already active."
+                else
+                    while true; do
+                        read -e -p "Enter the domain name for the SSL certificate: " domain
+                        if [ -z "$domain" ]; then
+                            echo "Domain name cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -e -p "Enter the port number for the service: " port
+                        if [ -z "$port" ]; then
+                            echo "Port number cannot be empty. Please try again."
+                        elif ! [[ "$port" =~ ^[0-9]+$ ]]; then
+                            echo "Port must be a number. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -e -p "Enter the admin username: " admin_username
+                        if [ -z "$admin_username" ]; then
+                            echo "Admin username cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -e -p "Enter the admin password: " admin_password
+                        if [ -z "$admin_password" ]; then
+                            echo "Admin password cannot be empty. Please try again."
+                        else
+                            break
+                        fi
+                    done
+
+                    python3 $CLI_PATH webpanel -a start -d "$domain" -p "$port" -au "$admin_username" -ap "$admin_password"
+                fi
+                ;;
+            2)
+                if ! systemctl is-active --quiet hysteria-webpanel.service; then
+                    echo "The hysteria-webpanel.service is already inactive."
+                else
+                    python3 $CLI_PATH webpanel -a stop
+                fi
+                ;;
+            3)
+                url=$(python3 $CLI_PATH get-webpanel-url)
+                echo "-------------------------------"
+                echo "$url"
+                echo "-------------------------------"
+                ;;
+            4)
+                api_token=$(python3 $CLI_PATH get-webpanel-api-token)
+                echo "-------------------------------"
+                echo "$api_token"
+                echo "-------------------------------"
                 ;;
             0)
                 break
@@ -758,7 +863,7 @@ hysteria2_menu() {
         case $choice in
             1) hysteria2_install_handler ;;
             2) hysteria2_add_user_handler ;;
-            3) hysteria2_edit_user ;;
+            3) hysteria2_edit_user_handler ;;
             4) hysteria2_reset_user_handler ;;
             5) hysteria2_remove_user_handler  ;;
             6) hysteria2_get_user_handler ;;
@@ -786,15 +891,16 @@ display_advance_menu() {
     echo -e "${green}[5] ${NC}↝ Telegram Bot"
     echo -e "${green}[6] ${NC}↝ SingBox SubLink"
     echo -e "${green}[7] ${NC}↝ Normal-SUB SubLink"
-    echo -e "${cyan}[8] ${NC}↝ Change Port Hysteria2"
-    echo -e "${cyan}[9] ${NC}↝ Change SNI Hysteria2"
-    echo -e "${cyan}[10] ${NC}↝ Manage OBFS"
-    echo -e "${cyan}[11] ${NC}↝ Change IPs(4-6)"
-    echo -e "${cyan}[12] ${NC}↝ Update geo Files"
-    echo -e "${cyan}[13] ${NC}↝ Manage Masquerade"
-    echo -e "${cyan}[14] ${NC}↝ Restart Hysteria2"
-    echo -e "${cyan}[15] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[16] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${green}[8] ${NC}↝ Web Panel"
+    echo -e "${cyan}[9] ${NC}↝ Change Port Hysteria2"
+    echo -e "${cyan}[10] ${NC}↝ Change SNI Hysteria2"
+    echo -e "${cyan}[11] ${NC}↝ Manage OBFS"
+    echo -e "${cyan}[12] ${NC}↝ Change IPs(4-6)"
+    echo -e "${cyan}[13] ${NC}↝ Update geo Files"
+    echo -e "${cyan}[14] ${NC}↝ Manage Masquerade"
+    echo -e "${cyan}[15] ${NC}↝ Restart Hysteria2"
+    echo -e "${cyan}[16] ${NC}↝ Update Core Hysteria2"
+    echo -e "${red}[17] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -815,15 +921,16 @@ advance_menu() {
             5) telegram_bot_handler ;;
             6) singbox_handler ;;
             7) normalsub_handler ;;
-            8) hysteria2_change_port_handler ;;
-            9) hysteria2_change_sni_handler ;;
-            10) obfs_handler ;;
-            11) edit_ips ;;
-            12) geo_update_handler ;;
-            13) masquerade_handler ;;
-            14) python3 $CLI_PATH restart-hysteria2 ;;
-            15) python3 $CLI_PATH update-hysteria2 ;;
-            16) python3 $CLI_PATH uninstall-hysteria2 ;;
+            8) webpanel_handler ;;
+            9) hysteria2_change_port_handler ;;
+            10) hysteria2_change_sni_handler ;;
+            11) obfs_handler ;;
+            12) edit_ips ;;
+            13) geo_update_handler ;;
+            14) masquerade_handler ;;
+            15) python3 $CLI_PATH restart-hysteria2 ;;
+            16) python3 $CLI_PATH update-hysteria2 ;;
+            17) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

@@ -1,4 +1,4 @@
-from pydantic import RootModel
+from pydantic import BaseModel, RootModel
 from typing import Any
 
 # Change: Installing and uninstalling Hysteria2 is possible only through the CLI
@@ -10,3 +10,11 @@ from typing import Any
 # TODO: Define supported fields of the config file
 class ConfigFile(RootModel):  # type: ignore
     root: dict[str, Any]
+
+
+class GetPortResponse(BaseModel):
+    port: int
+
+
+class GetSniResponse(BaseModel):
+    sni: str

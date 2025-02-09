@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from ..schema.config.hysteria import ConfigFile
+from ..schema.config.hysteria import ConfigFile, GetPortResponse, GetSniResponse
 from ..schema.response import DetailResponse
 # from ..schema.config.hysteria import InstallInputBody
 import cli_api
@@ -65,6 +65,26 @@ async def update():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
+@router.get('/get-port', response_model=GetPortResponse, summary='Get Hysteria2 port')
+async def get_port():
+    """
+    Retrieves the port for Hysteria2.
+
+    Returns:
+        A GetPortResponse containing the Hysteria2 port.
+
+    Raises:
+        HTTPException: if an error occurs while getting the Hysteria2 port.
+    """
+    try:
+        if port := cli_api.get_hysteria2_port():
+            return GetPortResponse(port=port)
+        else:
+            raise HTTPException(status_code=404, detail='Hysteria2 port not found.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
 @router.get('/set-port/{port}', response_model=DetailResponse, summary='Set Hysteria2 port')
 async def set_port(port: int):
     """
@@ -82,6 +102,26 @@ async def set_port(port: int):
     try:
         cli_api.change_hysteria2_port(port)
         return DetailResponse(detail=f'Hysteria2 port changed to {port} successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+
+@router.get('/get-sni', response_model=GetSniResponse, summary='Get Hysteria2 SNI')
+async def get_sni():
+    '''
+    Retrieves the SNI for Hysteria2.
+
+    Returns:
+        A GetSniResponse containing the Hysteria2 SNI.
+
+    Raises:
+        HTTPException: if an error occurs while getting the Hysteria2 SNI.
+    '''
+    try:
+        if sni := cli_api.get_hysteria2_sni():
+            return GetSniResponse(sni=sni)
+        else:
+            raise HTTPException(status_code=404, detail='Hysteria2 SNI not found.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 

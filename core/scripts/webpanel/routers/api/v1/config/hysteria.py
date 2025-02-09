@@ -236,6 +236,7 @@ async def set_file(body: ConfigFile):
     """
     try:
         cli_api.set_hysteria2_config_file(body.root)
+        cli_api.restart_hysteria2()
         return DetailResponse(detail='Hysteria2 configuration file updated successfully.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')

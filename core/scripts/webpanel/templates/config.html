@@ -103,8 +103,14 @@
     function restoreJson() {
         fetch("{{ url_for('get_file') }}")
             .then(response => response.json())
-            .then(json => editor.set(json))
-            .catch(error => console.error("Error loading JSON:", error));
+            .then(json => {
+                editor.set(json);
+                Swal.fire('Success!', 'Your JSON has been loaded.', 'success');
+            })
+            .catch(error => {
+                Swal.fire('Error!', 'There was an error loading your JSON.', 'error');
+                console.error("Error loading JSON:", error);
+            });
     }
 
     restoreJson(); // Initial JSON load

@@ -28,6 +28,9 @@
                                     Bot</a>
                             </li>
                             <li class='nav-item'>
+                                <a class='nav-link' id='port-tab' data-toggle='pill' href='#port' role='tab' aria-controls='port' aria-selected='false'>Change Port</a>
+                            </li>
+                            <li class='nav-item'>
                                 <a class='nav-link' id='sni-tab' data-toggle='pill' href='#sni' role='tab' aria-controls='sni' aria-selected='false'>Change SNI</a>
                             </li>
                             <li class='nav-item'>
@@ -90,7 +93,7 @@
 
 
                             <!-- Telegram Bot Tab -->
-                            <div class='tab-pane fade show' id='telegram' role='tabpanel' aria-labelledby='telegram-tab'>
+                            <div class='tab-pane fade' id='telegram' role='tabpanel' aria-labelledby='telegram-tab'>
                                 <form>
                                     <div class='form-group'>
                                         <label for='telegram_api_token'>API Token:</label>
@@ -103,6 +106,18 @@
                                     <button id="telegram_start" type='button' class='btn btn-success'>Start</button>
                                     <button id="telegram_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
 
+                                </form>
+                            </div>
+
+                            <!-- Port Tab -->
+                            <div class='tab-pane fade' id='port' role='tabpanel' aria-labelledby='port-tab'>
+
+                                <form>
+                                    <div class='form-group'>
+                                        <label for='hysteria_port'>Port:</label>
+                                        <input type='text' class='form-control' id='hysteria_port' placeholder='Enter Port'>
+                                    </div>
+                                    <button id="port_change" type='button' class='btn btn-primary'>Save</button>
                                 </form>
                             </div>
 
@@ -186,6 +201,51 @@
                 }
             });
         }
+
+
+        // Fetch IP addresses
+        $.ajax({
+            url: "{{ url_for('get_ip_api') }}",
+            type: "GET",
+            success: function (data) {
+                $("#ipv4").val(data.ipv4 || "");
+                $("#ipv6").val(data.ipv6 || "");
+
+                $("#ipv4").attr("placeholder", "Enter IPv4");
+                $("#ipv6").attr("placeholder", "Enter IPv6");
+
+
+            },
+            error: function () {
+                console.error("Failed to fetch IP addresses.");
+                $("#ipv4").attr("placeholder", "Enter IPv4");
+                $("#ipv6").attr("placeholder", "Enter IPv6");
+            }
+        });
+
+        // Fetch Port
+        $.ajax({
+            url: "{{ url_for('get_port_api') }}",
+            type: "GET",
+            success: function (data) {
+                $("#hysteria_port").val(data.port || "");
+            },
+            error: function () {
+                console.error("Failed to fetch port.");
+            }
+        });
+
+        // Fetch SNI domain
+        $.ajax({
+            url: "{{ url_for('get_sni_api') }}",
+            type: "GET",
+            success: function (data) {
+                $("#sni_domain").val(data.sni || "");
+            },
+            error: function () {
+                console.error("Failed to fetch SNI domain.");
+            }
+        });
     }
     $(document).ready(function () {
         // Init UI
@@ -307,10 +367,19 @@
             });
         }
 
+        function changePort() {
+            const port = $("#hysteria_port").val();
+            const baseUrl = "{{ url_for('set_port_api', port='PORT_PLACEHOLDER') }}";
+            const url = baseUrl.replace("PORT_PLACEHOLDER", port);
+            confirmAction("change the port", function () {
+                sendRequest(url, "GET", null, "Port changed successfully!");
+            });
+        }
+
         // Change SNI
         function changeSNI() {
             const domain = $("#sni_domain").val();
-            const baseUrl = "{{ url_for('set_sni', sni='SNI_PLACEHOLDER') }}";
+            const baseUrl = "{{ url_for('set_sni_api', sni='SNI_PLACEHOLDER') }}";
             const url = baseUrl.replace("SNI_PLACEHOLDER", domain);
             confirmAction("change the SNI", function () {
                 sendRequest(url, "GET", null, "SNI changed successfully!");
@@ -336,27 +405,10 @@
         $("#singbox_stop").on("click", stopSingbox);
         $("#normal_start").on("click", startNormal);
         $("#normal_stop").on("click", stopNormal);
+        $("#port_change").on("click", changePort);
         $("#sni_change").on("click", changeSNI);
         $("#ip_change").on("click", saveIP);
 
-        $.ajax({
-            url: "{{ url_for('get_ip_api') }}",
-            type: "GET",
-            success: function (data) {
-                $("#ipv4").val(data.ipv4 || "");
-                $("#ipv6").val(data.ipv6 || "");
-
-                $("#ipv4").attr("placeholder", "Enter IPv4");
-                $("#ipv6").attr("placeholder", "Enter IPv6");
-
-
-            },
-            error: function () {
-                console.error("Failed to fetch IP addresses.");
-                $("#ipv4").attr("placeholder", "Enter IPv4");
-                $("#ipv6").attr("placeholder", "Enter IPv6");
-            }
-        });
     });
 </script>
 

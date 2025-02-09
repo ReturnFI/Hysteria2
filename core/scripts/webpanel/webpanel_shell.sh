@@ -27,6 +27,10 @@ install_dependencies() {
         exit 1
     fi
 
+    # Stop and disable Caddy service
+    systemctl stop caddy > /dev/null 2>&1
+    systemctl disable caddy > /dev/null 2>&1
+
     echo -e "${green}Caddy installed successfully. ${NC}"
 }
 update_env_file() {

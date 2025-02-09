@@ -66,7 +66,7 @@ async def update():
 
 
 @router.get('/get-port', response_model=GetPortResponse, summary='Get Hysteria2 port')
-async def get_port():
+async def get_port_api():
     """
     Retrieves the port for Hysteria2.
 
@@ -86,7 +86,7 @@ async def get_port():
 
 
 @router.get('/set-port/{port}', response_model=DetailResponse, summary='Set Hysteria2 port')
-async def set_port(port: int):
+async def set_port_api(port: int):
     """
     Sets the port for Hysteria2.
 
@@ -107,7 +107,7 @@ async def set_port(port: int):
 
 
 @router.get('/get-sni', response_model=GetSniResponse, summary='Get Hysteria2 SNI')
-async def get_sni():
+async def get_sni_api():
     '''
     Retrieves the SNI for Hysteria2.
 
@@ -127,7 +127,7 @@ async def get_sni():
 
 
 @router.get('/set-sni/{sni}', response_model=DetailResponse, summary='Set Hysteria2 SNI')
-async def set_sni(sni: str):
+async def set_sni_api(sni: str):
     """
     Sets the SNI for Hysteria2.
 

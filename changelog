@@ -1,1 +1,7 @@
-1. Add: Manage masquerade
+Major Update!!
+
+1. Added web panel service
+2. Added API
+3. Refactored CLI
+4. Renamed systemd services
+5. Improved modularization

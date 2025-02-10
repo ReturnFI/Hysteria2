@@ -1,11 +1,12 @@
 ### API-CLI
 1. Added get_hysteria2_port and get_hysteria2_sni in cli_api
-2. Add: Change port & Fill sni domain field on loading DOM & Adopt previous
-3. Implement api/v1/config/ip/get endpoint API
+2. Chg: API function names
+3. Restart hysteria-server.service after updating config file through API
 
 ### WebPanel
 1. Add: Interact with users when config file restored in config.html
 2. Added documents and logo
+3. Add: Change port & Fill sni domain field on loading DOM & Adopt previous
 
 ### Main
 1. Restart Caddy service

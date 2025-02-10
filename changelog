@@ -1,7 +1,12 @@
-Major Update!!
+### API-CLI
+1. Added get_hysteria2_port and get_hysteria2_sni in cli_api
+2. Add: Change port & Fill sni domain field on loading DOM & Adopt previous
+3. Implement api/v1/config/ip/get endpoint API
 
-1. Added web panel service
-2. Added API
-3. Refactored CLI
-4. Renamed systemd services
-5. Improved modularization
+### WebPanel
+1. Add: Interact with users when config file restored in config.html
+2. Added documents and logo
+
+### Main
+1. Restart Caddy service
+2. Improve Hysteria2 uninstallation script for complete removal

@@ -47,6 +47,8 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="{{ url_for('index') }}" class="brand-link">
+                <img src="{{ url_for('assets', path='img/logo.png') }}" alt="Hysteria2 Logo"
+                    class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Hysteria2 Dashboard</span>
             </a>
 
@@ -78,6 +80,29 @@
                                 <i class="nav-icon fas fa-cog"></i>
                                 <p>Config</p>
                             </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>
+                                    Documentation
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ url_for('index') }}docs" class="nav-link">
+                                        <i class="nav-icon fas fa-network-wired"></i>
+                                        <p>API Documentation</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="https://returnfi.github.io/Hys2-docs/" class="nav-link">
+                                        <i class="nav-icon fas fa-lightbulb"></i>
+                                        <p>Guides & Tutorials</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </nav>

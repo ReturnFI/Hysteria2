@@ -200,8 +200,10 @@ start_service() {
         return 1
     fi
 
-    # Restart Caddy service
-    systemctl restart hysteria-caddy.service
+    # Reload systemd and enable/start Caddy service
+    systemctl daemon-reload
+    systemctl enable hysteria-caddy.service 
+    systemctl start hysteria-caddy.service
     if [ $? -ne 0 ]; then
         echo -e "${red}Error: Failed to restart Caddy.${NC}"
         return 1

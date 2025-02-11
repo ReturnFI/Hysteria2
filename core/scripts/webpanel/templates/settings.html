@@ -392,7 +392,10 @@
                 sendRequest(
                     "{{ url_for('edit_ip_api') }}",
                     "POST",
-                    { ipv4: $("#ipv4").val(), ipv6: $("#ipv6").val() },
+                    {
+                        ipv4: $("#ipv4").val() || null,
+                        ipv6: $("#ipv6").val() || null
+                    },
                     "New IP saved successfully!"
                 );
             });

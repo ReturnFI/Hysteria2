@@ -37,6 +37,18 @@ show_uri() {
 
             load_hysteria2_env
             load_hysteria2_ips
+
+            available_ip4=true
+            available_ip6=true
+
+            if [[ -z "$IP4" || "$IP4" == "None" ]]; then
+                available_ip4=false
+            fi
+
+            if [[ -z "$IP6" || "$IP6" == "None" ]]; then
+                available_ip6=false
+            fi
+
             
             while [[ "$#" -gt 0 ]]; do
                 case $1 in
@@ -87,33 +99,37 @@ show_uri() {
                 }
 
                 if [ "$show_all" = true ]; then
-                    URI=$(generate_uri 4 "$IP4")
-                    URI6=$(generate_uri 6 "$IP6")
-                    echo -e "\nIPv4:\n$URI\n"
-                    echo -e "\nIPv6:\n$URI6\n"
-                else
-                    if [ "$ip_version" -eq 4 ]; then
+                    if [ "$available_ip4" = true ]; then
                         URI=$(generate_uri 4 "$IP4")
                         echo -e "\nIPv4:\n$URI\n"
-                    elif [ "$ip_version" -eq 6 ]; then
+                    fi
+                    if [ "$available_ip6" = true ]; then
+                        URI6=$(generate_uri 6 "$IP6")
+                        echo -e "\nIPv6:\n$URI6\n"
+                    fi
+                else
+                    if [ "$ip_version" -eq 4 ] && [ "$available_ip4" = true ]; then
+                        URI=$(generate_uri 4 "$IP4")
+                        echo -e "\nIPv4:\n$URI\n"
+                    elif [ "$ip_version" -eq 6 ] && [ "$available_ip6" = true ]; then
                         URI6=$(generate_uri 6 "$IP6")
                         echo -e "\nIPv6:\n$URI6\n"
                     else
-                        echo "Invalid IP version. Use 4 for IPv4 or 6 for IPv6."
+                        echo "Invalid IP version or no available IP for the requested version."
                         exit 1
                     fi
                 fi
 
                 if [ "$generate_qrcode" = true ]; then
                     cols=$(tput cols)
-                    if [ -n "$URI" ]; then
+                    if [ "$available_ip4" = true ] && [ -n "$URI" ]; then
                         qr1=$(echo -n "$URI" | qrencode -t UTF8 -s 3 -m 2)
                         echo -e "\nIPv4 QR Code:\n"
                         echo "$qr1" | while IFS= read -r line; do
                             printf "%*s\n" $(( (${#line} + cols) / 2)) "$line"
                         done
                     fi
-                    if [ -n "$URI6" ]; then
+                    if [ "$available_ip6" = true ] && [ -n "$URI6" ]; then
                         qr2=$(echo -n "$URI6" | qrencode -t UTF8 -s 3 -m 2)
                         echo -e "\nIPv6 QR Code:\n"
                         echo "$qr2" | while IFS= read -r line; do

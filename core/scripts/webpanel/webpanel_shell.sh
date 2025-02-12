@@ -90,7 +90,7 @@ $DOMAIN:$PORT {
     
     # Any request that doesn't start with the ROOT_PATH('/$ROOT_PATH/') will be blocked and no response will be sent to the client
     @blocked {
-        not path /fd31b4edc70619d5d39edf3c2da97e2c/*
+        not path /$ROOT_PATH/*
     }
     
     # Abort the request, effectively dropping the connection without a response for invalid paths

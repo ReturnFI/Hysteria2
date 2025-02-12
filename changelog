@@ -8,6 +8,7 @@
 2. Add: documents and logo
 3. Add: Change port & Fill sni domain field on loading DOM & Adopt previous
 4. Chg: Change Webpanel Port
+5. Fix: blocked path
 
 ### Main
 1. Fix: Restart Caddy service

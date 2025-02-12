@@ -105,7 +105,7 @@ def get_user_uri(username):
             f"//subscription-userinfo: upload={upload}; download={download}; total={total}; expire={expiration_timestamp}\n"
         )
 
-        profile_lines = f"//profile-title: 🚀 {username}-Hysteria2 🚀\n//profile-update-interval: 1\n"
+        profile_lines = f"//profile-title: {username}-Hysteria2 🚀\n//profile-update-interval: 1\n"
         output = profile_lines + subscription_info + output
 
         return output

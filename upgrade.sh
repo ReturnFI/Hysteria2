@@ -35,14 +35,14 @@ declare -A SERVICE_MAP=(
 
 for OLD_SERVICE in "${!SERVICE_MAP[@]}"; do
     NEW_SERVICE="/etc/systemd/system/${SERVICE_MAP[$OLD_SERVICE]}"
-    
+
     if [[ -f "$OLD_SERVICE" ]]; then
         echo "Stopping old service: $(basename "$OLD_SERVICE")"
         systemctl stop "$(basename "$OLD_SERVICE")" 2>/dev/null
-        
+
         echo "Renaming $OLD_SERVICE to $NEW_SERVICE"
         mv "$OLD_SERVICE" "$NEW_SERVICE"
-        
+
         echo "Reloading systemd daemon"
         systemctl daemon-reload
     fi
@@ -62,6 +62,24 @@ echo "Restoring backup files"
 for FILE in "${FILES[@]}"; do
     cp "$TEMP_DIR/$FILE" "$FILE"
 done
+
+CADDYFILE="/etc/hysteria/core/scripts/webpanel/Caddyfile"
+
+if [ -f "$CADDYFILE" ]; then
+    echo "Updating Caddyfile port from 8080 to 28260"
+
+    sed -i 's/\(:[[:space:]]*\)8080/\128260/g' "$CADDYFILE"
+    sed -i 's/0\.0\.0\.0:8080/0.0.0.0:28260/g' "$CADDYFILE"
+    sed -i 's/127\.0\.0\.1:8080/127.0.0.1:28260/g' "$CADDYFILE"
+
+
+    if ! grep -q ':28260' "$CADDYFILE"; then
+        echo "Warning: Caddyfile does not contain port 8080 in expected formats.  Port replacement may have already been done."
+    fi
+else
+    echo "Error: Caddyfile not found at $CADDYFILE.  Cannot update port."
+fi
+
 
 CONFIG_ENV="/etc/hysteria/.configs.env"
 if [ ! -f "$CONFIG_ENV" ]; then
@@ -98,13 +116,16 @@ python3 -m venv hysteria2_venv
 source /etc/hysteria/hysteria2_venv/bin/activate
 pip install -r requirements.txt
 
-echo "Restarting hysteria services"
+echo "Restarting hysteria-caddy service"
+systemctl restart hysteria-caddy.service
+
+echo "Restarting other hysteria services"
 systemctl restart hysteria-server.service
 systemctl restart hysteria-telegram-bot.service
 systemctl restart hysteria-singbox.service
 systemctl restart hysteria-normal-sub.service
 systemctl restart hysteria-webpanel.service
-systemctl restart hysteria-caddy.service
+
 
 echo "Checking hysteria-server.service status"
 if systemctl is-active --quiet hysteria-server.service; then

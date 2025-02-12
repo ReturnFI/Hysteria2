@@ -1,13 +1,17 @@
 ### API-CLI
-1. Added get_hysteria2_port and get_hysteria2_sni in cli_api
+1. Add: get_hysteria2_port and get_hysteria2_sni in cli_api
 2. Chg: API function names
-3. Restart hysteria-server.service after updating config file through API
+3. Fix: Restart hysteria-server.service after updating config file through API
 
 ### WebPanel
 1. Add: Interact with users when config file restored in config.html
-2. Added documents and logo
+2. Add: documents and logo
 3. Add: Change port & Fill sni domain field on loading DOM & Adopt previous
+4. Chg: Change Webpanel Port
 
 ### Main
-1. Restart Caddy service
-2. Improve Hysteria2 uninstallation script for complete removal
+1. Fix: Restart Caddy service
+2. Fix: Improve Hysteria2 uninstallation script for complete removal
+3. Fix: Skip missing IPs while generating URI and QR codes
+4. Add: Use kernel for UUID generation and Removed uuid-runtime dependency
+5. Add: Userinfo on normalsub

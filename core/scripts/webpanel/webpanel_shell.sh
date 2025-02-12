@@ -83,14 +83,14 @@ $DOMAIN:$PORT {
         # We don't strip the ROOT_PATH('/$ROOT_PATH/') from the request
         # uri strip_prefix /$ROOT_PATH
 
-        # We are proxying all requests under the ROOT_PATH to FastAPI at 127.0.0.1:8080
+        # We are proxying all requests under the ROOT_PATH to FastAPI at 127.0.0.1:28260
         # FastAPI handles these requests because we set the 'root_path' parameter in the FastAPI instance.
-        reverse_proxy http://127.0.0.1:8080
+        reverse_proxy http://127.0.0.1:28260
     }
     
     # Any request that doesn't start with the ROOT_PATH('/$ROOT_PATH/') will be blocked and no response will be sent to the client
     @blocked {
-        not path /fd31b4edc70619d5d39edf3c2da97e2c/*
+        not path /$ROOT_PATH/*
     }
     
     # Abort the request, effectively dropping the connection without a response for invalid paths
@@ -181,7 +181,7 @@ start_service() {
 
     # Check if the web panel is running
     if systemctl is-active --quiet hysteria-webpanel.service; then
-        echo -e "${green}Hysteria web panel setup completed. The web panel is running locally on: http://127.0.0.1:8080/${NC}"
+        echo -e "${green}Hysteria web panel setup completed. The web panel is running locally on: http://127.0.0.1:28260/${NC}"
     else
         echo -e "${red}Error: Hysteria web panel service failed to start.${NC}"
         return 1

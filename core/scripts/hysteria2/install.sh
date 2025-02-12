@@ -53,7 +53,7 @@ EOF
     
     echo "Generating passwords and UUID..."
     obfspassword=$(pwgen -s 32 1)
-    UUID=$(uuidgen)
+    UUID=$(cat /proc/sys/kernel/random/uuid)
     
     chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
     chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt

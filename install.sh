@@ -31,7 +31,7 @@ fi
 
 check_os_version
 
-REQUIRED_PACKAGES=("jq" "qrencode" "curl" "pwgen" "uuid-runtime" "python3" "python3-pip" "python3-venv" "git" "bc" "zip" "cron" "lsof")
+REQUIRED_PACKAGES=("jq" "qrencode" "curl" "pwgen" "python3" "python3-pip" "python3-venv" "git" "bc" "zip" "cron" "lsof")
 MISSING_PACKAGES=()
 heavy_checkmark=$(printf "\xE2\x9C\x85")
 

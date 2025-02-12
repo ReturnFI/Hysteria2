@@ -13,6 +13,7 @@ FILES=(
     "/etc/hysteria/core/scripts/singbox/.env"
     "/etc/hysteria/core/scripts/normalsub/.env"
     "/etc/hysteria/core/scripts/webpanel/.env"
+    "/etc/hysteria/core/scripts/webpanel/Caddyfile"
 )
 
 echo "Backing up and stopping all cron jobs"

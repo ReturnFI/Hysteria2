@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     config = Config()
     config.debug = CONFIGS.DEBUG
-    config.bind = ['127.0.0.1:8080']
+    config.bind = ['127.0.0.1:28260']
     config.accesslog = '-'
     config.errorlog = '-'
 

@@ -4,7 +4,9 @@ import subprocess
 import time
 import re
 import shlex
-import json  # Import the json module
+import json
+import base64
+import hashlib
 from aiohttp import web
 from aiohttp.web_middlewares import middleware
 from dotenv import load_dotenv
@@ -51,8 +53,9 @@ async def handle(request):
 
         if not username:
             return web.Response(status=400, text="Error: Missing 'username' parameter.")
-
-        uri_output = get_user_uri(username)
+        
+        user_agent = request.headers.get('User-Agent', '').lower()
+        uri_output = get_user_uri(username, user_agent)
         return web.Response(text=uri_output, content_type='text/plain')
 
     except ValueError as e:
@@ -61,7 +64,7 @@ async def handle(request):
         print(f"Internal Server Error: {str(e)}")
         return web.Response(status=500, text="Error: Internal server error.")
 
-def get_user_uri(username):
+def get_user_uri(username, user_agent):
     try:
         user_info_command = [
             'python3',
@@ -72,8 +75,6 @@ def get_user_uri(username):
         safe_user_info_command = [shlex.quote(arg) for arg in user_info_command]
         user_info_output = subprocess.check_output(safe_user_info_command).decode()
         user_info = json.loads(user_info_output)
-
-    
         upload = user_info.get('upload_bytes', 0)
         download = user_info.get('download_bytes', 0)
         total = user_info.get('max_download_bytes', 0)
@@ -100,6 +101,18 @@ def get_user_uri(username):
         output = subprocess.check_output(safe_command).decode().strip()
         output = re.sub(r'IPv4:\s*', '', output)
         output = re.sub(r'IPv6:\s*', '', output)
+
+        if "v2ray" in user_agent and "ng" in user_agent:
+            match = re.search(r'pinSHA256=sha256/([^&]+)', output)
+            if match:
+                base64_pin = match.group(1)
+                try:
+                    decoded_pin = base64.b64decode(base64_pin)
+                    hex_pin = ':'.join(['{:02X}'.format(byte) for byte in decoded_pin])
+
+                    output = output.replace(f'pinSHA256=sha256/{base64_pin}', f'pinSHA256={hex_pin}')
+                except Exception as e:
+                    print(f"Error processing pinSHA256: {e}")
 
         subscription_info = (
             f"//subscription-userinfo: upload={upload}; download={download}; total={total}; expire={expiration_timestamp}\n"

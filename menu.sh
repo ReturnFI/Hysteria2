@@ -754,11 +754,15 @@ masquerade_handler() {
 
         case $option in
             1)
-                read -p "Enter the URL for rewriteHost: " url
-                if [ -z "$url" ]; then
-                    echo "Error: URL cannot be empty. Please try again."
+                if systemctl is-active --quiet hysteria-webpanel.service; then
+                    echo -e "${red}Error:${NC} Masquerade cannot be enabled because hysteria-webpanel.service is running."
                 else
-                    python3 $CLI_PATH masquerade -e "$url"
+                    read -p "Enter the URL for rewriteHost: " url
+                    if [ -z "$url" ]; then
+                        echo "Error: URL cannot be empty. Please try again."
+                    else
+                        python3 $CLI_PATH masquerade -e "$url"
+                    fi
                 fi
                 ;;
             2)

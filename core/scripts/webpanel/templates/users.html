@@ -7,7 +7,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Users</h1>
+                <h1 class="m-0">Users <small class="font-weight-light"></small></h1>
             </div>
         </div>
     </div>
@@ -18,19 +18,46 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">User List</h3>
-                <div class="card-tools d-flex align-items-center">
+                <div class="card-tools d-flex align-items-center flex-wrap">
+
+                    <!-- Filter Buttons -->
+                    <div class="mr-2 mb-2">
+                        <button type="button" class="btn btn-sm btn-default filter-button" data-filter="all">
+                            <i class="fas fa-list"></i> All
+                        </button>
+                    </div>
+                    <div class="mr-2 mb-2">
+                        <button type="button" class="btn btn-sm btn-default filter-button" data-filter="not-active">
+                            <i class="fas fa-exclamation-triangle"></i> NA
+                        </button>
+                    </div>
+                    <div class="mr-2 mb-2">
+                        <button type="button" class="btn btn-sm btn-success filter-button" data-filter="enable">
+                            <i class="fas fa-check"></i> Enable
+                        </button>
+                    </div>
+                    <div class="mr-2 mb-2">
+                        <button type="button" class="btn btn-sm btn-danger filter-button" data-filter="disable">
+                            <i class="fas fa-ban"></i> Disable
+                        </button>
+                    </div>
+
                     <!-- Search Form -->
-                    <div class="input-group input-group-sm" style="width: 100px;">
+                    <div class="input-group input-group-sm" style="width: 200px;">
                         <input type="text" id="searchInput" class="form-control float-right" placeholder="Search">
                         <div class="input-group-append">
-                            <button type="submit" class="btn btn-default" id="searchButton">
+                            <button type="button" class="btn btn-default" id="searchButton">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
                     </div>
                     <!-- Add User Button -->
-                    <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#addUserModal">
+                    <button type="button" class="btn btn-sm btn-primary ml-2" data-toggle="modal" data-target="#addUserModal">
                         <i class="fas fa-plus"></i>
+                    </button>
+                    <!-- Delete Selected Button -->
+                    <button type="button" class="btn btn-sm btn-danger ml-2" id="deleteSelected">
+                        <i class="fas fa-trash"></i>
                     </button>
                 </div>
             </div>
@@ -43,6 +70,9 @@
                 <table class="table table-bordered table-hover" id="userTable">
                     <thead>
                         <tr>
+                            <th>
+                                <input type="checkbox" id="selectAll">
+                            </th>
                             <th>Status</th>
                             <th>Username</th>
                             <th>Quota</th>
@@ -57,6 +87,9 @@
                     <tbody>
                         {% for user in users %}
                         <tr>
+                            <td>
+                                <input type="checkbox" class="user-checkbox" value="{{ user.username }}">
+                            </td>
                             <td>
                                 {% if user['status'] == "Online" %}
                                 <i class="fas fa-circle text-success"></i> Online
@@ -79,7 +112,8 @@
                                 {% endif %}
                             </td>
                             <td class="text-nowrap">
-                                <a href="#" class="config-link" data-toggle="modal" data-target="#qrcodeModal" data-username="{{ user.username }}">
+                                <a href="#" class="config-link" data-toggle="modal" data-target="#qrcodeModal"
+                                    data-username="{{ user.username }}">
                                     <i class="fas fa-qrcode"></i>
                                 </a>
                                 <div id="userConfigs-{{ user.username }}" style="display: none;">
@@ -96,13 +130,17 @@
                                 </div>
                             </td>
                             <td class="text-nowrap">
-                                <button type="button" class="btn btn-sm btn-info edit-user" data-user='{{ user.username }}' data-toggle="modal" data-target="#editUserModal">
+                                <button type="button" class="btn btn-sm btn-info edit-user"
+                                    data-user='{{ user.username }}' data-toggle="modal"
+                                    data-target="#editUserModal">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-warning reset-user" data-user='{{ user.username }}'>
+                                <button type="button" class="btn btn-sm btn-warning reset-user"
+                                    data-user='{{ user.username }}'>
                                     <i class="fas fa-undo"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger delete-user" data-user='{{ user.username }}'>
+                                <button type="button" class="btn btn-sm btn-danger delete-user"
+                                    data-user='{{ user.username }}'>
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -125,7 +163,8 @@
 
 
 <!-- Add User Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -139,6 +178,7 @@
                     <div class="form-group">
                         <label for="addUsername">Username</label>
                         <input type="text" class="form-control" id="addUsername" name="username" required>
+                        <small class="form-text text-danger" id="addUsernameError"></small>
                     </div>
                     <div class="form-group">
                         <label for="addTrafficLimit">Traffic Limit (GB)</label>
@@ -146,16 +186,18 @@
                     </div>
                     <div class="form-group">
                         <label for="addExpirationDays">Expiration Days</label>
-                        <input type="number" class="form-control" id="addExpirationDays" name="expiration_days" required>
+                        <input type="number" class="form-control" id="addExpirationDays" name="expiration_days"
+                            required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Add User</button>
+                    <button type="submit" class="btn btn-primary" id="addSubmitButton">Add User</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 <!-- Edit User Modal -->
-<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -169,6 +211,7 @@
                     <div class="form-group">
                         <label for="editUsername">Username</label>
                         <input type="text" class="form-control" id="editUsername" name="new_username">
+                        <small class="form-text text-danger" id="editUsernameError"></small>
                     </div>
                     <div class="form-group">
                         <label for="editTrafficLimit">Traffic Limit (GB)</label>
@@ -183,14 +226,15 @@
                         <label class="form-check-label" for="editBlocked">Blocked</label>
                     </div>
                     <input type="hidden" id="originalUsername" name="username">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="submit" class="btn btn-primary" id="editSubmitButton">Save Changes</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 <!-- QR Code Modal -->
-<div class="modal fade" id="qrcodeModal" tabindex="-1" role="dialog" aria-labelledby="qrcodeModalLabel" aria-hidden="true">
+<div class="modal fade" id="qrcodeModal" tabindex="-1" role="dialog" aria-labelledby="qrcodeModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -214,9 +258,160 @@
 
 <script>
     $(function () {
+
+        //** Username validation  */
+        const usernameRegex = /^[a-zA-Z0-9]+$/;
+
+        function validateUsername(username, errorElementId) {
+            const isValid = usernameRegex.test(username);
+            const errorElement = $("#" + errorElementId);
+
+            if (!isValid) {
+                errorElement.text("Usernames can only contain letters and numbers.");
+                return false;
+            } else {
+                errorElement.text(""); // Clear any previous error
+                return true;
+            }
+        }
+
+        // Disable submit buttons by default
+        $("#addSubmitButton").prop("disabled", true);
+        $("#editSubmitButton").prop("disabled", true);
+
+        //**  Add Username validation on Add User Modal  */
+        $("#addUsername").on("input", function () {
+            const username = $(this).val();
+            const isValid = validateUsername(username, "addUsernameError");
+            $("#addUserForm button[type='submit']").prop("disabled", !isValid);
+            $("#addSubmitButton").prop("disabled", !isValid);
+        });
+
+        //**  Add Username validation on Edit User Modal  */
+        $("#editUsername").on("input", function () {
+            const username = $(this).val();
+            const isValid = validateUsername(username, "editUsernameError");
+            $("#editUserForm button[type='submit']").prop("disabled", !isValid);
+            $("#editSubmitButton").prop("disabled", !isValid);
+        });
+
+        // Filter Buttons Functionality
+        $(".filter-button").on("click", function () {
+            const filter = $(this).data("filter");
+
+            // Deselect "Select All" checkbox when a filter is applied
+            $("#selectAll").prop("checked", false);
+
+            $("#userTable tbody tr").each(function () {
+                let showRow = true;
+
+                switch (filter) {
+                    case "all":
+                        showRow = true; // Show all users
+                        break;
+                    case "not-active":
+                        showRow = $(this).find("td:eq(1) i").hasClass("text-danger");
+                        break;
+                    case "enable":
+                        showRow = $(this).find("td:eq(7) i").hasClass("text-success");
+                        break;
+                    case "disable":
+                        showRow = $(this).find("td:eq(7) i").hasClass("text-danger");
+                        break;
+                }
+
+                if (showRow) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+                //Deselect checkbox when is not visible after sorting
+                $(this).find(".user-checkbox").prop("checked", false);
+            });
+        });
+
+        // Multi Delete Functionality
+        $("#selectAll").on("change", function () {
+            // Only select checkboxes in visible rows
+            $("#userTable tbody tr:visible .user-checkbox").prop("checked", $(this).prop("checked"));
+        });
+
+        $("#deleteSelected").on("click", function () {
+            const selectedUsers = $(".user-checkbox:checked").map(function () {
+                return $(this).val();
+            }).get();
+
+            if (selectedUsers.length === 0) {
+                Swal.fire({
+                    title: "Warning!",
+                    text: "Please select at least one user to delete.",
+                    icon: "warning",
+                    confirmButtonText: "OK",
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: "Are you sure?",
+                html: `This will delete the selected users: <b>${selectedUsers.join(", ")}</b>.<br>This action cannot be undone!`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete them!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    //AJAX request for each user selected
+                    Promise.all(selectedUsers.map(username => {
+                        const removeUserUrl = "{{ url_for('remove_user_api', username='USERNAME_PLACEHOLDER') }}";
+                        const url = removeUserUrl.replace("USERNAME_PLACEHOLDER", encodeURIComponent(username));
+                        return $.ajax({
+                            url: url,
+                            method: "DELETE",
+                            contentType: "application/json",
+                            data: JSON.stringify({ username: username }),
+                        });
+                    }))
+                        .then(responses => {
+                            const allSuccessful = responses.every(response => response.detail);
+                            if (allSuccessful) {
+                                Swal.fire({
+                                    title: "Success!",
+                                    text: "Selected users deleted successfully!",
+                                    icon: "success",
+                                    confirmButtonText: "OK",
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: "Failed to delete some users.",
+                                    icon: "error",
+                                    confirmButtonText: "OK",
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error deleting users:", error);
+                            Swal.fire({
+                                title: "Error!",
+                                text: "An error occurred while deleting users.",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                            });
+                        });
+                }
+            });
+        });
+
         // Add User Form Submit
         $("#addUserForm").on("submit", function (e) {
             e.preventDefault();
+            // Additional check before submitting (in case JS is disabled briefly)
+            if (!validateUsername($("#addUsername").val(), "addUsernameError")) {
+                return;
+            }
 
             const formData = $(this).serializeArray();
             const jsonData = {};
@@ -263,10 +458,10 @@
         $(document).on("click", ".edit-user", function () {
             const username = $(this).data("user");
             const row = $(this).closest("tr");
-            const quota = row.find("td:eq(2)").text().trim();
-            const expiry = row.find("td:eq(4)").text().trim(); // Get expiry from the table
-            const expiry_days = row.find("td:eq(5)").text().trim();
-            const blocked = row.find("td:eq(6)").text().trim().toLowerCase() === 'disabled'; // Check if 'disabled'
+            const quota = row.find("td:eq(3)").text().trim();
+            const expiry = row.find("td:eq(5)").text().trim(); // Get expiry from the table
+            const expiry_days = row.find("td:eq(6)").text().trim();
+            const blocked = row.find("td:eq(7)").text().trim().toLowerCase() === 'disabled'; // Check if 'disabled'
 
             // Extract numeric values from quota and expiry strings
             const quotaValue = parseFloat(quota);
@@ -282,6 +477,10 @@
 
         $("#editUserForm").on("submit", function (e) {
             e.preventDefault();
+             // Additional check before submitting (in case JS is disabled briefly)
+            if (!validateUsername($("#editUsername").val(), "editUsernameError")) {
+                return;
+            }
 
             const formData = $(this).serializeArray();
             const jsonData = {};
@@ -301,10 +500,10 @@
                     if (typeof response === 'string' && response.includes("User updated successfully")) {
                         const username = $("#originalUsername").val();
                         const row = $(`td[data-username='${username}']`).closest("tr");
-                        row.find("td:eq(1)").text($("#editUsername").val());
-                        row.find("td:eq(2)").text($("#editTrafficLimit").val() + " GB");
-                        row.find("td:eq(5)").text($("#editExpirationDays").val());
-                        row.find("td:eq(6) i")
+                        row.find("td:eq(2)").text($("#editUsername").val());
+                        row.find("td:eq(3)").text($("#editTrafficLimit").val() + " GB");
+                        row.find("td:eq(6)").text($("#editExpirationDays").val());
+                        row.find("td:eq(7) i")
                             .removeClass()
                             .addClass(
                                 $("#editBlocked").prop("checked")
@@ -323,10 +522,10 @@
                     else if (response && response.detail) {
                         const username = $("#originalUsername").val();
                         const row = $(`td[data-username='${username}']`).closest("tr");
-                        row.find("td:eq(1)").text($("#editUsername").val());
-                        row.find("td:eq(2)").text($("#editTrafficLimit").val() + " GB");
-                        row.find("td:eq(5)").text($("#editExpirationDays").val());
-                        row.find("td:eq(6) i")
+                        row.find("td:eq(2)").text($("#editUsername").val());
+                        row.find("td:eq(3)").text($("#editTrafficLimit").val() + " GB");
+                        row.find("td:eq(6)").text($("#editExpirationDays").val());
+                        row.find("td:eq(7) i")
                             .removeClass()
                             .addClass(
                                 $("#editBlocked").prop("checked")
@@ -461,7 +660,7 @@
                                     text: response.error || "Failed to delete user",
                                     icon: "error",
                                     confirmButtonText: "OK",
-                                });
+                            });
                             }
                         },
                         error: function () {
@@ -565,7 +764,7 @@
             const searchText = $("#searchInput").val().toLowerCase();
 
             $("#userTable tbody tr").each(function () {
-                const username = $(this).find("td:eq(1)").text().toLowerCase();
+                const username = $(this).find("td:eq(2)").text().toLowerCase();
                 if (username.includes(searchText)) {
                     $(this).show();
                 } else {

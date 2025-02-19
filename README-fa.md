@@ -17,6 +17,7 @@
 - 🌍 مسیریابی مبتنی بر Geo Files
 - 🔒 OBFS (مخفی‌سازی)
 - 📱 URIs سازگار با موبایل
+- 🐳 پشتیبانی از Docker
 
 ## 📋 راهنمای شروع سریع
 
@@ -37,9 +38,25 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh
 bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
 ```
 
+### اجرای Hysteria2 با استفاده از Docker
+
+پروژه اکنون از Docker پشتیبانی می‌کند، که فرآیند استقرار و راه‌اندازی را ساده‌تر و سریع‌تر می‌سازد.
+
+#### ساخت تصویر Docker
+ابتدا مخزن را کلون کنید و سپس تصویر Docker را با دستور زیر بسازید:
+```bash
+docker build -t hysteria2 .
+```
+#### اجرای Docker
+
+```bash
+docker run -d -p 80:80 hysteria2
+```
+
+
 <br />
 <p align="center">
- <img src="https://github.com/user-attachments/assets/2a1d46d4-b776-4a5a-bba1-f6f4e047591a" width="700" height="400">
+ <img src="https://github.com/user-attachments/assets/7004d5b9-00ab-4c2b-957e-49571a7439f5" width="700" height="400">
 </p>
 
 ## 🔧 پیش‌نیازهای سیستم

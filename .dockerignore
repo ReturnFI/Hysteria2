@@ -1,0 +1,33 @@
+# Ignore Git and related files
+.git
+.gitignore
+
+# Ignore temporary and log files
+*.log
+*.tmp
+
+# Ignore unnecessary build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.so
+node_modules/
+*.zip
+*.tar.gz
+
+# Ignore IDE and OS-specific files
+.DS_Store
+Thumbs.db
+*.swp
+
+# Ignore environment and sensitive configuration files
+.env
+*.secret
+
+# Ignore test and documentation directories
+tests/
+docs/
+
+# Ignore any large, unnecessary files
+*.bak
+*.old

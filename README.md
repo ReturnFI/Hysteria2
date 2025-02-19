@@ -17,6 +17,7 @@ A powerful and user-friendly management panel for Hysteria2 proxy server. Featur
 - 🌍 Geo-based routing
 - 🔒 OBFS (Obfuscation)
 - 📱 Mobile-friendly URIs
+- 🐳 Dockerized deployment  
 
 
 ## 📋 Quick Start Guide
@@ -34,12 +35,25 @@ There is no need to execute the installation command again.
 bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
 ```
 
+### Running Hysteria2 with Docker
+We have added support for running the project in a Docker container for easier deployment and isolation.
+
+#### Build the Docker Image
+To build the Docker image locally, clone the repository and run:
+```bash
+docker build -t hysteria2 .
+```
+
+#### Run the Docker Container
+To start the container:
+```bash
+docker run -d -p 80:80 hysteria2
+```
 
 <br />
 <p align="center">
- <img src="https://github.com/user-attachments/assets/2a1d46d4-b776-4a5a-bba1-f6f4e047591a" width="700" height="400">
+ <img src="https://github.com/user-attachments/assets/7004d5b9-00ab-4c2b-957e-49571a7439f5" width="700" height="400">
 </p>
-
 
 ## 🔧 System Requirements
 

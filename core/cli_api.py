@@ -36,6 +36,7 @@ class Command(Enum):
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
     BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
+    RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.sh')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
     SHELL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     SHELL_WEBPANEL = os.path.join(SCRIPT_DIR, 'webpanel', 'webpanel_shell.sh')
@@ -171,8 +172,22 @@ def change_hysteria2_sni(sni: str):
 
 
 def backup_hysteria2():
-    '''Backups Hysteria configuration.'''
-    run_cmd(['bash', Command.BACKUP_HYSTERIA2.value])
+    '''Backups Hysteria configuration.  Raises an exception on failure.'''
+    try:
+        run_cmd(['bash', Command.BACKUP_HYSTERIA2.value])
+    except subprocess.CalledProcessError as e:
+        raise Exception(f"Backup failed: {e}")
+    except Exception as ex:
+        raise
+
+def restore_hysteria2(backup_file_path):
+    '''Restores Hysteria configuration from the given backup file.'''
+    try:
+        run_cmd(['bash', Command.RESTORE_HYSTERIA2.value, backup_file_path])
+    except subprocess.CalledProcessError as e:
+        raise Exception(f"Restore failed: {e}")
+    except Exception as ex:
+        raise
 
 
 def enable_hysteria2_obfs():

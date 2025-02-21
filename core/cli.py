@@ -87,6 +87,16 @@ def backup_hysteria2():
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+@cli.command('restore-hysteria2')
+@click.argument('backup_file_path', type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True))
+def restore_hysteria2(backup_file_path):
+    """Restores Hysteria configuration from a backup ZIP file."""
+    try:
+        cli_api.restore_hysteria2(backup_file_path)
+        click.echo('Hysteria configuration restored successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 # endregion
 
 # region User

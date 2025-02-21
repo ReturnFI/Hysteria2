@@ -36,10 +36,13 @@
                             <li class='nav-item'>
                                 <a class='nav-link' id='ip-tab' data-toggle='pill' href='#change_ip' role='tab' aria-controls='change_ip' aria-selected='false'><i class="fas fa-network-wired"></i> Change IP</a>
                             </li>
+                            <!-- New Backup Tab -->
+                            <li class='nav-item'>
+                                <a class='nav-link' id='backup-tab' data-toggle='pill' href='#backup' role='tab' aria-controls='backup' aria-selected='false'><i class="fas fa-download"></i> Backup</a>
+                            </li>
                         </ul>
                     </div>
                     <div class='card-body' style="margin-left: 25px;">
-                         <!-- Rest of your form content (same as before) -->
                          <div class='tab-content' id='custom-tabs-three-tabContent'>
 
                             <!-- Subscriptions Tab -->
@@ -177,6 +180,10 @@
                                     </div>
                                     <button id="ip_change" type='button' class='btn btn-primary'>Save</button>
                                 </form>
+                            </div>
+                            <!-- Backup Tab (New) -->
+                            <div class='tab-pane fade' id='backup' role='tabpanel' aria-labelledby='backup-tab'>
+                                  <button id="download_backup" type='button' class='btn btn-primary'>Download Backup</button>
                             </div>
                         </div>
                     </div>
@@ -382,8 +389,7 @@
                         input.removeClass('is-invalid');
                     }
                 } else {
-                    // For other fields (like token, admin_id), just check if it's empty.  You could
-                    // add more robust validation for these if needed.
+
                      if (!input.val().trim()) {
                         input.addClass('is-invalid');
                         isValid = false;
@@ -512,6 +518,12 @@
                 );
             });
         }
+        // Download Backup (New)
+        function downloadBackup() {
+            // No confirmation needed for a download
+            window.location.href = "{{ url_for('backup') }}";  // Initiate the download
+        }
+
 
         // Attach event listeners
         $("#telegram_start").on("click", startTelegram);
@@ -523,6 +535,7 @@
         $("#port_change").on("click", changePort);
         $("#sni_change").on("click", changeSNI);
         $("#ip_change").on("click", saveIP);
+        $("#download_backup").on("click", downloadBackup); // New backup button
 
           // Input event listeners for real-time validation
         $('#singbox_domain, #normal_domain, #sni_domain').on('input', function() {

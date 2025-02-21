@@ -88,7 +88,8 @@ done
 rm -rf "$RESTORE_DIR"
 echo "Hysteria configuration restored successfully."
 
-
+chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
+chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
 python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 if [ $? -ne 0 ]; then
       echo "Error: Restart service failed'."

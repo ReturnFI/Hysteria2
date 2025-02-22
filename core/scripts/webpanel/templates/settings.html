@@ -19,65 +19,84 @@
             <div class='col-lg-12'>
                 <div class='card card-primary card-outline card-tabs'>
                     <div class='card-header p-0 pt-1 border-bottom-0'>
-                        <ul class='nav nav-pills' id='custom-tabs-three-tab' role='tablist' style="margin-left: 20px; margin-top: 10px;">
+                        <ul class='nav nav-pills' id='custom-tabs-three-tab' role='tablist'
+                            style="margin-left: 20px; margin-top: 10px;">
                             <li class='nav-item'>
-                                <a class='nav-link active' id='subs-tab' data-toggle='pill' href='#subs' role='tab' aria-controls='subs' aria-selected='false'><i class="fas fa-link"></i> Subscriptions</a>
+                                <a class='nav-link active' id='subs-tab' data-toggle='pill' href='#subs' role='tab'
+                                    aria-controls='subs' aria-selected='false'><i class="fas fa-link"></i>
+                                    Subscriptions</a>
                             </li>
                             <li class='nav-item'>
-                                <a class='nav-link' id='telegram-tab' data-toggle='pill' href='#telegram' role='tab' aria-controls='telegram' aria-selected='true'><i class="fab fa-telegram"></i> Telegram
+                                <a class='nav-link' id='telegram-tab' data-toggle='pill' href='#telegram' role='tab'
+                                    aria-controls='telegram' aria-selected='true'><i class="fab fa-telegram"></i>
+                                    Telegram
                                     Bot</a>
                             </li>
                             <li class='nav-item'>
-                                <a class='nav-link' id='port-tab' data-toggle='pill' href='#port' role='tab' aria-controls='port' aria-selected='false'><i class="fas fa-server"></i> Change Port</a>
+                                <a class='nav-link' id='port-tab' data-toggle='pill' href='#port' role='tab'
+                                    aria-controls='port' aria-selected='false'><i class="fas fa-server"></i> Change
+                                    Port</a>
                             </li>
                             <li class='nav-item'>
-                                <a class='nav-link' id='sni-tab' data-toggle='pill' href='#sni' role='tab' aria-controls='sni' aria-selected='false'><i class="fas fa-shield-alt"></i> Change SNI</a>
+                                <a class='nav-link' id='sni-tab' data-toggle='pill' href='#sni' role='tab'
+                                    aria-controls='sni' aria-selected='false'><i class="fas fa-shield-alt"></i> Change
+                                    SNI</a>
                             </li>
                             <li class='nav-item'>
-                                <a class='nav-link' id='ip-tab' data-toggle='pill' href='#change_ip' role='tab' aria-controls='change_ip' aria-selected='false'><i class="fas fa-network-wired"></i> Change IP</a>
+                                <a class='nav-link' id='ip-tab' data-toggle='pill' href='#change_ip' role='tab'
+                                    aria-controls='change_ip' aria-selected='false'><i class="fas fa-network-wired"></i>
+                                    Change IP</a>
                             </li>
                             <!-- New Backup Tab -->
                             <li class='nav-item'>
-                                <a class='nav-link' id='backup-tab' data-toggle='pill' href='#backup' role='tab' aria-controls='backup' aria-selected='false'><i class="fas fa-download"></i> Backup</a>
+                                <a class='nav-link' id='backup-tab' data-toggle='pill' href='#backup' role='tab'
+                                    aria-controls='backup' aria-selected='false'><i class="fas fa-download"></i>
+                                    Backup</a>
                             </li>
                         </ul>
                     </div>
                     <div class='card-body' style="margin-left: 25px;">
-                         <div class='tab-content' id='custom-tabs-three-tabContent'>
+                        <div class='tab-content' id='custom-tabs-three-tabContent'>
 
                             <!-- Subscriptions Tab -->
                             <div class='tab-pane fade show active' id='subs' role='tabpanel' aria-labelledby='subs-tab'>
                                 <ul class='nav nav-tabs' id='subs-tabs' role='tablist'>
                                     <li class='nav-item'>
-                                        <a class='nav-link active' id='singbox-tab' data-toggle='tab' href='#singbox' role='tab' aria-controls='singbox'
+                                        <a class='nav-link active' id='singbox-tab' data-toggle='tab' href='#singbox'
+                                            role='tab' aria-controls='singbox'
                                             aria-selected='true'><strong>SingBox</strong></a>
                                     </li>
                                     <li class='nav-item'>
-                                        <a class='nav-link' id='normal-tab' data-toggle='tab' href='#normal' role='tab' aria-controls='normal'
-                                            aria-selected='false'><strong>Normal</strong></a>
+                                        <a class='nav-link' id='normal-tab' data-toggle='tab' href='#normal' role='tab'
+                                            aria-controls='normal' aria-selected='false'><strong>Normal</strong></a>
                                     </li>
                                 </ul>
                                 <div class='tab-content' id='subs-tabs-content'>
                                     <br>
                                     <!-- SingBox Sub Tab -->
-                                    <div class='tab-pane fade show active' id='singbox' role='tabpanel' aria-labelledby='singbox-tab'>
+                                    <div class='tab-pane fade show active' id='singbox' role='tabpanel'
+                                        aria-labelledby='singbox-tab'>
                                         <form>
                                             <div class='form-group'>
                                                 <label for='singbox_domain'>Domain:</label>
-                                                <input type='text' class='form-control' id='singbox_domain' placeholder='Enter Domain'>
+                                                <input type='text' class='form-control' id='singbox_domain'
+                                                    placeholder='Enter Domain'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid domain (without http:// or https://).
                                                 </div>
                                             </div>
                                             <div class='form-group'>
                                                 <label for='singbox_port'>Port:</label>
-                                                <input type='text' class='form-control' id='singbox_port' placeholder='Enter Port'>
+                                                <input type='text' class='form-control' id='singbox_port'
+                                                    placeholder='Enter Port'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid port number.
                                                 </div>
                                             </div>
-                                            <button id="singbox_start" type='button' class='btn btn-success'>Start</button>
-                                            <button id="singbox_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
+                                            <button id="singbox_start" type='button'
+                                                class='btn btn-success'>Start</button>
+                                            <button id="singbox_stop" type='button' class='btn btn-danger'
+                                                style="display: none;">Stop</button>
 
                                         </form>
                                     </div>
@@ -87,20 +106,24 @@
                                         <form>
                                             <div class='form-group'>
                                                 <label for='normal_domain'>Domain:</label>
-                                                <input type='text' class='form-control' id='normal_domain' placeholder='Enter Domain'>
+                                                <input type='text' class='form-control' id='normal_domain'
+                                                    placeholder='Enter Domain'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid domain (without http:// or https://).
                                                 </div>
                                             </div>
                                             <div class='form-group'>
                                                 <label for='normal_port'>Port:</label>
-                                                <input type='text' class='form-control' id='normal_port' placeholder='Enter Port'>
+                                                <input type='text' class='form-control' id='normal_port'
+                                                    placeholder='Enter Port'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid port number.
                                                 </div>
                                             </div>
-                                            <button id="normal_start" type='button' class='btn btn-success'>Start</button>
-                                            <button id="normal_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
+                                            <button id="normal_start" type='button'
+                                                class='btn btn-success'>Start</button>
+                                            <button id="normal_stop" type='button' class='btn btn-danger'
+                                                style="display: none;">Stop</button>
 
                                         </form>
                                     </div>
@@ -113,20 +136,23 @@
                                 <form>
                                     <div class='form-group'>
                                         <label for='telegram_api_token'>API Token:</label>
-                                        <input type='text' class='form-control' id='telegram_api_token' placeholder='Enter API Token'>
-                                          <div class="invalid-feedback">
-                                                Please enter a valid API Token.
-                                          </div>
+                                        <input type='text' class='form-control' id='telegram_api_token'
+                                            placeholder='Enter API Token'>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid API Token.
+                                        </div>
                                     </div>
                                     <div class='form-group'>
                                         <label for='telegram_admin_id'>Admin ID:</label>
-                                        <input type='text' class='form-control' id='telegram_admin_id' placeholder='Enter Admin ID'>
+                                        <input type='text' class='form-control' id='telegram_admin_id'
+                                            placeholder='Enter Admin ID'>
                                         <div class="invalid-feedback">
-                                                Please enter a valid Admin ID.
+                                            Please enter a valid Admin ID.
                                         </div>
                                     </div>
                                     <button id="telegram_start" type='button' class='btn btn-success'>Start</button>
-                                    <button id="telegram_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
+                                    <button id="telegram_stop" type='button' class='btn btn-danger'
+                                        style="display: none;">Stop</button>
 
                                 </form>
                             </div>
@@ -137,7 +163,8 @@
                                 <form>
                                     <div class='form-group'>
                                         <label for='hysteria_port'>Port:</label>
-                                        <input type='text' class='form-control' id='hysteria_port' placeholder='Enter Port'>
+                                        <input type='text' class='form-control' id='hysteria_port'
+                                            placeholder='Enter Port'>
                                         <div class="invalid-feedback">
                                             Please enter a valid port number.
                                         </div>
@@ -152,7 +179,8 @@
                                 <form>
                                     <div class='form-group'>
                                         <label for='sni_domain'>Domain:</label>
-                                        <input type='text' class='form-control' id='sni_domain' placeholder='Enter Domain'>
+                                        <input type='text' class='form-control' id='sni_domain'
+                                            placeholder='Enter Domain'>
                                         <div class="invalid-feedback">
                                             Please enter a valid domain (without http:// or https://).
                                         </div>
@@ -166,14 +194,16 @@
                                 <form>
                                     <div class='form-group'>
                                         <label for='ipv4'>IPv4:</label>
-                                        <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4' value="{{ ipv4 or '' }}">
-                                         <div class="invalid-feedback">
+                                        <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4'
+                                            value="{{ ipv4 or '' }}">
+                                        <div class="invalid-feedback">
                                             Please enter a valid IPv4 address.
                                         </div>
                                     </div>
                                     <div class='form-group'>
                                         <label for='ipv6'>IPv6:</label>
-                                        <input type='text' class='form-control' id='ipv6' placeholder='Enter IPv6' value="{{ ipv6 or '' }}">
+                                        <input type='text' class='form-control' id='ipv6' placeholder='Enter IPv6'
+                                            value="{{ ipv6 or '' }}">
                                         <div class="invalid-feedback">
                                             Please enter a valid IPv6 address.
                                         </div>
@@ -183,7 +213,8 @@
                             </div>
                             <!-- Backup Tab (New) -->
                             <div class='tab-pane fade' id='backup' role='tabpanel' aria-labelledby='backup-tab'>
-                                  <button id="download_backup" type='button' class='btn btn-primary'>Download Backup</button>
+                                <button id="download_backup" type='button' class='btn btn-primary'>Download
+                                    Backup</button>
                             </div>
                         </div>
                     </div>
@@ -200,7 +231,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Font Awesome -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" integrity="sha512-yFjZbTYRCJodnuyGlsKamNE/LlEaEA/3apsIOPr7/l+jCMq9Dn9x5qyuAGqgpr4/NBZ95p8yrl/sLhJvoazg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"
+    integrity="sha512-yFjZbTYRCJodnuyGlsKamNE/LlEaEA/3apsIOPr7/l+jCMq9Dn9x5qyuAGqgpr4/NBZ95p8yrl/sLhJvoazg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
 
@@ -300,14 +333,14 @@
         }
 
         function isValidPort(port) {
-             if (!port) return false;
+            if (!port) return false;
             return /^[0-9]+$/.test(port) && parseInt(port) > 0 && parseInt(port) <= 65535;
         }
         function isValidIP(ip, version) {
             if (!ip) return true; // Allow empty input (optional)
 
             if (version === 4) {
-                 return /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip);
+                return /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip);
             } else if (version === 6) {
                 return /^(([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/.test(ip);
             }
@@ -355,8 +388,8 @@
         // Function to validate form fields
 
         function validateForm(formId) {
-             let isValid = true;
-            $(`#${formId} .form-control`).each(function() {
+            let isValid = true;
+            $(`#${formId} .form-control`).each(function () {
                 const input = $(this);
                 const id = input.attr('id');
 
@@ -390,7 +423,7 @@
                     }
                 } else {
 
-                     if (!input.val().trim()) {
+                    if (!input.val().trim()) {
                         input.addClass('is-invalid');
                         isValid = false;
                     } else {
@@ -403,7 +436,7 @@
         }
         // Telegram Bot Start
         function startTelegram() {
-             if (!validateForm('telegram')) return;
+            if (!validateForm('telegram')) return;
             const apiToken = $("#telegram_api_token").val();
             const adminId = $("#telegram_admin_id").val();
             confirmAction("start the Telegram bot", function () {
@@ -457,7 +490,7 @@
 
         // Normal Subscription Start
         function startNormal() {
-             if (!validateForm('normal')) return;
+            if (!validateForm('normal')) return;
             const domain = $("#normal_domain").val();
             const port = $("#normal_port").val();
             confirmAction("start the normal subscription", function () {
@@ -505,7 +538,7 @@
 
         // Save IP
         function saveIP() {
-              if (!validateForm('change_ip')) return;
+            if (!validateForm('change_ip')) return;
             confirmAction("save the new IP", function () {
                 sendRequest(
                     "{{ url_for('edit_ip_api') }}",
@@ -521,7 +554,7 @@
         // Download Backup (New)
         function downloadBackup() {
             // No confirmation needed for a download
-            window.location.href = "{{ url_for('backup') }}";  // Initiate the download
+            window.location.href = "{{ url_for('backup_api') }}";  // Initiate the download
         }
 
 
@@ -537,8 +570,8 @@
         $("#ip_change").on("click", saveIP);
         $("#download_backup").on("click", downloadBackup); // New backup button
 
-          // Input event listeners for real-time validation
-        $('#singbox_domain, #normal_domain, #sni_domain').on('input', function() {
+        // Input event listeners for real-time validation
+        $('#singbox_domain, #normal_domain, #sni_domain').on('input', function () {
             if (isValidDomain($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else {
@@ -546,29 +579,29 @@
             }
         });
 
-        $('#singbox_port, #normal_port, #hysteria_port').on('input', function() {
+        $('#singbox_port, #normal_port, #hysteria_port').on('input', function () {
             if (isValidPort($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else {
                 $(this).addClass('is-invalid');
             }
         });
-        $('#ipv4').on('input', function() {
-            if (isValidIP($(this).val(),4)) {
+        $('#ipv4').on('input', function () {
+            if (isValidIP($(this).val(), 4)) {
                 $(this).removeClass('is-invalid');
             } else {
                 $(this).addClass('is-invalid');
             }
         });
 
-          $('#ipv6').on('input', function() {
-            if (isValidIP($(this).val(),6)) {
+        $('#ipv6').on('input', function () {
+            if (isValidIP($(this).val(), 6)) {
                 $(this).removeClass('is-invalid');
             } else {
                 $(this).addClass('is-invalid');
             }
         });
-         $('#telegram_api_token, #telegram_admin_id').on('input', function() {
+        $('#telegram_api_token, #telegram_admin_id').on('input', function () {
             if ($(this).val().trim() !== "") {  // Basic check for non-empty
                 $(this).removeClass('is-invalid');
             } else {

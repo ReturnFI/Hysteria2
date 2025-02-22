@@ -180,7 +180,8 @@ def backup_hysteria2():
     except Exception as ex:
         raise
 
-def restore_hysteria2(backup_file_path):
+
+def restore_hysteria2(backup_file_path: str):
     '''Restores Hysteria configuration from the given backup file.'''
     try:
         run_cmd(['bash', Command.RESTORE_HYSTERIA2.value, backup_file_path])

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from ..schema.config.hysteria import ConfigFile, GetPortResponse, GetSniResponse
 from ..schema.response import DetailResponse
 from fastapi.responses import FileResponse
+import shutil
 # from ..schema.config.hysteria import InstallInputBody
 import os
 import cli_api
@@ -150,20 +151,20 @@ async def set_sni_api(sni: str):
 
 
 @router.get('/backup', response_class=FileResponse, summary='Backup Hysteria2 configuration')
-async def backup():
+async def backup_api():
     """
     Backups the Hysteria2 configuration and sends the backup ZIP file.
     """
     try:
         cli_api.backup_hysteria2()
-        backup_dir = "/opt/hysbackup/"
+        backup_dir = "/opt/hysbackup/"  # TODO: get this path from .env
 
         if not os.path.isdir(backup_dir):
             raise HTTPException(status_code=500, detail="Backup directory does not exist.")
 
         files = [f for f in os.listdir(backup_dir) if f.endswith('.zip')]
         files.sort(key=lambda x: os.path.getctime(os.path.join(backup_dir, x)), reverse=True)
-        latest_backup_file = files[0] if files else None 
+        latest_backup_file = files[0] if files else None
 
         if latest_backup_file:
             backup_file_path = os.path.join(backup_dir, latest_backup_file)
@@ -180,6 +181,24 @@ async def backup():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Error: {str(e)}')
+
+
+@router.get('/restore', response_model=DetailResponse, summary='Restore Hysteria2 Configuration')
+async def restore_api(f: UploadFile = File(...)):
+    try:
+        dst_dir_path = '/opt/hysbackup/'  # TODO: get this path from .env
+        if not os.path.isdir(dst_dir_path):  # TODO: the dir path should be exist, so no need to check
+            os.makedirs(dst_dir_path)
+
+        dst_path = os.path.join(dst_dir_path, f.filename)  # type: ignore
+
+        with open(dst_path, 'wb') as buffer:
+            shutil.copyfileobj(f.file, buffer)
+
+        cli_api.restore_hysteria2(dst_path)
+        return DetailResponse(detail='Hysteria2 restored successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
 @router.get('/enable-obfs', response_model=DetailResponse, summary='Enable Hysteria2 obfs')

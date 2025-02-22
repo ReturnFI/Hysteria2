@@ -93,8 +93,10 @@
                                                     Please enter a valid port number.
                                                 </div>
                                             </div>
-                                            <button id="singbox_start" type='button'
-                                                class='btn btn-success'>Start</button>
+                                            <button id="singbox_start" type='button' class='btn btn-success'>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                                Start
+                                            </button>
                                             <button id="singbox_stop" type='button' class='btn btn-danger'
                                                 style="display: none;">Stop</button>
 
@@ -120,8 +122,10 @@
                                                     Please enter a valid port number.
                                                 </div>
                                             </div>
-                                            <button id="normal_start" type='button'
-                                                class='btn btn-success'>Start</button>
+                                            <button id="normal_start" type='button' class='btn btn-success'>
+                                               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                                Start
+                                            </button>
                                             <button id="normal_stop" type='button' class='btn btn-danger'
                                                 style="display: none;">Stop</button>
 
@@ -213,8 +217,18 @@
                             </div>
                             <!-- Backup Tab (New) -->
                             <div class='tab-pane fade' id='backup' role='tabpanel' aria-labelledby='backup-tab'>
-                                <button id="download_backup" type='button' class='btn btn-primary'>Download
-                                    Backup</button>
+                                <div class="form-group">
+                                     <label for="backup_file">Upload Backup:</label>
+                                     <input type="file" class="form-control-file" id="backup_file" accept=".zip">
+                                 </div>
+                                <button id="upload_backup" type='button' class='btn btn-success'>Upload</button>
+                                 <button id="download_backup" type='button' class='btn btn-primary'>Download Backup</button>
+
+                                <div class="progress mt-3" style="display: none;">
+                                  <div id="backup_progress_bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+
+                               <div id="backup_status" class="mt-2"></div>  <!-- Status messages -->
                             </div>
                         </div>
                     </div>
@@ -237,95 +251,9 @@
 
 <script>
 
-    function initUI() {
-        // Fetch service status on page load
-        $.ajax({
-            url: "{{ url_for('server_services_status_api') }}",
-            type: "GET",
-            success: function (data) {
-                updateServiceUI(data);
-            },
-            error: function () {
-                console.error("Failed to fetch service status.");
-            }
-        });
-
-        // Update UI based on service status
-        function updateServiceUI(data) {
-            const servicesMap = {
-                "hysteria_telegram_bot": "#telegram",
-                "hysteria_singbox": "#singbox",
-                "hysteria_normal_sub": "#normal"
-            };
-
-            Object.keys(servicesMap).forEach(service => {
-                let selector = servicesMap[service];
-                let isRunning = data[service];
-
-                if (isRunning) {
-                    $(selector + " input, " + selector + " label").remove();
-                    $(selector + " .btn-success").remove();
-                    $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
-                    $(selector + " .btn-danger").show();
-                } else {
-                    $(selector + " input, " + selector + " label").show();
-                    $(selector + " .btn-success").show();
-                    $(selector + " .btn-danger").hide();
-                    $(selector + " .alert-info").remove();
-                }
-            });
-        }
-
-
-        // Fetch IP addresses
-        $.ajax({
-            url: "{{ url_for('get_ip_api') }}",
-            type: "GET",
-            success: function (data) {
-                $("#ipv4").val(data.ipv4 || "");
-                $("#ipv6").val(data.ipv6 || "");
-
-                $("#ipv4").attr("placeholder", "Enter IPv4");
-                $("#ipv6").attr("placeholder", "Enter IPv6");
-
-
-            },
-            error: function () {
-                console.error("Failed to fetch IP addresses.");
-                $("#ipv4").attr("placeholder", "Enter IPv4");
-                $("#ipv6").attr("placeholder", "Enter IPv6");
-            }
-        });
-
-        // Fetch Port
-        $.ajax({
-            url: "{{ url_for('get_port_api') }}",
-            type: "GET",
-            success: function (data) {
-                $("#hysteria_port").val(data.port || "");
-            },
-            error: function () {
-                console.error("Failed to fetch port.");
-            }
-        });
-
-        // Fetch SNI domain
-        $.ajax({
-            url: "{{ url_for('get_sni_api') }}",
-            type: "GET",
-            success: function (data) {
-                $("#sni_domain").val(data.sni || "");
-            },
-            error: function () {
-                console.error("Failed to fetch SNI domain.");
-            }
-        });
-    }
     $(document).ready(function () {
-        // Init UI
         initUI();
 
-        // Validation functions
         function isValidDomain(domain) {
             if (!domain) return false;
             const lowerDomain = domain.toLowerCase();
@@ -337,7 +265,7 @@
             return /^[0-9]+$/.test(port) && parseInt(port) > 0 && parseInt(port) <= 65535;
         }
         function isValidIP(ip, version) {
-            if (!ip) return true; // Allow empty input (optional)
+            if (!ip) return true;
 
             if (version === 4) {
                 return /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip);
@@ -348,7 +276,6 @@
         }
 
 
-        // Function to show confirmation before executing API calls
         function confirmAction(actionName, callback) {
             Swal.fire({
                 title: `Are you sure?`,
@@ -366,26 +293,44 @@
             });
         }
 
-        // Function to handle AJAX requests
-        function sendRequest(url, type, data, successMessage) {
+        function sendRequest(url, type, data, successMessage, buttonSelector, showReload = true) {
             $.ajax({
                 url: url,
                 type: type,
                 contentType: "application/json",
-                data: JSON.stringify(data),
+                data: data ? JSON.stringify(data) : null,
+                beforeSend: function() {
+                    if (buttonSelector) {
+                        $(buttonSelector).prop('disabled', true);
+                         $(buttonSelector + ' .spinner-border').show();
+                    }
+                },
                 success: function (response) {
-                    Swal.fire("Success!", successMessage, "success").then(() => {
-                        location.reload();
-                    });
+                    Swal.fire("Success!", successMessage, "success");
+                     if (showReload) { 
+                        Swal.fire("Success!", successMessage, "success").then(() => {
+                                location.reload();
+                        });
+                    }
+
                     console.log(response);
                 },
                 error: function (xhr, status, error) {
-                    Swal.fire("Error!", "Something went wrong. Check the console for details.", "error");
+                   let errorMessage = "Something went wrong.";
+                    if (xhr.responseJSON && xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    }
+                    Swal.fire("Error!", errorMessage, "error");
                     console.error(error);
+                },
+                complete: function() {
+                    if (buttonSelector) {
+                        $(buttonSelector).prop('disabled', false);
+                        $(buttonSelector + ' .spinner-border').hide();
+                    }
                 }
             });
         }
-        // Function to validate form fields
 
         function validateForm(formId) {
             let isValid = true;
@@ -434,7 +379,108 @@
             });
             return isValid;
         }
-        // Telegram Bot Start
+
+    function initUI() {
+        $.ajax({
+            url: "{{ url_for('server_services_status_api') }}",
+            type: "GET",
+            success: function (data) {
+                updateServiceUI(data);
+            },
+            error: function () {
+                console.error("Failed to fetch service status.");
+            }
+        });
+
+
+        function updateServiceUI(data) {
+            const servicesMap = {
+                "hysteria_telegram_bot": "#telegram",
+                "hysteria_singbox": "#singbox",
+                "hysteria_normal_sub": "#normal"
+            };
+
+            Object.keys(servicesMap).forEach(service => {
+                let selector = servicesMap[service];
+                let isRunning = data[service];
+
+                if (isRunning) {
+                    $(selector + " input, " + selector + " label").remove();
+                    $(selector + " .btn-success").remove();
+                    $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
+                    $(selector + " .btn-danger").show();
+
+                     if (service === "hysteria_singbox") {
+                         $("#singbox_start").prop('disabled', true);
+                     }
+                     if(service === "hysteria_telegram_bot"){
+                         $("#telegram_start").prop('disabled', true);
+                     }
+                    if(service === "hysteria_normal_sub"){
+                       $("#normal_start").prop('disabled', true);
+                    }
+
+                } else {
+                    $(selector + " input, " + selector + " label").show();
+                    $(selector + " .btn-success").show();
+                    $(selector + " .btn-danger").hide();
+                    $(selector + " .alert-info").remove();
+                     if (service === "hysteria_singbox") {
+                         $("#singbox_start").prop('disabled', false);
+                     }
+                      if(service === "hysteria_telegram_bot"){
+                         $("#telegram_start").prop('disabled', false);
+                     }
+                     if(service === "hysteria_normal_sub"){
+                       $("#normal_start").prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+
+
+        $.ajax({
+            url: "{{ url_for('get_ip_api') }}",
+            type: "GET",
+            success: function (data) {
+                $("#ipv4").val(data.ipv4 || "");
+                $("#ipv6").val(data.ipv6 || "");
+
+                $("#ipv4").attr("placeholder", "Enter IPv4");
+                $("#ipv6").attr("placeholder", "Enter IPv6");
+
+
+            },
+            error: function () {
+                console.error("Failed to fetch IP addresses.");
+                $("#ipv4").attr("placeholder", "Enter IPv4");
+                $("#ipv6").attr("placeholder", "Enter IPv6");
+            }
+        });
+
+        $.ajax({
+            url: "{{ url_for('get_port_api') }}",
+            type: "GET",
+            success: function (data) {
+                $("#hysteria_port").val(data.port || "");
+            },
+            error: function () {
+                console.error("Failed to fetch port.");
+            }
+        });
+
+        $.ajax({
+            url: "{{ url_for('get_sni_api') }}",
+            type: "GET",
+            success: function (data) {
+                $("#sni_domain").val(data.sni || "");
+            },
+            error: function () {
+                console.error("Failed to fetch SNI domain.");
+            }
+        });
+    }
         function startTelegram() {
             if (!validateForm('telegram')) return;
             const apiToken = $("#telegram_api_token").val();
@@ -444,24 +490,24 @@
                     "{{ url_for('telegram_start_api') }}",
                     "POST",
                     { token: apiToken, admin_id: adminId },
-                    "Telegram bot started successfully!"
+                    "Telegram bot started successfully!",
+                    "#telegram_start"
                 );
             });
         }
 
-        // Telegram Bot Stop
         function stopTelegram() {
             confirmAction("stop the Telegram bot", function () {
                 sendRequest(
                     "{{ url_for('telegram_stop_api') }}",
                     "DELETE",
                     null,
-                    "Telegram bot stopped successfully!"
+                    "Telegram bot stopped successfully!",
+                    null
                 );
             });
         }
 
-        // SingBox Start
         function startSingbox() {
             if (!validateForm('singbox')) return;
             const domain = $("#singbox_domain").val();
@@ -471,24 +517,24 @@
                     "{{ url_for('singbox_start_api') }}",
                     "POST",
                     { domain: domain, port: port },
-                    "SingBox started successfully!"
+                    "SingBox started successfully!",
+                    "#singbox_start"
                 );
             });
         }
 
-        // SingBox Stop
         function stopSingbox() {
             confirmAction("stop SingBox", function () {
                 sendRequest(
                     "{{ url_for('singbox_stop_api') }}",
                     "DELETE",
                     null,
-                    "SingBox stopped successfully!"
+                    "SingBox stopped successfully!",
+                     null
                 );
             });
         }
 
-        // Normal Subscription Start
         function startNormal() {
             if (!validateForm('normal')) return;
             const domain = $("#normal_domain").val();
@@ -498,19 +544,21 @@
                     "{{ url_for('normal_sub_start_api') }}",
                     "POST",
                     { domain: domain, port: port },
-                    "Normal subscription started successfully!"
+                    "Normal subscription started successfully!",
+                    "#normal_start"
                 );
             });
         }
 
-        // Normal Subscription Stop
         function stopNormal() {
             confirmAction("stop the normal subscription", function () {
                 sendRequest(
                     "{{ url_for('normal_sub_stop_api') }}",
                     "DELETE",
                     null,
-                    "Normal subscription stopped successfully!"
+                    "Normal subscription stopped successfully!",
+                    null
+
                 );
             });
         }
@@ -521,22 +569,20 @@
             const baseUrl = "{{ url_for('set_port_api', port='PORT_PLACEHOLDER') }}";
             const url = baseUrl.replace("PORT_PLACEHOLDER", port);
             confirmAction("change the port", function () {
-                sendRequest(url, "GET", null, "Port changed successfully!");
+                sendRequest(url, "GET", null, "Port changed successfully!",null);
             });
         }
 
-        // Change SNI
         function changeSNI() {
             if (!validateForm('sni')) return;
             const domain = $("#sni_domain").val();
             const baseUrl = "{{ url_for('set_sni_api', sni='SNI_PLACEHOLDER') }}";
             const url = baseUrl.replace("SNI_PLACEHOLDER", domain);
             confirmAction("change the SNI", function () {
-                sendRequest(url, "GET", null, "SNI changed successfully!");
+                sendRequest(url, "GET", null, "SNI changed successfully!",null);
             });
         }
 
-        // Save IP
         function saveIP() {
             if (!validateForm('change_ip')) return;
             confirmAction("save the new IP", function () {
@@ -547,18 +593,81 @@
                         ipv4: $("#ipv4").val() || null,
                         ipv6: $("#ipv6").val() || null
                     },
-                    "New IP saved successfully!"
+                    "New IP saved successfully!",
+                    null
                 );
             });
         }
-        // Download Backup (New)
         function downloadBackup() {
-            // No confirmation needed for a download
-            window.location.href = "{{ url_for('backup_api') }}";  // Initiate the download
+            window.location.href = "{{ url_for('backup_api') }}";
+        }
+        function uploadBackup() {
+            var fileInput = document.getElementById('backup_file');
+            var file = fileInput.files[0];
+            if (!file) {
+                Swal.fire("Error!", "Please select a file to upload.", "error");
+                return;
+            }
+
+            if (file.name.split('.').pop() !== 'zip') {
+               Swal.fire("Error!", "Only zip file.", "error");
+               return;
+            }
+
+
+            confirmAction("upload the backup", function() {
+            var formData = new FormData();
+            formData.append('file', file);
+
+            var progressBar = document.getElementById('backup_progress_bar');
+            var progressContainer = progressBar.parentElement;
+            var statusDiv = document.getElementById('backup_status');
+
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressBar.setAttribute('aria-valuenow', 0);
+            statusDiv.innerText = 'Uploading...';
+
+            $.ajax({
+                url: "{{ url_for('restore_api') }}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = (evt.loaded / evt.total) * 100;
+                            progressBar.style.width = percentComplete + '%';
+                            progressBar.setAttribute('aria-valuenow', percentComplete);
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(response) {
+                    statusDiv.innerText = 'Backup restored successfully!';
+                    statusDiv.className = 'mt-2 text-success';
+                    Swal.fire("Success!", "Backup restored successfully!", "success").then(() => {
+                            location.reload();
+                        });
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    statusDiv.innerText = 'Error restoring backup.';
+                    statusDiv.className = 'mt-2 text-danger';
+                     Swal.fire("Error!", xhr.responseJSON.detail, "error");
+                    console.error(error);
+                },
+                 complete: function() {
+                    setTimeout(function(){ progressContainer.style.display = 'none'; }, 1000);
+                }
+            });
+          });
         }
 
 
-        // Attach event listeners
+
         $("#telegram_start").on("click", startTelegram);
         $("#telegram_stop").on("click", stopTelegram);
         $("#singbox_start").on("click", startSingbox);
@@ -568,9 +677,9 @@
         $("#port_change").on("click", changePort);
         $("#sni_change").on("click", changeSNI);
         $("#ip_change").on("click", saveIP);
-        $("#download_backup").on("click", downloadBackup); // New backup button
+        $("#download_backup").on("click", downloadBackup);
+        $("#upload_backup").on("click", uploadBackup);
 
-        // Input event listeners for real-time validation
         $('#singbox_domain, #normal_domain, #sni_domain').on('input', function () {
             if (isValidDomain($(this).val())) {
                 $(this).removeClass('is-invalid');
@@ -602,7 +711,7 @@
             }
         });
         $('#telegram_api_token, #telegram_admin_id').on('input', function () {
-            if ($(this).val().trim() !== "") {  // Basic check for non-empty
+            if ($(this).val().trim() !== "") {
                 $(this).removeClass('is-invalid');
             } else {
                 $(this).addClass('is-invalid');

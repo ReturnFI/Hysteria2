@@ -1,3 +1,12 @@
-### Web Panel
-1. Enhance user management with multi-select, filters, validation and UI improvements
-2. Add input validation to settings
+
+### 🎉 **Release v1.2.0** 🎉  
+
+🔹 **New Features:**  
+- 🗄️ Added Backup Restore API & CLI  
+- 💾 Implemented Backup & Restore in the web panel  
+- 🎨 Enhanced Normal-Sub UI & data display  
+
+🔹 **Fixes & Improvements:**  
+- 🌐 Fixed IPv4/IPv6 URI handling in Normal-Sub  
+- 🔧 Improved `/restore` API method  
+- 🔑 Fixed permission issues  

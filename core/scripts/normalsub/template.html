@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hysteria2 Subscription</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/pulse/bootstrap.min.css" id="theme-link">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        body.dark-mode {
+            background-color: #343a40;
+            color: white;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.075);
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+        .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+        .card.dark-mode {
+
+             background-color: #3d4852;
+             color: #ffffff; 
+             box-shadow: 0 0.25rem 0.5rem rgba(255, 255, 255, 0.075); 
+        }
+        .card.dark-mode:hover {
+          
+             box-shadow: 0 0.5rem 1rem rgba(255,255,255, 0.15);
+        }
+        .card-header {
+            font-weight: bold;
+            color: #fff; 
+            background-color: #5e72e4; 
+             /* border-bottom: 1px solid #5e72e4; */
+             transition: background-color 0.3s ease;
+             padding: 1rem 1.25rem; 
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .card-header.dark-mode {
+            color: #fff;
+            background-color: #5a6a7f;
+             /* border-bottom: 1px solid #5a6a7f; */
+        }
+
+        .qrcode {
+            max-width: 200px;
+            margin: 10px auto;
+            display: block;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .btn-primary {
+             color: #fff;
+            background-color: #5e72e4;
+            border-color: #5e72e4;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #324cdd;
+            border-color: #324cdd;
+        }
+        .btn-primary.dark-mode {
+              color: #fff;
+              background-color: #5a6a7f;
+              border-color:  #5a6a7f;
+
+          }
+        .btn-primary.dark-mode:hover {
+            
+            background-color:  #6d7d94;
+             border-color:  #6d7d94;
+          }
+
+         .btn-info {
+           color: #fff;
+           background-color: #17a2b8;
+           border-color: #17a2b8;
+           transition: background-color 0.3s ease, border-color 0.3s ease;
+         }
+          .btn-info:hover{
+              background-color: #117a8b;
+               border-color: #117a8b;
+
+          }
+          .btn-info.dark-mode{
+               color: #fff;
+                background-color: #38b2ac;
+               border-color: #38b2ac;
+           }
+           .btn-info.dark-mode:hover {
+             background-color: #4ecdc4;
+              border-color: #4ecdc4;
+           }
+        .tooltip-inner {
+            max-width: 300px;
+            text-align: left;
+        }
+        #loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 1000;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: #5e72e4;
+        }
+
+        .row {
+            margin-bottom: 20px;
+        }
+        .col-md-4 {
+            padding: 15px;
+        }
+        h5 {
+            color: #5e72e4;
+            margin-top: 15px;
+            font-weight: 600;
+
+        }
+        h5.dark-mode{
+             color:  #ffffff;
+         }
+        .card-text {
+            font-size: 1.1em;
+            color: #333;
+        }
+         .card-text.dark-mode{
+                color: #f8f9fa;
+         }
+    </style>
+</head>
+<body>
+    <div id="loading-indicator">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div class="container">
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-light" id="dark-mode-toggle">
+                <i id="theme-icon" class="fas fa-sun"></i>
+            </button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-user"></i> Username
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ username }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar"></i> Upload + Download / Total
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text" data-toggle="tooltip" data-placement="top" title="Total Data Usage: {{ usage_raw }}">
+                            {{ usage }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-calendar-alt"></i> Expiration Date
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ expiration_date }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-qrcode"></i> QR Codes
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h5>Subscription Link</h5>
+                                <img src="{{ sublink_qrcode }}" alt="Subscription QR Code" class="qrcode">
+                                <button class="btn btn-primary" onclick="copyToClipboard('{{ sub_link }}')"><i class="fas fa-copy"></i> Copy</button>
+                                <a href="{{ sub_link }}" class="btn btn-info" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Open Link</a>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>IPv4 URI</h5>
+                                <img src="{{ ipv4_qrcode }}" alt="IPv4 QR Code" class="qrcode">
+                                <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv4_uri }}')"><i class="fas fa-copy"></i> Copy</button>
+                                <a href="{{ ipv4_uri }}" class="btn btn-info" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Open Link</a>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>IPv6 URI</h5>
+                                <img src="{{ ipv6_qrcode }}" alt="IPv6 QR Code" class="qrcode">
+                                <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv6_uri }}')"><i class="fas fa-copy"></i> Copy</button>
+                                <a href="{{ ipv6_uri }}" class="btn btn-info" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Open Link</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+        function copyToClipboard(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("Copy");
+            textArea.remove();
+            alert('URI copied to clipboard!');
+        }
+
+        function showLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'block';
+        }
+
+        function hideLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'none';
+        }
+
+        window.addEventListener('load', hideLoadingIndicator);
+
+        const themeToggle = document.getElementById('dark-mode-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeLink = document.getElementById('theme-link');
+        let darkMode = localStorage.getItem('dark-mode');
+
+        const enableDarkMode = () => {
+
+            document.body.classList.add('dark-mode');
+            document.querySelectorAll('.card').forEach(card => card.classList.add('dark-mode'));
+            document.querySelectorAll('.card-header').forEach(header => header.classList.add('dark-mode'));
+            document.querySelectorAll('.btn-primary').forEach(button => button.classList.add('dark-mode'));
+            document.querySelectorAll('.btn-info').forEach(button => button.classList.add('dark-mode'));
+             document.querySelectorAll('h5').forEach(button => button.classList.add('dark-mode'));
+             document.querySelectorAll('.card-text').forEach(button => button.classList.add('dark-mode'));
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+            themeLink.href = "https://bootswatch.com/4/darkly/bootstrap.min.css";
+            localStorage.setItem('dark-mode', 'enabled');
+        }
+
+        const disableDarkMode = () => {
+            document.body.classList.remove('dark-mode');
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('dark-mode'));
+             document.querySelectorAll('.card-header').forEach(header => header.classList.remove('dark-mode'));
+             document.querySelectorAll('.btn-primary').forEach(button => button.classList.remove('dark-mode'));
+             document.querySelectorAll('.btn-info').forEach(button => button.classList.remove('dark-mode'));
+            document.querySelectorAll('h5').forEach(button => button.classList.remove('dark-mode'));
+            document.querySelectorAll('.card-text').forEach(button => button.classList.remove('dark-mode'));
+
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+            themeLink.href = "https://bootswatch.com/4/pulse/bootstrap.min.css";
+            localStorage.setItem('dark-mode', null);
+        }
+
+        if (darkMode === 'enabled') {
+            enableDarkMode();
+        }
+
+        themeToggle.addEventListener('click', () => {
+            darkMode = localStorage.getItem('dark-mode');
+            if (darkMode !== 'enabled') {
+                enableDarkMode();
+            } else {
+                disableDarkMode();
+            }
+        });
+         showLoadingIndicator();
+    </script>
+</body>
+</html>

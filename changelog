@@ -1,3 +1,4 @@
-### Web Panel
-1. Enhance user management with multi-select, filters, validation and UI improvements
-2. Add input validation to settings
+1. Added Backup Restore API and CLI
+2. Implemented Backup and Restore feature in the web panel
+3. Improved Normal-Sub page template display in the browser
+4. Fixed permission issues and improved API methods

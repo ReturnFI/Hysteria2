@@ -145,6 +145,12 @@
          .card-text.dark-mode{
                 color: #f8f9fa;
          }
+
+        .uri-unavailable {
+           color: #777;
+           text-align: center;
+           margin: 10px auto;
+       }
     </style>
 </head>
 <body>
@@ -174,7 +180,7 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-chart-bar"></i> Upload + Download / Total
+                        <i class="fas fa-chart-bar"></i> Used / Total
                     </div>
                     <div class="card-body">
                         <p class="card-text" data-toggle="tooltip" data-placement="top" title="Total Data Usage: {{ usage_raw }}">
@@ -211,15 +217,23 @@
                             </div>
                             <div class="col-md-4">
                                 <h5>IPv4 URI</h5>
-                                <img src="{{ ipv4_qrcode }}" alt="IPv4 QR Code" class="qrcode">
-                                <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv4_uri }}')"><i class="fas fa-copy"></i> Copy</button>
-                                <a href="{{ ipv4_uri }}" class="btn btn-info" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Open Link</a>
+                                {% if ipv4_qrcode %}
+                                    <img src="{{ ipv4_qrcode }}" alt="IPv4 QR Code" class="qrcode">
+                                    <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv4_uri }}')"><i class="fas fa-copy"></i> Copy</button>
+                                    <a href="{{ ipv4_uri }}" class="btn btn-info" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Open Link</a>
+                                {% else %}
+                                    <p class="uri-unavailable">IPv4 URI not available</p>
+                                {% endif %}
                             </div>
                             <div class="col-md-4">
                                 <h5>IPv6 URI</h5>
-                                <img src="{{ ipv6_qrcode }}" alt="IPv6 QR Code" class="qrcode">
-                                <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv6_uri }}')"><i class="fas fa-copy"></i> Copy</button>
-                                <a href="{{ ipv6_uri }}" class="btn btn-info" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Open Link</a>
+                                {% if ipv6_qrcode %}
+                                    <img src="{{ ipv6_qrcode }}" alt="IPv6 QR Code" class="qrcode">
+                                    <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv6_uri }}')"><i class="fas fa-copy"></i> Copy</button>
+                                    <a href="{{ ipv6_uri }}" class="btn btn-info" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Open Link</a>
+                                {% else %}
+                                    <p class="uri-unavailable">IPv6 URI not available</p>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

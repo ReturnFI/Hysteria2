@@ -134,8 +134,10 @@ async def get_template_context(username, user_agent):
 
         ipv4_uri, ipv6_uri = get_uris(username)
         sub_link = f"https://{DOMAIN}:{PORT}/sub/normal/{username}"
-        ipv4_qrcode = generate_qrcode_base64(ipv4_uri)
-        ipv6_qrcode = generate_qrcode_base64(ipv6_uri)
+
+        # Generate QR codes only if URIs are available
+        ipv4_qrcode = generate_qrcode_base64(ipv4_uri) if ipv4_uri else None
+        ipv6_qrcode = generate_qrcode_base64(ipv6_uri) if ipv6_uri else None
         sublink_qrcode = generate_qrcode_base64(sub_link)
 
 
@@ -185,7 +187,7 @@ def get_user_info(username):
 
 def get_user_uri(username, user_agent):
     """
-    The original function, but it's only used when the request doesn't accept HTML.
+    Returns the URI for the user, adapting the output based on the User-Agent.
     """
     try:
         user_info = get_user_info(username)
@@ -204,27 +206,21 @@ def get_user_uri(username, user_agent):
             expiration_timestamp = 0
 
         # Get URI
-        command = [
-            'python3',
-            '/etc/hysteria/core/cli.py',
-            'show-user-uri',
-            '-u', username,
-            '-a'
-        ]
-        safe_command = [shlex.quote(arg) for arg in command]
-        output = subprocess.check_output(safe_command).decode().strip()
-        output = re.sub(r'IPv4:\s*', '', output)
-        output = re.sub(r'IPv6:\s*', '', output)
+        ipv4_uri, ipv6_uri = get_uris(username)
+
+        # Choose the appropriate URI based on availability.  Prioritize IPv6 if available.
+        output_uri = ipv6_uri if ipv6_uri else (ipv4_uri if ipv4_uri else "No URI available")
+
 
         if "v2ray" in user_agent and "ng" in user_agent:
-            match = re.search(r'pinSHA256=sha256/([^&]+)', output)
+            match = re.search(r'pinSHA256=sha256/([^&]+)', output_uri)
             if match:
                 base64_pin = match.group(1)
                 try:
                     decoded_pin = base64.b64decode(base64_pin)
                     hex_pin = ':'.join(['{:02X}'.format(byte) for byte in decoded_pin])
 
-                    output = output.replace(f'pinSHA256=sha256/{base64_pin}', f'pinSHA256={hex_pin}')
+                    output_uri = output_uri.replace(f'pinSHA256=sha256/{base64_pin}', f'pinSHA256={hex_pin}')
                 except Exception as e:
                     print(f"Error processing pinSHA256: {e}")
 
@@ -233,7 +229,7 @@ def get_user_uri(username, user_agent):
         )
 
         profile_lines = f"//profile-title: {username}-Hysteria2 🚀\n//profile-update-interval: 1\n"
-        output = profile_lines + subscription_info + output
+        output = profile_lines + subscription_info + output_uri
 
         return output
     except subprocess.CalledProcessError:
@@ -245,7 +241,7 @@ def get_user_uri(username, user_agent):
 
 def get_uris(username):
     """
-    Gets the IPv4 and IPv6 URIs for a user.
+    Gets the IPv4 and IPv6 URIs for a user, handling cases where one or both might be missing.
     """
     try:
         command = [
@@ -257,10 +253,16 @@ def get_uris(username):
         ]
         safe_command = [shlex.quote(arg) for arg in command]
         output = subprocess.check_output(safe_command).decode().strip()
-        ipv4_uri = re.search(r'IPv4:\s*(.*)', output).group(1).strip()
-        ipv6_uri = re.search(r'IPv6:\s*(.*)', output).group(1).strip()
+
+        # Use regex to find IPv4 and IPv6 URIs, handling cases where they might not exist.
+        ipv4_match = re.search(r'IPv4:\s*(.*)', output)
+        ipv6_match = re.search(r'IPv6:\s*(.*)', output)
+
+        ipv4_uri = ipv4_match.group(1).strip() if ipv4_match else None
+        ipv6_uri = ipv6_match.group(1).strip() if ipv6_match else None
 
         return ipv4_uri, ipv6_uri
+
     except subprocess.CalledProcessError as e:
         print(f"Error executing show-user-uri command: {e}")
         raise

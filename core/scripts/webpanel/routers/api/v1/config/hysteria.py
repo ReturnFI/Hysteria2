@@ -183,7 +183,7 @@ async def backup_api():
         raise HTTPException(status_code=500, detail=f'Error: {str(e)}')
 
 
-@router.get('/restore', response_model=DetailResponse, summary='Restore Hysteria2 Configuration')
+@router.post('/restore', response_model=DetailResponse, summary='Restore Hysteria2 Configuration')
 async def restore_api(f: UploadFile = File(...)):
     try:
         dst_dir_path = '/opt/hysbackup/'  # TODO: get this path from .env

@@ -1,4 +1,12 @@
-1. Added Backup Restore API and CLI
-2. Implemented Backup and Restore feature in the web panel
-3. Improved Normal-Sub page template display in the browser
-4. Fixed permission issues and improved API methods
+
+### 🎉 **Release v1.2.0** 🎉  
+
+🔹 **New Features:**  
+- 🗄️ Added Backup Restore API & CLI  
+- 💾 Implemented Backup & Restore in the web panel  
+- 🎨 Enhanced Normal-Sub UI & data display  
+
+🔹 **Fixes & Improvements:**  
+- 🌐 Fixed IPv4/IPv6 URI handling in Normal-Sub  
+- 🔧 Improved `/restore` API method  
+- 🔑 Fixed permission issues  

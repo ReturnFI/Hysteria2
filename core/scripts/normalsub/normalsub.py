@@ -346,8 +346,8 @@ async def handle_404(request: web.Request) -> web.Response:
 
 if __name__ == '__main__':
     app = web.Application(middlewares=[rate_limit_middleware])
-    app.add_routes([web.get('/sub/{username}', handle)])
-    app.router.add_route('*', '/sub/{tail:.*}', handle_404)
+    app.add_routes([web.get('/sub/normal/{username}', handle)])
+    app.router.add_route('*', '/sub/normal/{tail:.*}', handle_404)
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ssl_context.load_cert_chain(certfile=CERTFILE, keyfile=KEYFILE)
     ssl_context.set_ciphers('ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384')

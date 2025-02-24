@@ -1,0 +1,35 @@
+name: 💡 Suggest a New Feature
+description: Share your idea to make this project better
+title: "[Feature]: "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Feature Suggestion
+        Thanks for sharing your idea! Let us know what you'd like to see added.
+  - type: textarea
+    id: what-feature
+    attributes:
+      label: What would you like us to add?
+      description: Describe your idea and what problem it solves
+      placeholder: "Example: Add a button to generate secure passwords automatically"
+    validations:
+      required: true
+  - type: textarea
+    id: why-helpful
+    attributes:
+      label: How would this help users?
+      description: Tell us how you and others would use this feature
+      placeholder: "Example: It would make creating secure accounts easier and faster"
+    validations:
+      required: true
+  - type: textarea
+    id: any-other-thoughts
+    attributes:
+      label: Any other thoughts? (Optional)
+      description: Share any other ideas, suggestions, or examples
+      placeholder: "Additional details, screenshots, or examples can be added here"
+    validations:
+      required: false

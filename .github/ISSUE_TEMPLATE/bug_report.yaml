@@ -1,0 +1,50 @@
+name: 🐛 Report a Problem
+description: Let us know about an issue you're experiencing
+title: "[Bug]: "
+labels: ["bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for letting us know about this issue! This information will help us fix it quickly.
+  - type: dropdown
+    id: os
+    attributes:
+      label: What system are you using?
+      description: Select your operating system
+      options:
+        - Ubuntu 22.04
+        - Ubuntu 24.04
+        - Debian 11
+        - Debian 12
+    validations:
+      required: true
+  - type: input
+    id: hysteria2-version
+    attributes:
+      label: What version are you using?
+      description: The version number of Hysteria2 Panel
+      placeholder: "Example: 1.2.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What went wrong?
+      description: Tell us what happened and how to make it happen again
+      placeholder: |
+        Example:
+        1. I clicked on "Add User"
+        2. I filled out the form
+        3. When I clicked Save, I got an error message
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Any other helpful information?
+      description: Screenshots, error messages, or logs can be very helpful (optional)
+      placeholder: You can paste screenshots here or copy any error messages you saw
+    validations:
+      required: false

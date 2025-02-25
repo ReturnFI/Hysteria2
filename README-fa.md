@@ -1,3 +1,15 @@
+<div align="center">
+
+[![Telegram](https://img.shields.io/badge/Telegram-Join%20Chat-26A5E4?logo=telegram&logoColor=white)](https://t.me/hysteria2_panel)
+[![Docs](https://img.shields.io/badge/Docs-Read%20Now-FFA500?logo=bookstack&logoColor=white)](https://returnfi.github.io/Hys2-docs/)
+[![Lang_Eglish](https://img.shields.io/badge/Language-English-009688?style=flat-square&logo=translate&logoColor=white)](README.md)
+
+[![Latest Release](https://img.shields.io/github/v/release/ReturnFI/Hysteria2?color=brightgreen&style=flat-square)](https://github.com/ReturnFI/Hysteria2/releases)
+[![License](https://img.shields.io/github/license/ReturnFI/Hysteria2?color=blueviolet&style=flat-square)](LICENSE)  
+
+[![Made with ❤️](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red?style=flat-square)](#)
+
+</div>
 
 ---
 
@@ -123,11 +135,6 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh
 ---
 
 <p align="center">ساخته شده با ❤️</p>
-<div align="center">
-  
-[![آخرین نسخه](https://img.shields.io/github/v/release/ReturnFI/Hysteria2?style=flat-square)](https://github.com/ReturnFI/Hysteria2/releases)
-[![مجوز](https://img.shields.io/github/license/ReturnFI/Hysteria2?style=flat-square)](LICENSE) 
-</div>
 </div>
 
 

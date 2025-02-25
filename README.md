@@ -1,6 +1,16 @@
-<div dir="ltr">
+<div align="center">
 
-[**![Lang_farsi](https://user-images.githubusercontent.com/125398461/234186932-52f1fa82-52c6-417f-8b37-08fe9250a55f.png) &nbsp;فارسی**](README-fa.md)
+[![Telegram](https://img.shields.io/badge/Telegram-Join%20Chat-26A5E4?logo=telegram&logoColor=white)](https://t.me/hysteria2_panel)
+[![Docs](https://img.shields.io/badge/Docs-Read%20Now-FFA500?logo=bookstack&logoColor=white)](https://returnfi.github.io/Hys2-docs/)
+[![Lang_Farsi](https://img.shields.io/badge/Language-Persian-009688?style=flat-square&logo=translate&logoColor=white)](README-fa.md)
+
+[![Latest Release](https://img.shields.io/github/v/release/ReturnFI/Hysteria2?color=brightgreen&style=flat-square)](https://github.com/ReturnFI/Hysteria2/releases)
+[![License](https://img.shields.io/github/license/ReturnFI/Hysteria2?color=blueviolet&style=flat-square)](LICENSE)  
+
+[![Made with ❤️](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red?style=flat-square)](#)
+
+</div>
+
 
 # 🚀 Hysteria2 Management Shell Script 🚀
 
@@ -303,8 +313,3 @@ This tool is provided for educational and research purposes only. Users are resp
 ---
 
 <p align="center">Made with ❤️</p>
-<div align="center">
-  
-[![Latest Release](https://img.shields.io/github/v/release/ReturnFI/Hysteria2?style=flat-square)](https://github.com/ReturnFI/Hysteria2/releases)
-[![License](https://img.shields.io/github/license/ReturnFI/Hysteria2?style=flat-square)](LICENSE) 
-</div>

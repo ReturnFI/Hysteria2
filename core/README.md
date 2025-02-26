@@ -2,6 +2,8 @@
 
 This document provides a comprehensive guide to using the `cli.py` script, a command-line interface for managing Hysteria2 and related services.  It covers installation, user management, advanced configurations, and troubleshooting. The commands are organized into sections for clarity. Each command is described with its options, arguments, and expected behavior.
 
+---
+
 ## Table of Contents
 1.  [Hysteria2 Management](#hysteria2-management)
     *   [install-hysteria2](#install-hysteria2)
@@ -42,11 +44,14 @@ This document provides a comprehensive guide to using the `cli.py` script, a com
     *   [get-webpanel-services-status](#get-webpanel-services-status)
     *   [get-services-status](#get-services-status)
 
+
+---
+
 ## Hysteria2 Management
 
 This section covers commands related to installing, updating, and configuring the core Hysteria2 service.
 
-### `install-hysteria2`
+### install-hysteria2
 
 Installs and configures Hysteria2.
 
@@ -63,7 +68,9 @@ Installs and configures Hysteria2.
 ./cli.py install-hysteria2 -p 443 -s example.com
 ```
 
-### `uninstall-hysteria2`
+---
+
+### uninstall-hysteria2
 
 Uninstalls Hysteria2.
 
@@ -71,7 +78,9 @@ Uninstalls Hysteria2.
 ./cli.py uninstall-hysteria2
 ```
 
-### `update-hysteria2`
+---
+
+### update-hysteria2
 
 Updates the Hysteria2 core to the latest version.
 
@@ -79,7 +88,9 @@ Updates the Hysteria2 core to the latest version.
 ./cli.py update-hysteria2
 ```
 
-### `restart-hysteria2`
+---
+
+### restart-hysteria2
 
 Restarts the Hysteria2 service.
 
@@ -87,7 +98,9 @@ Restarts the Hysteria2 service.
 ./cli.py restart-hysteria2
 ```
 
-### `change-hysteria2-port`
+---
+
+### change-hysteria2-port
 
 Changes the port Hysteria2 listens on.
 
@@ -103,7 +116,9 @@ Changes the port Hysteria2 listens on.
 ./cli.py change-hysteria2-port -p 8080
 ```
 
-### `change-hysteria2-sni`
+---
+
+### change-hysteria2-sni
 
 Changes the SNI used by Hysteria2.
 
@@ -119,7 +134,9 @@ Changes the SNI used by Hysteria2.
 ./cli.py change-hysteria2-sni -s mynew.sni.com
 ```
 
-### `backup-hysteria`
+---
+
+### backup-hysteria
 Back up the current hysteria configuration.
 ```bash
 ./cli.py backup-hysteria
@@ -127,7 +144,9 @@ Back up the current hysteria configuration.
 Creates a zip file containing your configuration files in the `/etc/hysteria/` directory.
 
 
-### `restore-hysteria2`
+---
+
+### restore-hysteria2
 
 Restores Hysteria configuration from a backup ZIP file.
 
@@ -141,12 +160,14 @@ Restores Hysteria configuration from a backup ZIP file.
 ./cli.py restore-hysteria2 /path/to/backup.zip
 ```
 
+---
+
 
 ## User Management
 
 This section details commands for managing Hysteria2 users.
 
-### `list-users`
+### list-users
 
 Lists all configured Hysteria2 users.
 
@@ -155,7 +176,10 @@ Lists all configured Hysteria2 users.
 ```
 The output will be in JSON format
 
-### `get-user`
+---
+
+
+### get-user
 
 Retrieves detailed information about a specific user.
 
@@ -172,7 +196,9 @@ Retrieves detailed information about a specific user.
 ```
 The output will be in JSON format
 
-### `add-user`
+---
+
+### add-user
 
 Adds a new Hysteria2 user.
 
@@ -192,7 +218,9 @@ Adds a new Hysteria2 user.
 ./cli.py add-user -u newuser -t 100 -e 30 -p mysecretpassword -c 2023-12-25
 ```
 
-### `edit-user`
+---
+
+### edit-user
 
 Edits an existing Hysteria2 user's settings.
 
@@ -214,7 +242,9 @@ Edits an existing Hysteria2 user's settings.
 ./cli.py edit-user -u testuser -nt 50 -b
 ```
 
-### `reset-user`
+---
+
+### reset-user
 
 Resets a user's traffic statistics.
 
@@ -224,7 +254,9 @@ Resets a user's traffic statistics.
 
 *    **`--username` / `-u` (Required):** The username to reset.
 
-### `remove-user`
+---
+
+### remove-user
 
 Removes a Hysteria2 user.
 
@@ -234,7 +266,9 @@ Removes a Hysteria2 user.
 
 *   **`--username` / `-u` (Required):** The username to remove.
 
-### `show-user-uri`
+---
+
+### show-user-uri
 
 Generates and displays the Hysteria2 URI for a user, optionally as a QR code.
 
@@ -254,11 +288,13 @@ Generates and displays the Hysteria2 URI for a user, optionally as a QR code.
 ./cli.py show-user-uri -u testuser -qr -ip 6
 ```
 
+---
+
 ## Server Management
 
 This section covers server-related commands.
 
-### `traffic-status`
+### traffic-status
 
 Displays the current traffic usage statistics.
 
@@ -266,7 +302,9 @@ Displays the current traffic usage statistics.
 ./cli.py traffic-status
 ```
 
-### `server-info`
+---
+
+### server-info
 
 Displays server information.
 
@@ -275,7 +313,9 @@ Displays server information.
 ```
 The output will be in JSON format
 
-### `manage_obfs`
+---
+
+### manage_obfs
 
 Manages Obfuscation (obfs) settings in the Hysteria2 configuration.
 
@@ -288,7 +328,9 @@ Manages Obfuscation (obfs) settings in the Hysteria2 configuration.
 *   **`--generate` / `-g` (Optional, Flag):** Generates a new obfs configuration.
 *  **Mutually Exclusive**: you should supply only one of `--remove` or `--generate`. Supplying Neither will print an error.
 
-### `ip-address`
+---
+
+### ip-address
 
 Manages the server's IP addresses stored in `.configs.env`.
 
@@ -304,7 +346,9 @@ Manages the server's IP addresses stored in `.configs.env`.
 *   **`-6` / `--ipv6` (Optional):** Specifies a new IPv6 address (requires `--edit`).
     * **With Edit** You *must* supply at least one of `--ipv4` or `--ipv6`.
 
-### `update-geo`
+---
+
+### update-geo
 
 Updates GeoIP and GeoSite data files.
 
@@ -320,7 +364,9 @@ Updates GeoIP and GeoSite data files.
 ./cli.py update-geo -c china
 ```
 
-### `masquerade`
+---
+
+### masquerade
 
 Manages the masquerade settings in the Hysteria2 configuration.
 
@@ -339,11 +385,15 @@ Manages the masquerade settings in the Hysteria2 configuration.
 ./cli.py masquerade -e example.com
 ```
 
+---
+
+
 ## Advanced Menu
 
 This section describes commands that provide additional functionality.
 
-### `install-tcp-brutal`
+
+### install-tcp-brutal
 
 Installs TCP Brutal.
 
@@ -351,7 +401,9 @@ Installs TCP Brutal.
 ./cli.py install-tcp-brutal
 ```
 
-### `install-warp`
+---
+
+### install-warp
 
 Installs WARP.
 
@@ -359,7 +411,9 @@ Installs WARP.
 ./cli.py install-warp
 ```
 
-### `uninstall-warp`
+---
+
+### uninstall-warp
 
 Uninstalls WARP.
 
@@ -367,7 +421,9 @@ Uninstalls WARP.
 ./cli.py uninstall-warp
 ```
 
-### `configure-warp`
+---
+
+### configure-warp
 
 Configures WARP settings.
 
@@ -388,7 +444,9 @@ Configures WARP settings.
 ./cli.py configure-warp -w "warp plus" -k YOUR_WARP_PLUS_KEY
 ```
 
-### `warp-status`
+---
+
+### warp-status
 
 Displays the current WARP status.
 
@@ -396,7 +454,10 @@ Displays the current WARP status.
 ./cli.py warp-status
 ```
 The output will be in JSON format
-### `telegram`
+
+---
+
+### telegram
 
 Manages the Telegram bot integration.
 
@@ -414,7 +475,9 @@ Manages the Telegram bot integration.
 ./cli.py telegram -a start -t YOUR_BOT_TOKEN -aid 123456789,987654321
 ```
 
-### `singbox`
+---
+
+### singbox
 
 Manages the Singbox service.
 
@@ -426,7 +489,9 @@ Manages the Singbox service.
 *   **`--domain` / `-d` (Required for `start`):**  The domain name for SSL.
 *   **`--port` / `-p` (Required for `start`):** The port number for the Singbox service.
 
-### `normal-sub`
+---
+
+### normal-sub
 
 Manages the Normal-Sub service.
 
@@ -438,7 +503,9 @@ Manages the Normal-Sub service.
 *   **`--domain` / `-d` (Required for `start`):**  The domain name for SSL.
 *   **`--port` / `-p` (Required for `start`):** The port number for the service.
 
-### `webpanel`
+---
+
+### webpanel
 Manages the Web panel service.
 
 ```bash
@@ -458,26 +525,33 @@ Manages the Web panel service.
      ./cli.py webpanel -a start  -d example.com -p 8080 -au admin -ap 1234
     ```
 
-### `get-webpanel-url`
+---
+
+### get-webpanel-url
 Gets the web panel URL
 ```bash
 ./cli.py get-webpanel-url
 ```
 
-### `get-webpanel-api-token`
+---
+
+### get-webpanel-api-token
 ```bash
 ./cli.py get-webpanel-api-token
 ```
 
-### `get-webpanel-services-status`
+---
+
+### get-webpanel-services-status
   ```bash
    ./cli.py get-webpanel-services-status
   ```
 
-### `get-services-status`
+---
+
+### get-services-status
 
 Displays the status of all managed services (Active or Inactive).
   ```bash
     ./cli.py get-services-status
   ```
-

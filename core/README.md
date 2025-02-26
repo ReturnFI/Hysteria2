@@ -41,7 +41,6 @@ This document provides a comprehensive guide to using the `cli.py` script, a com
     *   [get-webpanel-api-token](#get-webpanel-api-token)
     *   [get-webpanel-services-status](#get-webpanel-services-status)
     *   [get-services-status](#get-services-status)
-5. [Running the script](#running-the-script)
 
 ## Hysteria2 Management
 

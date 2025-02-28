@@ -1,2 +1,11 @@
-**New Features:**  
-- 🌐 **Sing-box Integration with Normal Subscriptions:** Added support for managing sing-box configurations through normal subscriptions.
+🚨 Attention Please 🚨   
+⚠️ If you are using normal sub-link, you will need to re-link to your user's after this update. ⚠️      
+
+🔧 New Features:  
+- feat: Implement subpath support for normal subscriptions 🌐  
+- Add SUBPATH to normalsub.env if missing 🔑  
+- fix: Enforce strict subpath validation and URL safety 🔒
+
+🖥️ Main Menu (SSH):  
+- Added an option to change SUBPATH ⚙️  
+- Use printf to ensure equal spacing 🧮

@@ -532,6 +532,7 @@ normalsub_handler() {
     while true; do
         echo -e "${cyan}1.${NC} Start Normal-Sub service"
         echo -e "${red}2.${NC} Stop Normal-Sub service"
+        echo -e "${yellow}3.${NC} Change SUBPATH"
         echo "0. Back"
         read -p "Choose an option: " option
 
@@ -569,6 +570,25 @@ normalsub_handler() {
                 else
                     python3 $CLI_PATH normal-sub -a stop
                 fi
+                ;;
+            3)
+                if ! systemctl is-active --quiet hysteria-normal-sub.service; then
+                    echo "Error: The hysteria-normal-sub.service is not active. Start the service first."
+                    continue
+                fi
+
+                while true; do
+                    read -e -p "Enter new SUBPATH (Must include Uppercase, Lowercase, and Numbers): " subpath
+                    if [[ -z "$subpath" ]]; then
+                        echo "Error: SUBPATH cannot be empty. Please try again."
+                    elif ! [[ "$subpath" =~ [A-Z] ]] || ! [[ "$subpath" =~ [a-z] ]] || ! [[ "$subpath" =~ [0-9] ]]; then
+                        echo "Error: SUBPATH must include at least one uppercase letter, one lowercase letter, and one number."
+                    else
+                        sed -i "s|^SUBPATH=.*|SUBPATH=${subpath}|" "$NORMALSUB_ENV"
+                        echo "SUBPATH updated successfully!"
+                        break
+                    fi
+                done
                 ;;
             0)
                 break
@@ -782,12 +802,14 @@ masquerade_handler() {
 # Function to display the main menu
 display_main_menu() {
     clear
-    tput setaf 7 ; tput setab 4 ; tput bold ; printf '%40s%s%-12s\n' "◇───────────ㅤ🚀ㅤWelcome To Hysteria2 Managementㅤ🚀ㅤ───────────◇" ; tput sgr0
+    tput setaf 7 ; tput setab 4 ; tput bold
+    echo -e "◇────────────────🚀 Welcome To Hysteria2 Management 🚀─────────────────◇"
+    tput sgr0
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
 
-    echo -e "${green}• OS: ${NC}$OS           ${green}• ARCH: ${NC}$ARCH"
-    echo -e "${green}• ISP: ${NC}$ISP         ${green}• CPU: ${NC}$CPU"
-    echo -e "${green}• IP: ${NC}$IP                ${green}• RAM: ${NC}$RAM"
+    printf "\033[0;32m• OS:  \033[0m%-25s \033[0;32m• ARCH:  \033[0m%-25s\n" "$OS" "$ARCH"
+    printf "\033[0;32m• ISP: \033[0m%-25s \033[0;32m• CPU:   \033[0m%-25s\n" "$ISP" "$CPU"
+    printf "\033[0;32m• IP:  \033[0m%-25s \033[0;32m• RAM:   \033[0m%-25s\n" "$IP" "$RAM"
 
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
         check_core_version

@@ -52,7 +52,7 @@ echo "Removing /etc/hysteria directory"
 rm -rf /etc/hysteria/
 
 echo "Cloning Hysteria2 repository"
-git clone https://github.com/ReturnFI/Hysteria2 /etc/hysteria
+git clone -b beta https://github.com/ReturnFI/Hysteria2 /etc/hysteria
 
 echo "Downloading geosite.dat and geoip.dat"
 wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
@@ -99,6 +99,22 @@ if [[ -z "$IP6" ]]; then
     echo "IP6 not found, fetching from ip.gs..."
     IP6=$(curl -s -6 ip.gs || echo "")
     echo "IP6=${IP6:-}" >> "$CONFIG_ENV"
+fi
+
+NORMALSUB_ENV="/etc/hysteria/core/scripts/normalsub/.env"
+
+if [[ -f "$NORMALSUB_ENV" ]]; then
+    echo "Checking if SUBPATH exists in $NORMALSUB_ENV..."
+    
+    if ! grep -q '^SUBPATH=' "$NORMALSUB_ENV"; then
+        echo "SUBPATH not found, generating a new one..."
+        SUBPATH=$(pwgen -s 32 1)
+        echo -e "\nSUBPATH=$SUBPATH" >> "$NORMALSUB_ENV"
+    else
+        echo "SUBPATH already exists, no changes made."
+    fi
+else
+    echo "$NORMALSUB_ENV not found. Skipping SUBPATH check."
 fi
 
 echo "Setting ownership and permissions"

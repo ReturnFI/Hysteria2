@@ -22,6 +22,7 @@ HYSTERIA_DOMAIN=$domain
 HYSTERIA_PORT=$port
 HYSTERIA_CERTFILE=$cert_dir/fullchain.pem
 HYSTERIA_KEYFILE=$cert_dir/privkey.pem
+SUBPATH=$(pwgen -s 32 1)
 EOL
 }
 

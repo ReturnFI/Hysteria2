@@ -13,7 +13,7 @@ from io import BytesIO
 
 from aiohttp import web
 from aiohttp.web_middlewares import middleware
-from urllib.parse import unquote, parse_qs, urlparse
+from urllib.parse import unquote, parse_qs, urlparse, urljoin
 from dotenv import load_dotenv
 import qrcode
 from jinja2 import Environment, FileSystemLoader
@@ -36,6 +36,7 @@ class AppConfig:
     rate_limit_window: int
     sni: str
     template_dir: str
+    subpath: str
 
 
 class RateLimiter:
@@ -177,6 +178,11 @@ class Utils:
                 return f"{size:.2f} {unit}"
             size /= 1024
         return f"{size:.2f} PB"
+
+    @staticmethod
+    def build_url(base: str, path: str) -> str:
+        """Constructs a URL, handling potential double slashes correctly."""
+        return urljoin(base, path)
 
 
 class HysteriaCLI:
@@ -426,8 +432,9 @@ class HysteriaServer:
         self.template_renderer = TemplateRenderer(self.config.template_dir, self.config)
 
         self.app = web.Application(middlewares=[self._rate_limit_middleware])
-        self.app.add_routes([web.get('/sub/normal/{username}', self.handle)])
-        self.app.router.add_route('*', '/sub/normal/{tail:.*}', self.handle_404)
+        self.app.add_routes([web.get(Utils.build_url('/{subpath}/sub/normal/', '{username}'), self.handle)])
+        self.app.router.add_route('*', '/{subpath:[^{}]+}/{tail:.*}', self.handle_404)
+        self.app.router.add_route('*', '/{tail:.*}', self.handle_404)
 
     def _load_config(self) -> AppConfig:
         """Loads application configuration from environment variables"""
@@ -435,6 +442,7 @@ class HysteriaServer:
         cert_file = os.getenv('HYSTERIA_CERTFILE')
         key_file = os.getenv('HYSTERIA_KEYFILE')
         port = int(os.getenv('HYSTERIA_PORT', '3326'))
+        subpath = os.getenv('SUBPATH', '').strip().strip("/")
         sni_file = '/etc/hysteria/.configs.env'
         singbox_template_path = '/etc/hysteria/core/scripts/normalsub/singbox.json'
         hysteria_cli_path = '/etc/hysteria/core/cli.py'
@@ -455,7 +463,8 @@ class HysteriaServer:
             rate_limit=rate_limit,
             rate_limit_window=rate_limit_window,
             sni=sni,
-            template_dir=template_dir
+            template_dir=template_dir,
+            subpath=subpath
         )
 
     def _load_sni_from_env(self, sni_file: str) -> str:
@@ -483,10 +492,10 @@ class HysteriaServer:
     async def handle(self, request: web.Request) -> web.Response:
         """Main request handler"""
         try:
+            # No need to extract subpath here; aiohttp handles it in the route
             username = Utils.sanitize_input(request.match_info.get('username', ''), r'^[a-zA-Z0-9_-]+$')
             if not username:
                 return web.Response(status=400, text="Error: Missing 'username' parameter.")
-
             user_agent = request.headers.get('User-Agent', '').lower()
 
             if any(browser in user_agent for browser in ['chrome', 'firefox', 'safari', 'edge', 'opera']):
@@ -527,11 +536,12 @@ class HysteriaServer:
         return web.Response(text=subscription, content_type='text/plain')
 
     async def _get_template_context(self, username: str) -> TemplateContext:
-        """Generates the context for HTML template rendering"""
+        """Generates the context for HTML template rendering, incorporating subpath"""
         user_info = self.hysteria_cli.get_user_info(username)
         ipv4_uri, ipv6_uri = self.hysteria_cli.get_uris(username)
 
-        sub_link = f"https://{self.config.domain}:{self.config.port}/sub/normal/{username}"
+        base_url = f"https://{self.config.domain}:{self.config.port}"
+        sub_link = Utils.build_url(base_url, f"/{self.config.subpath}/sub/normal/{username}")
         ipv4_qrcode = Utils.generate_qrcode_base64(ipv4_uri)
         ipv6_qrcode = Utils.generate_qrcode_base64(ipv6_uri)
         sublink_qrcode = Utils.generate_qrcode_base64(sub_link)

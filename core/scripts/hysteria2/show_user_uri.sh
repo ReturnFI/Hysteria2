@@ -19,7 +19,8 @@ get_normalsub_domain_and_port() {
         local domain port
         domain=$(grep -E '^HYSTERIA_DOMAIN=' "$NORMALSUB_ENV" | cut -d'=' -f2)
         port=$(grep -E '^HYSTERIA_PORT=' "$NORMALSUB_ENV" | cut -d'=' -f2)
-        echo "$domain" "$port"
+        subpath=$(grep -E '^SUBPATH=' "$NORMALSUB_ENV" | cut -d'=' -f2)
+        echo "$domain" "$port" "$subpath"
     else
         echo ""
     fi
@@ -145,9 +146,9 @@ show_uri() {
                     fi
                 fi
                 if [ "$generate_normalsub" = true ] && systemctl is-active --quiet hysteria-normal-sub.service; then
-                    read -r domain port < <(get_normalsub_domain_and_port)
+                    read -r domain port subpath < <(get_normalsub_domain_and_port)
                     if [ -n "$domain" ] && [ -n "$port" ]; then
-                        echo -e "\nNormal-SUB Sublink:\nhttps://$domain:$port/sub/normal/$username#Hysteria2\n"
+                        echo -e "\nNormal-SUB Sublink:\nhttps://$domain:$port/$subpath/sub/normal/$username#Hysteria2\n"
                     fi
                 fi
             else

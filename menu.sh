@@ -532,6 +532,7 @@ normalsub_handler() {
     while true; do
         echo -e "${cyan}1.${NC} Start Normal-Sub service"
         echo -e "${red}2.${NC} Stop Normal-Sub service"
+        echo -e "${yellow}3.${NC} Change SUBPATH"
         echo "0. Back"
         read -p "Choose an option: " option
 
@@ -569,6 +570,25 @@ normalsub_handler() {
                 else
                     python3 $CLI_PATH normal-sub -a stop
                 fi
+                ;;
+            3)
+                if ! systemctl is-active --quiet hysteria-normal-sub.service; then
+                    echo "Error: The hysteria-normal-sub.service is not active. Start the service first."
+                    continue
+                fi
+
+                while true; do
+                    read -e -p "Enter new SUBPATH (Must include Uppercase, Lowercase, and Numbers): " subpath
+                    if [[ -z "$subpath" ]]; then
+                        echo "Error: SUBPATH cannot be empty. Please try again."
+                    elif ! [[ "$subpath" =~ [A-Z] ]] || ! [[ "$subpath" =~ [a-z] ]] || ! [[ "$subpath" =~ [0-9] ]]; then
+                        echo "Error: SUBPATH must include at least one uppercase letter, one lowercase letter, and one number."
+                    else
+                        sed -i "s|^SUBPATH=.*|SUBPATH=${subpath}|" "$NORMALSUB_ENV"
+                        echo "SUBPATH updated successfully!"
+                        break
+                    fi
+                done
                 ;;
             0)
                 break

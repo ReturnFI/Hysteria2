@@ -130,16 +130,13 @@
 
     <script>
         $(function () {
-            // Dark Mode Toggle
             const darkModeToggle = $("#darkModeToggle");
             const darkModeIcon = $("#darkModeIcon");
-
-            // Check for saved preference in localStorage
             const isDarkMode = localStorage.getItem("darkMode") === "enabled";
+            
             setDarkMode(isDarkMode);
             updateIcon(isDarkMode);
-
-            // Toggle dark mode on click
+            
             darkModeToggle.on("click", function (e) {
                 e.preventDefault();
                 const enabled = $("body").hasClass("dark-mode");
@@ -147,23 +144,23 @@
                 setDarkMode(!enabled);
                 updateIcon(!enabled);
             });
-
-            // Function to set dark mode styles
+            
             function setDarkMode(enabled) {
+                $("body").toggleClass("dark-mode", enabled);
+                
                 if (enabled) {
-                    $("body").addClass("dark-mode");
+                    $(".main-header").addClass("navbar-dark").removeClass("navbar-light navbar-white");
+                    $(".card").addClass("bg-dark");
                 } else {
-                    $("body").removeClass("dark-mode");
+                    $(".main-header").addClass("navbar-white navbar-light").removeClass("navbar-dark");
+                    $(".card").removeClass("bg-dark");
                 }
             }
-
-            // Function to update the icon
+            
             function updateIcon(enabled) {
-                if (enabled) {
-                    darkModeIcon.removeClass("fa-moon").addClass("fa-sun");
-                } else {
-                    darkModeIcon.removeClass("fa-sun").addClass("fa-moon");
-                }
+                darkModeIcon
+                    .removeClass("fa-moon fa-sun")
+                    .addClass(enabled ? "fa-sun" : "fa-moon");
             }
         });
     </script>

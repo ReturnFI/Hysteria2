@@ -49,11 +49,18 @@ EOF
     fi
 
     if [ -f "$CONFIG_ENV" ]; then
-        sed -i "s/^SNI=.*/SNI=$sni/" "$CONFIG_ENV"
-        echo "SNI updated successfully in .config.env"
+
+        if grep -q "^SNI=" "$CONFIG_ENV"; then
+
+            sed -i "s/^SNI=.*$/SNI=$sni/" "$CONFIG_ENV"
+            echo "SNI updated successfully in $CONFIG_ENV"
+        else
+            echo "SNI=$sni" >> "$CONFIG_ENV"
+            echo "Added new SNI entry to $CONFIG_ENV"
+        fi
     else
         echo "SNI=$sni" > "$CONFIG_ENV"
-        echo "Created .config.env with new SNI."
+        echo "Created $CONFIG_ENV with new SNI."
     fi
 
     python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1

@@ -75,23 +75,30 @@ load_hysteria2_env() {
 load_hysteria2_ips() {
     if [ -f "$CONFIG_ENV" ]; then
         export $(grep -v '^#' "$CONFIG_ENV" | xargs)
-
-        if [[ -z "$IP4" || -z "$IP6" ]]; then
-            echo "Warning: IP4 or IP6 is not set in configs.env. Fetching from system..."
-            default_interface=$(ip route | grep default | awk '{print $5}')
-            IP4=$(ip addr show "$default_interface" | grep "inet " | awk '{print $2}' | cut -d '/' -f 1 | head -n 1)
-            IP6=$(ip addr show "$default_interface" | grep "inet6 " | awk '{print $2}' | grep -v "^fe80::" | cut -d '/' -f 1 | head -n 1)
-        fi
     else
-        echo "Error: configs.env file not found. Fetching IPs from system..."
-        default_interface=$(ip route | grep default | awk '{print $5}')
-        IP4=$(ip addr show "$default_interface" | grep "inet " | awk '{print $2}' | cut -d '/' -f 1 | head -n 1)
-        IP6=$(ip addr show "$default_interface" | grep "inet6 " | awk '{print $2}' | grep -v "^fe80::" | cut -d '/' -f 1 | head -n 1)
+        echo "Error: $CONFIG_ENV file not found. Creating a new one..."
     fi
+
+    default_interface=$(ip route | grep default | awk '{print $5}')
+
+    IP4=$(ip addr show "$default_interface" | grep "inet " | awk '{print $2}' | cut -d '/' -f 1 | head -n 1)
+    if [[ -z "$IP4" ]]; then
+        echo "Warning: Could not fetch local IPv4. Trying external service..."
+        IP4=$(curl -s -4 ip.sb)
+    fi
+    [[ -z "$IP4" ]] && IP4="None"  # Set to None if still empty
+
+    IP6=$(ip addr show "$default_interface" | grep "inet6 " | awk '{print $2}' | grep -v "^fe80::" | cut -d '/' -f 1 | head -n 1)
+    if [[ -z "$IP6" ]]; then
+        echo "Warning: Could not fetch local IPv6. Trying external service..."
+        IP6=$(curl -s -6 ip.sb)
+    fi
+    [[ -z "$IP6" ]] && IP6="None"  # Set to None if still empty
 
     echo "IP4=$IP4" > "$CONFIG_ENV"
     echo "IP6=$IP6" >> "$CONFIG_ENV"
 }
+
 
 
 # check_services() {

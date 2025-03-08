@@ -1,11 +1,3 @@
-🚨 Attention Please 🚨   
-⚠️ If you are using normal sub-link, you will need to re-link to your user's after this update. ⚠️      
-
-🔧 New Features:  
-- feat: Implement subpath support for normal subscriptions 🌐  
-- Add SUBPATH to normalsub.env if missing 🔑  
-- fix: Enforce strict subpath validation and URL safety 🔒
-
-🖥️ Main Menu (SSH):  
-- Added an option to change SUBPATH ⚙️  
-- Use printf to ensure equal spacing 🧮
+🛠️ Fix: Restart service to clear API traffic
+🌙 Fix: Dark mode is working properly now! Enjoy the dark side.
+⚙️ Update: The singbox configuration.

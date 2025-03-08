@@ -73,30 +73,95 @@ load_hysteria2_env() {
 }
 
 load_hysteria2_ips() {
+    IP4=""
+    IP6=""
+
     if [ -f "$CONFIG_ENV" ]; then
-        export $(grep -v '^#' "$CONFIG_ENV" | xargs)
+        IP4=$(grep -E "^IP4=" "$CONFIG_ENV" | cut -d '=' -f 2)
+        IP6=$(grep -E "^IP6=" "$CONFIG_ENV" | cut -d '=' -f 2)
+        
+        if [[ -z "$IP4" || -z "$IP6" ]]; then
+            # echo "Warning: IP4 or IP6 is not set in configs.env. Fetching from system..."
+            default_interface=$(ip route | grep default | awk '{print $5}')
+            
+            if [ -n "$default_interface" ]; then
+                if [ -z "$IP4" ]; then
+                    system_IP4=$(ip addr show "$default_interface" | grep "inet " | awk '{print $2}' | cut -d '/' -f 1 | head -n 1)
+                    if [ -n "$system_IP4" ]; then
+                        IP4="$system_IP4"
+                    else
+                        # echo "Attempting to fetch IPv4 from external service..."
+                        system_IP4=$(curl -s -4 ip.sb)
+                        [ -n "$system_IP4" ] && IP4="$system_IP4" || IP4="None"
+                    fi
+                fi
+                
+                if [ -z "$IP6" ]; then
+                    system_IP6=$(ip addr show "$default_interface" | grep "inet6 " | awk '{print $2}' | grep -v "^fe80::" | cut -d '/' -f 1 | head -n 1)
+                    if [ -n "$system_IP6" ]; then
+                        IP6="$system_IP6"
+                    else
+                        # echo "Attempting to fetch IPv6 from external service..."
+                        system_IP6=$(curl -s -6 ip.sb)
+                        [ -n "$system_IP6" ] && IP6="$system_IP6" || IP6="None"
+                    fi
+                fi
+            else
+                # echo "Warning: Could not determine default interface, trying external services..."
+                if [ -z "$IP4" ]; then
+                    system_IP4=$(curl -s -4 ip.sb)
+                    [ -n "$system_IP4" ] && IP4="$system_IP4" || IP4="None"
+                fi
+                if [ -z "$IP6" ]; then
+                    system_IP6=$(curl -s -6 ip.sb)
+                    [ -n "$system_IP6" ] && IP6="$system_IP6" || IP6="None"
+                fi
+            fi
+        fi
     else
-        echo "Error: $CONFIG_ENV file not found. Creating a new one..."
+        # echo "Error: configs.env file not found. Fetching IPs from system..."
+        default_interface=$(ip route | grep default | awk '{print $5}')
+        
+        if [ -n "$default_interface" ]; then
+            system_IP4=$(ip addr show "$default_interface" | grep "inet " | awk '{print $2}' | cut -d '/' -f 1 | head -n 1)
+            if [ -n "$system_IP4" ]; then
+                IP4="$system_IP4"
+            else
+                system_IP4=$(curl -s -4 ip.sb)
+                [ -n "$system_IP4" ] && IP4="$system_IP4" || IP4="None"
+            fi
+            
+            system_IP6=$(ip addr show "$default_interface" | grep "inet6 " | awk '{print $2}' | grep -v "^fe80::" | cut -d '/' -f 1 | head -n 1)
+            if [ -n "$system_IP6" ]; then
+                IP6="$system_IP6"
+            else
+                system_IP6=$(curl -s -6 ip.sb)
+                [ -n "$system_IP6" ] && IP6="$system_IP6" || IP6="None"
+            fi
+        else
+            system_IP4=$(curl -s -4 ip.sb)
+            [ -n "$system_IP4" ] && IP4="$system_IP4" || IP4="None"
+            
+            system_IP6=$(curl -s -6 ip.sb)
+            [ -n "$system_IP6" ] && IP6="$system_IP6" || IP6="None"
+        fi
+        
+        echo "IP4=$IP4" > "$CONFIG_ENV"
+        echo "IP6=$IP6" >> "$CONFIG_ENV"
+        return
     fi
 
-    default_interface=$(ip route | grep default | awk '{print $5}')
-
-    IP4=$(ip addr show "$default_interface" | grep "inet " | awk '{print $2}' | cut -d '/' -f 1 | head -n 1)
-    if [[ -z "$IP4" ]]; then
-        echo "Warning: Could not fetch local IPv4. Trying external service..."
-        IP4=$(curl -s -4 ip.sb)
+    if grep -q "^IP4=" "$CONFIG_ENV"; then
+        sed -i "s/^IP4=.*$/IP4=$IP4/" "$CONFIG_ENV"
+    else
+        echo "IP4=$IP4" >> "$CONFIG_ENV"
     fi
-    [[ -z "$IP4" ]] && IP4="None"  # Set to None if still empty
-
-    IP6=$(ip addr show "$default_interface" | grep "inet6 " | awk '{print $2}' | grep -v "^fe80::" | cut -d '/' -f 1 | head -n 1)
-    if [[ -z "$IP6" ]]; then
-        echo "Warning: Could not fetch local IPv6. Trying external service..."
-        IP6=$(curl -s -6 ip.sb)
+    
+    if grep -q "^IP6=" "$CONFIG_ENV"; then
+        sed -i "s/^IP6=.*$/IP6=$IP6/" "$CONFIG_ENV"
+    else
+        echo "IP6=$IP6" >> "$CONFIG_ENV"
     fi
-    [[ -z "$IP6" ]] && IP6="None"  # Set to None if still empty
-
-    echo "IP4=$IP4" > "$CONFIG_ENV"
-    echo "IP6=$IP6" >> "$CONFIG_ENV"
 }
 
 

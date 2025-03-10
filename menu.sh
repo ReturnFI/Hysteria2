@@ -347,7 +347,7 @@ edit_ips() {
                 ;;
             2)
                 read -p "Enter the new IPv6 address: " new_ip6
-                if [[ $new_ip6 =~ ^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^(([0-9a-fA-F]{1,4}:){1,7}:)$|^(::([0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4})$ ]]; then
+                if [[ $new_ip6 =~ ^(([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$ ]]; then
                     python3 "$CLI_PATH" ip-address --edit -6 "$new_ip6"
                     echo "IPv6 address has been updated to $new_ip6."
                 else

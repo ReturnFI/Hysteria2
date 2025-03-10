@@ -15,6 +15,8 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     {% block stylesheets %}{% endblock %}
 </head>
 
@@ -114,11 +116,26 @@
             {% block content %}{% endblock %}
         </div>
 
-        <!-- Footer -->
-        <footer class="main-footer">
-            <strong>Copyright © 2023 <a href="https://github.com/ReturnFI/Hysteria2">Return-Hysteria2</a>.</strong>
-        </footer>
+<!-- Footer -->
+<footer class="main-footer">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <a href="https://github.com/ReturnFI/Hysteria2" target="_blank" class="text-decoration-none">
+                <span class="badge badge-secondary" style="font-size: 0.9rem;">
+                    <i class="fab fa-github"></i> GitHub
+                </span>
+            </a>
+            <a href="https://t.me/hysteria2_panel" target="_blank" class="text-decoration-none ml-2 mr-2">
+                <span class="badge bg-primary" style="font-size: 0.9rem;">
+                    <i class="fab fa-telegram"></i> Telegram
+                </span>
+            </a>
+            <span  class="badge badge-success" style="font-size: 0.9rem;">
+                <i class="fas fa-code-branch"></i> <span id="panel-version"></span>
+            </span>
+        </div>
     </div>
+</footer>
 
     <!-- REQUIRED SCRIPTS -->
     <!-- jQuery -->
@@ -127,16 +144,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 
     <script>
         $(function () {
             const darkModeToggle = $("#darkModeToggle");
             const darkModeIcon = $("#darkModeIcon");
             const isDarkMode = localStorage.getItem("darkMode") === "enabled";
-            
+
             setDarkMode(isDarkMode);
             updateIcon(isDarkMode);
-            
+
             darkModeToggle.on("click", function (e) {
                 e.preventDefault();
                 const enabled = $("body").hasClass("dark-mode");
@@ -144,10 +163,10 @@
                 setDarkMode(!enabled);
                 updateIcon(!enabled);
             });
-            
+
             function setDarkMode(enabled) {
                 $("body").toggleClass("dark-mode", enabled);
-                
+
                 if (enabled) {
                     $(".main-header").addClass("navbar-dark").removeClass("navbar-light navbar-white");
                     $(".card").addClass("bg-dark");
@@ -156,12 +175,50 @@
                     $(".card").removeClass("bg-dark");
                 }
             }
-            
+    
             function updateIcon(enabled) {
-                darkModeIcon
-                    .removeClass("fa-moon fa-sun")
+                darkModeIcon.removeClass("fa-moon fa-sun")
                     .addClass(enabled ? "fa-sun" : "fa-moon");
             }
+
+            const versionUrl = "{{ url_for('get_version_info') }}";
+            $.ajax({
+                url: versionUrl,
+                type: 'GET',
+                success: function (response) {
+                    $('#panel-version').text(`Version: ${response.current_version}`);
+                },
+                error: function (error) {
+                    console.error("Error fetching version:", error);
+                    $('#panel-version').text('Version: Error');
+                }
+            });
+
+            const checkVersionUrl = "{{ url_for('check_version_info') }}"; 
+            $.ajax({
+                url: checkVersionUrl,
+                type: 'GET',
+                success: function (response) {
+                    if (!response.is_latest) {
+                        Swal.fire({
+                            title: 'Update Available!',
+                            html: `A new version of the panel is available: <b>${response.latest_version}</b><br><br>${response.changelog.replace(/\n/g, '<br>')}`,
+                            icon: 'info',
+                            showCancelButton: false,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error checking for updates:", error);
+                    if (xhr.responseJSON && xhr.responseJSON.detail) {
+                        console.error("Server detail:", xhr.responseJSON.detail);
+                    }
+                }
+
+            });
+            $('.main-footer').addClass('d-flex justify-content-between');
+
         });
     </script>
     {% block javascripts %}{% endblock %}

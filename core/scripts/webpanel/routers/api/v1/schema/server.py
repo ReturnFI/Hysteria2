@@ -23,3 +23,13 @@ class ServerServicesStatusResponse(BaseModel):
     hysteria_normal_sub: bool
     hysteria_telegram_bot: bool
     hysteria_warp: bool
+
+class VersionInfoResponse(BaseModel):
+    current_version: str
+
+
+class VersionCheckResponse(BaseModel):
+    is_latest: bool
+    current_version: str
+    latest_version: str
+    changelog: str

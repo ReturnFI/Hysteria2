@@ -32,7 +32,7 @@ check_version() {
   else
     echo "Panel Version: $local_version"
     echo "Latest Version: $latest_version"
-    echo "${yellow}$latest_version Version Change Log:"
+    echo "$latest_version Version Change Log:"
     echo "$latest_changelog"
   fi
 }

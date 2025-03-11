@@ -502,15 +502,14 @@ def get_services_status() -> dict[str, bool] | None:
     if res := run_cmd(['bash', Command.SERVICES_STATUS.value]):
         return json.loads(res)
 
-
 def show_version() -> str | None:
     """Displays the currently installed version of the panel."""
-    return run_cmd(['bash', Command.VERSION.value, 'show-version'])
+    return run_cmd(['python3', Command.VERSION.value, 'show-version'])
 
 
 def check_version() -> str | None:
     """Checks if the current version is up-to-date and displays changelog if not."""
-    return run_cmd(['bash', Command.VERSION.value, 'check-version'])
+    return run_cmd(['python3', Command.VERSION.value, 'check-version'])
 
 # endregion
 # endregion

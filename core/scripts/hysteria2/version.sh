@@ -50,7 +50,7 @@ if [ "$1" == "check-version" ]; then
 elif [ "$1" == "show-version" ]; then
   show_version
 else
-  echo "Usage: $0 [check|show]" >&2
+  echo "Usage: $0 [check-version|show-version]" >&2
   exit 1
 fi
 

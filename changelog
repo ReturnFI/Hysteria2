@@ -1,3 +1,1 @@
-🚀 feat: Improve Hysteria2 IP detection with fallbacks
-
-⚙️ Enhance: SNI entry handling in CONFIG_ENV file
+🚀 feat: Add version check and notification new releases

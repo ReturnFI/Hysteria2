@@ -1,1 +1,3 @@
 🚀 feat: Add version check and notification new releases
+🛠️ refactor: Improve utils package structure with cleaner imports
+🐛 fix: IPv6 validation pattern

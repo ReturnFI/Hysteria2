@@ -47,7 +47,7 @@ class Command(Enum):
     CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
     STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
     SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
-    VERSION = os.path.join(SCRIPT_DIR, 'hysteria2', 'version.sh')
+    VERSION = os.path.join(SCRIPT_DIR, 'hysteria2', 'version.py')
 
 # region Custom Exceptions
 

@@ -8,6 +8,7 @@ from utils.edituser import *
 from utils.search import *
 from utils.serverinfo import *
 from utils.cpu import *
+from utils.check_version import *
 import threading
 import time
 
@@ -27,4 +28,6 @@ def monitoring_thread():
 if __name__ == '__main__':
     monitor_thread = threading.Thread(target=monitoring_thread, daemon=True)
     monitor_thread.start()
+    version_thread = threading.Thread(target=version_monitoring, daemon=True)
+    version_thread.start()
     bot.polling(none_stop=True)

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 import cli_api
-from .schema.server import ServerStatusResponse, ServerServicesStatusResponse
+from .schema.server import ServerStatusResponse, ServerServicesStatusResponse, VersionCheckResponse, VersionInfoResponse
 
 router = APIRouter()
 
@@ -144,3 +144,40 @@ def __parse_services_status(services_status: dict[str, bool]) -> ServerServicesS
         elif 'wg-quick' in service:
             parsed_services_status['hysteria_warp'] = status
     return ServerServicesStatusResponse(**parsed_services_status)
+
+@router.get('/version', response_model=VersionInfoResponse)
+async def get_version_info():
+    """Retrieves the current version of the panel."""
+    try:
+        version_output = cli_api.show_version()
+        if version_output:
+            current_version = version_output.split(": ")[1].strip()
+            return VersionInfoResponse(current_version=current_version)
+        raise HTTPException(status_code=404, detail="Version information not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get('/version/check', response_model=VersionCheckResponse)
+async def check_version_info():
+    """Checks for updates and retrieves version information."""
+    try:
+        check_output = cli_api.check_version()
+        if check_output:
+            lines = check_output.splitlines()
+            current_version = lines[0].split(": ")[1].strip()
+
+            if len(lines) > 1 and "Latest Version" in lines[1]:
+                latest_version = lines[1].split(": ")[1].strip()
+                is_latest = current_version == latest_version
+                changelog_start_index = 3 
+                changelog = "\n".join(lines[changelog_start_index:]).strip()
+                return VersionCheckResponse(is_latest=is_latest, current_version=current_version,
+                                             latest_version=latest_version, changelog=changelog)
+            else:
+                return VersionCheckResponse(is_latest=True, current_version=current_version)
+
+        raise HTTPException(status_code=404, detail="Version information not found")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

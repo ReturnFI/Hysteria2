@@ -485,6 +485,31 @@ def get_services_status():
             click.echo('Error: Services status not available.')
     except Exception as e:
         click.echo(f'{e}', err=True)
+
+
+@cli.command('show-version')
+def show_version():
+    """Displays the currently installed version of the panel."""
+    try:
+        if version_info := cli_api.show_version():
+             click.echo(version_info)
+        else:
+            click.echo("Error retrieving version")
+    except Exception as e:
+        click.echo(f"An unexpected error occurred: {e}", err=True)
+
+
+@cli.command('check-version')
+def check_version():
+    """Checks if the current version is up-to-date and displays changelog if not."""
+    try:
+        if version_info := cli_api.check_version():
+            click.echo(version_info)
+        else:
+            click.echo("Error retrieving version")
+    except Exception as e:
+        click.echo(f"An unexpected error occurred: {e}", err=True)
+
 # endregion
 
 

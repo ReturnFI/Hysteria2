@@ -20,7 +20,7 @@ fi
 
 # Clone the Hysteria2 repository if it doesn't exist
 if [ ! -d "Hysteria2" ]; then
-    git clone https://github.com/MSotoudeh/Hysteria2.git
+    git clone https://github.com/ReturnFI/Hysteria2.git
 fi
 
 cd Hysteria2

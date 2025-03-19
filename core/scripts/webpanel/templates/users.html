@@ -678,32 +678,48 @@
 
         // QR Code Modal
         $("#qrcodeModal").on("show.bs.modal", function (event) {
-            const button = $(event.relatedTarget);
-            const username = button.data("username");
-            const configContainer = $(`#userConfigs-${username}`);
-            const qrcodesContainer = $("#qrcodesContainer");
-            qrcodesContainer.empty();
+        const button = $(event.relatedTarget);
+        const configContainer = $(`#userConfigs-${button.data("username")}`);
+        const qrcodesContainer = $("#qrcodesContainer");
+        qrcodesContainer.empty();
 
-            configContainer.find(".config-container").each(function () {
-                const configLink = $(this).data("link");
-                const configType = $(this).find(".config-type").text().replace(":", "");
-
-                // Create a card for each QR code
+        configContainer.find(".config-container").each(function () {
+            const configLink = $(this).data("link");
+            const configType = $(this).find(".config-type").text().replace(":", "");
+                
+                let displayType = configType;
+                
+                const hashMatch = configLink.match(/#(.+)$/);
+                if (hashMatch && hashMatch[1]) {
+                    const hashValue = hashMatch[1];
+                    if (hashValue.includes("IPv4") || hashValue.includes("IPv6")) {
+                        displayType = hashValue;
+                    }
+                } else if (configLink.includes("ipv4") || configLink.includes("IPv4")) {
+                    displayType = "IPv4";
+                } else if (configLink.includes("ipv6") || configLink.includes("IPv6")) {
+                    displayType = "IPv6";
+                }
+                
+                const qrCodeId = `qrcode-${displayType}-${Math.random().toString(36).substring(2, 10)}`;
+                
                 const card = $(`
-                    <div class="card d-inline-block mx-2 my-2" style="width: 180px;">
+                    <div class="card d-inline-block my-2">
                         <div class="card-body">
-                            <div id="qrcode-${configType}" class="mx-auto cursor-pointer"></div>
-                            <div class="config-type-text mt-2 text-center">${configType}</div>
+                            <div id="${qrCodeId}" class="mx-auto cursor-pointer"></div>
+                            <br>
+                            <div class="config-type-text mt-2 text-center">${displayType}</div>
                         </div>
-                     </div>
+                    </div>
                 `);
 
                 qrcodesContainer.append(card);
 
                 const qrCodeStyling = new QRCodeStyling({
-                    width: 150,
-                    height: 150,
+                    width: 180,
+                    height: 180,
                     data: configLink,
+                    margin: 5,
                     dotsOptions: {
                         color: "#212121",
                         type: "square"
@@ -720,15 +736,14 @@
                     }
                 });
 
-                qrCodeStyling.append(document.getElementById(`qrcode-${configType}`));
-
-                // Add click to copy functionality to the card
+                qrCodeStyling.append(document.getElementById(qrCodeId));
+                
                 card.on("click", function () {
                     navigator.clipboard.writeText(configLink)
                         .then(() => {
                             Swal.fire({
                                 icon: "success",
-                                title: configType + " link copied!",
+                                title: displayType + " link copied!",
                                 showConfirmButton: false,
                                 timer: 1500,
                             });
@@ -745,12 +760,10 @@
             });
         });
 
-        // Prevent modal from closing when clicking inside
         $("#qrcodeModal .modal-content").on("click", function (e) {
             e.stopPropagation();
         });
 
-        // Clear the QR code when the modal is hidden
         $("#qrcodeModal").on("hidden.bs.modal", function () {
             $("#qrcodesContainer").empty();
         });
@@ -759,7 +772,6 @@
             $("#qrcodeModal").modal("hide");
         });
 
-        // Search Functionality
         function filterUsers() {
             const searchText = $("#searchInput").val().toLowerCase();
 

@@ -1,0 +1,49 @@
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore Git files and directories
+.git
+.gitignore
+
+# Ignore IDE and editor configuration files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore temporary and log files
+*.tmp
+*.log
+
+# Ignore local environment files and virtual environments
+.env
+venv/
+.venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Ignore build artifacts and distributions (if not needed for the build)
+build/
+dist/
+*.egg-info/
+*.tar.gz
+*.zip
+
+# Ignore additional caches and reports
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# Ignore Docker build files (optional - adjust if you need them in the context)
+docker-compose.yml
+Dockerfile*
+
+# Optionally ignore node_modules if not required for the Docker build
+node_modules/
+
+# Ignore system files
+.DS_Store
+Thumbs.db

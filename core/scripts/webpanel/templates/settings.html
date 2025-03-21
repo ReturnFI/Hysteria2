@@ -264,14 +264,18 @@
             if (!port) return false;
             return /^[0-9]+$/.test(port) && parseInt(port) > 0 && parseInt(port) <= 65535;
         }
-        function isValidIP(ip, version) {
-            if (!ip) return true;
+        function isValidIPorDomain(input) {
+            if (!input) return true;
 
-            if (version === 4) {
-                return /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip);
-            } else if (version === 6) {
-                return /^(([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/.test(ip);
-            }
+            const ipV4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            const ipV6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/;
+            const domainRegex = /^(?!\-)(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}$/;
+            const lowerInput = input.toLowerCase();
+
+            if (ipV4Regex.test(input)) return true;
+            if (ipV6Regex.test(input)) return true;
+            if (domainRegex.test(lowerInput) && !lowerInput.startsWith("http://") && !lowerInput.startsWith("https://")) return true;
+
             return false;
         }
 
@@ -352,15 +356,8 @@
                     } else {
                         input.removeClass('is-invalid');
                     }
-                } else if (id === 'ipv4') {
-                    if (!isValidIP(input.val(), 4)) {
-                        input.addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.removeClass('is-invalid');
-                    }
-                } else if (id === 'ipv6') {
-                    if (!isValidIP(input.val(), 6)) {
+                } else if (id === 'ipv4' || id === 'ipv6') { // Apply isValidIPorDomain for both IPv4 and IPv6
+                    if (!isValidIPorDomain(input.val())) {
                         input.addClass('is-invalid');
                         isValid = false;
                     } else {
@@ -447,15 +444,15 @@
                 $("#ipv4").val(data.ipv4 || "");
                 $("#ipv6").val(data.ipv6 || "");
 
-                $("#ipv4").attr("placeholder", "Enter IPv4");
-                $("#ipv6").attr("placeholder", "Enter IPv6");
+                $("#ipv4").attr("placeholder", "Enter IPv4 or Domain");
+                $("#ipv6").attr("placeholder", "Enter IPv6 or Domain");
 
 
             },
             error: function () {
                 console.error("Failed to fetch IP addresses.");
-                $("#ipv4").attr("placeholder", "Enter IPv4");
-                $("#ipv6").attr("placeholder", "Enter IPv6");
+                $("#ipv4").attr("placeholder", "Enter IPv4 or Domain");
+                $("#ipv6").attr("placeholder", "Enter IPv6 or Domain");
             }
         });
 
@@ -695,21 +692,14 @@
                 $(this).addClass('is-invalid');
             }
         });
-        $('#ipv4').on('input', function () {
-            if (isValidIP($(this).val(), 4)) {
+        $('#ipv4, #ipv6').on('input', function () { // Apply to both ipv4 and ipv6
+            if (isValidIPorDomain($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else {
                 $(this).addClass('is-invalid');
             }
         });
 
-        $('#ipv6').on('input', function () {
-            if (isValidIP($(this).val(), 6)) {
-                $(this).removeClass('is-invalid');
-            } else {
-                $(this).addClass('is-invalid');
-            }
-        });
         $('#telegram_api_token, #telegram_admin_id').on('input', function () {
             if ($(this).val().trim() !== "") {
                 $(this).removeClass('is-invalid');

@@ -323,35 +323,42 @@ hysteria2_change_sni_handler() {
 edit_ips() {
     while true; do
         echo "======================================"
-        echo "          IP Address Manager          "
+        echo "      IP/Domain Address Manager      "
         echo "======================================"
-        echo "1. Change IP4"
-        echo "2. Change IP6"
+        echo "1. Change IPv4 or Domain"
+        echo "2. Change IPv6 or Domain"
         echo "0. Back"
         echo "======================================"
-        read -p "Enter your choice [1-3]: " choice
+        read -p "Enter your choice [0-2]: " choice
 
         case $choice in
             1)
-                read -p "Enter the new IPv4 address: " new_ip4
-                if [[ $new_ip4 =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
-                    if [[ $(echo "$new_ip4" | awk -F. '{for (i=1;i<=NF;i++) if ($i>255) exit 1}') ]]; then
+                read -p "Enter the new IPv4 address or domain: " new_ip4_or_domain
+                if [[ $new_ip4_or_domain =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+                    if [[ $(echo "$new_ip4_or_domain" | awk -F. '{for (i=1;i<=NF;i++) if ($i>255) exit 1}') ]]; then
                         echo "Error: Invalid IPv4 address. Values must be between 0 and 255."
                     else
-                        python3 "$CLI_PATH" ip-address --edit -4 "$new_ip4"
+                        python3 "$CLI_PATH" ip-address --edit -4 "$new_ip4_or_domain"
+                        echo "IPv4 address has been updated to $new_ip4_or_domain."
                     fi
+                elif [[ $new_ip4_or_domain =~ ^[a-zA-Z0-9.-]+$ ]] && [[ ! $new_ip4_or_domain =~ [/:] ]]; then
+                    python3 "$CLI_PATH" ip-address --edit -4 "$new_ip4_or_domain"
+                    echo "Domain has been updated to $new_ip4_or_domain."
                 else
-                    echo "Error: Invalid IPv4 address format."
+                    echo "Error: Invalid IPv4 or domain format."
                 fi
                 break
                 ;;
             2)
-                read -p "Enter the new IPv6 address: " new_ip6
-                if [[ $new_ip6 =~ ^(([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$ ]]; then
-                    python3 "$CLI_PATH" ip-address --edit -6 "$new_ip6"
-                    echo "IPv6 address has been updated to $new_ip6."
+                read -p "Enter the new IPv6 address or domain: " new_ip6_or_domain
+                if [[ $new_ip6_or_domain =~ ^(([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$ ]]; then
+                    python3 "$CLI_PATH" ip-address --edit -6 "$new_ip6_or_domain"
+                    echo "IPv6 address has been updated to $new_ip6_or_domain."
+                elif [[ $new_ip6_or_domain =~ ^[a-zA-Z0-9.-]+$ ]] && [[ ! $new_ip6_or_domain =~ [/:] ]]; then
+                    python3 "$CLI_PATH" ip-address --edit -6 "$new_ip6_or_domain"
+                    echo "Domain has been updated to $new_ip6_or_domain."
                 else
-                    echo "Error: Invalid IPv6 address format."
+                    echo "Error: Invalid IPv6 or domain format."
                 fi
                 break
                 ;;

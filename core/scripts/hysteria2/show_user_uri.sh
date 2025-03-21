@@ -16,7 +16,7 @@ get_singbox_domain_and_port() {
 
 get_normalsub_domain_and_port() {
     if [ -f "$NORMALSUB_ENV" ]; then
-        local domain port
+        local domain port subpath
         domain=$(grep -E '^HYSTERIA_DOMAIN=' "$NORMALSUB_ENV" | cut -d'=' -f2)
         port=$(grep -E '^HYSTERIA_PORT=' "$NORMALSUB_ENV" | cut -d'=' -f2)
         subpath=$(grep -E '^SUBPATH=' "$NORMALSUB_ENV" | cut -d'=' -f2)
@@ -81,7 +81,11 @@ show_uri() {
                     local uri_base="hy2://$username%3A$authpassword@$ip:$port"
 
                     if [ "$ip_version" -eq 6 ]; then
-                        uri_base="hy2://$username%3A$authpassword@[$ip]:$port"
+                        if [[ "$ip" =~ ^[0-9a-fA-F:]+$ ]]; then
+                            uri_base="hy2://$username%3A$authpassword@[$ip]:$port"
+                        else
+                            uri_base="hy2://$username%3A$authpassword@$ip:$port"
+                        fi
                     fi
 
                     local params=""

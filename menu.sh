@@ -805,6 +805,95 @@ masquerade_handler() {
     done
 }
 
+ip_limit_handler() {
+    while true; do
+        echo -e "${cyan}1.${NC} Start IP Limiter Service"
+        echo -e "${red}2.${NC} Stop IP Limiter Service"
+        echo -e "${yellow}3.${NC} Change IP Limiter Configuration"
+        echo "0. Back"
+        read -p "Choose an option: " option
+
+        case $option in
+            1)
+                if systemctl is-active --quiet hysteria-ip-limit.service; then
+                    echo "The hysteria-ip-limit.service is already active."
+                else
+                    while true; do
+                        read -e -p "Enter Block Duration (seconds, default: 60): " block_duration
+                        block_duration=${block_duration:-60} # Default to 60 if empty
+                        if ! [[ "$block_duration" =~ ^[0-9]+$ ]]; then
+                            echo "Invalid Block Duration. Please enter a number."
+                        else
+                            break
+                        fi
+                    done
+
+                    while true; do
+                        read -e -p "Enter Max IPs per User (default: 1): " max_ips
+                        max_ips=${max_ips:-1} # Default to 1 if empty
+                        if ! [[ "$max_ips" =~ ^[0-9]+$ ]]; then
+                            echo "Invalid Max IPs. Please enter a number."
+                        else
+                            break
+                        fi
+                    done
+                    python3 $CLI_PATH config-ip-limit --block-duration "$block_duration" --max-ips "$max_ips"
+                    python3 $CLI_PATH start-ip-limit
+                fi
+                ;;
+            2)
+                if ! systemctl is-active --quiet hysteria-ip-limit.service; then
+                    echo "The hysteria-ip-limit.service is already inactive."
+                else
+                    python3 $CLI_PATH stop-ip-limit
+                fi
+                ;;
+            3)
+                block_duration=""
+                max_ips=""
+                updated=false
+
+                while true; do
+                    read -e -p "Enter New Block Duration (seconds, current: $(grep '^BLOCK_DURATION=' /etc/hysteria/.configs.env | cut -d'=' -f2), leave empty to keep current): " input_block_duration
+                    if [[ -n "$input_block_duration" ]] && ! [[ "$input_block_duration" =~ ^[0-9]+$ ]]; then
+                        echo "Invalid Block Duration. Please enter a number or leave empty."
+                    else
+                        if [[ -n "$input_block_duration" ]]; then
+                            block_duration="$input_block_duration"
+                            updated=true
+                        fi
+                        break
+                    fi
+                done
+
+                while true; do
+                    read -e -p "Enter New Max IPs per User (current: $(grep '^MAX_IPS=' /etc/hysteria/.configs.env | cut -d'=' -f2), leave empty to keep current): " input_max_ips
+                    if [[ -n "$input_max_ips" ]] && ! [[ "$input_max_ips" =~ ^[0-9]+$ ]]; then
+                        echo "Invalid Max IPs. Please enter a number or leave empty."
+                    else
+                        if [[ -n "$input_max_ips" ]]; then
+                            max_ips="$input_max_ips"
+                            updated=true
+                        fi
+                        break
+                    fi
+                done
+
+                if [[ "$updated" == "true" ]]; then
+                    python3 $CLI_PATH config-ip-limit --block-duration "$block_duration" --max-ips "$max_ips"
+                else
+                    echo "No changes to IP Limiter configuration were provided."
+                fi
+                ;;
+            0)
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+}
 
 # Function to display the main menu
 display_main_menu() {
@@ -933,7 +1022,8 @@ display_advance_menu() {
     echo -e "${cyan}[14] ${NC}↝ Manage Masquerade"
     echo -e "${cyan}[15] ${NC}↝ Restart Hysteria2"
     echo -e "${cyan}[16] ${NC}↝ Update Core Hysteria2"
-    echo -e "${red}[17] ${NC}↝ Uninstall Hysteria2"
+    echo -e "${cyan}[17] ${NC}↝ IP Limiter Menu"
+    echo -e "${red}[18] ${NC}↝ Uninstall Hysteria2"
     echo -e "${red}[0] ${NC}↝ Back to Main Menu"
     echo -e "${LPurple}◇──────────────────────────────────────────────────────────────────────◇${NC}"
     echo -ne "${yellow}➜ Enter your option: ${NC}"
@@ -963,7 +1053,8 @@ advance_menu() {
             14) masquerade_handler ;;
             15) python3 $CLI_PATH restart-hysteria2 ;;
             16) python3 $CLI_PATH update-hysteria2 ;;
-            17) python3 $CLI_PATH uninstall-hysteria2 ;;
+            17) ip_limit_handler ;;
+            18) python3 $CLI_PATH uninstall-hysteria2 ;;
             0) return ;;
             *) echo "Invalid option. Please try again." ;;
         esac

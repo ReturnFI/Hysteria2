@@ -48,6 +48,7 @@ class Command(Enum):
     STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
     SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
     VERSION = os.path.join(SCRIPT_DIR, 'hysteria2', 'version.py')
+    LIMIT_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'limit.sh')
 
 # region Custom Exceptions
 
@@ -511,5 +512,31 @@ def check_version() -> str | None:
     """Checks if the current version is up-to-date and displays changelog if not."""
     return run_cmd(['python3', Command.VERSION.value, 'check-version'])
 
-# endregion
+def start_ip_limiter():
+    '''Starts the IP limiter service.'''
+    run_cmd(['bash', Command.LIMIT_SCRIPT.value, 'start'])
+
+def stop_ip_limiter():
+    '''Stops the IP limiter service.'''
+    run_cmd(['bash', Command.LIMIT_SCRIPT.value, 'stop'])
+
+def config_ip_limiter(block_duration: int = None, max_ips: int = None):
+    '''Configures the IP limiter service.'''
+    if block_duration is not None and block_duration <= 0:
+        raise InvalidInputError("Block duration must be greater than 0.")
+    if max_ips is not None and max_ips <= 0:
+        raise InvalidInputError("Max IPs must be greater than 0.")
+
+    cmd_args = ['bash', Command.LIMIT_SCRIPT.value, 'config']
+    if block_duration is not None:
+        cmd_args.append(str(block_duration))
+    else:
+        cmd_args.append('')
+
+    if max_ips is not None:
+        cmd_args.append(str(max_ips))
+    else:
+        cmd_args.append('')
+
+    run_cmd(cmd_args)
 # endregion

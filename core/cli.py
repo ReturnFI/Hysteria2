@@ -510,6 +510,39 @@ def check_version():
     except Exception as e:
         click.echo(f"An unexpected error occurred: {e}", err=True)
 
+@cli.command('start-ip-limit')
+def start_ip_limit():
+    """Starts the IP limiter service."""
+    try:
+        cli_api.start_ip_limiter()
+        click.echo('IP Limiter service started successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+@cli.command('stop-ip-limit')
+def stop_ip_limit():
+    """Stops the IP limiter service."""
+    try:
+        cli_api.stop_ip_limiter()
+        click.echo('IP Limiter service stopped successfully.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+@cli.command('config-ip-limit')
+@click.option('--block-duration', '-bd', type=int, help='New block duration in seconds')
+@click.option('--max-ips', '-mi', type=int, help='New maximum IPs per user')
+def config_ip_limit(block_duration: int, max_ips: int):
+    """Configures the IP limiter service parameters."""
+    try:
+        cli_api.config_ip_limiter(block_duration, max_ips)
+        click.echo('IP Limiter configuration updated successfully.')
+        if block_duration is not None:
+            click.echo(f'  Block Duration: {block_duration} seconds')
+        if max_ips is not None:
+            click.echo(f'  Max IPs per user: {max_ips}')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 # endregion
 
 

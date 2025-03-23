@@ -1,12 +1,19 @@
 #!/bin/bash
 source /etc/hysteria/core/scripts/path.sh
 
-# ensure_config_env() {
-#   if [ ! -f "$CONFIG_ENV" ]; then
-#     echo ".configs.env not found. Creating it with default SNI=bts.com."
-#     echo "SNI=bts.com" > "$CONFIG_ENV"
-#   fi
-# }
+if [ ! -f "$CONFIG_ENV" ]; then
+  echo "CONFIG_ENV not found. Creating a new one..."
+  touch "$CONFIG_ENV"
+fi
+
+update_config() {
+  local key=$1
+  local value=$2
+
+  sed -i "/^$key=/d" "$CONFIG_ENV" 2>/dev/null
+
+  echo "$key=$value" >> "$CONFIG_ENV"
+}
 
 add_ips() {
   ipv4_address=""
@@ -16,7 +23,7 @@ add_ips() {
 
   for interface in $interfaces; do
     if ip addr show "$interface" > /dev/null 2>&1; then
-      ipv4=$(ip -o -4 addr show "$interface" | awk '{print $4}' | grep -vE '^(127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1]))' | head -n 1 | cut -d/ -f1)
+      ipv4=$(ip -o -4 addr show "$interface" | awk '{print $4}' | grep -vE '^(127\\.|10\\.|192\\.168\\.|172\\.(1[6-9]|2[0-9]|3[0-1]))' | head -n 1 | cut -d/ -f1)
       if [[ -z $ipv4_address && -n $ipv4 ]]; then
         ipv4_address=$ipv4
       fi
@@ -28,13 +35,11 @@ add_ips() {
     fi
   done
 
-  sed -i '/^IP4=/d' "$CONFIG_ENV" 2>/dev/null
-  sed -i '/^IP6=/d' "$CONFIG_ENV" 2>/dev/null
-  echo -e "\nIP4=${ipv4_address:-}" >> "$CONFIG_ENV"
-  echo "IP6=${ipv6_address:-}" >> "$CONFIG_ENV"
-  # echo "IPs have been added to $CONFIG_ENV:"
-  # echo "IP4=${ipv4_address:-Not Found}"
-  # echo "IP6=${ipv6_address:-Not Found}"
+  update_config "IP4" "${ipv4_address:-}"
+  update_config "IP6" "${ipv6_address:-}"
+
+  echo "Updated IP4=${ipv4_address:-Not Found}"
+  echo "Updated IP6=${ipv6_address:-Not Found}"
 }
 
 edit_ip() {
@@ -42,19 +47,16 @@ edit_ip() {
   local new_ip=$2
 
   if [[ $type == "-4" ]]; then
-    sed -i '/^IP4=/d' "$CONFIG_ENV" 2>/dev/null
-    echo "IP4=$new_ip" >> "$CONFIG_ENV"
+    update_config "IP4" "$new_ip"
     echo "IP4 has been updated to $new_ip."
   elif [[ $type == "-6" ]]; then
-    sed -i '/^IP6=/d' "$CONFIG_ENV" 2>/dev/null
-    echo "IP6=$new_ip" >> "$CONFIG_ENV"
+    update_config "IP6" "$new_ip"
     echo "IP6 has been updated to $new_ip."
   else
     echo "Invalid option. Use -4 for IPv4 or -6 for IPv6."
   fi
 }
 
-# ensure_config_env
 case "$1" in
   add)
     add_ips

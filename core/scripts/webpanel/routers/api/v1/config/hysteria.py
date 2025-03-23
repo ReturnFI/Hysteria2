@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from ..schema.config.hysteria import ConfigFile, GetPortResponse, GetSniResponse
-from ..schema.response import DetailResponse
+from ..schema.response import DetailResponse, IPLimitConfig
 from fastapi.responses import FileResponse
 import shutil
 import zipfile
@@ -10,47 +10,6 @@ import os
 import cli_api
 
 router = APIRouter()
-
-
-# Change: Installing and uninstalling Hysteria2 is possible only through the CLI
-# @router.post('/install', response_model=DetailResponse, summary='Install Hysteria2')
-# async def install(body: InstallInputBody):
-#     """
-#     Installs Hysteria2 on the given port and uses the provided or default SNI value.
-
-#     Args:
-#         body: An instance of InstallInputBody containing the new port and SNI value.
-
-#     Returns:
-#         A DetailResponse with a message indicating the Hysteria2 installation was successful.
-
-#     Raises:
-#         HTTPException: if an error occurs while installing Hysteria2.
-#     """
-#     try:
-#         cli_api.install_hysteria2(body.port, body.sni)
-#         return DetailResponse(detail=f'Hysteria2 installed successfully on port {body.port} with SNI {body.sni}.')
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
-
-
-# @router.delete('/uninstall', response_model=DetailResponse, summary='Uninstall Hysteria2')
-# async def uninstall():
-#     """
-#     Uninstalls Hysteria2.
-
-#     Returns:
-#         A DetailResponse with a message indicating the Hysteria2 uninstallation was successful.
-
-#     Raises:
-#         HTTPException: if an error occurs while uninstalling Hysteria2.
-#     """
-#     try:
-#         cli_api.uninstall_hysteria2()
-#         return DetailResponse(detail='Hysteria2 uninstalled successfully.')
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
-
 
 @router.patch('/update', response_model=DetailResponse, summary='Update Hysteria2')
 async def update():
@@ -343,3 +302,35 @@ async def set_file(body: ConfigFile):
         return DetailResponse(detail='Hysteria2 configuration file updated successfully.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+@router.post('/ip-limit/start', response_model=DetailResponse, summary='Start IP Limiter Service')
+async def start_ip_limit_api():
+    """Starts the IP Limiter service."""
+    try:
+        cli_api.start_ip_limiter()
+        return DetailResponse(detail='IP Limiter service started successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error starting IP Limiter: {str(e)}')
+
+@router.post('/ip-limit/stop', response_model=DetailResponse, summary='Stop IP Limiter Service')
+async def stop_ip_limit_api():
+    """Stops the IP Limiter service."""
+    try:
+        cli_api.stop_ip_limiter()
+        return DetailResponse(detail='IP Limiter service stopped successfully.')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error stopping IP Limiter: {str(e)}')
+
+@router.post('/ip-limit/config', response_model=DetailResponse, summary='Configure IP Limiter')
+async def config_ip_limit_api(config: IPLimitConfig):
+    """Configures the IP Limiter service parameters."""
+    try:
+        cli_api.config_ip_limiter(config.block_duration, config.max_ips)
+        details = 'IP Limiter configuration updated successfully.'
+        if config.block_duration is not None:
+            details += f' Block Duration: {config.block_duration} seconds.'
+        if config.max_ips is not None:
+            details += f' Max IPs per user: {config.max_ips}.'
+        return DetailResponse(detail=details)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error configuring IP Limiter: {str(e)}')

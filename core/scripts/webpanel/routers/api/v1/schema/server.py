@@ -19,6 +19,7 @@ class ServerStatusResponse(BaseModel):
 class ServerServicesStatusResponse(BaseModel):
     hysteria_server: bool
     hysteria_webpanel: bool
+    hysteria_iplimit: bool
     hysteria_singbox: bool
     hysteria_normal_sub: bool
     hysteria_telegram_bot: bool

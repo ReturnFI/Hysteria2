@@ -133,6 +133,8 @@ def __parse_services_status(services_status: dict[str, bool]) -> ServerServicesS
     for service, status in services_status.items():
         if 'hysteria-server' in service:
             parsed_services_status['hysteria_server'] = status
+        elif 'hysteria-ip-limit' in service:
+            parsed_services_status['hysteria_iplimit'] = status
         elif 'hysteria-webpanel' in service:
             parsed_services_status['hysteria_webpanel'] = status
         elif 'telegram-bot' in service:

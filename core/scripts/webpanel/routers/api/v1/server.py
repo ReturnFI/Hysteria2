@@ -177,7 +177,12 @@ async def check_version_info():
                 return VersionCheckResponse(is_latest=is_latest, current_version=current_version,
                                              latest_version=latest_version, changelog=changelog)
             else:
-                return VersionCheckResponse(is_latest=True, current_version=current_version)
+                return VersionCheckResponse(
+                    is_latest=True,
+                    current_version=current_version,
+                    latest_version=current_version,
+                    changelog="Panel is up-to-date."
+                )
 
         raise HTTPException(status_code=404, detail="Version information not found")
 

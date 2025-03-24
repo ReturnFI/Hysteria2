@@ -9,10 +9,13 @@ SERVICE_NAME="hysteria-ip-limit.service"
 if [ -f "$CONFIG_ENV" ]; then
   source "$CONFIG_ENV"
   BLOCK_DURATION="${BLOCK_DURATION:-60}" # Default to 60 seconds if not set
-  MAX_IPS="${MAX_IPS:-1}"             # Default to 1 IP if not set
+  MAX_IPS="${MAX_IPS:-1}"               # Default to 1 IP if not set
+
+  grep -q "^BLOCK_DURATION=" "$CONFIG_ENV" || echo -e "\nBLOCK_DURATION=$BLOCK_DURATION" >> "$CONFIG_ENV"
+
+  grep -q "^MAX_IPS=" "$CONFIG_ENV" || echo "MAX_IPS=$MAX_IPS" >> "$CONFIG_ENV"
 else
-  BLOCK_DURATION=240
-  MAX_IPS=5
+  echo -e "BLOCK_DURATION=240\nMAX_IPS=5" > "$CONFIG_ENV"
 fi
 
 # --- Ensure files exist ---

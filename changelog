@@ -1,1 +1,3 @@
-🚀 feat: allow updating IPv4, IPv6, or domain in IP Address Manager
+🚀 feat: Add Hysteria IP limiter
+🛠️ Fix: Correct Version Check Response for Up-to-Date Panel
+🛠️ Fix: CONFIG_ENV conflicts by ensuring clean updates for IP4 and IP6

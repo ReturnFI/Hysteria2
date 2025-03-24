@@ -133,6 +133,8 @@ def __parse_services_status(services_status: dict[str, bool]) -> ServerServicesS
     for service, status in services_status.items():
         if 'hysteria-server' in service:
             parsed_services_status['hysteria_server'] = status
+        elif 'hysteria-ip-limit' in service:
+            parsed_services_status['hysteria_iplimit'] = status
         elif 'hysteria-webpanel' in service:
             parsed_services_status['hysteria_webpanel'] = status
         elif 'telegram-bot' in service:
@@ -175,7 +177,12 @@ async def check_version_info():
                 return VersionCheckResponse(is_latest=is_latest, current_version=current_version,
                                              latest_version=latest_version, changelog=changelog)
             else:
-                return VersionCheckResponse(is_latest=True, current_version=current_version)
+                return VersionCheckResponse(
+                    is_latest=True,
+                    current_version=current_version,
+                    latest_version=current_version,
+                    changelog="Panel is up-to-date."
+                )
 
         raise HTTPException(status_code=404, detail="Version information not found")
 

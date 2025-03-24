@@ -53,6 +53,12 @@
                                     aria-controls='backup' aria-selected='false'><i class="fas fa-download"></i>
                                     Backup</a>
                             </li>
+                            <!-- IP Limiter Tab -->
+                            <li class='nav-item'>
+                                <a class='nav-link' id='ip-limit-tab' data-toggle='pill' href='#ip-limit' role='tab'
+                                    aria-controls='ip-limit' aria-selected='false'><i class="fas fa-user-slash"></i>
+                                    IP Limit</a>
+                            </li>
                         </ul>
                     </div>
                     <div class='card-body' style="margin-left: 25px;">
@@ -76,7 +82,7 @@
                                     <!-- SingBox Sub Tab -->
                                     <div class='tab-pane fade show active' id='singbox' role='tabpanel'
                                         aria-labelledby='singbox-tab'>
-                                        <form>
+                                        <form id="singbox">
                                             <div class='form-group'>
                                                 <label for='singbox_domain'>Domain:</label>
                                                 <input type='text' class='form-control' id='singbox_domain'
@@ -105,7 +111,7 @@
 
                                     <!-- Normal Sub Tab -->
                                     <div class='tab-pane fade' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
-                                        <form>
+                                        <form id="normal">
                                             <div class='form-group'>
                                                 <label for='normal_domain'>Domain:</label>
                                                 <input type='text' class='form-control' id='normal_domain'
@@ -137,7 +143,7 @@
 
                             <!-- Telegram Bot Tab -->
                             <div class='tab-pane fade' id='telegram' role='tabpanel' aria-labelledby='telegram-tab'>
-                                <form>
+                                <form id="telegram">
                                     <div class='form-group'>
                                         <label for='telegram_api_token'>API Token:</label>
                                         <input type='text' class='form-control' id='telegram_api_token'
@@ -154,7 +160,8 @@
                                             Please enter a valid Admin ID.
                                         </div>
                                     </div>
-                                    <button id="telegram_start" type='button' class='btn btn-success'>Start</button>
+                                    <button id="telegram_start" type='button' class='btn btn-success'>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>Start</button>
                                     <button id="telegram_stop" type='button' class='btn btn-danger'
                                         style="display: none;">Stop</button>
 
@@ -164,7 +171,7 @@
                             <!-- Port Tab -->
                             <div class='tab-pane fade' id='port' role='tabpanel' aria-labelledby='port-tab'>
 
-                                <form>
+                                <form id="port">
                                     <div class='form-group'>
                                         <label for='hysteria_port'>Port:</label>
                                         <input type='text' class='form-control' id='hysteria_port'
@@ -180,7 +187,7 @@
                             <!-- SNI Tab -->
                             <div class='tab-pane fade' id='sni' role='tabpanel' aria-labelledby='sni-tab'>
 
-                                <form>
+                                <form id="sni">
                                     <div class='form-group'>
                                         <label for='sni_domain'>Domain:</label>
                                         <input type='text' class='form-control' id='sni_domain'
@@ -195,7 +202,7 @@
 
                             <!-- Change IP Tab -->
                             <div class='tab-pane fade' id='change_ip' role='tabpanel' aria-labelledby='ip-tab'>
-                                <form>
+                                <form id="change_ip">
                                     <div class='form-group'>
                                         <label for='ipv4'>IPv4:</label>
                                         <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4'
@@ -230,6 +237,59 @@
 
                                <div id="backup_status" class="mt-2"></div>  <!-- Status messages -->
                             </div>
+
+                            <!-- IP Limit Tab (New) -->
+                            <div class='tab-pane fade' id='ip-limit' role='tabpanel' aria-labelledby='ip-limit-tab'>
+                                <ul class='nav nav-tabs' id='ip-limit-tabs' role='tablist'>
+                                    <li class='nav-item'>
+                                        <a class='nav-link active' id='ip-limit-service-tab' data-toggle='tab' href='#ip-limit-service'
+                                            role='tab' aria-controls='ip-limit-service'
+                                            aria-selected='true'><strong>Service Control</strong></a>
+                                    </li>
+                                    <li class='nav-item ip-limit-config-tab-li' style="display: none;">
+                                        <a class='nav-link' id='ip-limit-config-tab' data-toggle='tab' href='#ip-limit-config-content' role='tab'
+                                            aria-controls='ip-limit-config-content' aria-selected='false'><strong>Configuration</strong></a>
+                                    </li>
+                                </ul>
+                                <div class='tab-content' id='ip-limit-tabs-content'>
+                                    <br>
+                                    <!-- IP Limit Service Control Sub Tab -->
+                                    <div class='tab-pane fade show active' id='ip-limit-service' role='tabpanel'
+                                        aria-labelledby='ip-limit-service-tab'>
+                                        <form id="ip_limit_service_form">
+                                            <button id="ip_limit_start" type='button' class='btn btn-success'>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                                Start
+                                            </button>
+                                            <button id="ip_limit_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
+                                        </form>
+                                    </div>
+
+                                    <!-- IP Limit Configuration Sub Tab -->
+                                    <div class='tab-pane fade' id='ip-limit-config-content' role='tabpanel' aria-labelledby='ip-limit-config-tab'>
+                                        <form id="ip_limit_config">
+                                            <div class='form-group'>
+                                                <label for='block_duration'>Block Duration (seconds):</label>
+                                                <input type='text' class='form-control' id='block_duration'
+                                                    placeholder='Enter Block Duration' value="">
+                                                <div class="invalid-feedback">
+                                                    Please enter a valid positive number for block duration.
+                                                </div>
+                                            </div>
+                                            <div class='form-group'>
+                                                <label for='max_ips'>Max IPs per User:</label>
+                                                <input type='text' class='form-control' id='max_ips'
+                                                    placeholder='Enter Max IPs per User' value="">
+                                                <div class="invalid-feedback">
+                                                    Please enter a valid positive number for max IPs.
+                                                </div>
+                                            </div>
+                                            <button id="ip_limit_change_config" type='button' class='btn btn-primary'>Save Configuration</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <!-- /.card -->
@@ -268,7 +328,7 @@
             if (!input) return true;
 
             const ipV4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-            const ipV6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/;
+            const ipV6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,2}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,3}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,5}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,6}){1,6})|:((:[0-9a-fA-F]{1,7}){1,7}|:))$/;
             const domainRegex = /^(?!\-)(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}$/;
             const lowerInput = input.toLowerCase();
 
@@ -277,6 +337,11 @@
             if (domainRegex.test(lowerInput) && !lowerInput.startsWith("http://") && !lowerInput.startsWith("https://")) return true;
 
             return false;
+        }
+
+        function isValidPositiveNumber(value) {
+            if (!value) return false;
+            return /^[0-9]+$/.test(value) && parseInt(value) > 0;
         }
 
 
@@ -311,7 +376,7 @@
                 },
                 success: function (response) {
                     Swal.fire("Success!", successMessage, "success");
-                     if (showReload) { 
+                     if (showReload) {
                         Swal.fire("Success!", successMessage, "success").then(() => {
                                 location.reload();
                         });
@@ -356,14 +421,23 @@
                     } else {
                         input.removeClass('is-invalid');
                     }
-                } else if (id === 'ipv4' || id === 'ipv6') { // Apply isValidIPorDomain for both IPv4 and IPv6
+                } else if (id === 'ipv4' || id === 'ipv6') {
                     if (!isValidIPorDomain(input.val())) {
                         input.addClass('is-invalid');
                         isValid = false;
                     } else {
                         input.removeClass('is-invalid');
                     }
-                } else {
+                } else if (id === 'block_duration' || id === 'max_ips') {
+                    if (!isValidPositiveNumber(input.val())) {
+                        input.addClass('is-invalid');
+                        isValid = false;
+                    } else {
+                        input.removeClass('is-invalid');
+                    }
+                }
+
+                 else {
 
                     if (!input.val().trim()) {
                         input.addClass('is-invalid');
@@ -394,16 +468,18 @@
             const servicesMap = {
                 "hysteria_telegram_bot": "#telegram",
                 "hysteria_singbox": "#singbox",
-                "hysteria_normal_sub": "#normal"
+                "hysteria_normal_sub": "#normal",
+                "hysteria_iplimit": "#ip-limit-service"
             };
 
             Object.keys(servicesMap).forEach(service => {
                 let selector = servicesMap[service];
                 let isRunning = data[service];
+                let serviceName = service.replace("hysteria_", "");
 
                 if (isRunning) {
                     $(selector + " input, " + selector + " label").remove();
-                    $(selector + " .btn-success").remove();
+                    $(selector + " .btn-success").hide();
                     $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
                     $(selector + " .btn-danger").show();
 
@@ -415,6 +491,16 @@
                      }
                     if(service === "hysteria_normal_sub"){
                        $("#normal_start").prop('disabled', true);
+                    }
+                    if(service === "hysteria_iplimit"){
+                       $("#ip_limit_start").hide();
+                       $("#ip_limit_stop").show();
+                       $(".ip-limit-config-tab-li").show();
+                        if (!$("#ip-limit-config-tab").hasClass('active')) {
+                            $('#ip-limit-service-tab').tab('show');
+                        }
+
+
                     }
 
                 } else {
@@ -430,6 +516,13 @@
                      }
                      if(service === "hysteria_normal_sub"){
                        $("#normal_start").prop('disabled', false);
+                    }
+                     if(service === "hysteria_iplimit"){
+                       $("#ip_limit_start").show();
+                       $("#ip_limit_stop").hide();
+                       $(".ip-limit-config-tab-li").hide();
+                       $('#ip-limit-service-tab').tab('show');
+
                     }
                 }
             });
@@ -662,7 +755,39 @@
             });
           });
         }
+        function startIPLimit() {
+             sendRequest(
+                    "{{ url_for('start_ip_limit_api') }}",
+                    "POST",
+                    null,
+                    "IP Limit service started successfully!",
+                    "#ip_limit_start"
+                );
+        }
 
+        function stopIPLimit() {
+             sendRequest(
+                    "{{ url_for('stop_ip_limit_api') }}",
+                    "POST",
+                    null,
+                    "IP Limit service stopped successfully!",
+                    null
+                );
+        }
+
+        function configIPLimit() {
+            if (!validateForm('ip_limit_config')) return;
+            const blockDuration = $("#block_duration").val();
+            const maxIps = $("#max_ips").val();
+            sendRequest(
+                "{{ url_for('config_ip_limit_api') }}",
+                "POST",
+                { block_duration: blockDuration, max_ips: maxIps },
+                "IP Limit configuration saved successfully!",
+                "#ip_limit_change_config",
+                 false
+            );
+        }
 
 
         $("#telegram_start").on("click", startTelegram);
@@ -676,6 +801,10 @@
         $("#ip_change").on("click", saveIP);
         $("#download_backup").on("click", downloadBackup);
         $("#upload_backup").on("click", uploadBackup);
+        $("#ip_limit_start").on("click", startIPLimit);
+        $("#ip_limit_stop").on("click", stopIPLimit);
+        $("#ip_limit_change_config").on("click", configIPLimit);
+
 
         $('#singbox_domain, #normal_domain, #sni_domain').on('input', function () {
             if (isValidDomain($(this).val())) {
@@ -692,7 +821,7 @@
                 $(this).addClass('is-invalid');
             }
         });
-        $('#ipv4, #ipv6').on('input', function () { // Apply to both ipv4 and ipv6
+        $('#ipv4, #ipv6').on('input', function () {
             if (isValidIPorDomain($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else {
@@ -702,6 +831,13 @@
 
         $('#telegram_api_token, #telegram_admin_id').on('input', function () {
             if ($(this).val().trim() !== "") {
+                $(this).removeClass('is-invalid');
+            } else {
+                $(this).addClass('is-invalid');
+            }
+        });
+        $('#block_duration, #max_ips').on('input', function () {
+            if (isValidPositiveNumber($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else {
                 $(this).addClass('is-invalid');

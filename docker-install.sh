@@ -23,7 +23,7 @@ if [ ! -d "Hysteria2" ]; then
     git clone -b docker https://github.com/ReturnFI/Hysteria2.git
 fi
 
-cd Hysteria2
+cd /root/Hysteria2/
 
 # Ensure install.sh is executable
 chmod +x install.sh

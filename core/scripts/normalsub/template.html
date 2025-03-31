@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hysteria2 Subscription</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -20,7 +22,7 @@
             margin: 0;
             min-height: 100vh;
             transition: all 0.3s ease;
-            background: 
+            background:
                 radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
@@ -30,7 +32,7 @@
         }
 
         body.dark-mode {
-            background: 
+            background:
                 radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
                 radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
                 radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
@@ -76,9 +78,11 @@
             0% {
                 transform: translate(0, 0) rotate(0deg);
             }
+
             50% {
                 transform: translate(100px, 100px) rotate(180deg);
             }
+
             100% {
                 transform: translate(0, 0) rotate(360deg);
             }
@@ -170,7 +174,8 @@
         .qr-section {
             background: var(--card-bg-light);
             border-radius: 1rem;
-            overflow: hidden; /* Add this to contain the header */
+            overflow: hidden;
+            /* Add this to contain the header */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -289,7 +294,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         @media (max-width: 768px) {
@@ -299,6 +306,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="background-animation"></div>
     <div class="loading-indicator" id="loading-indicator">
@@ -330,7 +338,8 @@
                     Used / Total
                 </div>
                 <div class="card-body">
-                    <p class="card-text" data-toggle="tooltip" data-placement="top" title="Total Data Usage: {{ usage_raw }}">
+                    <p class="card-text" data-toggle="tooltip" data-placement="top"
+                        title="Total Data Usage: {{ usage_raw }}">
                         {{ usage }}
                     </p>
                 </div>
@@ -366,38 +375,38 @@
                             </a> -->
                         </div>
                     </div>
-        
+
                     <div class="qr-item">
                         <h3 class="qr-title">IPv4 URI</h3>
                         {% if ipv4_qrcode %}
-                            <img src="{{ ipv4_qrcode }}" alt="IPv4 QR Code" class="qrcode">
-                            <div class="btn-group">
-                                <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv4_uri }}')">
-                                    <i class="fas fa-copy"></i> Copy
-                                </button>
-                                <!-- <a href="{{ ipv4_uri }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                        <img src="{{ ipv4_qrcode }}" alt="IPv4 QR Code" class="qrcode">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv4_uri }}')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <!-- <a href="{{ ipv4_uri }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
                                     <i class="fas fa-external-link-alt"></i> Open
                                 </a> -->
-                            </div>
+                        </div>
                         {% else %}
-                            <p class="uri-unavailable">IPv4 URI not available</p>
+                        <p class="uri-unavailable">IPv4 URI not available</p>
                         {% endif %}
                     </div>
-        
+
                     <div class="qr-item">
                         <h3 class="qr-title">IPv6 URI</h3>
                         {% if ipv6_qrcode %}
-                            <img src="{{ ipv6_qrcode }}" alt="IPv6 QR Code" class="qrcode">
-                            <div class="btn-group">
-                                <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv6_uri }}')">
-                                    <i class="fas fa-copy"></i> Copy
-                                </button>
-                                <!-- <a href="{{ ipv6_uri }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                        <img src="{{ ipv6_qrcode }}" alt="IPv6 QR Code" class="qrcode">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="copyToClipboard('{{ ipv6_uri }}')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <!-- <a href="{{ ipv6_uri }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
                                     <i class="fas fa-external-link-alt"></i> Open
                                 </a> -->
-                            </div>
+                        </div>
                         {% else %}
-                            <p class="uri-unavailable">IPv6 URI not available</p>
+                        <p class="uri-unavailable">IPv6 URI not available</p>
                         {% endif %}
                     </div>
                 </div>
@@ -451,4 +460,5 @@
         });
     </script>
 </body>
+
 </html>

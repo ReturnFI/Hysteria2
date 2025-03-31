@@ -169,21 +169,36 @@ class HysteriaCLI:
     def _run_command(self, args: List[str]) -> str:
         try:
             command = ['python3', self.cli_path] + args
-            return subprocess.check_output(command, stderr=subprocess.DEVNULL, text=True).strip()
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            stdout, stderr = process.communicate()
+            if process.returncode != 0:
+                if "User not found" in stderr:
+                    return None  # Indicate user not found
+                else:
+                    print(f"Hysteria CLI error: {stderr}")
+                    raise subprocess.CalledProcessError(process.returncode, command, output=stdout, stderr=stderr)
+            return stdout.strip()
         except subprocess.CalledProcessError as e:
             print(f"Hysteria CLI error: {e}")
             raise
 
-    def get_user_info(self, username: str) -> UserInfo:
-        raw_info = json.loads(self._run_command(['get-user', '-u', username]))
-        return UserInfo(
-            username=username,
-            upload_bytes=raw_info.get('upload_bytes', 0),
-            download_bytes=raw_info.get('download_bytes', 0),
-            max_download_bytes=raw_info.get('max_download_bytes', 0),
-            account_creation_date=raw_info.get('account_creation_date', ''),
-            expiration_days=raw_info.get('expiration_days', 0)
-        )
+    def get_user_info(self, username: str) -> Optional[UserInfo]:
+        raw_info_str = self._run_command(['get-user', '-u', username])
+        if raw_info_str is None:
+            return None # User not found
+        try:
+            raw_info = json.loads(raw_info_str)
+            return UserInfo(
+                username=username,
+                upload_bytes=raw_info.get('upload_bytes', 0),
+                download_bytes=raw_info.get('download_bytes', 0),
+                max_download_bytes=raw_info.get('max_download_bytes', 0),
+                account_creation_date=raw_info.get('account_creation_date', ''),
+                expiration_days=raw_info.get('expiration_days', 0)
+            )
+        except json.JSONDecodeError as e:
+            print(f"JSONDecodeError: {e}, Raw output: {raw_info_str}")
+            return None 
 
     def get_user_uri(self, username: str, ip_version: Optional[str] = None) -> str:
         if ip_version:
@@ -322,6 +337,8 @@ class SubscriptionManager:
 
     def get_normal_subscription(self, username: str, user_agent: str) -> str:
         user_info = self.hysteria_cli.get_user_info(username)
+        if user_info is None:
+            return "User not found"
         ipv4_uri, ipv6_uri = self.hysteria_cli.get_uris(username)
         output_lines = [uri for uri in [ipv4_uri, ipv6_uri] if uri]
         if not output_lines:
@@ -439,7 +456,7 @@ class HysteriaServer:
         path = f'/{self.config.subpath}/'
         if not request.path.startswith(path):
             if request.transport is not None:
-                request.transport.close()  # Drop the connection immediately
+                request.transport.close()  
             raise web.HTTPForbidden()
         return await handler(request)
 
@@ -455,23 +472,27 @@ class HysteriaServer:
             if not username:
                 return web.Response(status=400, text="Error: Missing 'username' parameter.")
             user_agent = request.headers.get('User-Agent', '').lower()
+            user_info = self.hysteria_cli.get_user_info(username)
+            if user_info is None:
+                return web.Response(status=404, text=f"User '{username}' not found.") 
+
             if any(browser in user_agent for browser in ['chrome', 'firefox', 'safari', 'edge', 'opera']):
-                return await self._handle_html(request, username)
+                return await self._handle_html(request, username, user_info) 
             fragment = request.query.get('fragment', '')
             if not user_agent.startswith('hiddifynext') and ('singbox' in user_agent or 'sing' in user_agent):
-                return await self._handle_singbox(username, fragment)
-            return await self._handle_normalsub(request, username)
+                return await self._handle_singbox(username, fragment, user_info) 
+            return await self._handle_normalsub(request, username, user_info) 
         except ValueError as e:
             return web.Response(status=400, text=f"Error: {e}")
         except Exception as e:
             print(f"Internal Server Error: {e}")
             return web.Response(status=500, text="Error: Internal server error")
 
-    async def _handle_html(self, request: web.Request, username: str) -> web.Response:
-        context = await self._get_template_context(username)
+    async def _handle_html(self, request: web.Request, username: str, user_info: UserInfo) -> web.Response:
+        context = await self._get_template_context(username, user_info) 
         return web.Response(text=self.template_renderer.render(context), content_type='text/html')
 
-    async def _handle_singbox(self, username: str, fragment: str) -> web.Response:
+    async def _handle_singbox(self, username: str, fragment: str, user_info: UserInfo) -> web.Response:
         config_v4 = self.singbox_generator.generate_config(username, '4', fragment)
         config_v6 = self.singbox_generator.generate_config(username, '6', fragment)
         if config_v4 is None and config_v6 is None:
@@ -479,13 +500,14 @@ class HysteriaServer:
         combined_config = self.singbox_generator.combine_configs(username, config_v4, config_v6)
         return web.Response(text=json.dumps(combined_config, indent=4, sort_keys=True), content_type='application/json')
 
-    async def _handle_normalsub(self, request: web.Request, username: str) -> web.Response:
+    async def _handle_normalsub(self, request: web.Request, username: str, user_info: UserInfo) -> web.Response:
         user_agent = request.headers.get('User-Agent', '').lower()
         subscription = self.subscription_manager.get_normal_subscription(username, user_agent)
+        if subscription == "User not found":
+            return web.Response(status=404, text=f"User '{username}' not found.")
         return web.Response(text=subscription, content_type='text/plain')
 
-    async def _get_template_context(self, username: str) -> TemplateContext:
-        user_info = self.hysteria_cli.get_user_info(username)
+    async def _get_template_context(self, username: str, user_info: UserInfo) -> TemplateContext:
         ipv4_uri, ipv6_uri = self.hysteria_cli.get_uris(username)
 
         base_url = f"https://{self.config.domain}:{self.config.port}"

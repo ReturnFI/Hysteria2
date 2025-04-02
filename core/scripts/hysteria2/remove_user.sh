@@ -15,7 +15,7 @@ remove_user() {
     if [ -f "$USERS_FILE" ]; then
         if jq -e "has(\"$username\")" "$USERS_FILE" > /dev/null; then
             jq --arg username "$username" 'del(.[$username])' "$USERS_FILE" > "${USERS_FILE}.temp" && mv "${USERS_FILE}.temp" "$USERS_FILE"
-            python3 $CLI_PATH restart-hysteria2
+
             echo "User $username removed successfully."
         else
             echo -e "${red}Error:${NC} User $username not found."
@@ -24,5 +24,5 @@ remove_user() {
         echo -e "${red}Error:${NC} Config file $USERS_FILE not found."
     fi
 }
-
+python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 remove_user "$1"

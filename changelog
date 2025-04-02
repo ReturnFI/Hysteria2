@@ -1,1 +1,3 @@
-🛠️ Fix: Restart service to clear API traffic(Remove Users)
+🔒 Implement noindex for SEO restrictions
+📛 Fix: Return 404 User Not Found
+🚑 HotFix: Move restart command outside function

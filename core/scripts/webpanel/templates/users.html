@@ -456,16 +456,14 @@
         $(document).on("click", ".edit-user", function () {
             const username = $(this).data("user");
             const row = $(this).closest("tr");
-            const quota = row.find("td:eq(3)").text().trim(); // Now refers to Traffic Usage
-            const expiry = row.find("td:eq(4)").text().trim(); // Now expiry date is at index 4
-            const expiry_days = row.find("td:eq(5)").text().trim(); // Now expiry days is at index 5
-            const blocked = row.find("td:eq(6) i").hasClass("text-danger"); // Now Enable column is at index 6
+            const quota = row.find("td:eq(3)").text().trim();
+            const expiry = row.find("td:eq(4)").text().trim();
+            const expiry_days = row.find("td:eq(5)").text().trim();
+            const blocked = row.find("td:eq(6) i").hasClass("text-danger");
 
-            // Extract quota value from the combined format like "1.25 GB/10.00 GB (12.5%)"
             const quotaMatch = quota.match(/\/\s*([\d.]+)/);
             const quotaValue = quotaMatch ? parseFloat(quotaMatch[1]) : 0;
 
-            // Populate the modal fields
             $("#originalUsername").val(username);
             $("#editUsername").val(username);
             $("#editTrafficLimit").val(quotaValue);
@@ -475,7 +473,6 @@
 
         $("#editUserForm").on("submit", function (e) {
             e.preventDefault();
-             // Additional check before submitting (in case JS is disabled briefly)
             if (!validateUsername($("#editUsername").val(), "editUsernameError")) {
                 return;
             }
@@ -496,20 +493,6 @@
                 data: JSON.stringify(jsonData),
                 success: function (response) {
                     if (typeof response === 'string' && response.includes("User updated successfully")) {
-                        const username = $("#originalUsername").val();
-                        const row = $(`td[data-username='${username}']`).closest("tr");
-                        row.find("td:eq(2)").text($("#editUsername").val());
-                        // Update traffic usage display after edit (note: this is now just one column)
-                        // The backend will format this properly on page reload
-                        row.find("td:eq(3)").text($("#editTrafficLimit").val() + " GB");
-                        row.find("td:eq(5)").text($("#editExpirationDays").val());
-                        row.find("td:eq(6) i")
-                            .removeClass()
-                            .addClass(
-                                $("#editBlocked").prop("checked")
-                                    ? "fas fa-times-circle text-danger"
-                                    : "fas fa-check-circle text-success"
-                            );
                         // Hide the modal
                         $("#editUserModal").modal("hide");
                         Swal.fire({
@@ -517,23 +500,11 @@
                             text: "User updated successfully!",
                             icon: "success",
                             confirmButtonText: "OK",
+                        }).then(() => {
+                            location.reload();
                         });
                     }
                     else if (response && response.detail) {
-                        const username = $("#originalUsername").val();
-                        const row = $(`td[data-username='${username}']`).closest("tr");
-                        row.find("td:eq(2)").text($("#editUsername").val());
-                        // Update traffic usage display after edit (note: this is now just one column)
-                        // The backend will format this properly on page reload
-                        row.find("td:eq(3)").text($("#editTrafficLimit").val() + " GB");
-                        row.find("td:eq(5)").text($("#editExpirationDays").val());
-                        row.find("td:eq(6) i")
-                            .removeClass()
-                            .addClass(
-                                $("#editBlocked").prop("checked")
-                                    ? "fas fa-times-circle text-danger"
-                                    : "fas fa-check-circle text-success"
-                            );
                         // Hide the modal
                         $("#editUserModal").modal("hide");
 
@@ -543,6 +514,8 @@
                             text: response.detail,
                             icon: "success",
                             confirmButtonText: "OK",
+                        }).then(() => {
+                            location.reload();
                         });
                     } else {
                         $("#editUserModal").modal("hide");
@@ -566,7 +539,6 @@
             });
         });
 
-        // Prevent click event on the submit button from triggering form submission
         $("#editUserForm button[type='submit']").on("click", function (e) {
             e.preventDefault();
             $(this).closest("form").submit();

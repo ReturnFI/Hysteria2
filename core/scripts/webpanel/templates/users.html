@@ -75,8 +75,7 @@
                             </th>
                             <th>Status</th>
                             <th>Username</th>
-                            <th>Quota</th>
-                            <th>Used</th>
+                            <th>Traffic Usage</th>
                             <th class="text-nowrap">Expiry Date</th>
                             <th class="text-nowrap">Expiry Days</th>
                             <th>Enable</th>
@@ -100,7 +99,6 @@
                                 {% endif %}
                             </td>
                             <td data-username="{{ user.username }}">{{ user.username }}</td>
-                            <td>{{ user.quota }}</td>
                             <td>{{ user.traffic_used }}</td>
                             <td>{{ user.expiry_date }}</td>
                             <td>{{ user.expiry_days }}</td>
@@ -501,9 +499,11 @@
                         const username = $("#originalUsername").val();
                         const row = $(`td[data-username='${username}']`).closest("tr");
                         row.find("td:eq(2)").text($("#editUsername").val());
+                        // Update traffic usage display after edit (note: this is now just one column)
+                        // The backend will format this properly on page reload
                         row.find("td:eq(3)").text($("#editTrafficLimit").val() + " GB");
-                        row.find("td:eq(6)").text($("#editExpirationDays").val());
-                        row.find("td:eq(7) i")
+                        row.find("td:eq(5)").text($("#editExpirationDays").val());
+                        row.find("td:eq(6) i")
                             .removeClass()
                             .addClass(
                                 $("#editBlocked").prop("checked")
@@ -523,9 +523,11 @@
                         const username = $("#originalUsername").val();
                         const row = $(`td[data-username='${username}']`).closest("tr");
                         row.find("td:eq(2)").text($("#editUsername").val());
+                        // Update traffic usage display after edit (note: this is now just one column)
+                        // The backend will format this properly on page reload
                         row.find("td:eq(3)").text($("#editTrafficLimit").val() + " GB");
-                        row.find("td:eq(6)").text($("#editExpirationDays").val());
-                        row.find("td:eq(7) i")
+                        row.find("td:eq(5)").text($("#editExpirationDays").val());
+                        row.find("td:eq(6) i")
                             .removeClass()
                             .addClass(
                                 $("#editBlocked").prop("checked")

@@ -311,10 +311,10 @@
                         showRow = $(this).find("td:eq(1) i").hasClass("text-danger");
                         break;
                     case "enable":
-                        showRow = $(this).find("td:eq(7) i").hasClass("text-success");
+                        showRow = $(this).find("td:eq(6) i").hasClass("text-success");
                         break;
                     case "disable":
-                        showRow = $(this).find("td:eq(7) i").hasClass("text-danger");
+                        showRow = $(this).find("td:eq(6) i").hasClass("text-danger");
                         break;
                 }
 
@@ -456,14 +456,14 @@
         $(document).on("click", ".edit-user", function () {
             const username = $(this).data("user");
             const row = $(this).closest("tr");
-            const quota = row.find("td:eq(3)").text().trim();
-            const expiry = row.find("td:eq(5)").text().trim(); // Get expiry from the table
-            const expiry_days = row.find("td:eq(6)").text().trim();
-            const blocked = row.find("td:eq(7)").text().trim().toLowerCase() === 'disabled'; // Check if 'disabled'
+            const quota = row.find("td:eq(3)").text().trim(); // Now refers to Traffic Usage
+            const expiry = row.find("td:eq(4)").text().trim(); // Now expiry date is at index 4
+            const expiry_days = row.find("td:eq(5)").text().trim(); // Now expiry days is at index 5
+            const blocked = row.find("td:eq(6) i").hasClass("text-danger"); // Now Enable column is at index 6
 
-            // Extract numeric values from quota and expiry strings
-            const quotaValue = parseFloat(quota);
-            const expiryValue = parseInt(expiry); // Parse expiry as integer
+            // Extract quota value from the combined format like "1.25 GB/10.00 GB (12.5%)"
+            const quotaMatch = quota.match(/\/\s*([\d.]+)/);
+            const quotaValue = quotaMatch ? parseFloat(quotaMatch[1]) : 0;
 
             // Populate the modal fields
             $("#originalUsername").val(username);

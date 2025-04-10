@@ -20,7 +20,7 @@ requests==2.32.3
 typing_extensions==4.12.2
 urllib3==2.3.0
 yarl==1.18.3
-hysteria2-api==0.1.1
+hysteria2-api==0.1.2
 
 # webpanel
 annotated-types==0.7.0

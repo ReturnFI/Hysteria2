@@ -83,12 +83,26 @@ class User(BaseModel):
             except ValueError:
                 pass
 
-        traffic_used = User.__format_traffic(user_data.get("download_bytes", 0) + user_data.get("upload_bytes", 0))
+        # Calculate traffic values and percentage
+        used_bytes = user_data.get("download_bytes", 0) + user_data.get("upload_bytes", 0)
+        quota_bytes = user_data.get('max_download_bytes', 0)
+        
+        # Format individual values for combining
+        used_formatted = User.__format_traffic(used_bytes)
+        quota_formatted = User.__format_traffic(quota_bytes)
+        
+        # Calculate percentage if quota is not zero
+        percentage = 0
+        if quota_bytes > 0:
+            percentage = (used_bytes / quota_bytes) * 100
+        
+        # Combine the values with percentage
+        traffic_used = f"{used_formatted}/{quota_formatted} ({percentage:.1f}%)"
 
         return {
             'username': user_data['username'],
             'status': user_data.get('status', 'Not Active'),
-            'quota': User.__format_traffic(user_data.get('max_download_bytes', 0)),
+            'quota': User.__format_traffic(quota_bytes),
             'traffic_used': traffic_used,
             'expiry_date': expiry_date,
             'expiry_days': expiration_days,

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-import subprocess
 import json
 import os
+import json
+from hysteria2_api import Hysteria2Client
 
 # Define static variables for paths and URLs
 CONFIG_FILE = '/etc/hysteria/config.json'
 USERS_FILE = '/etc/hysteria/users.json'
-TRAFFIC_API_URL = 'http://127.0.0.1:25413/traffic?clear=1'
-ONLINE_API_URL = 'http://127.0.0.1:25413/online'
+API_BASE_URL = 'http://127.0.0.1:25413'
 
 def traffic_status():
     green = '\033[0;32m'
@@ -15,8 +15,10 @@ def traffic_status():
     NC = '\033[0m'
 
     try:
-        secret = subprocess.check_output(['jq', '-r', '.trafficStats.secret', CONFIG_FILE]).decode().strip()
-    except subprocess.CalledProcessError as e:
+        with open(CONFIG_FILE, 'r') as config_file:
+            config = json.load(config_file)
+            secret = config.get('trafficStats', {}).get('secret')
+    except (json.JSONDecodeError, FileNotFoundError) as e:
         print(f"Error: Failed to read secret from {CONFIG_FILE}. Details: {e}")
         return
 
@@ -24,29 +26,16 @@ def traffic_status():
         print("Error: Secret not found in config.json")
         return
 
-    try:
-        response = subprocess.check_output(['curl', '-s', '-H', f'Authorization: {secret}', TRAFFIC_API_URL]).decode().strip()
-    except subprocess.CalledProcessError as e:
-        print(f"Error: Failed to fetch traffic data. Details: {e}")
-        return
+    client = Hysteria2Client(base_url=API_BASE_URL, secret=secret)
 
     try:
-        online_response = subprocess.check_output(['curl', '-s', '-H', f'Authorization: {secret}', ONLINE_API_URL]).decode().strip()
-    except subprocess.CalledProcessError as e:
-        print(f"Error: Failed to fetch online status data. Details: {e}")
+        traffic_stats = client.get_traffic_stats(clear=True)
+        
+        online_status = client.get_online_clients()
+    except Exception as e:
+        print(f"Error communicating with Hysteria2 API: {e}")
         return
 
-    if not online_response:
-        print("No online data available.")
-        return
-
-    response_dict = {}
-    if response and response != "{}":
-        response_dict = json.loads(response)
-    
-    online_dict = json.loads(online_response)
-
-    # Load the current users.json data
     users_data = {}
     if os.path.exists(USERS_FILE):
         try:
@@ -59,32 +48,28 @@ def traffic_status():
     for user in users_data:
         users_data[user]["status"] = "Offline"
 
-    for user, online_status in online_dict.items():
-        if user in users_data:
-            users_data[user]["status"] = "Online" if online_status == 1 else "Offline"
+    for user_id, status in online_status.items():
+        if user_id in users_data:
+            users_data[user_id]["status"] = "Online" if status.is_online else "Offline"
         else:
-            users_data[user] = {
+            users_data[user_id] = {
                 "upload_bytes": 0,
                 "download_bytes": 0,
-                "status": "Online" if online_status == 1 else "Offline"
+                "status": "Online" if status.is_online else "Offline"
             }
 
-    for user, traffic_info in response_dict.items():
-        tx_bytes = traffic_info.get('tx', 0)
-        rx_bytes = traffic_info.get('rx', 0)
-
-        if user in users_data:
-            users_data[user]["upload_bytes"] = users_data[user].get("upload_bytes", 0) + tx_bytes
-            users_data[user]["download_bytes"] = users_data[user].get("download_bytes", 0) + rx_bytes
+    for user_id, stats in traffic_stats.items():
+        if user_id in users_data:
+            users_data[user_id]["upload_bytes"] = users_data[user_id].get("upload_bytes", 0) + stats.upload_bytes
+            users_data[user_id]["download_bytes"] = users_data[user_id].get("download_bytes", 0) + stats.download_bytes
         else:
-            online_status = online_dict.get(user, 0)
-            users_data[user] = {
-                "upload_bytes": tx_bytes,
-                "download_bytes": rx_bytes,
-                "status": "Online" if online_status == 1 else "Offline"
+            online = user_id in online_status and online_status[user_id].is_online
+            users_data[user_id] = {
+                "upload_bytes": stats.upload_bytes,
+                "download_bytes": stats.download_bytes,
+                "status": "Online" if online else "Offline"
             }
 
-    # Save the updated data back to users.json
     with open(USERS_FILE, 'w') as users_file:
         json.dump(users_data, users_file, indent=4)
 

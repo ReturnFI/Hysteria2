@@ -1,3 +1,7 @@
-📄 Improve user page and display user information
+## [1.5.0] - 2025-04-11
+### Added
+- Integrated Hysteria2-API package (https://github.com/ReturnFI/Hysteria2-API)
+- Added support for managing traffic file via API
 
-Thanks to @SeyedHashtag for their contribution!💖
+### Changed
+- Refactored traffic-related logic to use the new API package

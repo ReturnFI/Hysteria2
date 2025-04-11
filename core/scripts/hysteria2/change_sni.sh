@@ -19,25 +19,26 @@ update_sni() {
     openssl req -new -x509 -days 36500 -key ca.key -out ca.crt -subj "/CN=$sni" >/dev/null 2>&1
     chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
     chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
-    fingerprint=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s/://g')
+    sha256=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s///g')
 
-    sha256=$(python3 - <<EOF
-import base64
-import binascii
+#     sha256=$(python3 - <<EOF
+# import base64
+# import binascii
 
-# Hexadecimal string
-hex_string = "$fingerprint"
+# # Hexadecimal string
+# hex_string = "$fingerprint"
 
-# Convert hex to binary
-binary_data = binascii.unhexlify(hex_string)
+# # Convert hex to binary
+# binary_data = binascii.unhexlify(hex_string)
 
-# Encode binary data to base64
-base64_encoded = base64.b64encode(binary_data).decode('utf-8')
+# # Encode binary data to base64
+# base64_encoded = base64.b64encode(binary_data).decode('utf-8')
 
-# Print the result prefixed with 'sha256/'
-print('sha256/' + base64_encoded)
-EOF
-)
+# # Print the result prefixed with 'sha256/'
+# print('sha256/' + base64_encoded)
+# EOF
+# )
+
     echo "SHA-256 fingerprint generated: $sha256"
 
     if [ -f "$CONFIG_FILE" ]; then

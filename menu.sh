@@ -485,39 +485,40 @@ telegram_bot_handler() {
 
 singbox_handler() {
     while true; do
-        echo -e "${cyan}1.${NC} Start Singbox service"
+        echo -e "${cyan}Merged with Normal-Sub sublink.${NC}"
+        # echo -e "${cyan}1.${NC} Start Singbox service"
         echo -e "${red}2.${NC} Stop Singbox service"
         echo "0. Back"
         read -p "Choose an option: " option
 
         case $option in
-            1)
-                if systemctl is-active --quiet hysteria-singbox.service; then
-                    echo "The hysteria-singbox.service is already active."
-                else
-                    while true; do
-                        read -e -p "Enter the domain name for the SSL certificate: " domain
-                        if [ -z "$domain" ]; then
-                            echo "Domain name cannot be empty. Please try again."
-                        else
-                            break
-                        fi
-                    done
+            # 1)
+            #     if systemctl is-active --quiet hysteria-singbox.service; then
+            #         echo "The hysteria-singbox.service is already active."
+            #     else
+            #         while true; do
+            #             read -e -p "Enter the domain name for the SSL certificate: " domain
+            #             if [ -z "$domain" ]; then
+            #                 echo "Domain name cannot be empty. Please try again."
+            #             else
+            #                 break
+            #             fi
+            #         done
 
-                    while true; do
-                        read -e -p "Enter the port number for the service: " port
-                        if [ -z "$port" ]; then
-                            echo "Port number cannot be empty. Please try again."
-                        elif ! [[ "$port" =~ ^[0-9]+$ ]]; then
-                            echo "Port must be a number. Please try again."
-                        else
-                            break
-                        fi
-                    done
+            #         while true; do
+            #             read -e -p "Enter the port number for the service: " port
+            #             if [ -z "$port" ]; then
+            #                 echo "Port number cannot be empty. Please try again."
+            #             elif ! [[ "$port" =~ ^[0-9]+$ ]]; then
+            #                 echo "Port must be a number. Please try again."
+            #             else
+            #                 break
+            #             fi
+            #         done
 
-                    python3 $CLI_PATH singbox -a start -d "$domain" -p "$port"
-                fi
-                ;;
+            #         python3 $CLI_PATH singbox -a start -d "$domain" -p "$port"
+            #     fi
+            #     ;;
             2)
                 if ! systemctl is-active --quiet hysteria-singbox.service; then
                     echo "The hysteria-singbox.service is already inactive."
@@ -1011,7 +1012,7 @@ display_advance_menu() {
     echo -e "${cyan}[3] ${NC}↝ Configure WARP"
     echo -e "${red}[4] ${NC}↝ Uninstall WARP"
     echo -e "${green}[5] ${NC}↝ Telegram Bot"
-    echo -e "${green}[6] ${NC}↝ SingBox SubLink"
+    echo -e "${green}[6] ${NC}↝ SingBox SubLink(${red}Deprecated${NC})"
     echo -e "${green}[7] ${NC}↝ Normal-SUB SubLink"
     echo -e "${green}[8] ${NC}↝ Web Panel"
     echo -e "${cyan}[9] ${NC}↝ Change Port Hysteria2"

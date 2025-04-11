@@ -117,6 +117,23 @@ else
     echo "$NORMALSUB_ENV not found. Skipping SUBPATH check."
 fi
 
+CONFIG_FILE="/etc/hysteria/config.json"
+if [ -f "$CONFIG_FILE" ]; then
+    echo "Checking and converting pinSHA256 format in config.json"
+    
+    if grep -q "pinSHA256.*=" "$CONFIG_FILE"; then
+        echo "Converting pinSHA256 from base64 to hex format"
+        
+        HEX_FINGERPRINT=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in /etc/hysteria/ca.crt | sed 's/.*=//;s///g')
+        
+        sed -i "s|\"pinSHA256\": \"sha256/.*\"|\"pinSHA256\": \"$HEX_FINGERPRINT\"|" "$CONFIG_FILE"
+        
+        echo "pinSHA256 converted to hex format: $HEX_FINGERPRINT"
+    else
+        echo "pinSHA256 appears to already be in hex format or not present, no conversion needed"
+    fi
+fi
+
 echo "Setting ownership and permissions"
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt

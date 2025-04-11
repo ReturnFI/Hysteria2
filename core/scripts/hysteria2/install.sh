@@ -19,27 +19,27 @@ install_hysteria() {
     wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
     wget -O /etc/hysteria/geoip.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geoip.dat >/dev/null 2>&1
     
-    fingerprint=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s/://g')
+    # fingerprint=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s/://g')
     
     echo "Generating base64 encoded SHA-256 fingerprint..."
-    cat <<EOF > generate.py
-import base64
-import binascii
+#     cat <<EOF > generate.py
+# import base64
+# import binascii
 
-# Hexadecimal string
-hex_string = "$fingerprint"
+# # Hexadecimal string
+# hex_string = "$fingerprint"
 
-# Convert hex to binary
-binary_data = binascii.unhexlify(hex_string)
+# # Convert hex to binary
+# binary_data = binascii.unhexlify(hex_string)
 
-# Encode binary data to base64
-base64_encoded = base64.b64encode(binary_data).decode('utf-8')
+# # Encode binary data to base64
+# base64_encoded = base64.b64encode(binary_data).decode('utf-8')
 
-# Print the result prefixed with 'sha256/'
-print('sha256/' + base64_encoded)
-EOF
+# # Print the result prefixed with 'sha256/'
+# print('sha256/' + base64_encoded)
+# EOF
 
-    sha256=$(python3 generate.py)
+    sha256=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s///g')
     
     if [[ $port =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )); then
         if ss -tuln | grep -q ":$port\b"; then

@@ -5,7 +5,7 @@
 [![Language](https://img.shields.io/badge/Language-Persian-009688?logo=google-translate&logoColor=white)](README-fa.md)  
 
 [![Latest Release](https://img.shields.io/badge/Release-Latest-brightgreen?logo=github)](https://github.com/ReturnFI/Hysteria2/releases)
-[![License](https://img.shields.io/badge/License-MIT-blueviolet?logo=open-source-initiative&logoColor=white)](LICENSE)  
+[![License](https://img.shields.io/badge/License-GPL-blueviolet?logo=open-source-initiative&logoColor=white)](LICENSE)  
 
 [![Made with ❤️](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red)](#)
 

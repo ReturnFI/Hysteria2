@@ -68,19 +68,13 @@
                             <div class='tab-pane fade show active' id='subs' role='tabpanel' aria-labelledby='subs-tab'>
                                 <ul class='nav nav-tabs' id='subs-tabs' role='tablist'>
                                     <li class='nav-item'>
-                                        <a class='nav-link active' id='singbox-tab' data-toggle='tab' href='#singbox'
-                                            role='tab' aria-controls='singbox'
-                                            aria-selected='true'><strong>SingBox</strong></a>
-                                    </li>
-                                    <li class='nav-item'>
-                                        <a class='nav-link' id='normal-tab' data-toggle='tab' href='#normal' role='tab'
+                                        <a class='nav-link active' id='normal-tab' data-toggle='tab' href='#normal' role='tab'
                                             aria-controls='normal' aria-selected='false'><strong>Normal</strong></a>
                                     </li>
                                 </ul>
                                 <div class='tab-content' id='subs-tabs-content'>
-                                    <br>
-                                    <!-- SingBox Sub Tab -->
-                                    <div class='tab-pane fade show active' id='singbox' role='tabpanel'
+                                     <br>
+                                    <!-- <div class='tab-pane fade show active' id='singbox' role='tabpanel'
                                         aria-labelledby='singbox-tab'>
                                         <form id="singbox">
                                             <div class='form-group'>
@@ -107,10 +101,10 @@
                                                 style="display: none;">Stop</button>
 
                                         </form>
-                                    </div>
+                                    </div> -->
 
                                     <!-- Normal Sub Tab -->
-                                    <div class='tab-pane fade' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
+                                    <div class='tab-pane fade show active' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
                                         <form id="normal">
                                             <div class='form-group'>
                                                 <label for='normal_domain'>Domain:</label>
@@ -467,7 +461,7 @@
         function updateServiceUI(data) {
             const servicesMap = {
                 "hysteria_telegram_bot": "#telegram",
-                "hysteria_singbox": "#singbox",
+                // "hysteria_singbox": "#singbox", // singbox removed
                 "hysteria_normal_sub": "#normal",
                 "hysteria_iplimit": "#ip-limit-service"
             };
@@ -483,9 +477,9 @@
                     $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
                     $(selector + " .btn-danger").show();
 
-                     if (service === "hysteria_singbox") {
-                         $("#singbox_start").prop('disabled', true);
-                     }
+                    // if (service === "hysteria_singbox") { // singbox removed
+                    //      $("#singbox_start").prop('disabled', true);
+                    //  }
                      if(service === "hysteria_telegram_bot"){
                          $("#telegram_start").prop('disabled', true);
                      }
@@ -508,9 +502,9 @@
                     $(selector + " .btn-success").show();
                     $(selector + " .btn-danger").hide();
                     $(selector + " .alert-info").remove();
-                     if (service === "hysteria_singbox") {
-                         $("#singbox_start").prop('disabled', false);
-                     }
+                    //  if (service === "hysteria_singbox") { // singbox removed
+                    //      $("#singbox_start").prop('disabled', false);
+                    //  }
                       if(service === "hysteria_telegram_bot"){
                          $("#telegram_start").prop('disabled', false);
                      }
@@ -598,32 +592,32 @@
             });
         }
 
-        function startSingbox() {
-            if (!validateForm('singbox')) return;
-            const domain = $("#singbox_domain").val();
-            const port = $("#singbox_port").val();
-            confirmAction("start SingBox", function () {
-                sendRequest(
-                    "{{ url_for('singbox_start_api') }}",
-                    "POST",
-                    { domain: domain, port: port },
-                    "SingBox started successfully!",
-                    "#singbox_start"
-                );
-            });
-        }
+        // function startSingbox() { // singbox removed
+        //     if (!validateForm('singbox')) return;
+        //     const domain = $("#singbox_domain").val();
+        //     const port = $("#singbox_port").val();
+        //     confirmAction("start SingBox", function () {
+        //         sendRequest(
+        //             "{{ url_for('singbox_start_api') }}",
+        //             "POST",
+        //             { domain: domain, port: port },
+        //             "SingBox started successfully!",
+        //             "#singbox_start"
+        //         );
+        //     });
+        // }
 
-        function stopSingbox() {
-            confirmAction("stop SingBox", function () {
-                sendRequest(
-                    "{{ url_for('singbox_stop_api') }}",
-                    "DELETE",
-                    null,
-                    "SingBox stopped successfully!",
-                     null
-                );
-            });
-        }
+        // function stopSingbox() { // singbox removed
+        //     confirmAction("stop SingBox", function () {
+        //         sendRequest(
+        //             "{{ url_for('singbox_stop_api') }}",
+        //             "DELETE",
+        //             null,
+        //             "SingBox stopped successfully!",
+        //              null
+        //         );
+        //     });
+        // }
 
         function startNormal() {
             if (!validateForm('normal')) return;
@@ -792,8 +786,8 @@
 
         $("#telegram_start").on("click", startTelegram);
         $("#telegram_stop").on("click", stopTelegram);
-        $("#singbox_start").on("click", startSingbox);
-        $("#singbox_stop").on("click", stopSingbox);
+        // $("#singbox_start").on("click", startSingbox); // singbox removed
+        // $("#singbox_stop").on("click", stopSingbox); // singbox removed
         $("#normal_start").on("click", startNormal);
         $("#normal_stop").on("click", stopNormal);
         $("#port_change").on("click", changePort);
@@ -806,7 +800,8 @@
         $("#ip_limit_change_config").on("click", configIPLimit);
 
 
-        $('#singbox_domain, #normal_domain, #sni_domain').on('input', function () {
+        // $('#singbox_domain, #normal_domain, #sni_domain').on('input', function () { // singbox removed
+        $('#normal_domain, #sni_domain').on('input', function () {
             if (isValidDomain($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else {
@@ -814,7 +809,8 @@
             }
         });
 
-        $('#singbox_port, #normal_port, #hysteria_port').on('input', function () {
+        // $('#singbox_port, #normal_port, #hysteria_port').on('input', function () { // singbox removed
+        $('#normal_port, #hysteria_port').on('input', function () {
             if (isValidPort($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else {

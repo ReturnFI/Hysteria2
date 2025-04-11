@@ -12,6 +12,9 @@ class UserInfoResponse(BaseModel):
     expiration_days: int
     account_creation_date: str
     blocked: bool
+    status: str
+    upload_bytes: int
+    download_bytes: int
 
 
 class UserListResponse(RootModel):  # type: ignore

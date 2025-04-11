@@ -141,8 +141,8 @@ def __parse_services_status(services_status: dict[str, bool]) -> ServerServicesS
             parsed_services_status['hysteria_telegram_bot'] = status
         elif 'hysteria-normal-sub' in service:
             parsed_services_status['hysteria_normal_sub'] = status
-        elif 'hysteria-singbox' in service:
-            parsed_services_status['hysteria_singbox'] = status
+        # elif 'hysteria-singbox' in service:
+        #     parsed_services_status['hysteria_singbox'] = status
         elif 'wg-quick' in service:
             parsed_services_status['hysteria_warp'] = status
     return ServerServicesStatusResponse(**parsed_services_status)

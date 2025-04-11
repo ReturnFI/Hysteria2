@@ -87,15 +87,15 @@ def process_show_user(message):
     result_lines = combined_result.strip().split('\n')
     
     uri_v4 = ""
-    singbox_sublink = ""
+    # singbox_sublink = ""
     normal_sub_sublink = ""
 
     for line in result_lines:
         line = line.strip()
         if line.startswith("hy2://"):
             uri_v4 = line
-        elif line.startswith("Singbox Sublink:"):
-            singbox_sublink = result_lines[result_lines.index(line) + 1].strip()
+        # elif line.startswith("Singbox Sublink:"):
+        #     singbox_sublink = result_lines[result_lines.index(line) + 1].strip()
         elif line.startswith("Normal-SUB Sublink:"):
             normal_sub_sublink = result_lines[result_lines.index(line) + 1].strip()
 
@@ -119,8 +119,8 @@ def process_show_user(message):
                types.InlineKeyboardButton("Block User", callback_data=f"block_user:{actual_username}"))
 
     caption = f"{formatted_details}\n\n**IPv4 URI:**\n\n`{uri_v4}`"
-    if singbox_sublink:
-        caption += f"\n\n**SingBox SUB:**\n{singbox_sublink}"
+    # if singbox_sublink:
+    #     caption += f"\n\n**SingBox SUB:**\n{singbox_sublink}"
     if normal_sub_sublink:
         caption += f"\n\n**Normal SUB:**\n{normal_sub_sublink}"
 

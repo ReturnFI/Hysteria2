@@ -39,7 +39,7 @@ install_hysteria() {
 # print('sha256/' + base64_encoded)
 # EOF
 
-    sha256=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt)
+    sha256=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s///g')
     
     if [[ $port =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )); then
         if ss -tuln | grep -q ":$port\b"; then

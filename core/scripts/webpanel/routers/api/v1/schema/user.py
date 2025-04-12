@@ -13,8 +13,8 @@ class UserInfoResponse(BaseModel):
     account_creation_date: str
     blocked: bool
     status: str
-    upload_bytes: int
-    download_bytes: int
+    upload_bytes: int | None = None
+    download_bytes: int | None = None
 
 
 class UserListResponse(RootModel):  # type: ignore

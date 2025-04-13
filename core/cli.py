@@ -169,8 +169,20 @@ def reset_user(username: str):
 @click.option('--username', '-u', required=True, help='Username for the user to remove', type=str)
 def remove_user(username: str):
     try:
+        cli_api.kick_user_by_name(username)
+        cli_api.traffic_status()
         cli_api.remove_user(username)
         click.echo(f"User '{username}' removed successfully.")
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+@cli.command('kick-user')
+@click.option('--username', '-u', required=True, help='Username of the user to kick')
+def kick_user(username: str):
+    """Kicks a specific user by username."""
+    try:
+        cli_api.kick_user_by_name(username)
+        click.echo(f"User '{username}' kicked successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 

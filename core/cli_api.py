@@ -49,6 +49,8 @@ class Command(Enum):
     SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
     VERSION = os.path.join(SCRIPT_DIR, 'hysteria2', 'version.py')
     LIMIT_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'limit.sh')
+    KICK_USER_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'kickuser.sh')
+
 
 # region Custom Exceptions
 
@@ -302,6 +304,17 @@ def remove_user(username: str):
     '''
     run_cmd(['bash', Command.REMOVE_USER.value, username])
 
+def kick_user_by_name(username: str):
+    '''Kicks a specific user by username.'''
+    if not username:
+        raise InvalidInputError('Username must be provided to kick a specific user.')
+    script_path = Command.KICK_USER_SCRIPT.value
+    if not os.path.exists(script_path):
+        raise ScriptNotFoundError(f"Kick user script not found at: {script_path}")
+    try:
+        subprocess.run(['bash', script_path, username], check=True)
+    except subprocess.CalledProcessError as e:
+        raise CommandExecutionError(f"Failed to execute kick user script: {e}")
 
 # TODO: it's better to return json
 def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: bool, normalsub: bool) -> str | None:

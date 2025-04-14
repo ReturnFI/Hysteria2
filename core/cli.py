@@ -148,6 +148,8 @@ def add_user(username: str, traffic_limit: int, expiration_days: int, password: 
 @click.option('--blocked', '-b', is_flag=True, help='Block the user')
 def edit_user(username: str, new_username: str, new_traffic_limit: int, new_expiration_days: int, renew_password: bool, renew_creation_date: bool, blocked: bool):
     try:
+        cli_api.kick_user_by_name(username)
+        cli_api.traffic_status(display_output=False)
         cli_api.edit_user(username, new_username, new_traffic_limit, new_expiration_days,
                           renew_password, renew_creation_date, blocked)
         click.echo(f"User '{username}' updated successfully.")

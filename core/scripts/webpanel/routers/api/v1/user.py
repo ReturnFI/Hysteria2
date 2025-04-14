@@ -85,6 +85,8 @@ async def edit_user_api(username: str, body: EditUserInputBody):
         HTTPException: if an error occurs while editing the user.
     """
     try:
+        cli_api.kick_user_by_name(username)
+        cli_api.traffic_status(display_output=False)
         cli_api.edit_user(username, body.new_username, body.new_traffic_limit, body.new_expiration_days,
                           body.renew_password, body.renew_creation_date, body.blocked)
         return DetailResponse(detail=f'User {username} has been edited.')

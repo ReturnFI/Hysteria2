@@ -48,7 +48,7 @@ def main():
     try:
         api_secret = get_api_secret(CONFIG_FILE)
         # print(api_secret)
-        print(f"Kicking user: {username_to_kick}")
+        # print(f"Kicking user: {username_to_kick}")
 
         client = Hysteria2Client(
             base_url=API_BASE_URL,
@@ -57,7 +57,7 @@ def main():
 
         client.kick_clients([username_to_kick])
 
-        print(f"User '{username_to_kick}' kicked successfully.")
+        # print(f"User '{username_to_kick}' kicked successfully.")
         sys.exit(0)
 
     except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError) as e:

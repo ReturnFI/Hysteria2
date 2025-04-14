@@ -24,5 +24,5 @@ remove_user() {
         echo -e "${red}Error:${NC} Config file $USERS_FILE not found."
     fi
 }
-python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
+# python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 remove_user "$1"

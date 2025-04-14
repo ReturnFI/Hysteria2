@@ -224,7 +224,7 @@ edit_user() {
     new_creation_date=${new_creation_date:-$creation_date}
     new_blocked=$(convert_blocked_status "${new_blocked:-$blocked}")
 
-  python3 $CLI_PATH restart-hysteria2
+#   python3 $CLI_PATH restart-hysteria2
   
   if ! update_user_info "$username" "$new_username" "$new_password" "$new_traffic_limit" "$new_expiration_days" "$new_creation_date" "$new_blocked"; then
         return 1 # Update user failed

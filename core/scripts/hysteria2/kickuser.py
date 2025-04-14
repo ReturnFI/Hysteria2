@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import sys
+import os
+from hysteria2_api import Hysteria2Client, Hysteria2Error
+
+CONFIG_FILE = '/etc/hysteria/config.json'
+API_BASE_URL = 'http://127.0.0.1:25413'
+
+def get_api_secret(config_path: str) -> str:
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config_data = json.load(f)
+
+        traffic_stats = config_data.get('trafficStats')
+        if not isinstance(traffic_stats, dict):
+             raise KeyError("Key 'trafficStats' not found or is not a dictionary in config")
+
+        secret = traffic_stats.get('secret')
+        if not secret:
+            raise ValueError("Value for 'trafficStats.secret' not found or is empty in config")
+
+        return secret
+
+    except json.JSONDecodeError as e:
+        raise json.JSONDecodeError(f"Error parsing JSON file: {config_path} - {e.msg}", e.doc, e.pos)
+    except KeyError as e:
+         raise KeyError(f"Missing expected key {e} in {config_path}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Kick a Hysteria2 user via the API.",
+        usage="%(prog)s <username>" 
+    )
+    parser.add_argument(
+        "username",
+        help="The username (Auth identity) to kick."
+    )
+    args = parser.parse_args()
+    username_to_kick = args.username
+
+    try:
+        api_secret = get_api_secret(CONFIG_FILE)
+        # print(api_secret)
+        # print(f"Kicking user: {username_to_kick}")
+
+        client = Hysteria2Client(
+            base_url=API_BASE_URL,
+            secret=api_secret
+        )
+
+        client.kick_clients([username_to_kick])
+
+        # print(f"User '{username_to_kick}' kicked successfully.")
+        sys.exit(0)
+
+    except (FileNotFoundError, KeyError, ValueError, json.JSONDecodeError) as e:
+        print(f"Configuration Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Hysteria2Error as e:
+        print(f"API Error kicking user '{username_to_kick}': {e}", file=sys.stderr)
+        sys.exit(1)
+    except ConnectionError as e:
+         print(f"Connection Error: Could not connect to API at {API_BASE_URL}. Is it running? Details: {e}", file=sys.stderr)
+         sys.exit(1)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

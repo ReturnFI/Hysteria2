@@ -85,6 +85,8 @@ async def edit_user_api(username: str, body: EditUserInputBody):
         HTTPException: if an error occurs while editing the user.
     """
     try:
+        cli_api.kick_user_by_name(username)
+        cli_api.traffic_status(display_output=False)
         cli_api.edit_user(username, body.new_username, body.new_traffic_limit, body.new_expiration_days,
                           body.renew_password, body.renew_creation_date, body.blocked)
         return DetailResponse(detail=f'User {username} has been edited.')
@@ -104,11 +106,20 @@ async def remove_user_api(username: str):
         A DetailResponse with a message indicating the user has been removed.
 
     Raises:
-        HTTPException: if an error occurs while removing the user.
+        HTTPException: 404 if the user is not found, 400 if another error occurs.
     """
     try:
+        user = cli_api.get_user(username)
+        if not user:
+            raise HTTPException(status_code=404, detail=f'User {username} not found.')
+        
+        cli_api.kick_user_by_name(username)
+        cli_api.traffic_status(display_output=False)
         cli_api.remove_user(username)
         return DetailResponse(detail=f'User {username} has been removed.')
+    except HTTPException:
+
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
@@ -128,8 +139,14 @@ async def reset_user_api(username: str):
         HTTPException: if an error occurs while resetting the user.
     """
     try:
+        user = cli_api.get_user(username)
+        if not user:
+            raise HTTPException(status_code=404, detail=f'User {username} not found.')
+        
         cli_api.reset_user(username)
         return DetailResponse(detail=f'User {username} has been reset.')
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 

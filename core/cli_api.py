@@ -49,7 +49,7 @@ class Command(Enum):
     SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
     VERSION = os.path.join(SCRIPT_DIR, 'hysteria2', 'version.py')
     LIMIT_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'limit.sh')
-    KICK_USER_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'kickuser.sh')
+    KICK_USER_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'kickuser.py')
 
 
 # region Custom Exceptions
@@ -312,7 +312,7 @@ def kick_user_by_name(username: str):
     if not os.path.exists(script_path):
         raise ScriptNotFoundError(f"Kick user script not found at: {script_path}")
     try:
-        subprocess.run(['bash', script_path, username], check=True)
+        subprocess.run(['python3', script_path, username], check=True)
     except subprocess.CalledProcessError as e:
         raise CommandExecutionError(f"Failed to execute kick user script: {e}")
 
@@ -339,9 +339,10 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
 # region Server
 
 
-def traffic_status():
+def traffic_status(no_gui=False, display_output=False):
     '''Fetches traffic status.'''
-    traffic.traffic_status()
+    data = traffic.traffic_status(no_gui=True if not display_output else no_gui)
+    return data
 
 
 # TODO: it's better to return json

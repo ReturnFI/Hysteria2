@@ -9,7 +9,7 @@ CONFIG_FILE = '/etc/hysteria/config.json'
 USERS_FILE = '/etc/hysteria/users.json'
 API_BASE_URL = 'http://127.0.0.1:25413'
 
-def traffic_status():
+def traffic_status(no_gui=False):
     green = '\033[0;32m'
     cyan = '\033[0;36m'
     NC = '\033[0m'
@@ -73,7 +73,10 @@ def traffic_status():
     with open(USERS_FILE, 'w') as users_file:
         json.dump(users_data, users_file, indent=4)
 
-    display_traffic_data(users_data, green, cyan, NC)
+    if not no_gui:
+        display_traffic_data(users_data, green, cyan, NC)
+    
+    return users_data
 
 def display_traffic_data(data, green, cyan, NC):
     if not data:

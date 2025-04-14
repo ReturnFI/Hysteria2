@@ -170,7 +170,7 @@ def reset_user(username: str):
 def remove_user(username: str):
     try:
         cli_api.kick_user_by_name(username)
-        cli_api.traffic_status()
+        cli_api.traffic_status(display_output=False)
         cli_api.remove_user(username)
         click.echo(f"User '{username}' removed successfully.")
     except Exception as e:
@@ -182,7 +182,7 @@ def kick_user(username: str):
     """Kicks a specific user by username."""
     try:
         cli_api.kick_user_by_name(username)
-        click.echo(f"User '{username}' kicked successfully.")
+        # click.echo(f"User '{username}' kicked successfully.")
     except Exception as e:
         click.echo(f'{e}', err=True)
 
@@ -209,9 +209,10 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
 
 
 @cli.command('traffic-status')
-def traffic_status():
+@click.option('--no-gui', is_flag=True, help='Retrieve traffic data without displaying output')
+def traffic_status(no_gui):
     try:
-        cli_api.traffic_status()
+        cli_api.traffic_status(no_gui=no_gui)
     except Exception as e:
         click.echo(f'{e}', err=True)
 

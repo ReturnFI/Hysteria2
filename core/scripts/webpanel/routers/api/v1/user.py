@@ -104,11 +104,20 @@ async def remove_user_api(username: str):
         A DetailResponse with a message indicating the user has been removed.
 
     Raises:
-        HTTPException: if an error occurs while removing the user.
+        HTTPException: 404 if the user is not found, 400 if another error occurs.
     """
     try:
+        user = cli_api.get_user(username)
+        if not user:
+            raise HTTPException(status_code=404, detail=f'User {username} not found.')
+        
+        cli_api.kick_user_by_name(username)
+        cli_api.traffic_status(display_output=False)
         cli_api.remove_user(username)
         return DetailResponse(detail=f'User {username} has been removed.')
+    except HTTPException:
+
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 

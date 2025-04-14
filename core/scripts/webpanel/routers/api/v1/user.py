@@ -137,8 +137,14 @@ async def reset_user_api(username: str):
         HTTPException: if an error occurs while resetting the user.
     """
     try:
+        user = cli_api.get_user(username)
+        if not user:
+            raise HTTPException(status_code=404, detail=f'User {username} not found.')
+        
         cli_api.reset_user(username)
         return DetailResponse(detail=f'User {username} has been reset.')
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 

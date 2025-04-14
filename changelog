@@ -1,5 +1,8 @@
-## [1.5.1] - 2025-04-11
+## [1.5.2] - 2025-04-14
 
-### Changed
-- Deprecated SingBox SubLink
-- Change pinSHA256 to Hex
+### ✨ Changed
+- 🚀 Optimized user edit/remove operations to eliminate service restart delays
+- 🔧 Improved `kick` functionality with support for targeting specific users
+- 🧠 Enhanced `UserInfoResponse` class with more detailed user information
+- 🛠️ Improved user removal/reset API with proper 404 error handling
+- 💻 Added `--no-gui` flag to `traffic-status` CLI command

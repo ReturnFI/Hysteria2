@@ -80,11 +80,13 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
 
 | کلاینت        | نسخه‌های پشتیبانی‌شده          | سیستم‌عامل‌های پشتیبانی‌شده                                             |
 |---------------|------------------------------|------------------------------------------------------------------------|
-| **SingBox**   | 1.10.5 (21 دسامبر 2024)      | Linux, macOS, iOS, Android                                           |
-| **Hiddify**   | آخرین نسخه                   | Windows, Linux, macOS, iOS, Android                                  |
-| **Sterisand** | آخرین نسخه                   | iOS                                                                  |
-| **Nekobox**   | آخرین نسخه                   | Android                                                              |
-| **Nekoray**   | آخرین نسخه                   | Windows, Linux                                                       |
+| **v2rayN**    | آخرین نسخه                   | Windows, Linux, macOS                                                 |
+| **v2rayNG**   | آخرین نسخه                   | Android                                                               |
+| **SingBox**   | 1.10.5 (21 دسامبر 2024)      | Linux, macOS, iOS, Android                                            |
+| **Hiddify**   | آخرین نسخه                   | Windows, Linux, macOS, iOS, Android                                   |
+| **Sterisand** | آخرین نسخه                   | iOS                                                                   |
+| **Nekobox**   | آخرین نسخه                   | Android                                                               |
+| **Nekoray**   | آخرین نسخه                   | Windows, Linux                                                        |
 
 ---
 

@@ -4,7 +4,7 @@
 [![Docs](https://img.shields.io/badge/Docs-Read%20Now-FFA500?logo=bookstack&logoColor=white)](https://returnfi.github.io/Hys2-docs/)
 [![Language](https://img.shields.io/badge/Language-Persian-009688?logo=google-translate&logoColor=white)](README-fa.md)  
 
-[![Latest Release](https://img.shields.io/badge/Release-Latest-brightgreen?logo=github)](https://github.com/ReturnFI/Hysteria2/releases)
+[![Latest Release](https://img.shields.io/badge/Release-Latest-brightgreen?logo=github)](https://github.com/ReturnFI/Blitz/releases)
 [![License](https://img.shields.io/badge/License-GPL-blueviolet?logo=open-source-initiative&logoColor=white)](LICENSE)  
 
 [![Made with ❤️](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red)](#)
@@ -41,7 +41,7 @@ A powerful and user-friendly management panel for Hysteria2 proxy server. Featur
 
 ### One-Click Installation
 ```bash
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/install.sh)
 ```
 After installation, use `hys2` to launch the management panel.
 
@@ -49,13 +49,13 @@ There is no need to execute the installation command again.
 
 ### Upgrade to Latest Version
 ```bash
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
 ```
 ## 📚 Documentation
 
 For detailed information and advanced usage, refer to the documentation:
 
-[Hysteria2 Documentation](https://returnfi.github.io/Hys2-docs/)
+[Blitz Documentation](https://returnfi.github.io/Hys2-docs/)
 
 ---
 

@@ -59,10 +59,9 @@ For detailed information and advanced usage, refer to the documentation:
 
 ---
 
-
 <br />
 <p align="center">
- <img src="https://github.com/user-attachments/assets/2a1d46d4-b776-4a5a-bba1-f6f4e047591a" width="700" height="400">
+ <img src="https://github.com/user-attachments/assets/ae09aa18-0866-469f-8b6b-9c5cb76186c0" width="700" height="400">
 </p>
 
 ## 🔄 Client Compatibility

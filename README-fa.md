@@ -4,7 +4,7 @@
 [![Docs](https://img.shields.io/badge/Docs-Read%20Now-FFA500?logo=bookstack&logoColor=white)](https://returnfi.github.io/Hys2-docs/)
 [![Lang_Eglish](https://img.shields.io/badge/Language-English-009688?logo=google-translate&logoColor=white)](README.md)
 
-[![Latest Release](https://img.shields.io/badge/Release-Latest-brightgreen?logo=github)](https://github.com/ReturnFI/Hysteria2/releases)
+[![Latest Release](https://img.shields.io/badge/Release-Latest-brightgreen?logo=github)](https://github.com/ReturnFI/Blitz/releases)
 [![License](https://img.shields.io/badge/License-GPL-blueviolet?logo=open-source-initiative&logoColor=white)](LICENSE)  
 
 [![Made with ❤️](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red)](#)
@@ -47,7 +47,7 @@
 
 ### نصب با یک کلیک  
 ```bash
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh)
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/install.sh)
 ```
 پس از نصب، از دستور `hys2` برای اجرای پنل مدیریت استفاده کنید.  
 
@@ -55,7 +55,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/install.sh
 
 ### به‌روزرسانی به آخرین نسخه  
 ```bash
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh)
+bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
 ```
 
 ---
@@ -64,7 +64,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/upgrade.sh
 
 برای اطلاعات بیشتر و نحوه استفاده پیشرفته، به مستندات مراجعه کنید:  
 
- [مستندات Hysteria2](https://returnfi.github.io/Hys2-docs/)
+ [مستندات Blitz](https://returnfi.github.io/Hys2-docs/)
 
 ---
 

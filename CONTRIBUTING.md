@@ -1,14 +1,14 @@
-# Contributing to Hysteria2 Panel
+# Contributing to Blitz Panel
 
-Thank you for your interest in contributing to Hysteria2 Panel! We appreciate your help in making this project better.
+Thank you for your interest in contributing to Blitz Panel! We appreciate your help in making this project better.
 
 ## Getting Started
 
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally
    ```
-   git clone https://github.com/ReturnFI/Hysteria2.git
-   cd Hysteria2
+   git clone https://github.com/ReturnFI/Blitz.git
+   cd Blitz
    ```
 3. **Create a new branch** for your feature or bugfix
    ```
@@ -48,7 +48,7 @@ Thank you for your interest in contributing to Hysteria2 Panel! We appreciate yo
 
 If you find a bug or have a suggestion for improvement:
 
-1. Check the [Issues](https://github.com/ReturnFI/Hysteria2/issues) page to see if it has already been reported
+1. Check the [Issues](https://github.com/ReturnFI/Blitz/issues) page to see if it has already been reported
 2. If not, create a new issue with:
    - A clear title
    - A detailed description
@@ -61,10 +61,10 @@ Please do not report security vulnerabilities through public GitHub issues. Inst
 
 ## Release Process
 
-We only support the latest release of Hysteria2 Panel. All contributions will be incorporated into the next release.
+We only support the latest release of Blitz Panel. All contributions will be incorporated into the next release.
 
 ## Questions?
 
 If you have any questions about contributing, please contact us at ReturnFI@proton.me.
 
-Thank you for contributing to Hysteria2 Panel!
+Thank you for contributing to Blitz Panel!

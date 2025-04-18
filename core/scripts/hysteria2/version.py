@@ -6,8 +6,8 @@ import requests
 from pathlib import Path
 
 LOCALVERSION = "/etc/hysteria/VERSION"
-LATESTVERSION = "https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/VERSION"
-LASTESTCHANGE = "https://raw.githubusercontent.com/ReturnFI/Hysteria2/main/changelog"
+LATESTVERSION = "https://raw.githubusercontent.com/ReturnFI/Blitz/main/VERSION"
+LASTESTCHANGE = "https://raw.githubusercontent.com/ReturnFI/Blitz/main/changelog"
 
 def version_greater_equal(version1, version2):
     version1_parts = [int(part) for part in version1.strip().split('.')]

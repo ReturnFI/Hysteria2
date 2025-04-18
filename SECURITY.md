@@ -29,7 +29,7 @@ After receiving your report, we will:
 * We appreciate your efforts in responsibly disclosing any security issues
 * All security vulnerabilities will be addressed in the latest release
 
-Thank you for helping keep Hysteria2 Panel secure!
+Thank you for helping keep Blitz Panel secure!
 
-[release]: https://github.com/ReturnFI/Hysteria2/releases
+[release]: https://github.com/ReturnFI/Blitz/releases
 [emailing]: mailto:ReturnFI@proton.me

@@ -27,7 +27,7 @@ class Command(Enum):
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
     RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
-    SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
+    SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.py')
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
     MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
@@ -321,7 +321,7 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
     '''
     Displays the URI for a user, with options for QR code and other formats.
     '''
-    command_args = ['bash', Command.SHOW_USER_URI.value, '-u', username]
+    command_args = ['python3', Command.SHOW_USER_URI.value, '-u', username]
     if qrcode:
         command_args.append('-qr')
     if all:

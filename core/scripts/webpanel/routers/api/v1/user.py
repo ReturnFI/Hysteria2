@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from .schema.user import UserListResponse, UserInfoResponse, AddUserInputBody, EditUserInputBody
+from .schema.user import UserListResponse, UserInfoResponse, AddUserInputBody, EditUserInputBody, UserUriResponse
 from .schema.response import DetailResponse
 import cli_api
 

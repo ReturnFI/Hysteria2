@@ -7,7 +7,7 @@ import json
 
 
 def pretty_print(data: typing.Any):
-    if isinstance(data, dict):
+    if isinstance(data, dict) or isinstance(data, list):
         print(json.dumps(data, indent=4))
         return
 
@@ -205,6 +205,22 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
             click.echo(f"URI for user '{username}' could not be generated.")
     except Exception as e:
         click.echo(f'{e}', err=True)
+
+@cli.command('show-user-uri-json')
+@click.argument('usernames', nargs=-1, required=True)
+def show_user_uri_json(usernames: list[str]):
+    """
+    Displays URI information in JSON format for a list of users.
+    """
+    try:
+        res = cli_api.show_user_uri_json(usernames)
+        if res:
+            pretty_print(res)
+        else:
+            click.echo('No user URIs could be generated.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 # endregion
 
 # region Server

@@ -3,73 +3,61 @@
 source /etc/hysteria/core/scripts/path.sh
 
 get_secret() {
-    if [ ! -f "$CONFIG_FILE" ]; then
-        echo "Error: config.json file not found!"
-        exit 1
-    fi
-
-    secret=$(jq -r '.trafficStats.secret' $CONFIG_FILE)
+    [ ! -f "$CONFIG_FILE" ] && { echo "Error: config.json file not found!" >&2; exit 1; }
     
-    if [ "$secret" == "null" ] || [ -z "$secret" ]; then
-        echo "Error: secret not found in config.json!"
-        exit 1
-    fi
+    local secret=$(jq -r '.trafficStats.secret' "$CONFIG_FILE")
     
-    echo $secret
+    [ "$secret" = "null" ] || [ -z "$secret" ] && { 
+        echo "Error: secret not found in config.json!" >&2
+        exit 1
+    }
+    
+    echo "$secret"
 }
 
 convert_bytes() {
     local bytes=$1
     if (( bytes < 1048576 )); then
-        echo "$(echo "scale=2; $bytes / 1024" | bc) KB"
+        printf "%.2f KB" "$(echo "scale=2; $bytes / 1024" | bc)"
     elif (( bytes < 1073741824 )); then
-        echo "$(echo "scale=2; $bytes / 1048576" | bc) MB"
+        printf "%.2f MB" "$(echo "scale=2; $bytes / 1048576" | bc)"
     elif (( bytes < 1099511627776 )); then
-        echo "$(echo "scale=2; $bytes / 1073741824" | bc) GB"
+        printf "%.2f GB" "$(echo "scale=2; $bytes / 1073741824" | bc)"
     else
-        echo "$(echo "scale=2; $bytes / 1099511627776" | bc) TB"
+        printf "%.2f TB" "$(echo "scale=2; $bytes / 1099511627776" | bc)"
     fi
 }
 
-# iT'S BETTER TO PRINT BYTES ITSELF AND NOT HUMAN READABLE FORMAT BECAUSE THE CALLER SHOULD DECIDE WHAT TO PRINT
-
 cpu_usage=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}')
-total_ram=$(free -m | awk '/Mem:/ {print $2}')
-used_ram=$(free -m | awk '/Mem:/ {print $3}')
+
+mem_stats=$(free -m)
+mem_total=$(echo "$mem_stats" | awk '/Mem:/ {print $2}')
+mem_used=$(echo "$mem_stats" | awk '/Mem:/ {print $3}')
 
 secret=$(get_secret)
-online_users=$(curl -s -H "Authorization: $secret" $ONLINE_API_URL)
-online_user_count=$(echo $online_users | jq 'add')
-
-if [ "$online_user_count" == "null" ] || [ "$online_user_count" == "0" ]; then
-    online_user_count=0
-fi
+online_users=$(curl -s -H "Authorization: $secret" "$ONLINE_API_URL")
+online_user_count=$(echo "$online_users" | jq 'add // 0')
 
 echo "📈 CPU Usage: $cpu_usage"
-echo "📋 Total RAM: ${total_ram}MB"
-echo "💻 Used RAM: ${used_ram}MB"
+echo "📋 Total RAM: ${mem_total}MB"
+echo "💻 Used RAM: ${mem_used}MB"
 echo "👥 Online Users: $online_user_count"
 echo 
-#echo "🚦Total Traffic: "
 
 if [ -f "$USERS_FILE" ]; then
-    total_upload=0
-    total_download=0
+    read total_upload total_download <<< $(jq -r '
+        reduce .[] as $user (
+            {"up": 0, "down": 0}; 
+            .up += (($user.upload_bytes | numbers) // 0) | 
+            .down += (($user.download_bytes | numbers) // 0)
+        ) | "\(.up) \(.down)"' "$USERS_FILE" 2>/dev/null || echo "0 0")
+    
+    total_upload=${total_upload:-0}
+    total_download=${total_download:-0}
 
-    while IFS= read -r line; do
-        upload=$(echo $line | jq -r '.upload_bytes')
-        download=$(echo $line | jq -r '.download_bytes')
-        total_upload=$(echo "$total_upload + $upload" | bc)
-        total_download=$(echo "$total_download + $download" | bc)
-    done <<< "$(jq -c '.[]' $USERS_FILE)"
-
-    total_upload_human=$(convert_bytes $total_upload)
-    total_download_human=$(convert_bytes $total_download)
-
-    echo "🔼 Uploaded Traffic: ${total_upload_human}"
-    echo "🔽 Downloaded Traffic: ${total_download_human}"
+    echo "🔼 Uploaded Traffic: $(convert_bytes "$total_upload")"
+    echo "🔽 Downloaded Traffic: $(convert_bytes "$total_download")"
     
     total_traffic=$((total_upload + total_download))
-    total_traffic_human=$(convert_bytes $total_traffic)
-    echo "📊 Total Traffic: ${total_traffic_human}"
+    echo "📊 Total Traffic: $(convert_bytes "$total_traffic")"
 fi

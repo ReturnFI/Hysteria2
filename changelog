@@ -1,11 +1,9 @@
-## [1.6.0] - 2025-04-14
+## [1.7.0] - 2025-04-19
 
 ### Changed
-- 🚀 **Optimization:** Improved user edit/remove functionality and eliminated unnecessary service restart delay.
-- 👥 **User Management:** Enhanced kick functionality with the ability to target specific users and integrated advanced handling.
-- 🔍 **API Enhancement:** Expanded `UserInfoResponse` class with additional details for a more comprehensive output.
-- ❗ **Bug Fix:** Improved user removal/reset API to return proper 404 errors when applicable.
-- ⚙️ **CLI Update:** Added a new `--no-gui` flag to the `traffic-status` command for enhanced flexibility.
-
-### Notes
-- These updates aim to streamline user operations and improve overall system responsiveness.
+- 🧪 feat: Add show-user-uri-json CLI command
+- 🌐 feat: Introduce user URI API endpoint
+- 🖥️ feat: Integrate show_user_uri_api into the Users page
+- 🧹 refactor: Move URI generation logic from ViewModel to backend logic
+- 📦 refactor: Rewrite show-user-uri to Python for consistency
+- ⚙️ optimize: Improve server_info.sh for better performance and lower resource usage

@@ -27,7 +27,8 @@ class Command(Enum):
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
     RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
-    SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.sh')
+    SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.py')
+    WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
     MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
@@ -321,7 +322,7 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
     '''
     Displays the URI for a user, with options for QR code and other formats.
     '''
-    command_args = ['bash', Command.SHOW_USER_URI.value, '-u', username]
+    command_args = ['python3', Command.SHOW_USER_URI.value, '-u', username]
     if qrcode:
         command_args.append('-qr')
     if all:
@@ -334,6 +335,25 @@ def show_user_uri(username: str, qrcode: bool, ipv: int, all: bool, singbox: boo
         command_args.append('-n')
     return run_cmd(command_args)
 
+def show_user_uri_json(usernames: list[str]) -> list[dict[str, Any]] | None:
+    '''
+    Displays the URI for a list of users in JSON format.
+    '''
+    script_path = Command.WRAPPER_URI.value
+    if not os.path.exists(script_path):
+        raise ScriptNotFoundError(f"Wrapper URI script not found at: {script_path}")
+    try:
+        process = subprocess.run(['python3', script_path, *usernames], capture_output=True, text=True, check=True)
+        return json.loads(process.stdout)
+    except subprocess.CalledProcessError as e:
+        raise CommandExecutionError(f"Failed to execute wrapper URI script: {e}\nError: {e.stderr}")
+    except FileNotFoundError:
+        raise ScriptNotFoundError(f'Script not found: {script_path}')
+    except json.JSONDecodeError:
+        raise CommandExecutionError(f"Failed to decode JSON output from script: {script_path}\nOutput: {process.stdout if 'process' in locals() else 'No output'}") # Add process check
+    except Exception as e:
+        raise HysteriaError(f'An unexpected error occurred: {e}')
+        
 # endregion
 
 # region Server

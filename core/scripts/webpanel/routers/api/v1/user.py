@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from .schema.user import UserListResponse, UserInfoResponse, AddUserInputBody, EditUserInputBody
+from .schema.user import UserListResponse, UserInfoResponse, AddUserInputBody, EditUserInputBody, UserUriResponse
 from .schema.response import DetailResponse
 import cli_api
 
@@ -150,11 +150,33 @@ async def reset_user_api(username: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
-# TODO implement show user uri endpoint
-# @router.get('/{username}/uri', response_model=TODO)
-# async def show_user_uri(username: str):
-#     try:
-#         res = cli_api.show_user_uri(username)
-#         return res
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+@router.get('/{username}/uri', response_model=UserUriResponse)
+async def show_user_uri_api(username: str):
+    """
+    Get the URI information for a user in JSON format.
+
+    Args:
+        username: The username of the user.
+
+    Returns:
+        UserUriResponse: An object containing URI information for the user.
+
+    Raises:
+        HTTPException: 404 if the user is not found, 400 if another error occurs.
+    """
+    try:
+        uri_data_list = cli_api.show_user_uri_json([username])
+        if not uri_data_list:
+            raise HTTPException(status_code=404, detail=f'URI for user {username} not found.')
+        uri_data = uri_data_list[0]
+        if uri_data.get('error'):
+            raise HTTPException(status_code=404, detail=f"{uri_data['error']}")
+        return uri_data
+    except cli_api.ScriptNotFoundError as e:
+        raise HTTPException(status_code=500, detail=f'Server script error: {str(e)}')
+    except cli_api.CommandExecutionError as e:
+        raise HTTPException(status_code=400, detail=f'Error executing script: {str(e)}')
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Unexpected error: {str(e)}')

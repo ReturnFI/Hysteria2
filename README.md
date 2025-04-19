@@ -61,7 +61,7 @@ For detailed information and advanced usage, refer to the documentation:
 
 <br />
 <p align="center">
- <img src="https://github.com/user-attachments/assets/ae09aa18-0866-469f-8b6b-9c5cb76186c0" width="700" height="400">
+ <img src="https://github.com/user-attachments/assets/e9c6ab56-59b5-46a8-afcb-0e7f3e9f6330" width="1000" height="500">
 </p>
 
 ## 🔄 Client Compatibility

@@ -114,18 +114,6 @@
                                     data-username="{{ user.username }}">
                                     <i class="fas fa-qrcode"></i>
                                 </a>
-                                <div id="userConfigs-{{ user.username }}" style="display: none;">
-                                    {% for config in user.configs %}
-                                    <div class="config-container" data-link="{{ config.link }}">
-                                        <span class="config-type">{{ config.type }}:</span>
-                                        {% if config.type == "Singbox" or config.type == "Normal-SUB" %}
-                                        <span class="config-link-text">{{ config.link }}</span>
-                                        {% else %}
-                                        <span class="config-link-text">{{ config.link }}</span>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
-                                </div>
                             </td>
                             <td class="text-nowrap">
                                 <button type="button" class="btn btn-sm btn-info edit-user"
@@ -652,86 +640,103 @@
 
         // QR Code Modal
         $("#qrcodeModal").on("show.bs.modal", function (event) {
-        const button = $(event.relatedTarget);
-        const configContainer = $(`#userConfigs-${button.data("username")}`);
-        const qrcodesContainer = $("#qrcodesContainer");
-        qrcodesContainer.empty();
+            const button = $(event.relatedTarget);
+            const username = button.data("username");
+            const qrcodesContainer = $("#qrcodesContainer");
+            qrcodesContainer.empty();
 
-        configContainer.find(".config-container").each(function () {
-            const configLink = $(this).data("link");
-            const configType = $(this).find(".config-type").text().replace(":", "");
-                
-                let displayType = configType;
-                
-                const hashMatch = configLink.match(/#(.+)$/);
-                if (hashMatch && hashMatch[1]) {
-                    const hashValue = hashMatch[1];
-                    if (hashValue.includes("IPv4") || hashValue.includes("IPv6")) {
-                        displayType = hashValue;
-                    }
-                } else if (configLink.includes("ipv4") || configLink.includes("IPv4")) {
-                    displayType = "IPv4";
-                } else if (configLink.includes("ipv6") || configLink.includes("IPv6")) {
-                    displayType = "IPv6";
+            const userUriApiUrl = "{{ url_for('show_user_uri_api', username='USERNAME_PLACEHOLDER') }}";
+            const url = userUriApiUrl.replace("USERNAME_PLACEHOLDER", encodeURIComponent(username));
+
+            $.ajax({
+                url: url,
+                method: "GET",
+                dataType: 'json',
+                success: function (response) {
+                    // console.log("API Response:", response);
+
+                    const configs = [
+                        { type: "IPv4", link: response.ipv4 },
+                        { type: "IPv6", link: response.ipv6 },
+                        { type: "Normal-SUB", link: response.normal_sub }
+                    ];
+
+
+                    configs.forEach(config => {
+                        if (config.link) {
+                            const displayType = config.type;
+                            const configLink = config.link;
+                            const qrCodeId = `qrcode-${displayType}-${Math.random().toString(36).substring(2, 10)}`;
+
+                            const card = $(`
+                                <div class="card d-inline-block my-2">
+                                    <div class="card-body">
+                                        <div id="${qrCodeId}" class="mx-auto cursor-pointer"></div>
+                                        <br>
+                                        <div class="config-type-text mt-2 text-center">${displayType}</div>
+                                    </div>
+                                </div>
+                            `);
+                            qrcodesContainer.append(card);
+
+                            const qrCodeStyling = new QRCodeStyling({
+                                width: 180,
+                                height: 180,
+                                data: configLink,
+                                margin: 5,
+                                dotsOptions: {
+                                    color: "#212121",
+                                    type: "square"
+                                },
+                                cornersSquareOptions: {
+                                    color: "#212121",
+                                    type: "square"
+                                },
+                                backgroundOptions: {
+                                    color: "#FAFAFA",
+                                },
+                                imageOptions: {
+                                    hideBackgroundDots: true,
+                                }
+                            });
+                            qrCodeStyling.append(document.getElementById(qrCodeId));
+
+                            card.on("click", function () {
+                                navigator.clipboard.writeText(configLink)
+                                    .then(() => {
+                                        Swal.fire({
+                                            icon: "success",
+                                            title: displayType + " link copied!",
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                        });
+                                    })
+                                    .catch(err => {
+                                        console.error("Failed to copy link: ", err);
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Failed to copy link",
+                                            text: "Please copy manually.",
+                                        });
+                                    });
+                            });
+                        }
+                    });
+
+
+                },
+                error: function (error) {
+                    console.error("Error fetching user URI:", error);
+                    Swal.fire({
+                        title: "Error!",
+                        text: "Failed to fetch user configuration URIs.",
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
                 }
-                
-                const qrCodeId = `qrcode-${displayType}-${Math.random().toString(36).substring(2, 10)}`;
-                
-                const card = $(`
-                    <div class="card d-inline-block my-2">
-                        <div class="card-body">
-                            <div id="${qrCodeId}" class="mx-auto cursor-pointer"></div>
-                            <br>
-                            <div class="config-type-text mt-2 text-center">${displayType}</div>
-                        </div>
-                    </div>
-                `);
-
-                qrcodesContainer.append(card);
-
-                const qrCodeStyling = new QRCodeStyling({
-                    width: 180,
-                    height: 180,
-                    data: configLink,
-                    margin: 5,
-                    dotsOptions: {
-                        color: "#212121",
-                        type: "square"
-                    },
-                    cornersSquareOptions: {
-                        color: "#212121",
-                        type: "square"
-                    },
-                    backgroundOptions: {
-                        color: "#FAFAFA",
-                    },
-                    imageOptions: {
-                        hideBackgroundDots: true,
-                    }
-                });
-
-                qrCodeStyling.append(document.getElementById(qrCodeId));
-                
-                card.on("click", function () {
-                    navigator.clipboard.writeText(configLink)
-                        .then(() => {
-                            Swal.fire({
-                                icon: "success",
-                                title: displayType + " link copied!",
-                                showConfirmButton: false,
-                                timer: 1500,
-                            });
-                        })
-                        .catch(err => {
-                            console.error("Failed to copy link: ", err);
-                            Swal.fire({
-                                icon: "error",
-                                title: "Failed to copy link",
-                                text: "Please copy manually.",
-                            });
-                        });
-                });
             });
+
+
         });
 
         $("#qrcodeModal .modal-content").on("click", function (e) {

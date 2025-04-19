@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from typing import Optional
 from pydantic import BaseModel, RootModel
 
 
@@ -37,3 +37,9 @@ class EditUserInputBody(BaseModel):
     renew_password: bool = False
     renew_creation_date: bool = False
     blocked: bool = False
+
+class UserUriResponse(BaseModel):
+    username: str
+    ipv4: str | None = None
+    ipv6: str | None = None
+    normal_sub: str | None = None

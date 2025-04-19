@@ -4,57 +4,6 @@ from datetime import datetime, timedelta
 import cli_api
 
 
-class Config(BaseModel):
-    type: str
-    link: str
-
-    @staticmethod
-    def from_username(username: str) -> list['Config']:
-        raw_uri = Config.__get_user_configs_uri(username)
-        if not raw_uri:
-            return []
-
-        res = []
-        for line in raw_uri.splitlines():
-            config = Config.__parse_user_configs_uri_line(line)
-            if config:
-                res.append(config)
-        return res
-
-    @staticmethod
-    def __get_user_configs_uri(username: str) -> str:
-        # This command is equivalent to `show-user-uri --username $username --ipv 4 --all --singbox --normalsub`
-        raw_uri = cli_api.show_user_uri(username, False, 4, True, True, True)
-
-        return raw_uri.strip() if raw_uri else ''
-
-    @staticmethod
-    def __parse_user_configs_uri_line(line: str) -> "Config | None":
-        config_type = ''
-        config_link = ''
-
-        line = line.strip()
-        if line.startswith("hy2://"):
-            if "@" in line:
-                ip_version = "IPv6" if line.split("@")[1].count(":") > 1 else "IPv4"
-                config_type = ip_version
-                config_link = line
-            else:
-                return None
-        elif line.startswith("https://"):
-            if "singbox" in line.lower():
-                config_type = "Singbox"
-            elif "normal" in line.lower():
-                config_type = "Normal-SUB"
-            else:
-                return None
-            config_link = line
-        else:
-            return None
-
-        return Config(type=config_type, link=config_link)
-
-
 class User(BaseModel):
     username: str
     status: str
@@ -63,7 +12,6 @@ class User(BaseModel):
     expiry_date: datetime
     expiry_days: int
     enable: bool
-    configs: list[Config]
 
     @staticmethod
     def from_dict(username: str, user_data: dict):
@@ -107,7 +55,6 @@ class User(BaseModel):
             'expiry_date': expiry_date,
             'expiry_days': expiration_days,
             'enable': False if user_data.get('blocked', False) else True,
-            'configs': Config.from_username(user_data['username'])
         }
 
     @staticmethod

@@ -359,7 +359,7 @@ def show_user_uri_json(usernames: list[str]) -> list[dict[str, Any]] | None:
 # region Server
 
 
-def traffic_status(no_gui=False, display_output=False):
+def traffic_status(no_gui=False, display_output=True):
     '''Fetches traffic status.'''
     data = traffic.traffic_status(no_gui=True if not display_output else no_gui)
     return data

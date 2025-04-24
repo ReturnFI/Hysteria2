@@ -7,13 +7,8 @@ import subprocess
 import argparse
 import re
 from typing import Tuple, Optional, Dict, List, Any
-
-CORE_DIR = "/etc/hysteria"
-CONFIG_FILE = f"{CORE_DIR}/config.json"
-USERS_FILE = f"{CORE_DIR}/users.json"
-HYSTERIA2_ENV = f"{CORE_DIR}/.configs.env"
-SINGBOX_ENV = f"{CORE_DIR}/core/scripts/singbox/.env"
-NORMALSUB_ENV = f"{CORE_DIR}/core/scripts/normalsub/.env"
+from init_paths import *
+from paths import *
 
 def load_env_file(env_file: str) -> Dict[str, str]:
     """Load environment variables from a file into a dictionary."""
@@ -29,7 +24,7 @@ def load_env_file(env_file: str) -> Dict[str, str]:
 
 def load_hysteria2_env() -> Dict[str, str]:
     """Load Hysteria2 environment variables."""
-    return load_env_file(HYSTERIA2_ENV)
+    return load_env_file(CONFIG_ENV)
 
 def load_hysteria2_ips() -> Tuple[str, str, str]:
     """Load Hysteria2 IPv4 and IPv6 addresses from environment."""

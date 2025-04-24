@@ -4,10 +4,8 @@ import os
 import sys
 import requests
 from pathlib import Path
-
-LOCALVERSION = "/etc/hysteria/VERSION"
-LATESTVERSION = "https://raw.githubusercontent.com/ReturnFI/Blitz/main/VERSION"
-LASTESTCHANGE = "https://raw.githubusercontent.com/ReturnFI/Blitz/main/changelog"
+from init_paths import *
+from paths import *
 
 def version_greater_equal(version1, version2):
     version1_parts = [int(part) for part in version1.strip().split('.')]

@@ -507,13 +507,13 @@ def stop_normalsub():
     run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'stop'])
 
 
-def start_webpanel(domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool):
+def start_webpanel(domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool, decoy_path: str):
     '''Starts WebPanel.'''
     if not domain or not port or not admin_username or not admin_password or not expiration_minutes:
         raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
     run_cmd(
         ['bash', Command.SHELL_WEBPANEL.value, 'start',
-         domain, str(port), admin_username, admin_password, str(expiration_minutes), str(debug).lower()]
+         domain, str(port), admin_username, admin_password, str(expiration_minutes), str(debug).lower(), str(decoy_path)]
     )
 
 
@@ -521,6 +521,15 @@ def stop_webpanel():
     '''Stops WebPanel.'''
     run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stop'])
 
+def setup_webpanel_decoy(domain: str, decoy_path: str):
+    '''Sets up or updates the decoy site for the web panel.'''
+    if not domain or not decoy_path:
+        raise InvalidInputError('Error: Both domain and decoy_path are required.')
+    run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'decoy', domain, decoy_path])
+
+def stop_webpanel_decoy():
+    '''Stops and removes the decoy site configuration for the web panel.'''
+    run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stopdecoy'])
 
 def get_webpanel_url() -> str | None:
     '''Gets the URL of WebPanel.'''

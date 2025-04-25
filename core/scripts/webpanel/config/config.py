@@ -10,6 +10,7 @@ class Configs(BaseSettings):
     API_TOKEN: str
     EXPIRATION_MINUTES: int
     ROOT_PATH: str
+    DECOY_PATH: str | None = None
 
     class Config:
         env_file = '.env'

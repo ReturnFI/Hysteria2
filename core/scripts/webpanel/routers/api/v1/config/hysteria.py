@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile, File
 from ..schema.config.hysteria import ConfigFile, GetPortResponse, GetSniResponse
-from ..schema.response import DetailResponse, IPLimitConfig
+from ..schema.response import DetailResponse, IPLimitConfig, SetupDecoyRequest
 from fastapi.responses import FileResponse
 import shutil
 import zipfile
@@ -334,3 +334,43 @@ async def config_ip_limit_api(config: IPLimitConfig):
         return DetailResponse(detail=details)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error configuring IP Limiter: {str(e)}')
+
+
+def run_setup_decoy_background(domain: str, decoy_path: str):
+    """Function to run decoy setup in the background."""
+    try:
+        cli_api.setup_webpanel_decoy(domain, decoy_path)
+    except Exception:
+        pass
+
+def run_stop_decoy_background():
+    """Function to run decoy stop in the background."""
+    try:
+        cli_api.stop_webpanel_decoy()
+    except Exception:
+        pass 
+
+@router.post('/webpanel/decoy/setup', response_model=DetailResponse, summary='Setup/Update WebPanel Decoy Site (Background Task)')
+async def setup_decoy_api(request_body: SetupDecoyRequest, background_tasks: BackgroundTasks):
+    """
+    Initiates the setup or update of the decoy site configuration for the web panel.
+    Requires the web panel service to be running.
+    The actual operation (including Caddy restart) runs in the background.
+    """
+    if not os.path.isdir(request_body.decoy_path):
+         raise HTTPException(status_code=400, detail=f"Decoy path does not exist or is not a directory: {request_body.decoy_path}")
+
+    background_tasks.add_task(run_setup_decoy_background, request_body.domain, request_body.decoy_path)
+
+    return DetailResponse(detail=f'Web Panel decoy site setup initiated for domain {request_body.domain}. Caddy will restart in the background.')
+
+
+@router.post('/webpanel/decoy/stop', response_model=DetailResponse, summary='Stop WebPanel Decoy Site (Background Task)')
+async def stop_decoy_api(background_tasks: BackgroundTasks):
+    """
+    Initiates the removal of the decoy site configuration for the web panel.
+    The actual operation (including Caddy restart) runs in the background.
+    """
+    background_tasks.add_task(run_stop_decoy_background)
+
+    return DetailResponse(detail='Web Panel decoy site stop initiated. Caddy will restart in the background.')

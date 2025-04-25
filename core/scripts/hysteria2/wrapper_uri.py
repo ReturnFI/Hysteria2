@@ -4,12 +4,14 @@ import re
 import json
 import sys
 
-SHOW_URI_SCRIPT = "/etc/hysteria/core/scripts/hysteria2/show_user_uri.py"
+from init_paths import *
+from paths import *
+
 DEFAULT_ARGS = ["-a", "-n", "-s"]
 
 def run_show_uri(username):
     try:
-        cmd = ["python3", SHOW_URI_SCRIPT, "-u", username] + DEFAULT_ARGS
+        cmd = ["python3", CLI_PATH, "show-user-uri", "-u", username] + DEFAULT_ARGS
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         output = result.stdout
         if "Invalid username" in output:

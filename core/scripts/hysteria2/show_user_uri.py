@@ -7,13 +7,8 @@ import subprocess
 import argparse
 import re
 from typing import Tuple, Optional, Dict, List, Any
-
-CORE_DIR = "/etc/hysteria"
-CONFIG_FILE = f"{CORE_DIR}/config.json"
-USERS_FILE = f"{CORE_DIR}/users.json"
-HYSTERIA2_ENV = f"{CORE_DIR}/.configs.env"
-SINGBOX_ENV = f"{CORE_DIR}/core/scripts/singbox/.env"
-NORMALSUB_ENV = f"{CORE_DIR}/core/scripts/normalsub/.env"
+from init_paths import *
+from paths import *
 
 def load_env_file(env_file: str) -> Dict[str, str]:
     """Load environment variables from a file into a dictionary."""
@@ -29,7 +24,7 @@ def load_env_file(env_file: str) -> Dict[str, str]:
 
 def load_hysteria2_env() -> Dict[str, str]:
     """Load Hysteria2 environment variables."""
-    return load_env_file(HYSTERIA2_ENV)
+    return load_env_file(CONFIG_ENV)
 
 def load_hysteria2_ips() -> Tuple[str, str, str]:
     """Load Hysteria2 IPv4 and IPv6 addresses from environment."""
@@ -66,11 +61,10 @@ def is_service_active(service_name: str) -> bool:
         return False
 
 def generate_uri(username: str, auth_password: str, ip: str, port: str, 
-                 obfs_password: str, sha256: str, sni: str, ip_version: int) -> str:
+                 obfs_password: str, sha256: str, sni: str, ip_version: int, insecure: bool) -> str:
     """Generate Hysteria2 URI for the given parameters."""
     uri_base = f"hy2://{username}%3A{auth_password}@{ip}:{port}"
     
-    # Handle IPv6 address formatting
     if ip_version == 6 and re.match(r'^[0-9a-fA-F:]+$', ip):
         uri_base = f"hy2://{username}%3A{auth_password}@[{ip}]:{port}"
     
@@ -82,7 +76,8 @@ def generate_uri(username: str, auth_password: str, ip: str, port: str,
     if sha256:
         params.append(f"pinSHA256={sha256}")
     
-    params.append(f"insecure=1&sni={sni}")
+    insecure_value = "1" if insecure else "0"
+    params.append(f"insecure={insecure_value}&sni={sni}")
     
     params_str = "&".join(params)
     return f"{uri_base}?{params_str}#{username}-IPv{ip_version}"
@@ -138,6 +133,8 @@ def show_uri(args: argparse.Namespace) -> None:
     sha256 = config.get("tls", {}).get("pinSHA256", "")
     obfs_password = config.get("obfs", {}).get("salamander", {}).get("password", "")
     
+    insecure = config.get("tls", {}).get("insecure", True)
+    
     ip4, ip6, sni = load_hysteria2_ips()
     available_ip4 = ip4 and ip4 != "None"
     available_ip6 = ip6 and ip6 != "None"
@@ -148,21 +145,21 @@ def show_uri(args: argparse.Namespace) -> None:
     if args.all:
         if available_ip4:
             uri_ipv4 = generate_uri(args.username, auth_password, ip4, port, 
-                                    obfs_password, sha256, sni, 4)
+                                    obfs_password, sha256, sni, 4, insecure)
             print(f"\nIPv4:\n{uri_ipv4}\n")
         
         if available_ip6:
             uri_ipv6 = generate_uri(args.username, auth_password, ip6, port, 
-                                    obfs_password, sha256, sni, 6)
+                                    obfs_password, sha256, sni, 6, insecure)
             print(f"\nIPv6:\n{uri_ipv6}\n")
     else:
         if args.ip_version == 4 and available_ip4:
             uri_ipv4 = generate_uri(args.username, auth_password, ip4, port, 
-                                    obfs_password, sha256, sni, 4)
+                                    obfs_password, sha256, sni, 4, insecure)
             print(f"\nIPv4:\n{uri_ipv4}\n")
         elif args.ip_version == 6 and available_ip6:
             uri_ipv6 = generate_uri(args.username, auth_password, ip6, port, 
-                                    obfs_password, sha256, sni, 6)
+                                    obfs_password, sha256, sni, 6, insecure)
             print(f"\nIPv6:\n{uri_ipv6}\n")
         else:
             print("Invalid IP version or no available IP for the requested version.")

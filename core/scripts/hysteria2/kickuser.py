@@ -6,8 +6,9 @@ import sys
 import os
 from hysteria2_api import Hysteria2Client, Hysteria2Error
 
-CONFIG_FILE = '/etc/hysteria/config.json'
-API_BASE_URL = 'http://127.0.0.1:25413'
+from init_paths import *
+from paths import *
+
 
 def get_api_secret(config_path: str) -> str:
     if not os.path.exists(config_path):

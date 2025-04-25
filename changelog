@@ -1,4 +1,4 @@
-## [1.7.1] - 2025-04-24
+## [1.7.1] - 2025-04-25
 
 ### Changed
 - feat: Add init_paths to handle sys.path setup for importing shared modules

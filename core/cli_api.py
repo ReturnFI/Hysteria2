@@ -531,7 +531,7 @@ def stop_webpanel_decoy():
     '''Stops and removes the decoy site configuration for the web panel.'''
     run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stopdecoy'])
 
-def get_webpanel_decoy_status() -> Dict[str, Any]:
+def get_webpanel_decoy_status() -> dict[str, Any]:
     """Checks the status of the webpanel decoy site configuration."""
     try:
         if not os.path.exists(WEBPANEL_ENV_FILE):

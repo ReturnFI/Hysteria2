@@ -12,7 +12,7 @@ DEBUG = False
 SCRIPT_DIR = '/etc/hysteria/core/scripts'
 CONFIG_FILE = '/etc/hysteria/config.json'
 CONFIG_ENV_FILE = '/etc/hysteria/.configs.env'
-
+WEBPANEL_ENV_FILE = '/etc/hysteria/core/scripts/webpanel/.env'
 
 class Command(Enum):
     '''Contains path to command's script'''
@@ -530,6 +530,23 @@ def setup_webpanel_decoy(domain: str, decoy_path: str):
 def stop_webpanel_decoy():
     '''Stops and removes the decoy site configuration for the web panel.'''
     run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stopdecoy'])
+
+def get_webpanel_decoy_status() -> Dict[str, Any]:
+    """Checks the status of the webpanel decoy site configuration."""
+    try:
+        if not os.path.exists(WEBPANEL_ENV_FILE):
+            return {"active": False, "path": None}
+
+        env_vars = dotenv_values(WEBPANEL_ENV_FILE)
+        decoy_path = env_vars.get('DECOY_PATH')
+
+        if decoy_path and decoy_path.strip():
+            return {"active": True, "path": decoy_path.strip()}
+        else:
+            return {"active": False, "path": None}
+    except Exception as e:
+        print(f"Error checking decoy status: {e}")
+        return {"active": False, "path": None}
 
 def get_webpanel_url() -> str | None:
     '''Gets the URL of WebPanel.'''

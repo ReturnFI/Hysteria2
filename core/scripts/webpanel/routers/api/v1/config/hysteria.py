@@ -1,6 +1,6 @@
 from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile, File
 from ..schema.config.hysteria import ConfigFile, GetPortResponse, GetSniResponse
-from ..schema.response import DetailResponse, IPLimitConfig, SetupDecoyRequest
+from ..schema.response import DetailResponse, IPLimitConfig, SetupDecoyRequest, DecoyStatusResponse
 from fastapi.responses import FileResponse
 import shutil
 import zipfile
@@ -374,3 +374,14 @@ async def stop_decoy_api(background_tasks: BackgroundTasks):
     background_tasks.add_task(run_stop_decoy_background)
 
     return DetailResponse(detail='Web Panel decoy site stop initiated. Caddy will restart in the background.')
+
+@router.get('/webpanel/decoy/status', response_model=DecoyStatusResponse, summary='Get WebPanel Decoy Site Status')
+async def get_decoy_status_api():
+    """
+    Checks if the decoy site is currently configured and active.
+    """
+    try:
+        status = cli_api.get_webpanel_decoy_status()
+        return DecoyStatusResponse(**status)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Error retrieving decoy status: {str(e)}')

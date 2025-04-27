@@ -1,6 +1,13 @@
-## [1.7.1] - 2025-04-25
+## [1.8.0] - 2025-04-27
 
 ### Changed
-- feat: Add init_paths to handle sys.path setup for importing shared modules
-- feat: Add insecure parameter to generate_uri() function
-- feat: Add SNI checker and certificate manager
+🛡️ feat: Add Decoy Site feature
+🖥️ feat: Add Decoy status API for web panel integration
+🔧 feat (API): Add endpoints for Decoy site management using background tasks
+🛠️ feat (CLI): Add Decoy Site management commands to CLI
+🌐 feat: Integrate Decoy Site functionality into the Hysteria web panel
+🧹 improve: Enhance restore.sh to automatically fix config.json based on active network interface
+🛡️ improve: Prevent duplicate WARP outbound entries and improve the installation flow
+🛠️ fix: Completely remove WARP ACL rules when the wg-quick@wgcf service is inactive
+🛠️ fix: Properly handle domain names in the IP4 configuration variable
+📝 fix: Correct minor typos across the project

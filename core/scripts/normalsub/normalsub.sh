@@ -2,16 +2,6 @@
 source /etc/hysteria/core/scripts/utils.sh
 define_colors
 
-# install_dependencies() {
-#     echo "Installing necessary dependencies..."
-#     apt-get install certbot -y > /dev/null 2>&1
-#     if [ $? -ne 0 ]; then
-#         echo -e "${red}Error: Failed to install certbot. ${NC}"
-#         exit 1
-#     fi
-#     echo -e "${green}Certbot installed successfully. ${NC}"
-# }
-
 update_env_file() {
     local domain=$1
     local port=$2
@@ -54,14 +44,23 @@ start_service() {
         return
     fi
 
-    # install_dependencies
-    # systemctl stop caddy.service > /dev/null 2>&1 # We stopped caddy service just after its installation
-
-    echo "Generating SSL certificates for $domain..."
-    certbot certonly --standalone --agree-tos --register-unsafely-without-email -d "$domain"
-    if [ $? -ne 0 ]; then
-        echo -e "${red}Error: Failed to generate SSL certificates. ${NC}"
-        exit 1
+    echo "Checking SSL certificates for $domain..."
+    if certbot certificates | grep -q "$domain"; then
+        echo -e "${yellow}Certificate for $domain already exists. Renewing...${NC}"
+        certbot renew --cert-name "$domain"
+        if [ $? -ne 0 ]; then
+            echo -e "${red}Error: Failed to renew SSL certificate. ${NC}"
+            exit 1
+        fi
+        echo -e "${green}Certificate renewed successfully. ${NC}"
+    else
+        echo -e "${yellow}Requesting new certificate for $domain...${NC}"
+        certbot certonly --standalone --agree-tos --register-unsafely-without-email -d "$domain"
+        if [ $? -ne 0 ]; then
+            echo -e "${red}Error: Failed to generate SSL certificate. ${NC}"
+            exit 1
+        fi
+        echo -e "${green}Certificate generated successfully. ${NC}"
     fi
 
     update_env_file "$domain" "$port"
@@ -86,12 +85,12 @@ stop_service() {
         source /etc/hysteria/core/scripts/normalsub/.env
     fi
 
-    if [ -n "$HYSTERIA_DOMAIN" ]; then
-        echo -e "${yellow}Deleting SSL certificate for domain: $HYSTERIA_DOMAIN...${NC}"
-        certbot delete --cert-name "$HYSTERIA_DOMAIN" --non-interactive > /dev/null 2>&1
-    else
-        echo -e "${red}HYSTERIA_DOMAIN not found in .env. Skipping certificate deletion.${NC}"
-    fi
+    # if [ -n "$HYSTERIA_DOMAIN" ]; then
+    #     echo -e "${yellow}Deleting SSL certificate for domain: $HYSTERIA_DOMAIN...${NC}"
+    #     certbot delete --cert-name "$HYSTERIA_DOMAIN" --non-interactive > /dev/null 2>&1
+    # else
+    #     echo -e "${red}HYSTERIA_DOMAIN not found in .env. Skipping certificate deletion.${NC}"
+    # fi
 
     systemctl stop hysteria-normal-sub.service > /dev/null 2>&1
     systemctl disable hysteria-normal-sub.service > /dev/null 2>&1

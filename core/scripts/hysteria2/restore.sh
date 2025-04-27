@@ -115,17 +115,13 @@ if [ -f "$CONFIG_FILE" ]; then
   fi
 
   if ! systemctl is-active --quiet wg-quick@wgcf.service; then
-    echo "wgcf service is NOT active. Removing warps outbound and fixing ACL rules..."
+    echo "wgcf service is NOT active. Removing warps outbound and any ACL rules..."
 
     tmpfile=$(mktemp)
     jq '
       .outbounds = (.outbounds | map(select(.name != "warps"))) |
       .acl.inline = (.acl.inline | map(
-        if test("^warps\\(") then
-          sub("^warps\\("; "direct(")
-        else
-          .
-        end
+        select(test("^warps\\(") | not)
       ))
     ' "$CONFIG_FILE" > "$tmpfile"
     
@@ -139,6 +135,7 @@ echo "Hysteria configuration restored and updated successfully."
 
 chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
+
 python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 if [ $? -ne 0 ]; then
       echo "Error: Restart service failed'."

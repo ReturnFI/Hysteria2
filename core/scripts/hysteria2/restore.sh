@@ -61,7 +61,6 @@ for file in "${expected_files[@]}"; do
     fi
 done
 
-
 timestamp=$(date +%Y%m%d_%H%M%S)
 existing_backup_dir="/opt/hysbackup/restore_pre_backup_$timestamp"
 mkdir -p "$existing_backup_dir"
@@ -85,10 +84,54 @@ for file in "${expected_files[@]}"; do
     fi
 done
 
-rm -rf "$RESTORE_DIR"
-echo "Hysteria configuration restored successfully."
 
-chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
+CONFIG_FILE="$TARGET_DIR/config.json"
+
+if [ -f "$CONFIG_FILE" ]; then
+  echo "Checking and adjusting config.json based on system state..."
+
+  networkdef=$(ip route | grep "^default" | awk '{print $5}')
+
+  if [ -n "$networkdef" ]; then
+    current_v4_device=$(jq -r '.outbounds[] | select(.name=="v4") | .direct.bindDevice' "$CONFIG_FILE")
+
+    if [ "$current_v4_device" != "$networkdef" ]; then
+      echo "Updating v4 outbound bindDevice from '$current_v4_device' to '$networkdef'..."
+      tmpfile=$(mktemp)
+      jq --arg newdev "$networkdef" '
+        .outbounds = (.outbounds | map(
+          if .name == "v4" then
+            .direct.bindDevice = $newdev
+          else
+            .
+          end
+        ))
+      ' "$CONFIG_FILE" > "$tmpfile" && mv "$tmpfile" "$CONFIG_FILE"
+    fi
+  fi
+
+  if ! systemctl is-active --quiet wg-quick@wgcf.service; then
+    echo "wgcf service is NOT active. Removing warps outbound and fixing ACL rules..."
+
+    tmpfile=$(mktemp)
+
+    jq '
+      .outbounds = (.outbounds | map(select(.name != "warps"))) |
+      .acl.inline = (.acl.inline | map(
+        if test("^warps\\(") then
+          sub("^warps\\("; "direct(")
+        else
+          .
+        end
+      ))
+    ' "$CONFIG_FILE" > "$tmpfile" && mv "$tmpfile" "$CONFIG_FILE"
+  fi
+fi
+
+rm -rf "$RESTORE_DIR"
+echo "Hysteria configuration restored and updated successfully."
+
+chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt /etc/hysteria/config.json
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
 python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 if [ $? -ne 0 ]; then

@@ -97,6 +97,7 @@ if [ -f "$CONFIG_FILE" ]; then
 
     if [ "$current_v4_device" != "$networkdef" ]; then
       echo "Updating v4 outbound bindDevice from '$current_v4_device' to '$networkdef'..."
+      
       tmpfile=$(mktemp)
       jq --arg newdev "$networkdef" '
         .outbounds = (.outbounds | map(
@@ -106,7 +107,10 @@ if [ -f "$CONFIG_FILE" ]; then
             .
           end
         ))
-      ' "$CONFIG_FILE" > "$tmpfile" && mv "$tmpfile" "$CONFIG_FILE"
+      ' "$CONFIG_FILE" > "$tmpfile"
+      
+      cat "$tmpfile" > "$CONFIG_FILE"
+      rm -f "$tmpfile"
     fi
   fi
 
@@ -114,7 +118,6 @@ if [ -f "$CONFIG_FILE" ]; then
     echo "wgcf service is NOT active. Removing warps outbound and fixing ACL rules..."
 
     tmpfile=$(mktemp)
-
     jq '
       .outbounds = (.outbounds | map(select(.name != "warps"))) |
       .acl.inline = (.acl.inline | map(
@@ -124,14 +127,17 @@ if [ -f "$CONFIG_FILE" ]; then
           .
         end
       ))
-    ' "$CONFIG_FILE" > "$tmpfile" && mv "$tmpfile" "$CONFIG_FILE"
+    ' "$CONFIG_FILE" > "$tmpfile"
+    
+    cat "$tmpfile" > "$CONFIG_FILE"
+    rm -f "$tmpfile"
   fi
 fi
 
 rm -rf "$RESTORE_DIR"
 echo "Hysteria configuration restored and updated successfully."
 
-chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt /etc/hysteria/config.json
+chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
 python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
 if [ $? -ne 0 ]; then

@@ -10,6 +10,7 @@ else
     echo "Error: Config file $CONFIG_ENV not found."
     exit 1
 fi
+
 update_sni() {
     local sni=$1
     local server_ip
@@ -21,10 +22,21 @@ update_sni() {
     fi
 
     if [ -n "$IP4" ]; then
-        server_ip="$IP4"
-        echo "Using server IP from config: $server_ip"
+        if [[ $IP4 =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            server_ip="$IP4"
+            echo "Using server IP from config: $server_ip"
+        else
+            domain_ip=$(dig +short "$IP4" A | head -n 1)
+            if [ -n "$domain_ip" ]; then
+                server_ip="$domain_ip"
+                echo "Resolved domain $IP4 to IP: $server_ip"
+            else
+                server_ip=$(curl -s -4 ifconfig.me)
+                echo "Could not resolve domain $IP4. Using auto-detected server IP: $server_ip"
+            fi
+        fi
     else
-        server_ip=$(curl -s ifconfig.me)
+        server_ip=$(curl -s -4 ifconfig.me)
         echo "Using auto-detected server IP: $server_ip"
     fi
 

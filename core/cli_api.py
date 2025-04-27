@@ -12,7 +12,7 @@ DEBUG = False
 SCRIPT_DIR = '/etc/hysteria/core/scripts'
 CONFIG_FILE = '/etc/hysteria/config.json'
 CONFIG_ENV_FILE = '/etc/hysteria/.configs.env'
-
+WEBPANEL_ENV_FILE = '/etc/hysteria/core/scripts/webpanel/.env'
 
 class Command(Enum):
     '''Contains path to command's script'''
@@ -507,13 +507,13 @@ def stop_normalsub():
     run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'stop'])
 
 
-def start_webpanel(domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool):
+def start_webpanel(domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool, decoy_path: str):
     '''Starts WebPanel.'''
     if not domain or not port or not admin_username or not admin_password or not expiration_minutes:
         raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
     run_cmd(
         ['bash', Command.SHELL_WEBPANEL.value, 'start',
-         domain, str(port), admin_username, admin_password, str(expiration_minutes), str(debug).lower()]
+         domain, str(port), admin_username, admin_password, str(expiration_minutes), str(debug).lower(), str(decoy_path)]
     )
 
 
@@ -521,6 +521,32 @@ def stop_webpanel():
     '''Stops WebPanel.'''
     run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stop'])
 
+def setup_webpanel_decoy(domain: str, decoy_path: str):
+    '''Sets up or updates the decoy site for the web panel.'''
+    if not domain or not decoy_path:
+        raise InvalidInputError('Error: Both domain and decoy_path are required.')
+    run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'decoy', domain, decoy_path])
+
+def stop_webpanel_decoy():
+    '''Stops and removes the decoy site configuration for the web panel.'''
+    run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'stopdecoy'])
+
+def get_webpanel_decoy_status() -> dict[str, Any]:
+    """Checks the status of the webpanel decoy site configuration."""
+    try:
+        if not os.path.exists(WEBPANEL_ENV_FILE):
+            return {"active": False, "path": None}
+
+        env_vars = dotenv_values(WEBPANEL_ENV_FILE)
+        decoy_path = env_vars.get('DECOY_PATH')
+
+        if decoy_path and decoy_path.strip():
+            return {"active": True, "path": decoy_path.strip()}
+        else:
+            return {"active": False, "path": None}
+    except Exception as e:
+        print(f"Error checking decoy status: {e}")
+        return {"active": False, "path": None}
 
 def get_webpanel_url() -> str | None:
     '''Gets the URL of WebPanel.'''

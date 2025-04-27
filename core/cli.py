@@ -447,15 +447,17 @@ def normalsub(action: str, domain: str, port: int):
 @click.option('--port', '-p', required=False, help='Port number for WebPanel service', type=int)
 @click.option('--admin-username', '-au', required=False, help='Admin username for WebPanel', type=str)
 @click.option('--admin-password', '-ap', required=False, help='Admin password for WebPanel', type=str)
-@click.option('--expiration-minutes', '-e', required=False, help='Expiration minutes for WebPanel', type=int, default=20)
+@click.option('--expiration-minutes', '-e', required=False, help='Expiration minutes for WebPanel session', type=int, default=20)
 @click.option('--debug', '-g', is_flag=True, help='Enable debug mode for WebPanel', default=False)
-def webpanel(action: str, domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool):
+@click.option('--decoy-path', '-dp', required=False, type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True), help='Optional path to serve as a decoy site (only for start action)') # Add decoy_path option
+def webpanel(action: str, domain: str, port: int, admin_username: str, admin_password: str, expiration_minutes: int, debug: bool, decoy_path: str | None): # Add decoy_path parameter
+    """Manages the Hysteria Web Panel service."""
     try:
         if action == 'start':
             if not domain or not port or not admin_username or not admin_password:
                 raise click.UsageError('Error: the --domain, --port, --admin-username, and --admin-password are required for the start action.')
-
-            cli_api.start_webpanel(domain, port, admin_username, admin_password, expiration_minutes, debug)
+            
+            cli_api.start_webpanel(domain, port, admin_username, admin_password, expiration_minutes, debug, decoy_path) 
 
             services_status = cli_api.get_services_status()
             if not services_status:
@@ -467,12 +469,37 @@ def webpanel(action: str, domain: str, port: int, admin_username: str, admin_pas
 
             url = cli_api.get_webpanel_url()
             click.echo(f'Hysteria web panel is now running. The service is accessible on: {url}')
+            if decoy_path:
+                click.echo(f'Decoy site configured using path: {decoy_path}')
         elif action == 'stop':
+            if decoy_path: 
+                 click.echo('Warning: --decoy-path option is ignored for the stop action.', err=True)
             cli_api.stop_webpanel()
             click.echo(f'WebPanel stopped successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+@cli.command('setup-webpanel-decoy')
+@click.option('--domain', '-d', required=True, help='Domain name associated with the web panel', type=str)
+@click.option('--decoy-path', '-dp', required=True, type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True), help='Path to the directory containing the decoy website files (e.g., /var/www/html)')
+def setup_webpanel_decoy(domain: str, decoy_path: str):
+    """Sets up or updates the decoy site for the running Web Panel."""
+    try:
+        cli_api.setup_webpanel_decoy(domain, decoy_path)
+        click.echo(f'Web Panel decoy site configured successfully for domain {domain} using path {decoy_path}.')
+        click.echo('Note: Caddy service was restarted.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
+@cli.command('stop-webpanel-decoy')
+def stop_webpanel_decoy():
+    """Stops the decoy site functionality for the Web Panel."""
+    try:
+        cli_api.stop_webpanel_decoy()
+        click.echo(f'Web Panel decoy site stopped and configuration removed successfully.')
+        click.echo('Note: Caddy service was restarted.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
 
 @cli.command('get-webpanel-url')
 def get_web_panel_url():

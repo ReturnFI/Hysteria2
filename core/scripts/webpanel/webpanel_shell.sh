@@ -33,6 +33,7 @@ install_dependencies() {
 
     echo -e "${green}Caddy installed successfully. ${NC}"
 }
+
 update_env_file() {
     local domain=$1
     local port=$2
@@ -41,6 +42,7 @@ update_env_file() {
     local admin_password_hash=$(echo -n "$admin_password" | sha256sum | cut -d' ' -f1) # hash the password
     local expiration_minutes=$5
     local debug=$6
+    local decoy_path=$7
 
     local api_token=$(openssl rand -hex 32) 
     local root_path=$(openssl rand -hex 16)
@@ -55,6 +57,10 @@ ADMIN_USERNAME=$admin_username
 ADMIN_PASSWORD=$admin_password_hash
 EXPIRATION_MINUTES=$expiration_minutes
 EOL
+
+    if [ -n "$decoy_path" ]; then
+        echo "DECOY_PATH=$decoy_path" >> /etc/hysteria/core/scripts/webpanel/.env
+    fi
 }
 
 update_caddy_file() {
@@ -66,8 +72,40 @@ update_caddy_file() {
         return 1
     fi
 
-    # Update the Caddyfile without the email directive
-    cat <<EOL > "$CADDY_CONFIG_FILE"
+    if [ -n "$DECOY_PATH" ] && [ "$PORT" -eq 443 ]; then
+        cat <<EOL > "$CADDY_CONFIG_FILE"
+# Global configuration
+{
+    # Disable admin panel of the Caddy
+    admin off
+    # Disable automatic HTTP to HTTPS redirects so the Caddy won't listen on port 80 (We need this port for other parts of the project)
+    auto_https disable_redirects
+}
+
+# Listen for incoming requests on the specified domain and port
+$DOMAIN:$PORT {
+    # Define a route to handle all requests starting with ROOT_PATH('/$ROOT_PATH/')
+    route /$ROOT_PATH/* {
+        # We don't strip the ROOT_PATH('/$ROOT_PATH/') from the request
+        # uri strip_prefix /$ROOT_PATH
+
+        # We are proxying all requests under the ROOT_PATH to FastAPI at 127.0.0.1:28260
+        # FastAPI handles these requests because we set the 'root_path' parameter in the FastAPI instance.
+        reverse_proxy http://127.0.0.1:28260
+    }
+    
+    @otherPaths {
+        not path /$ROOT_PATH/*
+    }
+    
+    handle @otherPaths {
+        root * $DECOY_PATH
+        file_server
+    }
+}
+EOL
+    else
+        cat <<EOL > "$CADDY_CONFIG_FILE"
 # Global configuration
 {
     # Disable admin panel of the Caddy
@@ -97,8 +135,19 @@ $DOMAIN:$PORT {
     abort @blocked
 }
 EOL
-}
 
+        if [ -n "$DECOY_PATH" ] && [ "$PORT" -ne 443 ]; then
+            cat <<EOL >> "$CADDY_CONFIG_FILE"
+
+# Decoy site on port 443
+$DOMAIN:443 {
+    root * $DECOY_PATH
+    file_server
+}
+EOL
+        fi
+    fi
+}
 
 create_webpanel_service_file() {
     cat <<EOL > /etc/systemd/system/hysteria-webpanel.service
@@ -147,21 +196,13 @@ start_service() {
     local admin_password=$4
     local expiration_minutes=$5
     local debug=$6
-
-    # MAYBE I WANT TO CHANGE CONFIGS WITHOUT RESTARTING THE SERVICE MYSELF
-    # # Check if the services are already active
-    # if systemctl is-active --quiet hysteria-webpanel.service && systemctl is-active --quiet hysteria-caddy.service; then
-    #     echo -e "${green}Hysteria web panel is already running with Caddy.${NC}"
-    #     source /etc/hysteria/core/scripts/webpanel/.env
-    #     echo -e "${yellow}The web panel is accessible at: http://$domain:$port/$ROOT_PATH${NC}"
-    #     return
-    # fi
+    local decoy_path=$7 
 
     # Install required dependencies
     install_dependencies
 
     # Update environment file
-    update_env_file "$domain" "$port" "$admin_username" "$admin_password" "$expiration_minutes" "$debug"
+    update_env_file "$domain" "$port" "$admin_username" "$admin_password" "$expiration_minutes" "$debug" "$decoy_path"
     if [ $? -ne 0 ]; then
         echo -e "${red}Error: Failed to update the environment file.${NC}"
         return 1
@@ -214,8 +255,113 @@ start_service() {
         source /etc/hysteria/core/scripts/webpanel/.env
         local webpanel_url="http://$domain:$port/$ROOT_PATH/"
         echo -e "${green}Hysteria web panel is now running. The service is accessible on: $webpanel_url ${NC}"
+        
+        if [ -n "$decoy_path" ]; then
+            if [ "$port" -eq 443 ]; then
+                echo -e "${green}Decoy site is configured on the same port (443) and will handle non-webpanel paths.${NC}"
+            else
+                echo -e "${green}Decoy site is configured on port 443 at: http://$domain:443/${NC}"
+            fi
+        fi
     else
         echo -e "${red}Error: Hysteria web panel failed to start after Caddy restart.${NC}"
+    fi
+}
+
+setup_decoy_site() {
+    local domain=$1
+    local decoy_path=$2
+    
+    if [ -z "$domain" ] || [ -z "$decoy_path" ]; then
+        echo -e "${red}Usage: $0 decoy <DOMAIN> <PATH_TO_DECOY_SITE>${NC}"
+        return 1
+    fi
+    
+    if [ ! -d "$decoy_path" ]; then
+        echo -e "${yellow}Warning: Decoy site path does not exist. Creating directory...${NC}"
+        mkdir -p "$decoy_path"
+        echo "<html><body><h1>Website Under Construction</h1></body></html>" > "$decoy_path/index.html"
+    fi
+    
+    if [ -f "/etc/hysteria/core/scripts/webpanel/.env" ]; then
+        source /etc/hysteria/core/scripts/webpanel/.env
+        sed -i "/DECOY_PATH=/d" /etc/hysteria/core/scripts/webpanel/.env
+        echo "DECOY_PATH=$decoy_path" >> /etc/hysteria/core/scripts/webpanel/.env
+        
+        update_caddy_file
+        
+        systemctl restart hysteria-caddy.service
+        
+        echo -e "${green}Decoy site configured successfully for $domain${NC}"
+        if [ "$PORT" -eq 443 ]; then
+            echo -e "${green}Decoy site is accessible at non-webpanel paths on: https://$domain:443/${NC}"
+        else
+            echo -e "${green}Decoy site is accessible at: https://$domain:443/${NC}"
+        fi
+    else
+        echo -e "${red}Error: Web panel is not configured yet. Please start the web panel first.${NC}"
+        return 1
+    fi
+}
+
+stop_decoy_site() {
+    if [ ! -f "/etc/hysteria/core/scripts/webpanel/.env" ]; then
+        echo -e "${red}Error: Web panel is not configured.${NC}"
+        return 1
+    fi
+    
+    source /etc/hysteria/core/scripts/webpanel/.env
+    
+    if [ -z "$DECOY_PATH" ]; then
+        echo -e "${yellow}No decoy site is currently configured.${NC}"
+        return 0
+    fi
+    
+    local was_separate_port=false
+    if [ "$PORT" -ne 443 ]; then
+        was_separate_port=true
+    fi
+    
+    sed -i "/DECOY_PATH=/d" /etc/hysteria/core/scripts/webpanel/.env
+    
+    cat <<EOL > "$CADDY_CONFIG_FILE"
+# Global configuration
+{
+    # Disable admin panel of the Caddy
+    admin off
+    # Disable automatic HTTP to HTTPS redirects so the Caddy won't listen on port 80 (We need this port for other parts of the project)
+    auto_https disable_redirects
+}
+
+# Listen for incoming requests on the specified domain and port
+$DOMAIN:$PORT {
+    # Define a route to handle all requests starting with ROOT_PATH('/$ROOT_PATH/')
+    route /$ROOT_PATH/* {
+        # We don't strip the ROOT_PATH('/$ROOT_PATH/') from the request
+        # uri strip_prefix /$ROOT_PATH
+
+        # We are proxying all requests under the ROOT_PATH to FastAPI at 127.0.0.1:28260
+        # FastAPI handles these requests because we set the 'root_path' parameter in the FastAPI instance.
+        reverse_proxy http://127.0.0.1:28260
+    }
+    
+    # Any request that doesn't start with the ROOT_PATH('/$ROOT_PATH/') will be blocked and no response will be sent to the client
+    @blocked {
+        not path /$ROOT_PATH/*
+    }
+    
+    # Abort the request, effectively dropping the connection without a response for invalid paths
+    abort @blocked
+}
+EOL
+    
+    systemctl restart hysteria-caddy.service
+    
+    echo -e "${green}Decoy site has been stopped and removed from configuration.${NC}"
+    if [ "$was_separate_port" = true ]; then
+        echo -e "${green}Port 443 is no longer served by Caddy.${NC}"
+    else
+        echo -e "${green}Non-webpanel paths on port 443 will now return connection errors instead of serving the decoy site.${NC}"
     fi
 }
 
@@ -240,18 +386,32 @@ stop_service() {
     systemctl disable hysteria-webpanel.service
     systemctl stop hysteria-webpanel.service
     echo "Hysteria web panel stopped."
+
+    systemctl daemon-reload
+    rm /etc/hysteria/core/scripts/webpanel/.env
+    rm "$CADDY_CONFIG_FILE"
 }
 
 case "$1" in
     start)
         if [ -z "$2" ] || [ -z "$3" ]; then
-            echo -e "${red}Usage: $0 start <DOMAIN> <PORT> ${NC}"
+            echo -e "${red}Usage: $0 start <DOMAIN> <PORT> [ADMIN_USERNAME] [ADMIN_PASSWORD] [EXPIRATION_MINUTES] [DEBUG] [DECOY_PATH]${NC}"
             exit 1
         fi
-        start_service "$2" "$3" "$4" "$5" "$6" "$7"
+        start_service "$2" "$3" "$4" "$5" "$6" "$7" "$8"
         ;;
     stop)
         stop_service
+        ;;
+    decoy)
+        if [ -z "$2" ] || [ -z "$3" ]; then
+            echo -e "${red}Usage: $0 decoy <DOMAIN> <PATH_TO_DECOY_SITE>${NC}"
+            exit 1
+        fi
+        setup_decoy_site "$2" "$3"
+        ;;
+    stopdecoy)
+        stop_decoy_site
         ;;
     url)
         show_webpanel_url
@@ -260,9 +420,13 @@ case "$1" in
         show_webpanel_api_token
         ;;
     *)
-        echo -e "${red}Usage: $0 {start|stop} <DOMAIN> <PORT> ${NC}"
+        echo -e "${red}Usage: $0 {start|stop|decoy|stopdecoy|url|api-token} [options]${NC}"
+        echo -e "${yellow}start <DOMAIN> <PORT> [ADMIN_USERNAME] [ADMIN_PASSWORD] [EXPIRATION_MINUTES] [DEBUG] [DECOY_PATH]${NC}"
+        echo -e "${yellow}stop${NC}"
+        echo -e "${yellow}decoy <DOMAIN> <PATH_TO_DECOY_SITE>${NC}"
+        echo -e "${yellow}stopdecoy${NC}"
+        echo -e "${yellow}url${NC}"
+        echo -e "${yellow}api-token${NC}"
         exit 1
         ;;
 esac
-
-

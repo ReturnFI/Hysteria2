@@ -29,8 +29,7 @@
                             <li class='nav-item'>
                                 <a class='nav-link' id='telegram-tab' data-toggle='pill' href='#telegram' role='tab'
                                     aria-controls='telegram' aria-selected='true'><i class="fab fa-telegram"></i>
-                                    Telegram
-                                    Bot</a>
+                                    Telegram Bot</a>
                             </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='port-tab' data-toggle='pill' href='#port' role='tab'
@@ -47,17 +46,20 @@
                                     aria-controls='change_ip' aria-selected='false'><i class="fas fa-network-wired"></i>
                                     Change IP</a>
                             </li>
-                            <!-- New Backup Tab -->
                             <li class='nav-item'>
                                 <a class='nav-link' id='backup-tab' data-toggle='pill' href='#backup' role='tab'
                                     aria-controls='backup' aria-selected='false'><i class="fas fa-download"></i>
                                     Backup</a>
                             </li>
-                            <!-- IP Limiter Tab -->
                             <li class='nav-item'>
                                 <a class='nav-link' id='ip-limit-tab' data-toggle='pill' href='#ip-limit' role='tab'
                                     aria-controls='ip-limit' aria-selected='false'><i class="fas fa-user-slash"></i>
                                     IP Limit</a>
+                            </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' id='decoy-tab' data-toggle='pill' href='#decoy' role='tab'
+                                    aria-controls='decoy' aria-selected='false'><i class="fas fa-mask"></i>
+                                    Decoy Site</a>
                             </li>
                         </ul>
                     </div>
@@ -74,35 +76,6 @@
                                 </ul>
                                 <div class='tab-content' id='subs-tabs-content'>
                                      <br>
-                                    <!-- <div class='tab-pane fade show active' id='singbox' role='tabpanel'
-                                        aria-labelledby='singbox-tab'>
-                                        <form id="singbox">
-                                            <div class='form-group'>
-                                                <label for='singbox_domain'>Domain:</label>
-                                                <input type='text' class='form-control' id='singbox_domain'
-                                                    placeholder='Enter Domain'>
-                                                <div class="invalid-feedback">
-                                                    Please enter a valid domain (without http:// or https://).
-                                                </div>
-                                            </div>
-                                            <div class='form-group'>
-                                                <label for='singbox_port'>Port:</label>
-                                                <input type='text' class='form-control' id='singbox_port'
-                                                    placeholder='Enter Port'>
-                                                <div class="invalid-feedback">
-                                                    Please enter a valid port number.
-                                                </div>
-                                            </div>
-                                            <button id="singbox_start" type='button' class='btn btn-success'>
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                                Start
-                                            </button>
-                                            <button id="singbox_stop" type='button' class='btn btn-danger'
-                                                style="display: none;">Stop</button>
-
-                                        </form>
-                                    </div> -->
-
                                     <!-- Normal Sub Tab -->
                                     <div class='tab-pane fade show active' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
                                         <form id="normal">
@@ -134,7 +107,6 @@
                                 </div>
                             </div>
 
-
                             <!-- Telegram Bot Tab -->
                             <div class='tab-pane fade' id='telegram' role='tabpanel' aria-labelledby='telegram-tab'>
                                 <form id="telegram">
@@ -158,13 +130,11 @@
                                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>Start</button>
                                     <button id="telegram_stop" type='button' class='btn btn-danger'
                                         style="display: none;">Stop</button>
-
                                 </form>
                             </div>
 
                             <!-- Port Tab -->
                             <div class='tab-pane fade' id='port' role='tabpanel' aria-labelledby='port-tab'>
-
                                 <form id="port">
                                     <div class='form-group'>
                                         <label for='hysteria_port'>Port:</label>
@@ -180,7 +150,6 @@
 
                             <!-- SNI Tab -->
                             <div class='tab-pane fade' id='sni' role='tabpanel' aria-labelledby='sni-tab'>
-
                                 <form id="sni">
                                     <div class='form-group'>
                                         <label for='sni_domain'>Domain:</label>
@@ -199,40 +168,41 @@
                                 <form id="change_ip">
                                     <div class='form-group'>
                                         <label for='ipv4'>IPv4:</label>
-                                        <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4'
+                                        <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4 or Domain'
                                             value="{{ ipv4 or '' }}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid IPv4 address.
+                                            Please enter a valid IPv4 address or Domain.
                                         </div>
                                     </div>
                                     <div class='form-group'>
                                         <label for='ipv6'>IPv6:</label>
-                                        <input type='text' class='form-control' id='ipv6' placeholder='Enter IPv6'
+                                        <input type='text' class='form-control' id='ipv6' placeholder='Enter IPv6 or Domain'
                                             value="{{ ipv6 or '' }}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid IPv6 address.
+                                            Please enter a valid IPv6 address or Domain.
                                         </div>
                                     </div>
                                     <button id="ip_change" type='button' class='btn btn-primary'>Save</button>
                                 </form>
                             </div>
-                            <!-- Backup Tab (New) -->
+
+                            <!-- Backup Tab -->
                             <div class='tab-pane fade' id='backup' role='tabpanel' aria-labelledby='backup-tab'>
                                 <div class="form-group">
                                      <label for="backup_file">Upload Backup:</label>
                                      <input type="file" class="form-control-file" id="backup_file" accept=".zip">
                                  </div>
                                 <button id="upload_backup" type='button' class='btn btn-success'>Upload</button>
-                                 <button id="download_backup" type='button' class='btn btn-primary'>Download Backup</button>
+                                <button id="download_backup" type='button' class='btn btn-primary'>Download Backup</button>
 
                                 <div class="progress mt-3" style="display: none;">
                                   <div id="backup_progress_bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
 
-                               <div id="backup_status" class="mt-2"></div>  <!-- Status messages -->
+                               <div id="backup_status" class="mt-2"></div>
                             </div>
 
-                            <!-- IP Limit Tab (New) -->
+                            <!-- IP Limit Tab -->
                             <div class='tab-pane fade' id='ip-limit' role='tabpanel' aria-labelledby='ip-limit-tab'>
                                 <ul class='nav nav-tabs' id='ip-limit-tabs' role='tablist'>
                                     <li class='nav-item'>
@@ -284,6 +254,40 @@
                                 </div>
                             </div>
 
+                            <!-- Decoy Site Tab -->
+                            <div class='tab-pane fade' id='decoy' role='tabpanel' aria-labelledby='decoy-tab'>
+                                <form id="decoy_form">
+                                    <div class='form-group'>
+                                        <label for='decoy_domain'>Domain:</label>
+                                        <input type='text' class='form-control' id='decoy_domain'
+                                            placeholder='Enter Domain'>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid domain (without http:// or https://).
+                                        </div>
+                                    </div>
+                                    <div class='form-group'>
+                                        <label for='decoy_path'>Decoy Site Path:</label>
+                                        <input type='text' class='form-control' id='decoy_path'
+                                            placeholder='Enter Path to Decoy Site Files'>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid directory path.
+                                        </div>
+                                    </div>
+                                    <button id="decoy_setup" type='button' class='btn btn-success'>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                        Setup Decoy
+                                    </button>
+                                    <button id="decoy_stop" type='button' class='btn btn-danger' style="display: none;">Stop Decoy</button>
+                                </form>
+
+                                <div class="mt-4">
+                                    <h5>Decoy Status</h5>
+                                    <div id="decoy_status_container" class="p-3 border rounded">
+                                        <div id="decoy_status_message">Loading status...</div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <!-- /.card -->
@@ -298,15 +302,20 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Font Awesome -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"
     integrity="sha512-yFjZbTYRCJodnuyGlsKamNE/LlEaEA/3apsIOPr7/l+jCMq9Dn9x5qyuAGqgpr4/NBZ95p8yrl/sLhJvoazg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
-
     $(document).ready(function () {
+
         initUI();
+        fetchDecoyStatus();
+
+        function isValidPath(path) {
+            if (!path) return false;
+            return path.trim() !== '';
+        }
 
         function isValidDomain(domain) {
             if (!domain) return false;
@@ -318,12 +327,13 @@
             if (!port) return false;
             return /^[0-9]+$/.test(port) && parseInt(port) > 0 && parseInt(port) <= 65535;
         }
+
         function isValidIPorDomain(input) {
             if (!input) return true;
 
             const ipV4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-            const ipV6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,2}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,3}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,5}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,6}){1,6})|:((:[0-9a-fA-F]{1,7}){1,7}|:))$/;
-            const domainRegex = /^(?!\-)(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}$/;
+            const ipV6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/;
+            const domainRegex = /^(?!-)(?:[a-zA-Z\d-]{0,62}[a-zA-Z\d]\.){1,126}(?!\d+$)[a-zA-Z\d]{1,63}$/;
             const lowerInput = input.toLowerCase();
 
             if (ipV4Regex.test(input)) return true;
@@ -337,7 +347,6 @@
             if (!value) return false;
             return /^[0-9]+$/.test(value) && parseInt(value) > 0;
         }
-
 
         function confirmAction(actionName, callback) {
             Swal.fire({
@@ -369,22 +378,22 @@
                     }
                 },
                 success: function (response) {
-                    Swal.fire("Success!", successMessage, "success");
-                     if (showReload) {
+                    if (showReload) {
                         Swal.fire("Success!", successMessage, "success").then(() => {
-                                location.reload();
+                            location.reload();
                         });
+                    } else {
+                        Swal.fire("Success!", successMessage, "success");
                     }
-
-                    console.log(response);
+                    console.log("Success Response:", response);
                 },
                 error: function (xhr, status, error) {
-                   let errorMessage = "Something went wrong.";
+                    let errorMessage = "Something went wrong.";
                     if (xhr.responseJSON && xhr.responseJSON.detail) {
                         errorMessage = xhr.responseJSON.detail;
                     }
                     Swal.fire("Error!", errorMessage, "error");
-                    console.error(error);
+                    console.error("AJAX Error:", status, error, xhr.responseText); 
                 },
                 complete: function() {
                     if (buttonSelector) {
@@ -400,171 +409,191 @@
             $(`#${formId} .form-control`).each(function () {
                 const input = $(this);
                 const id = input.attr('id');
+                let fieldValid = true;
 
                 if (id.includes('domain')) {
-                    if (!isValidDomain(input.val())) {
-                        input.addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.removeClass('is-invalid');
-                    }
+                    fieldValid = isValidDomain(input.val());
                 } else if (id.includes('port')) {
-                    if (!isValidPort(input.val())) {
-                        input.addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.removeClass('is-invalid');
-                    }
+                    fieldValid = isValidPort(input.val());
                 } else if (id === 'ipv4' || id === 'ipv6') {
-                    if (!isValidIPorDomain(input.val())) {
-                        input.addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.removeClass('is-invalid');
-                    }
+                    fieldValid = (input.val().trim() === '') ? true : isValidIPorDomain(input.val());
                 } else if (id === 'block_duration' || id === 'max_ips') {
-                    if (!isValidPositiveNumber(input.val())) {
-                        input.addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.removeClass('is-invalid');
-                    }
+                    fieldValid = isValidPositiveNumber(input.val());
+                } else if (id === 'decoy_path') {
+                    fieldValid = isValidPath(input.val());
+                } else {
+                    fieldValid = input.val().trim() !== "";
                 }
 
-                 else {
-
-                    if (!input.val().trim()) {
-                        input.addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.removeClass('is-invalid');
-                    }
+                if (!fieldValid) {
+                    input.addClass('is-invalid');
+                    isValid = false; 
+                } else {
+                    input.removeClass('is-invalid');
                 }
-
             });
-            return isValid;
+            return isValid; 
         }
 
-    function initUI() {
-        $.ajax({
-            url: "{{ url_for('server_services_status_api') }}",
-            type: "GET",
-            success: function (data) {
-                updateServiceUI(data);
-            },
-            error: function () {
-                console.error("Failed to fetch service status.");
-            }
-        });
+        function initUI() {
+            $.ajax({
+                url: "{{ url_for('server_services_status_api') }}",
+                type: "GET",
+                success: function (data) {
+                    updateServiceUI(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to fetch service status:", error, xhr.responseText);
+                     Swal.fire("Error!", "Could not fetch service statuses.", "error");
+                }
+            });
 
+             $.ajax({
+                url: "{{ url_for('get_ip_api') }}",
+                type: "GET",
+                success: function (data) {
+                    $("#ipv4").val(data.ipv4 || "");
+                    $("#ipv6").val(data.ipv6 || "");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to fetch IP addresses:", error, xhr.responseText);
+                }
+            });
+
+            $.ajax({
+                url: "{{ url_for('get_port_api') }}",
+                type: "GET",
+                success: function (data) {
+                    $("#hysteria_port").val(data.port || "");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to fetch port:", error, xhr.responseText);
+                }
+            });
+
+            $.ajax({
+                url: "{{ url_for('get_sni_api') }}",
+                type: "GET",
+                success: function (data) {
+                    $("#sni_domain").val(data.sni || "");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to fetch SNI domain:", error, xhr.responseText);
+                }
+            });
+
+            }
 
         function updateServiceUI(data) {
-            const servicesMap = {
+             const servicesMap = {
                 "hysteria_telegram_bot": "#telegram",
-                // "hysteria_singbox": "#singbox", // singbox removed
                 "hysteria_normal_sub": "#normal",
-                "hysteria_iplimit": "#ip-limit-service"
+                "hysteria_iplimit": "#ip-limit-service" 
             };
 
             Object.keys(servicesMap).forEach(service => {
                 let selector = servicesMap[service];
-                let isRunning = data[service];
-                let serviceName = service.replace("hysteria_", "");
+                let isRunning = data[service]; 
 
                 if (isRunning) {
-                    $(selector + " input, " + selector + " label").remove();
+                    $(selector + " .form-group").hide();
                     $(selector + " .btn-success").hide();
-                    $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
                     $(selector + " .btn-danger").show();
-
-                    // if (service === "hysteria_singbox") { // singbox removed
-                    //      $("#singbox_start").prop('disabled', true);
-                    //  }
-                     if(service === "hysteria_telegram_bot"){
-                         $("#telegram_start").prop('disabled', true);
-                     }
-                    if(service === "hysteria_normal_sub"){
-                       $("#normal_start").prop('disabled', true);
+                    if ($(selector + " .alert-info").length === 0) {
+                        $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
                     }
+
                     if(service === "hysteria_iplimit"){
                        $("#ip_limit_start").hide();
                        $("#ip_limit_stop").show();
                        $(".ip-limit-config-tab-li").show();
-                        if (!$("#ip-limit-config-tab").hasClass('active')) {
-                            $('#ip-limit-service-tab').tab('show');
-                        }
-
-
                     }
 
                 } else {
-                    $(selector + " input, " + selector + " label").show();
-                    $(selector + " .btn-success").show();
-                    $(selector + " .btn-danger").hide();
-                    $(selector + " .alert-info").remove();
-                    //  if (service === "hysteria_singbox") { // singbox removed
-                    //      $("#singbox_start").prop('disabled', false);
-                    //  }
-                      if(service === "hysteria_telegram_bot"){
-                         $("#telegram_start").prop('disabled', false);
-                     }
-                     if(service === "hysteria_normal_sub"){
-                       $("#normal_start").prop('disabled', false);
-                    }
+                     $(selector + " .form-group").show(); 
+                    $(selector + " .btn-success").show(); 
+                    $(selector + " .btn-danger").hide(); 
+                    $(selector + " .alert-info").remove(); 
+
                      if(service === "hysteria_iplimit"){
                        $("#ip_limit_start").show();
                        $("#ip_limit_stop").hide();
                        $(".ip-limit-config-tab-li").hide();
                        $('#ip-limit-service-tab').tab('show');
-
                     }
                 }
             });
         }
 
 
+        function setupDecoy() {
+            if (!validateForm('decoy_form')) return;
+            const domain = $("#decoy_domain").val();
+            const path = $("#decoy_path").val();
+            confirmAction("set up the decoy site", function () {
+                sendRequest(
+                    "{{ url_for('setup_decoy_api') }}",
+                    "POST",
+                    { domain: domain, decoy_path: path },
+                    "Decoy site setup initiated successfully!",
+                    "#decoy_setup",
+                    false
+                );
+                setTimeout(fetchDecoyStatus, 2000);
+            });
+        }
 
-        $.ajax({
-            url: "{{ url_for('get_ip_api') }}",
-            type: "GET",
-            success: function (data) {
-                $("#ipv4").val(data.ipv4 || "");
-                $("#ipv6").val(data.ipv6 || "");
+        function stopDecoy() {
+            confirmAction("stop the decoy site", function () {
+                sendRequest(
+                    "{{ url_for('stop_decoy_api') }}",
+                    "POST", 
+                    null,
+                    "Decoy site stop initiated successfully!",
+                    "#decoy_stop", 
+                    false 
+                );
+                setTimeout(fetchDecoyStatus, 2000);
+            });
+        }
 
-                $("#ipv4").attr("placeholder", "Enter IPv4 or Domain");
-                $("#ipv6").attr("placeholder", "Enter IPv6 or Domain");
+        function fetchDecoyStatus() {
+            $.ajax({
+                url: "{{ url_for('get_decoy_status_api') }}",
+                type: "GET",
+                success: function (data) {
+                    updateDecoyStatusUI(data); 
+                },
+                error: function (xhr, status, error) {
+                    $("#decoy_status_message").html('<div class="alert alert-danger">Failed to fetch decoy status.</div>');
+                    console.error("Failed to fetch decoy status:", error, xhr.responseText);
+                }
+            });
+        }
 
-
-            },
-            error: function () {
-                console.error("Failed to fetch IP addresses.");
-                $("#ipv4").attr("placeholder", "Enter IPv4 or Domain");
-                $("#ipv6").attr("placeholder", "Enter IPv6 or Domain");
+        function updateDecoyStatusUI(data) {
+            if (data.active) {
+                $("#decoy_form .form-group").hide(); 
+                $("#decoy_setup").hide();
+                $("#decoy_stop").show(); 
+                $("#decoy_form .alert-info").remove();
+                 if ($("#decoy_form .alert-info").length === 0) {
+                    $("#decoy_form").prepend(`<div class='alert alert-info'>Decoy site is running. You can stop it if needed.</div>`);
+                 }
+                $("#decoy_status_message").html(`
+                    <strong>Status:</strong> <span class="text-success">Active</span><br>
+                    <strong>Path:</strong> ${data.path || 'N/A'}
+                `);
+            } else {
+                $("#decoy_form .form-group").show(); 
+                $("#decoy_setup").show();
+                $("#decoy_stop").hide();
+                $("#decoy_form .alert-info").remove();
+                $("#decoy_status_message").html('<strong>Status:</strong> <span class="text-danger">Not Active</span>');
             }
-        });
+        }
 
-        $.ajax({
-            url: "{{ url_for('get_port_api') }}",
-            type: "GET",
-            success: function (data) {
-                $("#hysteria_port").val(data.port || "");
-            },
-            error: function () {
-                console.error("Failed to fetch port.");
-            }
-        });
 
-        $.ajax({
-            url: "{{ url_for('get_sni_api') }}",
-            type: "GET",
-            success: function (data) {
-                $("#sni_domain").val(data.sni || "");
-            },
-            error: function () {
-                console.error("Failed to fetch SNI domain.");
-            }
-        });
-    }
         function startTelegram() {
             if (!validateForm('telegram')) return;
             const apiToken = $("#telegram_api_token").val();
@@ -587,37 +616,10 @@
                     "DELETE",
                     null,
                     "Telegram bot stopped successfully!",
-                    null
+                    "#telegram_stop"
                 );
             });
         }
-
-        // function startSingbox() { // singbox removed
-        //     if (!validateForm('singbox')) return;
-        //     const domain = $("#singbox_domain").val();
-        //     const port = $("#singbox_port").val();
-        //     confirmAction("start SingBox", function () {
-        //         sendRequest(
-        //             "{{ url_for('singbox_start_api') }}",
-        //             "POST",
-        //             { domain: domain, port: port },
-        //             "SingBox started successfully!",
-        //             "#singbox_start"
-        //         );
-        //     });
-        // }
-
-        // function stopSingbox() { // singbox removed
-        //     confirmAction("stop SingBox", function () {
-        //         sendRequest(
-        //             "{{ url_for('singbox_stop_api') }}",
-        //             "DELETE",
-        //             null,
-        //             "SingBox stopped successfully!",
-        //              null
-        //         );
-        //     });
-        // }
 
         function startNormal() {
             if (!validateForm('normal')) return;
@@ -641,8 +643,7 @@
                     "DELETE",
                     null,
                     "Normal subscription stopped successfully!",
-                    null
-
+                    "#normal_stop"
                 );
             });
         }
@@ -653,7 +654,7 @@
             const baseUrl = "{{ url_for('set_port_api', port='PORT_PLACEHOLDER') }}";
             const url = baseUrl.replace("PORT_PLACEHOLDER", port);
             confirmAction("change the port", function () {
-                sendRequest(url, "GET", null, "Port changed successfully!",null);
+                sendRequest(url, "GET", null, "Port changed successfully!", "#port_change");
             });
         }
 
@@ -663,131 +664,144 @@
             const baseUrl = "{{ url_for('set_sni_api', sni='SNI_PLACEHOLDER') }}";
             const url = baseUrl.replace("SNI_PLACEHOLDER", domain);
             confirmAction("change the SNI", function () {
-                sendRequest(url, "GET", null, "SNI changed successfully!",null);
+                sendRequest(url, "GET", null, "SNI changed successfully!", "#sni_change");
             });
         }
 
         function saveIP() {
             if (!validateForm('change_ip')) return;
-            confirmAction("save the new IP", function () {
+            const ipv4 = $("#ipv4").val().trim() || null; 
+            const ipv6 = $("#ipv6").val().trim() || null;
+            confirmAction("save the new IP settings", function () {
                 sendRequest(
                     "{{ url_for('edit_ip_api') }}",
                     "POST",
-                    {
-                        ipv4: $("#ipv4").val() || null,
-                        ipv6: $("#ipv6").val() || null
-                    },
-                    "New IP saved successfully!",
-                    null
+                    { ipv4: ipv4, ipv6: ipv6 },
+                    "IP settings saved successfully!",
+                    "#ip_change"
                 );
             });
         }
+
         function downloadBackup() {
             window.location.href = "{{ url_for('backup_api') }}";
+             Swal.fire("Starting Download", "Your backup download should start shortly.", "info");
         }
+
         function uploadBackup() {
             var fileInput = document.getElementById('backup_file');
             var file = fileInput.files[0];
+
             if (!file) {
                 Swal.fire("Error!", "Please select a file to upload.", "error");
                 return;
             }
-
-            if (file.name.split('.').pop() !== 'zip') {
-               Swal.fire("Error!", "Only zip file.", "error");
+            if (!file.name.toLowerCase().endsWith('.zip')) {
+               Swal.fire("Error!", "Only .zip files are allowed for restore.", "error");
                return;
             }
 
+            confirmAction(`restore the system from the selected backup file (${file.name})`, function() {
+                var formData = new FormData();
+                formData.append('file', file);
 
-            confirmAction("upload the backup", function() {
-            var formData = new FormData();
-            formData.append('file', file);
+                var progressBar = document.getElementById('backup_progress_bar');
+                var progressContainer = progressBar.parentElement;
+                var statusDiv = document.getElementById('backup_status');
 
-            var progressBar = document.getElementById('backup_progress_bar');
-            var progressContainer = progressBar.parentElement;
-            var statusDiv = document.getElementById('backup_status');
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                progressBar.setAttribute('aria-valuenow', 0);
+                statusDiv.innerText = 'Uploading...';
+                statusDiv.className = 'mt-2'; 
 
-            progressContainer.style.display = 'block';
-            progressBar.style.width = '0%';
-            progressBar.setAttribute('aria-valuenow', 0);
-            statusDiv.innerText = 'Uploading...';
-
-            $.ajax({
-                url: "{{ url_for('restore_api') }}",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                xhr: function() {
-                    var xhr = new window.XMLHttpRequest();
-                    xhr.upload.addEventListener("progress", function(evt) {
-                        if (evt.lengthComputable) {
-                            var percentComplete = (evt.loaded / evt.total) * 100;
-                            progressBar.style.width = percentComplete + '%';
-                            progressBar.setAttribute('aria-valuenow', percentComplete);
-                        }
-                    }, false);
-                    return xhr;
-                },
-                success: function(response) {
-                    statusDiv.innerText = 'Backup restored successfully!';
-                    statusDiv.className = 'mt-2 text-success';
-                    Swal.fire("Success!", "Backup restored successfully!", "success").then(() => {
-                            location.reload();
+                $.ajax({
+                    url: "{{ url_for('restore_api') }}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", function(evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = Math.round((evt.loaded / evt.total) * 100);
+                                progressBar.style.width = percentComplete + '%';
+                                progressBar.setAttribute('aria-valuenow', percentComplete);
+                                statusDiv.innerText = `Uploading... ${percentComplete}%`;
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(response) {
+                        progressBar.style.width = '100%';
+                        progressBar.classList.add('bg-success');
+                        statusDiv.innerText = 'Backup restored successfully! Reloading page...';
+                        statusDiv.className = 'mt-2 text-success';
+                        Swal.fire("Success!", "Backup restored successfully!", "success").then(() => {
+                                location.reload();
                         });
-                    console.log(response);
-                },
-                error: function(xhr, status, error) {
-                    statusDiv.innerText = 'Error restoring backup.';
-                    statusDiv.className = 'mt-2 text-danger';
-                     Swal.fire("Error!", xhr.responseJSON.detail, "error");
-                    console.error(error);
-                },
-                 complete: function() {
-                    setTimeout(function(){ progressContainer.style.display = 'none'; }, 1000);
-                }
+                        console.log("Restore Success:", response);
+                    },
+                    error: function(xhr, status, error) {
+                        progressBar.classList.add('bg-danger');
+                        let detail = (xhr.responseJSON && xhr.responseJSON.detail) ? xhr.responseJSON.detail : 'Check console for details.';
+                        statusDiv.innerText = `Error restoring backup: ${detail}`;
+                        statusDiv.className = 'mt-2 text-danger';
+                        Swal.fire("Error!", `Failed to restore backup. ${detail}`, "error");
+                        console.error("Restore Error:", status, error, xhr.responseText);
+                    },
+                    complete: function() {
+                       fileInput.value = '';
+                    }
+                });
             });
-          });
         }
+
         function startIPLimit() {
-             sendRequest(
+             confirmAction("start the IP Limit service", function () {
+                sendRequest(
                     "{{ url_for('start_ip_limit_api') }}",
                     "POST",
                     null,
                     "IP Limit service started successfully!",
                     "#ip_limit_start"
                 );
+            });
         }
 
         function stopIPLimit() {
-             sendRequest(
+             confirmAction("stop the IP Limit service", function () {
+                sendRequest(
                     "{{ url_for('stop_ip_limit_api') }}",
                     "POST",
                     null,
                     "IP Limit service stopped successfully!",
-                    null
+                    "#ip_limit_stop"
                 );
+            });
         }
 
         function configIPLimit() {
             if (!validateForm('ip_limit_config')) return;
             const blockDuration = $("#block_duration").val();
             const maxIps = $("#max_ips").val();
-            sendRequest(
-                "{{ url_for('config_ip_limit_api') }}",
-                "POST",
-                { block_duration: blockDuration, max_ips: maxIps },
-                "IP Limit configuration saved successfully!",
-                "#ip_limit_change_config",
-                 false
-            );
+             confirmAction("save the IP Limit configuration", function () {
+                sendRequest(
+                    "{{ url_for('config_ip_limit_api') }}",
+                    "POST",
+                    { block_duration: parseInt(blockDuration), max_ips: parseInt(maxIps) }, 
+                    "IP Limit configuration saved successfully!",
+                    "#ip_limit_change_config",
+                    false 
+                );
+            });
         }
+
 
 
         $("#telegram_start").on("click", startTelegram);
         $("#telegram_stop").on("click", stopTelegram);
-        // $("#singbox_start").on("click", startSingbox); // singbox removed
-        // $("#singbox_stop").on("click", stopSingbox); // singbox removed
         $("#normal_start").on("click", startNormal);
         $("#normal_stop").on("click", stopNormal);
         $("#port_change").on("click", changePort);
@@ -798,28 +812,34 @@
         $("#ip_limit_start").on("click", startIPLimit);
         $("#ip_limit_stop").on("click", stopIPLimit);
         $("#ip_limit_change_config").on("click", configIPLimit);
+        $("#decoy_setup").on("click", setupDecoy);
+        $("#decoy_stop").on("click", stopDecoy);
 
 
-        // $('#singbox_domain, #normal_domain, #sni_domain').on('input', function () { // singbox removed
-        $('#normal_domain, #sni_domain').on('input', function () {
+
+        $('#normal_domain, #sni_domain, #decoy_domain').on('input', function () {
             if (isValidDomain($(this).val())) {
                 $(this).removeClass('is-invalid');
-            } else {
+            } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
+            } else {
+                 $(this).removeClass('is-invalid');
             }
         });
 
-        // $('#singbox_port, #normal_port, #hysteria_port').on('input', function () { // singbox removed
         $('#normal_port, #hysteria_port').on('input', function () {
-            if (isValidPort($(this).val())) {
+             if (isValidPort($(this).val())) {
                 $(this).removeClass('is-invalid');
-            } else {
+            } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
+            } else {
+                 $(this).removeClass('is-invalid');
             }
         });
+
         $('#ipv4, #ipv6').on('input', function () {
-            if (isValidIPorDomain($(this).val())) {
-                $(this).removeClass('is-invalid');
+             if (isValidIPorDomain($(this).val()) || $(this).val().trim() === '') {
+                 $(this).removeClass('is-invalid');
             } else {
                 $(this).addClass('is-invalid');
             }
@@ -829,16 +849,31 @@
             if ($(this).val().trim() !== "") {
                 $(this).removeClass('is-invalid');
             } else {
-                $(this).addClass('is-invalid');
+                 $(this).addClass('is-invalid');
             }
         });
+
         $('#block_duration, #max_ips').on('input', function () {
             if (isValidPositiveNumber($(this).val())) {
                 $(this).removeClass('is-invalid');
-            } else {
+            } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
+            } else {
+                 $(this).removeClass('is-invalid');
             }
         });
+
+        $('#decoy_path').on('input', function () {
+            if (isValidPath($(this).val())) {
+                $(this).removeClass('is-invalid');
+            } else if ($(this).val().trim() !== "") {
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+
     });
 </script>
 {% endblock %}

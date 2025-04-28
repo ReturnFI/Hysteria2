@@ -35,7 +35,7 @@ async def telegram_stop_api():
 
     try:
         cli_api.stop_telegram_bot()
+        return DetailResponse(detail='Telegram bot stopped successfully.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
-# TODO: Maybe would be nice to have a status endpoint

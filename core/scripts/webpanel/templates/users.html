@@ -17,10 +17,9 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">User List</h3>
+                <h3 class="card-title">User List {% if users %}({{ users|length }}){% endif %}</h3>
                 <div class="card-tools d-flex align-items-center flex-wrap">
 
-                    <!-- Filter Buttons -->
                     <div class="mr-2 mb-2">
                         <button type="button" class="btn btn-sm btn-default filter-button" data-filter="all">
                             <i class="fas fa-list"></i> All
@@ -42,7 +41,6 @@
                         </button>
                     </div>
 
-                    <!-- Search Form -->
                     <div class="input-group input-group-sm" style="width: 200px;">
                         <input type="text" id="searchInput" class="form-control float-right" placeholder="Search">
                         <div class="input-group-append">
@@ -51,11 +49,9 @@
                             </button>
                         </div>
                     </div>
-                    <!-- Add User Button -->
                     <button type="button" class="btn btn-sm btn-primary ml-2" data-toggle="modal" data-target="#addUserModal">
                         <i class="fas fa-plus"></i>
                     </button>
-                    <!-- Delete Selected Button -->
                     <button type="button" class="btn btn-sm btn-danger ml-2" id="deleteSelected">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -73,6 +69,7 @@
                             <th>
                                 <input type="checkbox" id="selectAll">
                             </th>
+                            <th>#</th>
                             <th>Status</th>
                             <th>Username</th>
                             <th>Traffic Usage</th>
@@ -84,11 +81,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for user in users %}
+                        {% for user in users|sort(attribute='username', case_sensitive=false) %}
                         <tr>
                             <td>
                                 <input type="checkbox" class="user-checkbox" value="{{ user.username }}">
                             </td>
+                            <td>{{ loop.index }}</td>
                             <td>
                                 {% if user['status'] == "Online" %}
                                 <i class="fas fa-circle text-success"></i> Online
@@ -293,16 +291,16 @@
 
                 switch (filter) {
                     case "all":
-                        showRow = true; // Show all users
+                        showRow = true;
                         break;
                     case "not-active":
-                        showRow = $(this).find("td:eq(1) i").hasClass("text-danger");
+                        showRow = $(this).find("td:eq(2) i").hasClass("text-danger");
                         break;
                     case "enable":
-                        showRow = $(this).find("td:eq(6) i").hasClass("text-success");
+                        showRow = $(this).find("td:eq(7) i").hasClass("text-success");
                         break;
                     case "disable":
-                        showRow = $(this).find("td:eq(6) i").hasClass("text-danger");
+                        showRow = $(this).find("td:eq(7) i").hasClass("text-danger");
                         break;
                 }
 
@@ -311,14 +309,11 @@
                 } else {
                     $(this).hide();
                 }
-                //Deselect checkbox when is not visible after sorting
                 $(this).find(".user-checkbox").prop("checked", false);
             });
         });
 
-        // Multi Delete Functionality
         $("#selectAll").on("change", function () {
-            // Only select checkboxes in visible rows
             $("#userTable tbody tr:visible .user-checkbox").prop("checked", $(this).prop("checked"));
         });
 
@@ -444,10 +439,9 @@
         $(document).on("click", ".edit-user", function () {
             const username = $(this).data("user");
             const row = $(this).closest("tr");
-            const quota = row.find("td:eq(3)").text().trim();
-            const expiry = row.find("td:eq(4)").text().trim();
-            const expiry_days = row.find("td:eq(5)").text().trim();
-            const blocked = row.find("td:eq(6) i").hasClass("text-danger");
+            const quota = row.find("td:eq(4)").text().trim(); 
+            const expiry_days = row.find("td:eq(6)").text().trim(); 
+            const blocked = row.find("td:eq(7) i").hasClass("text-danger");
 
             const quotaMatch = quota.match(/\/\s*([\d.]+)/);
             const quotaValue = quotaMatch ? parseFloat(quotaMatch[1]) : 0;
@@ -457,6 +451,9 @@
             $("#editTrafficLimit").val(quotaValue);
             $("#editExpirationDays").val(expiry_days);
             $("#editBlocked").prop("checked", blocked);
+
+            const isValid = validateUsername(username, "editUsernameError");
+            $("#editUserForm button[type='submit']").prop("disabled", !isValid);
         });
 
         $("#editUserForm").on("submit", function (e) {
@@ -755,7 +752,7 @@
             const searchText = $("#searchInput").val().toLowerCase();
 
             $("#userTable tbody tr").each(function () {
-                const username = $(this).find("td:eq(2)").text().toLowerCase();
+                const username = $(this).find("td:eq(3)").text().toLowerCase();
                 if (username.includes(searchText)) {
                     $(this).show();
                 } else {

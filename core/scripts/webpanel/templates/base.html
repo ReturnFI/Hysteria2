@@ -14,13 +14,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+    <!-- iCheck Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css">
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('assets', path='css/custom.css') }}">
     {% block stylesheets %}{% endblock %}
 </head>
 
-<body class="hold-transition sidebar-mini layout-footer-fixed sidebar-collapse">
+<body class="hold-transition sidebar-mini sidebar-collapse">
     <div class="wrapper">
 
         <!-- Navbar -->
@@ -116,28 +119,28 @@
             {% block content %}{% endblock %}
         </div>
 
-<!-- Footer -->
-<footer class="main-footer">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <a href="https://github.com/ReturnFI/Blitz" target="_blank" class="text-decoration-none">
-                <span class="badge badge-secondary" style="font-size: 0.9rem;">
-                    <i class="fab fa-github"></i> GitHub
-                </span>
-            </a>
-            <a href="https://t.me/hysteria2_panel" target="_blank" class="text-decoration-none ml-2 mr-2">
-                <span class="badge bg-primary" style="font-size: 0.9rem;">
-                    <i class="fab fa-telegram"></i> Telegram
-                </span>
-            </a>
-            <a href="https://github.com/ReturnFI/Blitz/releases" target="_blank" class="text-decoration-none ml-2 mr-2">
-            <span class="badge badge-success" style="font-size: 0.9rem;">
-                <i class="fas fa-code-branch"></i> <span id="panel-version"></span>
-            </span>
-            </a>
-        </div>
-    </div>
-</footer>
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="d-flex justify-content-between align-items-center flex-wrap"> 
+                <div>
+                    <a href="https://github.com/ReturnFI/Blitz" target="_blank" class="text-decoration-none mr-2 mb-1 d-inline-block">
+                        <img src="https://img.shields.io/badge/GitHub-Repository-181717?logo=github" alt="GitHub">
+                    </a>
+                    <a href="https://t.me/hysteria2_panel" target="_blank" class="text-decoration-none mr-2 mb-1 d-inline-block">
+                        <img src="https://img.shields.io/badge/Telegram-Channel-0088cc?logo=telegram" alt="Telegram">
+                    </a>
+                    <a href="https://github.com/ReturnFI/Blitz/releases" target="_blank" class="text-decoration-none mr-2 mb-1 d-inline-block">
+                        <img id="panel-version" src="https://img.shields.io/github/v/release/ReturnFI/Blitz?label=Release&logo=github" alt="Release Version">
+                    </a>
+                </div>
+                <div class="mb-1">
+                    <strong>
+                        <img src="https://img.shields.io/badge/Made%20with-%E2%9D%A4-red" alt="Made with Love">
+                    </strong>
+                </div>
+            </div>
+        </footer>
+    </div> 
 
     <!-- REQUIRED SCRIPTS -->
     <!-- jQuery -->
@@ -188,7 +191,7 @@
                 url: versionUrl,
                 type: 'GET',
                 success: function (response) {
-                    $('#panel-version').text(`Version: ${response.current_version}`);
+                     $('#panel-version').text(`Version: ${response.current_version || 'N/A'}`);
                 },
                 error: function (error) {
                     console.error("Error fetching version:", error);
@@ -217,9 +220,7 @@
                         console.error("Server detail:", xhr.responseJSON.detail);
                     }
                 }
-
             });
-            $('.main-footer').addClass('d-flex justify-content-between');
 
         });
     </script>

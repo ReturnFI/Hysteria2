@@ -25,14 +25,12 @@
 
     const editor = new JSONEditor(container, {
         mode: "code",
-        modes: ["code", "tree"],
         onChange: validateJson
     });
 
-    // Function to validate the JSON and update UI elements
     function validateJson() {
         try {
-            editor.get(); // Validate the JSON
+            editor.get();
             updateSaveButton(true);
             hideErrorMessage();
         } catch (error) {
@@ -41,7 +39,6 @@
         }
     }
 
-    // Function to update save button based on JSON validity
     function updateSaveButton(isValid) {
         saveButton.disabled = !isValid;
         saveButton.style.cursor = isValid ? "pointer" : "not-allowed";
@@ -51,7 +48,6 @@
         //saveButton.style.setProperty('border-color', isValid ? "#28a745" : "#ccc", 'important');
     }
 
-    // Function to show error message with SweetAlert2
     function showErrorMessage(message) {
         Swal.fire({
             title: "Error",
@@ -66,12 +62,10 @@
         });
     }
 
-    // Function to hide error message if JSON is fixed
     function hideErrorMessage() {
         Swal.close();
     }
 
-    // Function to ask the user before saving and save the JSON if confirmed
     function saveJson() {
         Swal.fire({
             title: 'Are you sure?',
@@ -99,7 +93,6 @@
         });
     }
 
-    // Function to load JSON from the server
     function restoreJson() {
         fetch("{{ url_for('get_file') }}")
             .then(response => response.json())
@@ -113,6 +106,6 @@
             });
     }
 
-    restoreJson(); // Initial JSON load
+    restoreJson();
 </script>
 {% endblock %}

@@ -555,3 +555,117 @@ body.dark-mode .content-header h1 small { color: var(--dark-text-muted); }
 
 .table-responsive { border: none; }
 .cursor-pointer { cursor: pointer; }
+
+/* -------------------------------------------------- */
+/*           JSONEditor Dark Mode Styling             */
+/* -------------------------------------------------- */
+
+body.dark-mode .jsoneditor {
+  border: 1px solid var(--dark-navy-border) !important;
+}
+
+body.dark-mode .jsoneditor-menu {
+  background-color: var(--dark-navy-light) !important;
+  border-bottom: 1px solid var(--dark-navy-border) !important;
+}
+body.dark-mode .jsoneditor-menu > button,
+body.dark-mode .jsoneditor-menu > div.jsoneditor-modes > button {
+  background-color: #639dd6;
+  border: 1px solid #fff;
+  color: var(--dark-text-primary);
+  opacity: 0.8;
+}
+body.dark-mode .jsoneditor-menu > button:hover,
+body.dark-mode .jsoneditor-menu > div.jsoneditor-modes > button:hover {
+  background-color: var(--dark-navy-hover);
+  color: #fff;
+  opacity: 1;
+}
+body.dark-mode .jsoneditor-menu > button:active,
+body.dark-mode .jsoneditor-menu > div.jsoneditor-modes > button:active {
+  background-color: var(--dark-navy-border);
+}
+body.dark-mode .jsoneditor-menu > div.jsoneditor-modes > button.jsoneditor-selected,
+body.dark-mode .jsoneditor-menu > div.jsoneditor-modes > button.jsoneditor-selected:hover {
+ background-color: var(--dark-link-color) !important;
+ color: #ffffff !important;
+ border-color: var(--dark-link-hover);
+}
+
+body.dark-mode .jsoneditor-tree table,
+body.dark-mode div.jsoneditor-tree table {
+  background-color: var(--dark-navy-card);
+}
+body.dark-mode .jsoneditor td,
+body.dark-mode .jsoneditor th,
+body.dark-mode .jsoneditor tr {
+  border-color: var(--dark-navy-border) !important;
+}
+body.dark-mode .jsoneditor-field,
+body.dark-mode div.jsoneditor-field {
+  color: var(--dark-text-secondary);
+}
+body.dark-mode .jsoneditor-value,
+body.dark-mode div.jsoneditor-value {
+  color: var(--dark-text-primary);
+}
+body.dark-mode .jsoneditor-value.jsoneditor-string { color: #a5d6ff; }
+body.dark-mode .jsoneditor-value.jsoneditor-number { color: #fcc28c; }
+body.dark-mode .jsoneditor-value.jsoneditor-boolean { color: #b39ddb; }
+body.dark-mode .jsoneditor-value.jsoneditor-null { color: var(--dark-text-muted); }
+
+body.dark-mode tr.jsoneditor-highlight,
+body.dark-mode tr.jsoneditor-selected {
+  background-color: var(--dark-navy-hover) !important;
+}
+body.dark-mode .jsoneditor-tree .jsoneditor-treepath {
+  border-left: 1px dotted var(--dark-navy-hover);
+}
+
+body.dark-mode .ace-jsoneditor .ace_scroller {
+  background-color: #343a40 !important;
+}
+
+body.dark-mode .ace_gutter { 
+  background: var(--dark-navy-medium) !important;
+  color: var(--dark-text-muted) !important;
+}
+body.dark-mode .ace_gutter-active-line {
+  background-color: var(--dark-navy-accent) !important;
+}
+body.dark-mode .ace_marker-layer .ace_active-line {
+  background: var(--dark-navy-light) !important;
+}
+body.dark-mode .ace_cursor {
+  color: #f8f8f0 !important;
+  border-left: 2px solid #f8f8f0 !important;
+}
+body.dark-mode .ace_marker-layer .ace_selection {
+  background: var(--dark-navy-hover) !important;
+}
+
+body.dark-mode .ace_keyword { color: #ff79c6 !important; }
+body.dark-mode .ace_string { color: #f1fa8c !important; }
+body.dark-mode .ace_variable, body.dark-mode .ace_variable.ace_language { color: #8be9fd !important; }
+body.dark-mode .ace_constant.ace_numeric { color: #bd93f9 !important; }
+body.dark-mode .ace_constant.ace_language { color: #bd93f9 !important; }
+body.dark-mode .ace_support.ace_function { color: #8be9fd !important; }
+body.dark-mode .ace_comment { color: #6272a4 !important; }
+body.dark-mode .ace_punctuation.ace_operator { color: #ff79c6 !important; }
+body.dark-mode .ace_paren { color: var(--dark-text-primary) !important; }
+
+body.dark-mode .jsoneditor-search {
+  background-color: var(--dark-navy-light);
+  border-top: 1px solid var(--dark-navy-border);
+}
+body.dark-mode .jsoneditor-search input {
+  background-color: var(--dark-navy-medium);
+  border: 1px solid var(--dark-navy-border);
+  color: var(--dark-text-primary);
+}
+body.dark-mode .jsoneditor-search input:focus {
+ border-color: var(--dark-link-color);
+}
+body.dark-mode .jsoneditor-search .jsoneditor-search-results {
+  color: var(--dark-text-muted);
+}

@@ -25,7 +25,7 @@ class Command(Enum):
     GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.sh')
     ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
-    RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
+    RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.py')
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.py')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.py')
     WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
@@ -296,7 +296,7 @@ def reset_user(username: str):
     '''
     Resets a user's configuration.
     '''
-    run_cmd(['bash', Command.RESET_USER.value, username])
+    run_cmd(['python3', Command.RESET_USER.value, username])
 
 
 def remove_user(username: str):

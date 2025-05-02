@@ -35,7 +35,7 @@ class Command(Enum):
     TRAFFIC_STATUS = 'traffic.py'  # won't be called directly (it's a python module)
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
-    SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
+    SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.py')
     BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.py')
     RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.sh')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.py')
@@ -368,10 +368,12 @@ def traffic_status(no_gui=False, display_output=True):
     return data
 
 
+# Next Update:
 # TODO: it's better to return json
+# TODO: After json todo need fix Telegram Bot and WebPanel
 def server_info() -> str | None:
     '''Retrieves server information.'''
-    return run_cmd(['bash', Command.SERVER_INFO.value])
+    return run_cmd(['python3', Command.SERVER_INFO.value])
 
 
 def get_ip_address() -> tuple[str | None, str | None]:

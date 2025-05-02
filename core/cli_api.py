@@ -30,7 +30,7 @@ class Command(Enum):
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.py')
     WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
-    MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
+    MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.py')
     MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be called directly (it's a python module)
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
@@ -201,12 +201,12 @@ def restore_hysteria2(backup_file_path: str):
 
 def enable_hysteria2_obfs():
     '''Generates 'obfs' in Hysteria2 configuration.'''
-    run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
+    run_cmd(['python3', Command.MANAGE_OBFS.value, '--generate'])
 
 
 def disable_hysteria2_obfs():
     '''Removes 'obfs' from Hysteria2 configuration.'''
-    run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
+    run_cmd(['python3', Command.MANAGE_OBFS.value, '--remove'])
 
 
 def enable_hysteria2_masquerade(domain: str):

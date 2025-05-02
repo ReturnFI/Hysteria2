@@ -17,20 +17,20 @@ WEBPANEL_ENV_FILE = '/etc/hysteria/core/scripts/webpanel/.env'
 class Command(Enum):
     '''Contains path to command's script'''
     INSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'install.sh')
-    UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'uninstall.sh')
-    UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.sh')
-    RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.sh')
-    CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.sh')
+    UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'uninstall.py')
+    UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.py')
+    RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.py')
+    CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.py')
     CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
-    GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.sh')
-    ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
+    GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.py')
+    ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.py')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
-    RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
-    REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
+    RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.py')
+    REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.py')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.py')
     WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
-    MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.sh')
+    MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.py')
     MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be called directly (it's a python module)
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
@@ -110,8 +110,11 @@ def generate_password() -> str:
     '''
     try:
         return subprocess.check_output(['pwgen', '-s', '32', '1'], shell=False).decode().strip()
-    except subprocess.CalledProcessError as e:
-        raise PasswordGenerationError(f'Failed to generate password: {e}')
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        try:
+            return subprocess.check_output(['cat', '/proc/sys/kernel/random/uuid'], shell=False).decode().strip()
+        except Exception as e:
+            raise PasswordGenerationError(f"Failed to generate password: {e}")
 
 # endregion
 
@@ -129,17 +132,17 @@ def install_hysteria2(port: int, sni: str):
 
 def uninstall_hysteria2():
     '''Uninstalls Hysteria2.'''
-    run_cmd(['bash', Command.UNINSTALL_HYSTERIA2.value])
+    run_cmd(['python3', Command.UNINSTALL_HYSTERIA2.value])
 
 
 def update_hysteria2():
     '''Updates Hysteria2.'''
-    run_cmd(['bash', Command.UPDATE_HYSTERIA2.value])
+    run_cmd(['python3', Command.UPDATE_HYSTERIA2.value])
 
 
 def restart_hysteria2():
     '''Restarts Hysteria2.'''
-    run_cmd(['bash', Command.RESTART_HYSTERIA2.value])
+    run_cmd(['python3', Command.RESTART_HYSTERIA2.value])
 
 
 def get_hysteria2_port() -> int | None:
@@ -158,7 +161,7 @@ def change_hysteria2_port(port: int):
     '''
     Changes the port for Hysteria2.
     '''
-    run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
+    run_cmd(['python3', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
 
 
 def get_hysteria2_sni() -> str | None:
@@ -198,12 +201,12 @@ def restore_hysteria2(backup_file_path: str):
 
 def enable_hysteria2_obfs():
     '''Generates 'obfs' in Hysteria2 configuration.'''
-    run_cmd(['bash', Command.MANAGE_OBFS.value, '--generate'])
+    run_cmd(['python3', Command.MANAGE_OBFS.value, '--generate'])
 
 
 def disable_hysteria2_obfs():
     '''Removes 'obfs' from Hysteria2 configuration.'''
-    run_cmd(['bash', Command.MANAGE_OBFS.value, '--remove'])
+    run_cmd(['python3', Command.MANAGE_OBFS.value, '--remove'])
 
 
 def enable_hysteria2_masquerade(domain: str):
@@ -243,7 +246,7 @@ def get_user(username: str) -> dict[str, Any] | None:
     '''
     Retrieves information about a specific user.
     '''
-    if res := run_cmd(['bash', Command.GET_USER.value, '-u', str(username)]):
+    if res := run_cmd(['python3', Command.GET_USER.value, '-u', str(username)]):
         return json.loads(res)
 
 
@@ -255,7 +258,7 @@ def add_user(username: str, traffic_limit: int, expiration_days: int, password: 
         password = generate_password()
     if not creation_date:
         creation_date = datetime.now().strftime('%Y-%m-%d')
-    run_cmd(['bash', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
+    run_cmd(['python3', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
 
 
 def edit_user(username: str, new_username: str | None, new_traffic_limit: int | None, new_expiration_days: int | None, renew_password: bool, renew_creation_date: bool, blocked: bool):
@@ -296,14 +299,14 @@ def reset_user(username: str):
     '''
     Resets a user's configuration.
     '''
-    run_cmd(['bash', Command.RESET_USER.value, username])
+    run_cmd(['python3', Command.RESET_USER.value, username])
 
 
 def remove_user(username: str):
     '''
     Removes a user by username.
     '''
-    run_cmd(['bash', Command.REMOVE_USER.value, username])
+    run_cmd(['python3', Command.REMOVE_USER.value, username])
 
 def kick_user_by_name(username: str):
     '''Kicks a specific user by username.'''

@@ -180,8 +180,8 @@ hysteria2_get_user_handler() {
 
     user_data=$(python3 "$CLI_PATH" get-user --username "$username" 2>/dev/null)
 
-    if [[ $? -ne 0 ]]; then
-        echo -e "${red}Error:${NC} User '$username' not found."
+    if [[ $exit_code -ne 0 || -z "$user_data" ]]; then
+        echo -e "${red}Error:${NC} User '$username' not found or invalid response."
         return 1
     fi
 

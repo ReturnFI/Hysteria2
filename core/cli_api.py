@@ -46,7 +46,7 @@ class Command(Enum):
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.py')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.py')
     CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
-    STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
+    STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.py')
     SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
     VERSION = os.path.join(SCRIPT_DIR, 'hysteria2', 'version.py')
     LIMIT_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'limit.sh')
@@ -471,7 +471,7 @@ def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_a
 
 def warp_status() -> str | None:
     '''Checks the status of WARP.'''
-    return run_cmd(['bash', Command.STATUS_WARP.value])
+    return run_cmd(['python3', Command.STATUS_WARP.value])
 
 
 def start_telegram_bot(token: str, adminid: str):

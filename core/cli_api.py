@@ -38,7 +38,7 @@ class Command(Enum):
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
     BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
     RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.sh')
-    INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
+    INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.py')
     SHELL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     SHELL_WEBPANEL = os.path.join(SCRIPT_DIR, 'webpanel', 'webpanel_shell.sh')
     INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
@@ -470,12 +470,12 @@ def start_telegram_bot(token: str, adminid: str):
     '''Starts the Telegram bot.'''
     if not token or not adminid:
         raise InvalidInputError('Error: Both --token and --adminid are required for the start action.')
-    run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'start', token, adminid])
+    run_cmd(['python3', Command.INSTALL_TELEGRAMBOT.value, 'start', token, adminid])
 
 
 def stop_telegram_bot():
     '''Stops the Telegram bot.'''
-    run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
+    run_cmd(['python3', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
 
 
 def start_singbox(domain: str, port: int):

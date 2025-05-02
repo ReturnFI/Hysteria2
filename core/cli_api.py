@@ -29,24 +29,24 @@ class Command(Enum):
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.py')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.py')
     WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
-    IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
+    IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.py')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.py')
     MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be called directly (it's a python module)
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
-    SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
-    BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
+    SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.py')
+    BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.py')
     RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.sh')
-    INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.sh')
+    INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.py')
     SHELL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     SHELL_WEBPANEL = os.path.join(SCRIPT_DIR, 'webpanel', 'webpanel_shell.sh')
     INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
-    INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
-    UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
-    CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
-    STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
+    INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.py')
+    UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.py')
+    CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.py')
+    STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.py')
     SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
     VERSION = os.path.join(SCRIPT_DIR, 'hysteria2', 'version.py')
     LIMIT_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'limit.sh')
@@ -182,7 +182,7 @@ def change_hysteria2_sni(sni: str):
 def backup_hysteria2():
     '''Backups Hysteria configuration.  Raises an exception on failure.'''
     try:
-        run_cmd(['bash', Command.BACKUP_HYSTERIA2.value])
+        run_cmd(['python3', Command.BACKUP_HYSTERIA2.value])
     except subprocess.CalledProcessError as e:
         raise Exception(f"Backup failed: {e}")
     except Exception as ex:
@@ -368,10 +368,12 @@ def traffic_status(no_gui=False, display_output=True):
     return data
 
 
+# Next Update:
 # TODO: it's better to return json
+# TODO: After json todo need fix Telegram Bot and WebPanel
 def server_info() -> str | None:
     '''Retrieves server information.'''
-    return run_cmd(['bash', Command.SERVER_INFO.value])
+    return run_cmd(['python3', Command.SERVER_INFO.value])
 
 
 def get_ip_address() -> tuple[str | None, str | None]:
@@ -387,7 +389,7 @@ def add_ip_address():
     '''
     Adds IP addresses from the environment to the .configs.env file.
     '''
-    run_cmd(['bash', Command.IP_ADD.value, 'add'])
+    run_cmd(['python3', Command.IP_ADD.value, 'add'])
 
 
 def edit_ip_address(ipv4: str, ipv6: str):
@@ -402,9 +404,9 @@ def edit_ip_address(ipv4: str, ipv6: str):
     if not ipv4 and not ipv6:
         raise InvalidInputError('Error: --edit requires at least one of --ipv4 or --ipv6.')
     if ipv4:
-        run_cmd(['bash', Command.IP_ADD.value, 'edit', '-4', ipv4])
+        run_cmd(['python3', Command.IP_ADD.value, 'edit', '-4', ipv4])
     if ipv6:
-        run_cmd(['bash', Command.IP_ADD.value, 'edit', '-6', ipv6])
+        run_cmd(['python3', Command.IP_ADD.value, 'edit', '-6', ipv6])
 
 
 def update_geo(country: str):
@@ -434,56 +436,48 @@ def install_tcp_brutal():
 
 def install_warp():
     '''Installs WARP.'''
-    run_cmd(['bash', Command.INSTALL_WARP.value])
+    run_cmd(['python3', Command.INSTALL_WARP.value])
 
 
 def uninstall_warp():
     '''Uninstalls WARP.'''
-    run_cmd(['bash', Command.UNINSTALL_WARP.value])
+    run_cmd(['python3', Command.UNINSTALL_WARP.value])
 
 
-def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool, warp_option: str, warp_key: str):
+def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool):
     '''
     Configures WARP with various options.
     '''
-    if warp_option == 'warp plus' and not warp_key:
-        raise InvalidInputError('Error: WARP Plus key is required when \'warp plus\' is selected.')
-    options = {
-        'all': 'true' if all else 'false',
-        'popular_sites': 'true' if popular_sites else 'false',
-        'domestic_sites': 'true' if domestic_sites else 'false',
-        'block_adult_sites': 'true' if block_adult_sites else 'false',
-        'warp_option': warp_option or '',
-        'warp_key': warp_key or ''
-    }
     cmd_args = [
-        'bash', Command.CONFIGURE_WARP.value,
-        options['all'],
-        options['popular_sites'],
-        options['domestic_sites'],
-        options['block_adult_sites'],
-        options['warp_option']
+        'python3', Command.CONFIGURE_WARP.value
     ]
-    if options['warp_key']:
-        cmd_args.append(options['warp_key'])
+    if all:
+        cmd_args.append('--all')
+    if popular_sites:
+        cmd_args.append('--popular-sites')
+    if domestic_sites:
+        cmd_args.append('--domestic-sites')
+    if block_adult_sites:
+        cmd_args.append('--block-adult')
+
     run_cmd(cmd_args)
 
 
 def warp_status() -> str | None:
     '''Checks the status of WARP.'''
-    return run_cmd(['bash', Command.STATUS_WARP.value])
+    return run_cmd(['python3', Command.STATUS_WARP.value])
 
 
 def start_telegram_bot(token: str, adminid: str):
     '''Starts the Telegram bot.'''
     if not token or not adminid:
         raise InvalidInputError('Error: Both --token and --adminid are required for the start action.')
-    run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'start', token, adminid])
+    run_cmd(['python3', Command.INSTALL_TELEGRAMBOT.value, 'start', token, adminid])
 
 
 def stop_telegram_bot():
     '''Stops the Telegram bot.'''
-    run_cmd(['bash', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
+    run_cmd(['python3', Command.INSTALL_TELEGRAMBOT.value, 'stop'])
 
 
 def start_singbox(domain: str, port: int):

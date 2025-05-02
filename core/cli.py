@@ -365,15 +365,12 @@ def uninstall_warp():
 @click.option('--popular-sites', '-p', is_flag=True, help='Use WARP for popular sites like Google, OpenAI, etc')
 @click.option('--domestic-sites', '-d', is_flag=True, help='Use WARP for Iran domestic sites')
 @click.option('--block-adult-sites', '-x', is_flag=True, help='Block adult content (porn)')
-@click.option('--warp-option', '-w', type=click.Choice(['warp', 'warp plus'], case_sensitive=False), help='Specify whether to use WARP or WARP Plus')
-@click.option('--warp-key', '-k', help="WARP Plus key (required if warp-option is 'warp plus')")
-def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool, warp_option: str, warp_key: str):
+def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool):
     try:
-        cli_api.configure_warp(all, popular_sites, domestic_sites, block_adult_sites, warp_option, warp_key)
+        cli_api.configure_warp(all, popular_sites, domestic_sites, block_adult_sites)
         click.echo('WARP configured successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
-
 
 @cli.command('warp-status')
 def warp_status():

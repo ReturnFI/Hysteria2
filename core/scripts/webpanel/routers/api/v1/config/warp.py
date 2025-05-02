@@ -61,7 +61,7 @@ async def configure(body: ConfigureInputBody):
     """
     try:
         cli_api.configure_warp(body.all, body.popular_sites, body.domestic_sites,
-                               body.block_adult_sites, body.warp_option, body.warp_key)
+                               body.block_adult_sites)
         return DetailResponse(detail='WARP configured successfully.')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')

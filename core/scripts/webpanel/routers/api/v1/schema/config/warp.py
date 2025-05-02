@@ -7,8 +7,6 @@ class ConfigureInputBody(BaseModel):
     popular_sites: bool = False
     domestic_sites: bool = False
     block_adult_sites: bool = False
-    warp_option: Literal['warp', 'warp plus', ''] = ''
-    warp_key: str = ''
 
 
 class StatusResponse(BaseModel):

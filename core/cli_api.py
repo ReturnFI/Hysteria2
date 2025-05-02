@@ -45,7 +45,7 @@ class Command(Enum):
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.py')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.py')
-    CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
+    CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.py')
     STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.py')
     SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
     VERSION = os.path.join(SCRIPT_DIR, 'hysteria2', 'version.py')
@@ -442,30 +442,22 @@ def uninstall_warp():
     run_cmd(['python3', Command.UNINSTALL_WARP.value])
 
 
-def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool, warp_option: str, warp_key: str):
+def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool):
     '''
     Configures WARP with various options.
     '''
-    if warp_option == 'warp plus' and not warp_key:
-        raise InvalidInputError('Error: WARP Plus key is required when \'warp plus\' is selected.')
-    options = {
-        'all': 'true' if all else 'false',
-        'popular_sites': 'true' if popular_sites else 'false',
-        'domestic_sites': 'true' if domestic_sites else 'false',
-        'block_adult_sites': 'true' if block_adult_sites else 'false',
-        'warp_option': warp_option or '',
-        'warp_key': warp_key or ''
-    }
     cmd_args = [
-        'bash', Command.CONFIGURE_WARP.value,
-        options['all'],
-        options['popular_sites'],
-        options['domestic_sites'],
-        options['block_adult_sites'],
-        options['warp_option']
+        'python3', Command.CONFIGURE_WARP.value
     ]
-    if options['warp_key']:
-        cmd_args.append(options['warp_key'])
+    if all:
+        cmd_args.append('--all')
+    if popular_sites:
+        cmd_args.append('--popular-sites')
+    if domestic_sites:
+        cmd_args.append('--domestic-sites')
+    if block_adult_sites:
+        cmd_args.append('--block-adult')
+
     run_cmd(cmd_args)
 
 

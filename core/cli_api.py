@@ -20,7 +20,7 @@ class Command(Enum):
     UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'uninstall.sh')
     UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.sh')
     RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.sh')
-    CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.sh')
+    CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.py')
     CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
     GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.sh')
     ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
@@ -158,7 +158,7 @@ def change_hysteria2_port(port: int):
     '''
     Changes the port for Hysteria2.
     '''
-    run_cmd(['bash', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
+    run_cmd(['python3', Command.CHANGE_PORT_HYSTERIA2.value, str(port)])
 
 
 def get_hysteria2_sni() -> str | None:

@@ -1,21 +1,10 @@
-## [1.9.0] - 2025-05-02
+## [1.9.1] - 2025-05-03
 
 ### ✨ Changed
-🧠 **refactor:** Migrate core Hysteria2 functionality from Bash to Python  
-  - 🔁 Uninstallation  
-  - ⬆️ Server update  
-  - ➕ User addition  
-  - 🔁 User reset  
-  - 🔍 User info retrieval  
-  - ❌ User removal  
-  - 🔄 Port update  
-  - 🔁 Server restart
-
-### 🐛 Fixed
-🛠️ **fix:** Resolved file permission issues by explicitly calling Python in subprocess  
-🐛 **fix:** Removed improper usage of `asyncio.to_thread` in `remove_user.py`  
-🌚 **fix (UI):** Fixed JSONEditor background in dark mode for better readability  
-
-### 🎨 UI / UX
-🎨 **feat:** Improved light/dark mode design with enhanced CSS  
-🧩 **update:** Integrated custom CSS directly into `base.html`
+🧠 **refactor:**: Implement server stats manager in Python
+🧠 **refactor:**: Migrate IP address config management to Python
+🧠 **refactor:**: Implement Hysteria backup functionality in Python
+🧠 **refactor:**: Transition Telegram bot service management to Python
+🧠 **refactor:**: Migrate WARP ACL configuration handling to Python
+🧠 **refactor:**: Implement WARP status management in Python
+🧠 **refactor:**: Rewrite WARP setup and uninstallation scripts in Python3

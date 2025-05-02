@@ -17,7 +17,7 @@ WEBPANEL_ENV_FILE = '/etc/hysteria/core/scripts/webpanel/.env'
 class Command(Enum):
     '''Contains path to command's script'''
     INSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'install.sh')
-    UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'uninstall.sh')
+    UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'uninstall.py')
     UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.py')
     RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.py')
     CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.py')
@@ -132,7 +132,7 @@ def install_hysteria2(port: int, sni: str):
 
 def uninstall_hysteria2():
     '''Uninstalls Hysteria2.'''
-    run_cmd(['bash', Command.UNINSTALL_HYSTERIA2.value])
+    run_cmd(['python3', Command.UNINSTALL_HYSTERIA2.value])
 
 
 def update_hysteria2():

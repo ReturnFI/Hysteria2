@@ -22,7 +22,7 @@ class Command(Enum):
     RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.sh')
     CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.py')
     CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
-    GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.sh')
+    GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.py')
     ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
     RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.py')
@@ -243,7 +243,7 @@ def get_user(username: str) -> dict[str, Any] | None:
     '''
     Retrieves information about a specific user.
     '''
-    if res := run_cmd(['bash', Command.GET_USER.value, '-u', str(username)]):
+    if res := run_cmd(['python3', Command.GET_USER.value, '-u', str(username)]):
         return json.loads(res)
 
 

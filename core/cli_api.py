@@ -23,7 +23,7 @@ class Command(Enum):
     CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.py')
     CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
     GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.py')
-    ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
+    ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.py')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
     RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.py')
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.py')
@@ -110,8 +110,11 @@ def generate_password() -> str:
     '''
     try:
         return subprocess.check_output(['pwgen', '-s', '32', '1'], shell=False).decode().strip()
-    except subprocess.CalledProcessError as e:
-        raise PasswordGenerationError(f'Failed to generate password: {e}')
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        try:
+            return subprocess.check_output(['cat', '/proc/sys/kernel/random/uuid'], shell=False).decode().strip()
+        except Exception as e:
+            raise PasswordGenerationError(f"Failed to generate password: {e}")
 
 # endregion
 
@@ -255,7 +258,7 @@ def add_user(username: str, traffic_limit: int, expiration_days: int, password: 
         password = generate_password()
     if not creation_date:
         creation_date = datetime.now().strftime('%Y-%m-%d')
-    run_cmd(['bash', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
+    run_cmd(['python3', Command.ADD_USER.value, username, str(traffic_limit), str(expiration_days), password, creation_date])
 
 
 def edit_user(username: str, new_username: str | None, new_traffic_limit: int | None, new_expiration_days: int | None, renew_password: bool, renew_creation_date: bool, blocked: bool):

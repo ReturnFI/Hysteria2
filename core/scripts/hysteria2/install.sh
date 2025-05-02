@@ -18,26 +18,8 @@ install_hysteria() {
     echo "Downloading geo data..."
     wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
     wget -O /etc/hysteria/geoip.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geoip.dat >/dev/null 2>&1
-    
-    # fingerprint=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s/://g')
-    
+        
     echo "Generating base64 encoded SHA-256 fingerprint..."
-#     cat <<EOF > generate.py
-# import base64
-# import binascii
-
-# # Hexadecimal string
-# hex_string = "$fingerprint"
-
-# # Convert hex to binary
-# binary_data = binascii.unhexlify(hex_string)
-
-# # Encode binary data to base64
-# base64_encoded = base64.b64encode(binary_data).decode('utf-8')
-
-# # Print the result prefixed with 'sha256/'
-# print('sha256/' + base64_encoded)
-# EOF
 
     sha256=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ca.crt | sed 's/.*=//;s///g')
     
@@ -78,8 +60,8 @@ install_hysteria() {
         .trafficStats.secret = $UUID |
         .outbounds[0].direct.bindDevice = $networkdef' "$CONFIG_FILE" > "${CONFIG_FILE}.temp" && mv "${CONFIG_FILE}.temp" "$CONFIG_FILE"
     
-    echo "Updating hysteria-server.service to use config.json..."
-    sed -i 's|(config.yaml)||' /etc/systemd/system/hysteria-server.service
+    echo "Updating hysteria-server.service to use Blitz Panel config.json..."
+    sed -i 's|(config.yaml)|(Blitz Panel)|' /etc/systemd/system/hysteria-server.service
     sed -i "s|/etc/hysteria/config.yaml|$CONFIG_FILE|" /etc/systemd/system/hysteria-server.service
     rm /etc/hysteria/config.yaml
     sleep 1

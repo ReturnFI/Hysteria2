@@ -34,9 +34,7 @@ def update_port(port):
         with open(CONFIG_FILE, 'w') as f:
             json.dump(config, f, indent=2)
         
-        subprocess.run([CLI_PATH, "restart-hysteria2"], 
-                      stdout=subprocess.DEVNULL, 
-                      stderr=subprocess.DEVNULL)
+        subprocess.run(["python3", CLI_PATH, "restart-hysteria2"],)
         
         print(f"Port changed successfully to {port}.")
         return True

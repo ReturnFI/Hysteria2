@@ -18,7 +18,7 @@ class Command(Enum):
     '''Contains path to command's script'''
     INSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'install.sh')
     UNINSTALL_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'uninstall.sh')
-    UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.sh')
+    UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.py')
     RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.py')
     CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.py')
     CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
@@ -137,7 +137,7 @@ def uninstall_hysteria2():
 
 def update_hysteria2():
     '''Updates Hysteria2.'''
-    run_cmd(['bash', Command.UPDATE_HYSTERIA2.value])
+    run_cmd(['python3', Command.UPDATE_HYSTERIA2.value])
 
 
 def restart_hysteria2():

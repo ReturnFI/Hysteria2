@@ -1,5 +1,21 @@
-## [1.8.1] - 2025-04-28
+## [1.9.0] - 2025-05-02
 
-### Changed
-- 🔒 Improve SSL certificate handling with auto-renewal detection
-- 🔧 Fix missing return statement in telegram_stop_api function
+### ✨ Changed
+🧠 **refactor:** Migrate core Hysteria2 functionality from Bash to Python  
+  - 🔁 Uninstallation  
+  - ⬆️ Server update  
+  - ➕ User addition  
+  - 🔁 User reset  
+  - 🔍 User info retrieval  
+  - ❌ User removal  
+  - 🔄 Port update  
+  - 🔁 Server restart
+
+### 🐛 Fixed
+🛠️ **fix:** Resolved file permission issues by explicitly calling Python in subprocess  
+🐛 **fix:** Removed improper usage of `asyncio.to_thread` in `remove_user.py`  
+🌚 **fix (UI):** Fixed JSONEditor background in dark mode for better readability  
+
+### 🎨 UI / UX
+🎨 **feat:** Improved light/dark mode design with enhanced CSS  
+🧩 **update:** Integrated custom CSS directly into `base.html`

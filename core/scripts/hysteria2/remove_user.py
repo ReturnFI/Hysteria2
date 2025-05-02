@@ -7,42 +7,30 @@ import asyncio
 from init_paths import *
 from paths import *
 
-async def remove_user(username):
-    """
-    Remove a user from the USERS_FILE asynchronously.
-
-    Args:
-        username (str): The username to remove
-
-    Returns:
-        int: 0 on success, 1 on failure
-    """
+def sync_remove_user(username):
     if not os.path.isfile(USERS_FILE):
-        print(f"Error: Config file {USERS_FILE} not found.")
-        return 1
+        return 1, f"Error: Config file {USERS_FILE} not found."
 
     try:
-        async with asyncio.to_thread(open, USERS_FILE, 'r') as f:
+        with open(USERS_FILE, 'r') as f:
             try:
                 users_data = json.load(f)
             except json.JSONDecodeError:
-                print(f"Error: {USERS_FILE} contains invalid JSON.")
-                return 1
+                return 1, f"Error: {USERS_FILE} contains invalid JSON."
 
         if username in users_data:
             del users_data[username]
-            async with asyncio.to_thread(open, USERS_FILE, 'w') as f:
+            with open(USERS_FILE, 'w') as f:
                 json.dump(users_data, f, indent=4)
-            print(f"User {username} removed successfully.")
+            return 0, f"User {username} removed successfully."
         else:
-            print(f"Error: User {username} not found.")
-            return 1
+            return 1, f"Error: User {username} not found."
 
     except Exception as e:
-        print(f"Error: {str(e)}")
-        return 1
+        return 1, f"Error: {str(e)}"
 
-    return 0
+async def remove_user(username):
+    return await asyncio.to_thread(sync_remove_user, username)
 
 async def main():
     if len(sys.argv) != 2:
@@ -50,7 +38,8 @@ async def main():
         sys.exit(1)
 
     username = sys.argv[1]
-    exit_code = await remove_user(username)
+    exit_code, message = await remove_user(username)
+    print(message)
     sys.exit(exit_code)
 
 if __name__ == "__main__":

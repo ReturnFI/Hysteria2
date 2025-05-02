@@ -43,8 +43,8 @@ class Command(Enum):
     SHELL_WEBPANEL = os.path.join(SCRIPT_DIR, 'webpanel', 'webpanel_shell.sh')
     INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
     INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
-    INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.sh')
-    UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.sh')
+    INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.py')
+    UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.py')
     CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.sh')
     STATUS_WARP = os.path.join(SCRIPT_DIR, 'warp', 'status.sh')
     SERVICES_STATUS = os.path.join(SCRIPT_DIR, 'services_status.sh')
@@ -434,12 +434,12 @@ def install_tcp_brutal():
 
 def install_warp():
     '''Installs WARP.'''
-    run_cmd(['bash', Command.INSTALL_WARP.value])
+    run_cmd(['python3', Command.INSTALL_WARP.value])
 
 
 def uninstall_warp():
     '''Uninstalls WARP.'''
-    run_cmd(['bash', Command.UNINSTALL_WARP.value])
+    run_cmd(['python3', Command.UNINSTALL_WARP.value])
 
 
 def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool, warp_option: str, warp_key: str):

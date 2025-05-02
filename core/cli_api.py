@@ -29,7 +29,7 @@ class Command(Enum):
     REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.py')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.py')
     WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
-    IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
+    IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.py')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.py')
     MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
     TRAFFIC_STATUS = 'traffic.py'  # won't be called directly (it's a python module)
@@ -387,7 +387,7 @@ def add_ip_address():
     '''
     Adds IP addresses from the environment to the .configs.env file.
     '''
-    run_cmd(['bash', Command.IP_ADD.value, 'add'])
+    run_cmd(['python3', Command.IP_ADD.value, 'add'])
 
 
 def edit_ip_address(ipv4: str, ipv6: str):
@@ -402,9 +402,9 @@ def edit_ip_address(ipv4: str, ipv6: str):
     if not ipv4 and not ipv6:
         raise InvalidInputError('Error: --edit requires at least one of --ipv4 or --ipv6.')
     if ipv4:
-        run_cmd(['bash', Command.IP_ADD.value, 'edit', '-4', ipv4])
+        run_cmd(['python3', Command.IP_ADD.value, 'edit', '-4', ipv4])
     if ipv6:
-        run_cmd(['bash', Command.IP_ADD.value, 'edit', '-6', ipv6])
+        run_cmd(['python3', Command.IP_ADD.value, 'edit', '-6', ipv6])
 
 
 def update_geo(country: str):

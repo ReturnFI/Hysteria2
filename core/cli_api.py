@@ -36,7 +36,7 @@ class Command(Enum):
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.sh')
-    BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.sh')
+    BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.py')
     RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.sh')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.py')
     SHELL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
@@ -182,7 +182,7 @@ def change_hysteria2_sni(sni: str):
 def backup_hysteria2():
     '''Backups Hysteria configuration.  Raises an exception on failure.'''
     try:
-        run_cmd(['bash', Command.BACKUP_HYSTERIA2.value])
+        run_cmd(['python3', Command.BACKUP_HYSTERIA2.value])
     except subprocess.CalledProcessError as e:
         raise Exception(f"Backup failed: {e}")
     except Exception as ex:

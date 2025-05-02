@@ -26,7 +26,7 @@ class Command(Enum):
     ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.sh')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
     RESET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'reset_user.sh')
-    REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.sh')
+    REMOVE_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'remove_user.py')
     SHOW_USER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'show_user_uri.py')
     WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.sh')
@@ -303,7 +303,7 @@ def remove_user(username: str):
     '''
     Removes a user by username.
     '''
-    run_cmd(['bash', Command.REMOVE_USER.value, username])
+    run_cmd(['python3', Command.REMOVE_USER.value, username])
 
 def kick_user_by_name(username: str):
     '''Kicks a specific user by username.'''

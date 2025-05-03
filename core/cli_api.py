@@ -31,7 +31,7 @@ class Command(Enum):
     WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.py')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.py')
-    MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
+    MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.py')
     TRAFFIC_STATUS = 'traffic.py'  # won't be called directly (it's a python module)
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
@@ -211,12 +211,12 @@ def disable_hysteria2_obfs():
 
 def enable_hysteria2_masquerade(domain: str):
     '''Enables masquerade for Hysteria2.'''
-    run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '1', domain])
+    run_cmd(['python3', Command.MASQUERADE_SCRIPT.value, '1', domain])
 
 
 def disable_hysteria2_masquerade():
     '''Disables masquerade for Hysteria2.'''
-    run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '2'])
+    run_cmd(['python3', Command.MASQUERADE_SCRIPT.value, '2'])
 
 
 def get_hysteria2_config_file() -> dict[str, Any]:

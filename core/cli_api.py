@@ -21,7 +21,7 @@ class Command(Enum):
     UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.py')
     RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.py')
     CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.py')
-    CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
+    CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.py')
     GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.py')
     ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.py')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
@@ -176,7 +176,7 @@ def change_hysteria2_sni(sni: str):
     '''
     Changes the SNI for Hysteria2.
     '''
-    run_cmd(['bash', Command.CHANGE_SNI_HYSTERIA2.value, sni])
+    run_cmd(['python3', Command.CHANGE_SNI_HYSTERIA2.value, sni])
 
 
 def backup_hysteria2():

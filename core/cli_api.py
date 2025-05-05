@@ -42,7 +42,7 @@ class Command(Enum):
     SHELL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     SHELL_WEBPANEL = os.path.join(SCRIPT_DIR, 'webpanel', 'webpanel_shell.sh')
     INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
-    INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
+    INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.py')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.py')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.py')
     CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.py')
@@ -431,7 +431,7 @@ def update_geo(country: str):
 
 def install_tcp_brutal():
     '''Installs TCP Brutal.'''
-    run_cmd(['bash', Command.INSTALL_TCP_BRUTAL.value])
+    run_cmd(['python3', Command.INSTALL_TCP_BRUTAL.value])
 
 
 def install_warp():

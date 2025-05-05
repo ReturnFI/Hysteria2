@@ -37,7 +37,7 @@ class Command(Enum):
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.py')
     BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.py')
-    RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.sh')
+    RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.py')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.py')
     SHELL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     SHELL_WEBPANEL = os.path.join(SCRIPT_DIR, 'webpanel', 'webpanel_shell.sh')
@@ -192,7 +192,7 @@ def backup_hysteria2():
 def restore_hysteria2(backup_file_path: str):
     '''Restores Hysteria configuration from the given backup file.'''
     try:
-        run_cmd(['bash', Command.RESTORE_HYSTERIA2.value, backup_file_path])
+        run_cmd(['python3', Command.RESTORE_HYSTERIA2.value, backup_file_path])
     except subprocess.CalledProcessError as e:
         raise Exception(f"Restore failed: {e}")
     except Exception as ex:

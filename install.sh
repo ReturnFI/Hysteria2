@@ -16,10 +16,10 @@ check_os_version() {
     fi
 
     if [[ "$os_name" == "ubuntu" && $(echo "$os_version >= 22" | bc) -eq 1 ]] ||
-       [[ "$os_name" == "debian" && $(echo "$os_version >= 11" | bc) -eq 1 ]]; then
+       [[ "$os_name" == "debian" && $(echo "$os_version >= 12" | bc) -eq 1 ]]; then
         return 0
     else
-        echo "This script is only supported on Ubuntu 22+ or Debian 11+."
+        echo "This script is only supported on Ubuntu 22+ or Debian 12+."
         exit 1
     fi
 }

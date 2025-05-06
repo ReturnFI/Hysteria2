@@ -109,7 +109,7 @@ install_packages() {
 }
 
 clone_repository() {
-    log_info "Cloning Hysteria repository..."
+    log_info "Cloning Blitz repository..."
     
     if [ -d "/etc/hysteria" ]; then
         log_warning "Directory /etc/hysteria already exists."
@@ -166,18 +166,18 @@ add_alias() {
 }
 
 run_menu() {
-    log_info "Preparing to run setup menu..."
+    log_info "Preparing to run menu..."
     
     cd /etc/hysteria || { log_error "Failed to change to /etc/hysteria directory"; exit 1; }
     chmod +x menu.sh || { log_error "Failed to make menu.sh executable"; exit 1; }
     
-    log_info "Starting setup menu..."
-    echo -e "\n${BOLD}${GREEN}======== Launching Hysteria Setup Menu ========${NC}\n"
+    log_info "Starting menu..."
+    echo -e "\n${BOLD}${GREEN}======== Launching Blitz Menu ========${NC}\n"
     ./menu.sh
 }
 
 main() {
-    echo -e "\n${BOLD}${BLUE}======== Hysteria Setup Script ========${NC}\n"
+    echo -e "\n${BOLD}${BLUE}======== Blitz Setup Script ========${NC}\n"
     
     check_root
     check_os_version
@@ -188,7 +188,7 @@ main() {
     
     source ~/.bashrc &> /dev/null || true
     
-    echo -e "\n${YELLOW}Starting Hysteria setup in 3 seconds...${NC}"
+    echo -e "\n${YELLOW}Starting Blitz in 3 seconds...${NC}"
     sleep 3
     
     run_menu

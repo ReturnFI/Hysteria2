@@ -100,9 +100,9 @@ chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chown -R hysteria:hysteria /etc/hysteria/core/scripts/singbox
 chown -R hysteria:hysteria /etc/hysteria/core/scripts/telegrambot
 
-echo "Setting execute permissions for user.sh and kick.sh"
+echo "Setting execute permissions for user.sh and kick.py"
 chmod +x /etc/hysteria/core/scripts/hysteria2/user.sh
-chmod +x /etc/hysteria/core/scripts/hysteria2/kick.sh
+chmod +x /etc/hysteria/core/scripts/hysteria2/kick.py
 
 cd /etc/hysteria
 python3 -m venv hysteria2_venv

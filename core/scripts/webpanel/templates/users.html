@@ -389,10 +389,11 @@
         // Add User Form Submit
         $("#addUserForm").on("submit", function (e) {
             e.preventDefault();
-            // Additional check before submitting (in case JS is disabled briefly)
             if (!validateUsername($("#addUsername").val(), "addUsernameError")) {
+                $("#addSubmitButton").prop("disabled", true);
                 return;
             }
+            $("#addSubmitButton").prop("disabled", true);
 
             const formData = $(this).serializeArray();
             const jsonData = {};
@@ -406,31 +407,32 @@
                 contentType: "application/json",
                 data: JSON.stringify(jsonData),
                 success: function (response) {
-                    if (response.detail) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: response.detail,
-                            icon: "success",
-                            confirmButtonText: "OK",
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Error!",
-                            text: response.error || "Failed to add user",
-                            icon: "error",
-                            confirmButtonText: "OK",
-                        });
-                    }
+                    Swal.fire({
+                        title: "Success!",
+                        text: response.detail || "User added successfully!",
+                        icon: "success",
+                        confirmButtonText: "OK",
+                    }).then(() => {
+                        location.reload();
+                    });
                 },
-                error: function () {
+                error: function (jqXHR, textStatus, errorThrown) {
+                    let errorMessage = "An error occurred while adding user.";
+                    if (jqXHR.responseJSON && jqXHR.responseJSON.detail) {
+                        errorMessage = jqXHR.responseJSON.detail;
+                    } else if (jqXHR.status === 409) {
+                        errorMessage = "User '" + jsonData.username + "' already exists.";
+                         $("#addUsernameError").text(errorMessage);
+                    } else if (jqXHR.status === 422) {
+                        errorMessage = jqXHR.responseJSON.detail || "Invalid input provided.";
+                    }
                     Swal.fire({
                         title: "Error!",
-                        text: "An error occurred while adding user",
+                        text: errorMessage,
                         icon: "error",
                         confirmButtonText: "OK",
                     });
+                    $("#addSubmitButton").prop("disabled", false);
                 }
             });
         });
@@ -760,6 +762,14 @@
                 }
             });
         }
+
+        $('#addUserModal').on('show.bs.modal', function (event) {
+            $('#addUsername').val('');
+            $('#addTrafficLimit').val('30');
+            $('#addExpirationDays').val('30');
+            $('#addUsernameError').text('');
+            $('#addSubmitButton').prop('disabled', true);
+        });
 
         $("#searchButton").on("click", filterUsers);
         $("#searchInput").on("keyup", filterUsers);

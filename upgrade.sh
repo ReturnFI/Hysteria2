@@ -129,8 +129,13 @@ fi
 echo "Restoring cron jobs"
 crontab /tmp/crontab_backup
 echo "Updating kick.sh cron job to kick.py"
-( crontab -l | sed "s|/etc/hysteria/core/scripts/hysteria2/kick.sh|/bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/scripts/hysteria2/kick.py'|g" ) | crontab -
-rm /tmp/crontab_backup
+if crontab -l | grep -Fq '*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1'; then
+    crontab -l | grep -vF '*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1' | \
+        { cat; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/scripts/hysteria2/kick.py' >/dev/null 2>&1"; } | crontab -
+    echo "Cron job updated."
+else
+    echo "Old cron job not found. No need change."
+fi
 
 chmod +x menu.sh
 ./menu.sh

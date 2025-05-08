@@ -83,24 +83,32 @@ class ScriptNotFoundError(HysteriaError):
 # region Utils
 
 
-def run_cmd(command: list[str]) -> str | None:
+def run_cmd(command: list[str]) -> str:
     '''
-    Runs a command and returns the output.
-    Could raise subprocess.CalledProcessError
+    Runs a command and returns its stdout if successful.
+    Raises CommandExecutionError if the command fails (non-zero exit code) or cannot be found.
     '''
-    if (DEBUG) and not (Command.GET_USER.value in command or Command.LIST_USERS.value in command):
-        print(' '.join(command))
+    if DEBUG:
+        print(f"Executing command: {' '.join(command)}")
     try:
-        result = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=False)
-        if result:
-            result = result.decode().strip()
-            return result
-    except subprocess.CalledProcessError as e:
-        if DEBUG:
-            raise CommandExecutionError(f'Command execution failed: {e}\nOutput: {e.output.decode()}')
-        else:
-            return None
-    return None
+        process = subprocess.run(command, capture_output=True, text=True, shell=False, check=False)
+
+        if process.returncode != 0:
+            error_output = process.stderr.strip() if process.stderr.strip() else process.stdout.strip()
+            if not error_output:
+                error_output = f"Command exited with status {process.returncode} without specific error message."
+            
+            detailed_error_message = f"Command '{' '.join(command)}' failed with exit code {process.returncode}: {error_output}"
+            raise CommandExecutionError(detailed_error_message)
+
+        return process.stdout.strip() if process.stdout else ""
+
+    except FileNotFoundError as e:
+        raise ScriptNotFoundError(f"Script or command not found: {command[0]}. Original error: {e}")
+    except subprocess.TimeoutExpired as e: 
+        raise CommandExecutionError(f"Command '{' '.join(command)}' timed out. Original error: {e}")
+    except OSError as e: 
+        raise CommandExecutionError(f"OS error while trying to run command '{' '.join(command)}': {e}")
 
 
 def generate_password() -> str:

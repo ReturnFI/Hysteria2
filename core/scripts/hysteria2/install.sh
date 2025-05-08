@@ -80,12 +80,12 @@ install_hysteria() {
     fi
     
     chmod +x /etc/hysteria/core/scripts/hysteria2/user.sh
-    chmod +x /etc/hysteria/core/scripts/hysteria2/kick.sh
+    chmod +x /etc/hysteria/core/scripts/hysteria2/kick.py
 
     (crontab -l ; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status' >/dev/null 2>&1") | crontab -
     (crontab -l ; echo "0 3 */3 * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py restart-hysteria2' >/dev/null 2>&1") | crontab -
     (crontab -l ; echo "0 */6 * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria' >/dev/null 2>&1") | crontab -
-    (crontab -l ; echo "*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1") | crontab -
+    (crontab -l ; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/scripts/hysteria2/kick.py' >/dev/null 2>&1") | crontab -
 
 }
 

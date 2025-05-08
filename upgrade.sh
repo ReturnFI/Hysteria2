@@ -26,28 +26,6 @@ for FILE in "${FILES[@]}"; do
     cp "$FILE" "$TEMP_DIR/$FILE"
 done
 
-# echo "Checking and renaming old systemd service files"
-# declare -A SERVICE_MAP=(
-#     ["/etc/systemd/system/hysteria-bot.service"]="hysteria-telegram-bot.service"
-#     ["/etc/systemd/system/singbox.service"]="hysteria-singbox.service"
-#     ["/etc/systemd/system/normalsub.service"]="hysteria-normal-sub.service"
-# )
-
-# for OLD_SERVICE in "${!SERVICE_MAP[@]}"; do
-#     NEW_SERVICE="/etc/systemd/system/${SERVICE_MAP[$OLD_SERVICE]}"
-
-#     if [[ -f "$OLD_SERVICE" ]]; then
-#         echo "Stopping old service: $(basename "$OLD_SERVICE")"
-#         systemctl stop "$(basename "$OLD_SERVICE")" 2>/dev/null
-
-#         echo "Renaming $OLD_SERVICE to $NEW_SERVICE"
-#         mv "$OLD_SERVICE" "$NEW_SERVICE"
-
-#         echo "Reloading systemd daemon"
-#         systemctl daemon-reload
-#     fi
-# done
-
 echo "Removing /etc/hysteria directory"
 rm -rf /etc/hysteria/
 
@@ -62,24 +40,6 @@ echo "Restoring backup files"
 for FILE in "${FILES[@]}"; do
     cp "$TEMP_DIR/$FILE" "$FILE"
 done
-
-# CADDYFILE="/etc/hysteria/core/scripts/webpanel/Caddyfile"
-
-# if [ -f "$CADDYFILE" ]; then
-#     echo "Updating Caddyfile port from 8080 to 28260"
-
-#     sed -i 's/\(:[[:space:]]*\)8080/\128260/g' "$CADDYFILE"
-#     sed -i 's/0\.0\.0\.0:8080/0.0.0.0:28260/g' "$CADDYFILE"
-#     sed -i 's/127\.0\.0\.1:8080/127.0.0.1:28260/g' "$CADDYFILE"
-
-
-#     if ! grep -q ':28260' "$CADDYFILE"; then
-#         echo "Warning: Caddyfile does not contain port 8080 in expected formats.  Port replacement may have already been done."
-#     fi
-# else
-#     echo "Error: Caddyfile not found at $CADDYFILE.  Cannot update port."
-# fi
-
 
 CONFIG_ENV="/etc/hysteria/.configs.env"
 if [ ! -f "$CONFIG_ENV" ]; then
@@ -155,7 +115,6 @@ systemctl restart hysteria-caddy.service
 echo "Restarting other hysteria services"
 systemctl restart hysteria-server.service
 systemctl restart hysteria-telegram-bot.service
-# systemctl restart hysteria-singbox.service
 systemctl restart hysteria-normal-sub.service
 systemctl restart hysteria-webpanel.service
 
@@ -169,6 +128,8 @@ fi
 
 echo "Restoring cron jobs"
 crontab /tmp/crontab_backup
+echo "Updating kick.sh cron job to kick.py"
+( crontab -l | sed "s|/etc/hysteria/core/scripts/hysteria2/kick.sh|/bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/scripts/hysteria2/kick.py'|g" ) | crontab -
 rm /tmp/crontab_backup
 
 chmod +x menu.sh

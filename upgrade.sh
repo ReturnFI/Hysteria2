@@ -41,7 +41,7 @@ echo "Removing /etc/hysteria directory"
 rm -rf /etc/hysteria/
 
 echo "Cloning Blitz repository"
-git clone -b beta https://github.com/ReturnFI/Blitz /etc/hysteria
+git clone https://github.com/ReturnFI/Blitz /etc/hysteria
 
 echo "Downloading geosite.dat and geoip.dat"
 wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1

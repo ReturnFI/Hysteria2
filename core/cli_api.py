@@ -371,8 +371,12 @@ def show_user_uri_json(usernames: list[str]) -> list[dict[str, Any]] | None:
 
 
 def traffic_status(no_gui=False, display_output=True):
-    '''Fetches traffic status.'''
-    data = traffic.traffic_status(no_gui=True if not display_output else no_gui)
+    if no_gui:
+        data = traffic.traffic_status(no_gui=True)
+        traffic.kick_expired_users()
+    else:
+        data = traffic.traffic_status(no_gui=True if not display_output else no_gui)
+    
     return data
 
 

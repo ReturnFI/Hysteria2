@@ -16,9 +16,20 @@ FILES=(
     "/etc/hysteria/core/scripts/webpanel/Caddyfile"
 )
 
-echo "Backing up and stopping all cron jobs"
-crontab -l > /tmp/crontab_backup
-crontab -r
+if crontab -l 2>/dev/null | grep -q "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py" || \
+   crontab -l 2>/dev/null | grep -q "/etc/hysteria/core/scripts/hysteria2/kick.sh"; then
+    
+    echo "Removing existing Hysteria cronjobs..."
+    crontab -l | grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status" | \
+    grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py restart-hysteria2" | \
+    grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria" | \
+    grep -v "/etc/hysteria/core/scripts/hysteria2/kick.sh" | \
+    crontab -
+    echo "Old Hysteria cronjobs removed successfully."
+else
+    echo "No existing Hysteria cronjobs found. Skipping removal."
+fi
+
 
 echo "Backing up files to $TEMP_DIR"
 for FILE in "${FILES[@]}"; do
@@ -126,15 +137,19 @@ else
     echo "Upgrade failed: hysteria-server.service is not active"
 fi
 
-echo "Restoring cron jobs"
-crontab /tmp/crontab_backup
-echo "Updating kick.sh cron job to kick.py"
-if crontab -l | grep -Fq '*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1'; then
-    crontab -l | grep -vF '*/1 * * * * /etc/hysteria/core/scripts/hysteria2/kick.sh >/dev/null 2>&1' | \
-        { cat; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/scripts/hysteria2/kick.py' >/dev/null 2>&1"; } | crontab -
-    echo "Cron job updated."
+echo "Adding new Hysteria cronjobs..."
+if ! crontab -l 2>/dev/null | grep -q "python3 /etc/hysteria/core/cli.py traffic-status --no-gui"; then
+    echo "Adding traffic-status cronjob..."
+    (crontab -l ; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status --no-gui'") | crontab -
 else
-    echo "Old cron job not found. No need change."
+    echo "Traffic-status cronjob already exists. Skipping."
+fi
+
+if ! crontab -l 2>/dev/null | grep -q "python3 /etc/hysteria/core/cli.py backup-hysteria"; then
+    echo "Adding backup-hysteria cronjob..."
+    (crontab -l ; echo "0 */6 * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria' >/dev/null 2>&1") | crontab -
+else
+    echo "Backup-hysteria cronjob already exists. Skipping."
 fi
 
 chmod +x menu.sh

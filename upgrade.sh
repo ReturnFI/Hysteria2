@@ -16,37 +16,26 @@ FILES=(
     "/etc/hysteria/core/scripts/webpanel/Caddyfile"
 )
 
-echo "Backing up and stopping all cron jobs"
-crontab -l > /tmp/crontab_backup
-crontab -r
+if crontab -l 2>/dev/null | grep -q "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py" || \
+   crontab -l 2>/dev/null | grep -q "/etc/hysteria/core/scripts/hysteria2/kick.sh"; then
+    
+    echo "Removing existing Hysteria cronjobs..."
+    crontab -l | grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status" | \
+    grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py restart-hysteria2" | \
+    grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria" | \
+    grep -v "/etc/hysteria/core/scripts/hysteria2/kick.sh" | \
+    crontab -
+    echo "Old Hysteria cronjobs removed successfully."
+else
+    echo "No existing Hysteria cronjobs found. Skipping removal."
+fi
+
 
 echo "Backing up files to $TEMP_DIR"
 for FILE in "${FILES[@]}"; do
     mkdir -p "$TEMP_DIR/$(dirname "$FILE")"
     cp "$FILE" "$TEMP_DIR/$FILE"
 done
-
-# echo "Checking and renaming old systemd service files"
-# declare -A SERVICE_MAP=(
-#     ["/etc/systemd/system/hysteria-bot.service"]="hysteria-telegram-bot.service"
-#     ["/etc/systemd/system/singbox.service"]="hysteria-singbox.service"
-#     ["/etc/systemd/system/normalsub.service"]="hysteria-normal-sub.service"
-# )
-
-# for OLD_SERVICE in "${!SERVICE_MAP[@]}"; do
-#     NEW_SERVICE="/etc/systemd/system/${SERVICE_MAP[$OLD_SERVICE]}"
-
-#     if [[ -f "$OLD_SERVICE" ]]; then
-#         echo "Stopping old service: $(basename "$OLD_SERVICE")"
-#         systemctl stop "$(basename "$OLD_SERVICE")" 2>/dev/null
-
-#         echo "Renaming $OLD_SERVICE to $NEW_SERVICE"
-#         mv "$OLD_SERVICE" "$NEW_SERVICE"
-
-#         echo "Reloading systemd daemon"
-#         systemctl daemon-reload
-#     fi
-# done
 
 echo "Removing /etc/hysteria directory"
 rm -rf /etc/hysteria/
@@ -62,24 +51,6 @@ echo "Restoring backup files"
 for FILE in "${FILES[@]}"; do
     cp "$TEMP_DIR/$FILE" "$FILE"
 done
-
-# CADDYFILE="/etc/hysteria/core/scripts/webpanel/Caddyfile"
-
-# if [ -f "$CADDYFILE" ]; then
-#     echo "Updating Caddyfile port from 8080 to 28260"
-
-#     sed -i 's/\(:[[:space:]]*\)8080/\128260/g' "$CADDYFILE"
-#     sed -i 's/0\.0\.0\.0:8080/0.0.0.0:28260/g' "$CADDYFILE"
-#     sed -i 's/127\.0\.0\.1:8080/127.0.0.1:28260/g' "$CADDYFILE"
-
-
-#     if ! grep -q ':28260' "$CADDYFILE"; then
-#         echo "Warning: Caddyfile does not contain port 8080 in expected formats.  Port replacement may have already been done."
-#     fi
-# else
-#     echo "Error: Caddyfile not found at $CADDYFILE.  Cannot update port."
-# fi
-
 
 CONFIG_ENV="/etc/hysteria/.configs.env"
 if [ ! -f "$CONFIG_ENV" ]; then
@@ -140,9 +111,9 @@ chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
 chown -R hysteria:hysteria /etc/hysteria/core/scripts/singbox
 chown -R hysteria:hysteria /etc/hysteria/core/scripts/telegrambot
 
-echo "Setting execute permissions for user.sh and kick.sh"
+echo "Setting execute permissions for user.sh and kick.py"
 chmod +x /etc/hysteria/core/scripts/hysteria2/user.sh
-chmod +x /etc/hysteria/core/scripts/hysteria2/kick.sh
+chmod +x /etc/hysteria/core/scripts/hysteria2/kick.py
 
 cd /etc/hysteria
 python3 -m venv hysteria2_venv
@@ -155,7 +126,6 @@ systemctl restart hysteria-caddy.service
 echo "Restarting other hysteria services"
 systemctl restart hysteria-server.service
 systemctl restart hysteria-telegram-bot.service
-# systemctl restart hysteria-singbox.service
 systemctl restart hysteria-normal-sub.service
 systemctl restart hysteria-webpanel.service
 
@@ -167,9 +137,20 @@ else
     echo "Upgrade failed: hysteria-server.service is not active"
 fi
 
-echo "Restoring cron jobs"
-crontab /tmp/crontab_backup
-rm /tmp/crontab_backup
+echo "Adding new Hysteria cronjobs..."
+if ! crontab -l 2>/dev/null | grep -q "python3 /etc/hysteria/core/cli.py traffic-status --no-gui"; then
+    echo "Adding traffic-status cronjob..."
+    (crontab -l ; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status --no-gui'") | crontab -
+else
+    echo "Traffic-status cronjob already exists. Skipping."
+fi
+
+if ! crontab -l 2>/dev/null | grep -q "python3 /etc/hysteria/core/cli.py backup-hysteria"; then
+    echo "Adding backup-hysteria cronjob..."
+    (crontab -l ; echo "0 */6 * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria' >/dev/null 2>&1") | crontab -
+else
+    echo "Backup-hysteria cronjob already exists. Skipping."
+fi
 
 chmod +x menu.sh
 ./menu.sh

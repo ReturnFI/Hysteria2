@@ -227,7 +227,7 @@ def show_user_uri_json(usernames: list[str]):
 
 
 @cli.command('traffic-status')
-@click.option('--no-gui', is_flag=True, help='Retrieve traffic data without displaying output')
+@click.option('--no-gui', is_flag=True, help='Retrieve traffic data without displaying output and kick expired users')
 def traffic_status(no_gui):
     try:
         cli_api.traffic_status(no_gui=no_gui)

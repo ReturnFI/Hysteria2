@@ -21,7 +21,7 @@ class Command(Enum):
     UPDATE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'update.py')
     RESTART_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restart.py')
     CHANGE_PORT_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_port.py')
-    CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.sh')
+    CHANGE_SNI_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'change_sni.py')
     GET_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'get_user.py')
     ADD_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'add_user.py')
     EDIT_USER = os.path.join(SCRIPT_DIR, 'hysteria2', 'edit_user.sh')
@@ -31,18 +31,18 @@ class Command(Enum):
     WRAPPER_URI = os.path.join(SCRIPT_DIR, 'hysteria2', 'wrapper_uri.py')
     IP_ADD = os.path.join(SCRIPT_DIR, 'hysteria2', 'ip.py')
     MANAGE_OBFS = os.path.join(SCRIPT_DIR, 'hysteria2', 'manage_obfs.py')
-    MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.sh')
+    MASQUERADE_SCRIPT = os.path.join(SCRIPT_DIR, 'hysteria2', 'masquerade.py')
     TRAFFIC_STATUS = 'traffic.py'  # won't be called directly (it's a python module)
     UPDATE_GEO = os.path.join(SCRIPT_DIR, 'hysteria2', 'update_geo.py')
     LIST_USERS = os.path.join(SCRIPT_DIR, 'hysteria2', 'list_users.sh')
     SERVER_INFO = os.path.join(SCRIPT_DIR, 'hysteria2', 'server_info.py')
     BACKUP_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'backup.py')
-    RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.sh')
+    RESTORE_HYSTERIA2 = os.path.join(SCRIPT_DIR, 'hysteria2', 'restore.py')
     INSTALL_TELEGRAMBOT = os.path.join(SCRIPT_DIR, 'telegrambot', 'runbot.py')
     SHELL_SINGBOX = os.path.join(SCRIPT_DIR, 'singbox', 'singbox_shell.sh')
     SHELL_WEBPANEL = os.path.join(SCRIPT_DIR, 'webpanel', 'webpanel_shell.sh')
     INSTALL_NORMALSUB = os.path.join(SCRIPT_DIR, 'normalsub', 'normalsub.sh')
-    INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.sh')
+    INSTALL_TCP_BRUTAL = os.path.join(SCRIPT_DIR, 'tcp-brutal', 'install.py')
     INSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'install.py')
     UNINSTALL_WARP = os.path.join(SCRIPT_DIR, 'warp', 'uninstall.py')
     CONFIGURE_WARP = os.path.join(SCRIPT_DIR, 'warp', 'configure.py')
@@ -83,24 +83,32 @@ class ScriptNotFoundError(HysteriaError):
 # region Utils
 
 
-def run_cmd(command: list[str]) -> str | None:
+def run_cmd(command: list[str]) -> str:
     '''
-    Runs a command and returns the output.
-    Could raise subprocess.CalledProcessError
+    Runs a command and returns its stdout if successful.
+    Raises CommandExecutionError if the command fails (non-zero exit code) or cannot be found.
     '''
-    if (DEBUG) and not (Command.GET_USER.value in command or Command.LIST_USERS.value in command):
-        print(' '.join(command))
+    if DEBUG:
+        print(f"Executing command: {' '.join(command)}")
     try:
-        result = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=False)
-        if result:
-            result = result.decode().strip()
-            return result
-    except subprocess.CalledProcessError as e:
-        if DEBUG:
-            raise CommandExecutionError(f'Command execution failed: {e}\nOutput: {e.output.decode()}')
-        else:
-            return None
-    return None
+        process = subprocess.run(command, capture_output=True, text=True, shell=False, check=False)
+
+        if process.returncode != 0:
+            error_output = process.stderr.strip() if process.stderr.strip() else process.stdout.strip()
+            if not error_output:
+                error_output = f"Command exited with status {process.returncode} without specific error message."
+            
+            detailed_error_message = f"Command '{' '.join(command)}' failed with exit code {process.returncode}: {error_output}"
+            raise CommandExecutionError(detailed_error_message)
+
+        return process.stdout.strip() if process.stdout else ""
+
+    except FileNotFoundError as e:
+        raise ScriptNotFoundError(f"Script or command not found: {command[0]}. Original error: {e}")
+    except subprocess.TimeoutExpired as e: 
+        raise CommandExecutionError(f"Command '{' '.join(command)}' timed out. Original error: {e}")
+    except OSError as e: 
+        raise CommandExecutionError(f"OS error while trying to run command '{' '.join(command)}': {e}")
 
 
 def generate_password() -> str:
@@ -176,7 +184,7 @@ def change_hysteria2_sni(sni: str):
     '''
     Changes the SNI for Hysteria2.
     '''
-    run_cmd(['bash', Command.CHANGE_SNI_HYSTERIA2.value, sni])
+    run_cmd(['python3', Command.CHANGE_SNI_HYSTERIA2.value, sni])
 
 
 def backup_hysteria2():
@@ -192,7 +200,7 @@ def backup_hysteria2():
 def restore_hysteria2(backup_file_path: str):
     '''Restores Hysteria configuration from the given backup file.'''
     try:
-        run_cmd(['bash', Command.RESTORE_HYSTERIA2.value, backup_file_path])
+        run_cmd(['python3', Command.RESTORE_HYSTERIA2.value, backup_file_path])
     except subprocess.CalledProcessError as e:
         raise Exception(f"Restore failed: {e}")
     except Exception as ex:
@@ -211,12 +219,12 @@ def disable_hysteria2_obfs():
 
 def enable_hysteria2_masquerade(domain: str):
     '''Enables masquerade for Hysteria2.'''
-    run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '1', domain])
+    run_cmd(['python3', Command.MASQUERADE_SCRIPT.value, '1', domain])
 
 
 def disable_hysteria2_masquerade():
     '''Disables masquerade for Hysteria2.'''
-    run_cmd(['bash', Command.MASQUERADE_SCRIPT.value, '2'])
+    run_cmd(['python3', Command.MASQUERADE_SCRIPT.value, '2'])
 
 
 def get_hysteria2_config_file() -> dict[str, Any]:
@@ -363,8 +371,12 @@ def show_user_uri_json(usernames: list[str]) -> list[dict[str, Any]] | None:
 
 
 def traffic_status(no_gui=False, display_output=True):
-    '''Fetches traffic status.'''
-    data = traffic.traffic_status(no_gui=True if not display_output else no_gui)
+    if no_gui:
+        data = traffic.traffic_status(no_gui=True)
+        traffic.kick_expired_users()
+    else:
+        data = traffic.traffic_status(no_gui=True if not display_output else no_gui)
+    
     return data
 
 
@@ -431,7 +443,7 @@ def update_geo(country: str):
 
 def install_tcp_brutal():
     '''Installs TCP Brutal.'''
-    run_cmd(['bash', Command.INSTALL_TCP_BRUTAL.value])
+    run_cmd(['python3', Command.INSTALL_TCP_BRUTAL.value])
 
 
 def install_warp():

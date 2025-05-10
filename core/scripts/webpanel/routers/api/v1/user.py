@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, HTTPException
 
 from .schema.user import UserListResponse, UserInfoResponse, AddUserInputBody, EditUserInputBody, UserUriResponse
@@ -25,26 +26,35 @@ async def list_users_api():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.post('/', response_model=DetailResponse)
+@router.post('/', response_model=DetailResponse, status_code=201)
 async def add_user_api(body: AddUserInputBody):
-    """
-    Add a new user to the system.
-
-    Args:
-        body: An instance of AddUserInputBody containing the user's details.
-
-    Returns:
-        A DetailResponse with a message indicating the user has been added.
-
-    Raises:
-        HTTPException: if an error occurs while adding the user.
-    """
+    try:
+        cli_api.get_user(body.username)
+        raise HTTPException(status_code=409,
+                            detail=f"User '{body.username}' already exists.")
+    except cli_api.CommandExecutionError:
+        pass
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=500,
+                            detail=f"{str(e)}")
 
     try:
         cli_api.add_user(body.username, body.traffic_limit, body.expiration_days, body.password, body.creation_date)
         return DetailResponse(detail=f'User {body.username} has been added.')
+    except cli_api.CommandExecutionError as e:
+        if "User already exists" in str(e):
+            raise HTTPException(status_code=409,
+                                detail=f"User '{body.username}' already exists.")
+        raise HTTPException(status_code=400,
+                            detail=f'Failed to add user {body.username}: {str(e)}')
+    except cli_api.PasswordGenerationError as e:
+        raise HTTPException(status_code=500,
+                            detail=f"Failed to generate password for user '{body.username}': {str(e)}")
+    except cli_api.InvalidInputError as e:
+         raise HTTPException(status_code=422, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+        raise HTTPException(status_code=500,
+                            detail=f"An unexpected error occurred while adding user '{body.username}': {str(e)}")
 
 
 @router.get('/{username}', response_model=UserInfoResponse)

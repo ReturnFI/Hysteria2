@@ -1,10 +1,20 @@
-## [1.9.1] - 2025-05-03
+# [1.9.2] - 2025-05-10
 
-### ✨ Changed
-🧠 **refactor:**: Implement server stats manager in Python
-🧠 **refactor:**: Migrate IP address config management to Python
-🧠 **refactor:**: Implement Hysteria backup functionality in Python
-🧠 **refactor:**: Transition Telegram bot service management to Python
-🧠 **refactor:**: Migrate WARP ACL configuration handling to Python
-🧠 **refactor:**: Implement WARP status management in Python
-🧠 **refactor:**: Rewrite WARP setup and uninstallation scripts in Python3
+## ✨ Changed
+
+### ✨ Features
+🔄 feat: Merge traffic collection with user kicking for efficient enforcement
+🧪 feat(api): Add user existence validation to `add-user` endpoint
+🖥️ feat(frontend): Improve user management UI and error feedback in `users.html`
+
+### 🧠 Refactors
+📦 refactor: Migrate Hysteria restore functionality to Python
+🌐 refactor: Implement SNI changer in Python
+🛠️ refactor: Port TCP Brutal installation to Python
+🎭 refactor: Rewrite masquerade management in Python3
+⚙️ refactor(cli): Enhance error propagation and handling in CLI scripts
+
+### 🛠️ System Enhancements
+🧩 update: Improve upgrade script with better cronjob management
+🛠️ enhance: Setup script with robust error handling and cleaner UX
+📦 update: Drop Debian 11 support to focus on supported OS versions

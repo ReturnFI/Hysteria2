@@ -25,10 +25,10 @@ hysteria2-api==0.1.2
 # webpanel
 annotated-types==0.7.0
 anyio==4.8.0
-fastapi==0.115.6
-h11==0.14.0
+fastapi==0.115.12
+h11==0.16.0
 itsdangerous==2.2.0
-Jinja2==3.1.5
+Jinja2==3.1.6
 MarkupSafe==3.0.2
 pydantic==2.10.5
 pydantic_core==2.27.2

@@ -76,7 +76,7 @@ check_os_version() {
 }
 
 install_packages() {
-    local REQUIRED_PACKAGES=("jq" "qrencode" "curl" "pwgen" "python3" "python3-pip" "python3-venv" "git" "bc" "zip" "cron" "lsof")
+    local REQUIRED_PACKAGES=("jq" "curl" "pwgen" "python3" "python3-pip" "python3-venv" "git" "bc" "zip" "cron" "lsof")
     local MISSING_PACKAGES=()
     
     log_info "Checking required packages..."

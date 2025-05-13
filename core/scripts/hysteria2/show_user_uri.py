@@ -6,6 +6,8 @@ import json
 import subprocess
 import argparse
 import re
+import qrcode
+from io import StringIO
 from typing import Tuple, Optional, Dict, List, Any
 from init_paths import *
 from paths import *
@@ -83,17 +85,20 @@ def generate_uri(username: str, auth_password: str, ip: str, port: str,
     return f"{uri_base}?{params_str}#{username}-IPv{ip_version}"
 
 def generate_qr_code(uri: str) -> List[str]:
-    """Generate QR code for the URI using qrencode."""
+    """Generate terminal-friendly ASCII QR code using pure Python."""
     try:
-        result = subprocess.run(
-            ['qrencode', '-t', 'UTF8', '-s', '3', '-m', '2'],
-            input=uri.encode(),
-            capture_output=True,
-            check=True
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=1,
+            border=2,
         )
-        return result.stdout.decode().splitlines()
-    except subprocess.CalledProcessError:
-        return ["QR Code generation failed. Is qrencode installed?"]
+        qr.add_data(uri)
+        qr.make(fit=True)
+
+        output = StringIO()
+        qr.print_ascii(out=output, invert=True)
+        return output.getvalue().splitlines()
     except Exception as e:
         return [f"Error generating QR code: {str(e)}"]
 

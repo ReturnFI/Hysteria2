@@ -15,7 +15,7 @@ psutil==6.1.1
 pypng==0.20220715.0
 pyTelegramBotAPI==4.26.0
 python-dotenv==1.0.1
-qrcode==8.0
+qrcode==8.2
 requests==2.32.3
 typing_extensions==4.12.2
 urllib3==2.4.0

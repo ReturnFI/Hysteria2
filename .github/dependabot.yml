@@ -12,8 +12,6 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
-    reviewers:
-      - "ReturnFI"
     labels:
       - "dependencies"
       - "python"

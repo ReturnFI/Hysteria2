@@ -10,16 +10,3 @@ updates:
     labels:
       - "dependencies"
       - "python"
-
-  # - package-ecosystem: "github-actions"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "daily"
-  #   commit-message:
-  #     prefix: "chore"
-  #     include: "scope"
-  #   reviewers:
-  #     - "ReturnFI"
-  #   labels:
-  #     - "dependencies"
-  #     - "github_actions"

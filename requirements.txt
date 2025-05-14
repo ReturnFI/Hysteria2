@@ -24,7 +24,7 @@ hysteria2-api==0.1.2
 
 # webpanel
 annotated-types==0.7.0
-anyio==4.8.0
+anyio==4.9.0
 fastapi==0.115.12
 h11==0.16.0
 itsdangerous==2.2.0

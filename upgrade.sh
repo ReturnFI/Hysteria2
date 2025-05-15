@@ -16,21 +16,6 @@ FILES=(
     "/etc/hysteria/core/scripts/webpanel/Caddyfile"
 )
 
-if crontab -l 2>/dev/null | grep -q "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py" || \
-   crontab -l 2>/dev/null | grep -q "/etc/hysteria/core/scripts/hysteria2/kick.sh"; then
-    
-    echo "Removing existing Hysteria cronjobs..."
-    crontab -l | grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status" | \
-    grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py restart-hysteria2" | \
-    grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria" | \
-    grep -v "/etc/hysteria/core/scripts/hysteria2/kick.sh" | \
-    crontab -
-    echo "Old Hysteria cronjobs removed successfully."
-else
-    echo "No existing Hysteria cronjobs found. Skipping removal."
-fi
-
-
 echo "Backing up files to $TEMP_DIR"
 for FILE in "${FILES[@]}"; do
     mkdir -p "$TEMP_DIR/$(dirname "$FILE")"
@@ -41,7 +26,7 @@ echo "Removing /etc/hysteria directory"
 rm -rf /etc/hysteria/
 
 echo "Cloning Blitz repository"
-git clone https://github.com/ReturnFI/Blitz /etc/hysteria
+git clone -b beta https://github.com/ReturnFI/Blitz /etc/hysteria
 
 echo "Downloading geosite.dat and geoip.dat"
 wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
@@ -120,6 +105,11 @@ python3 -m venv hysteria2_venv
 source /etc/hysteria/hysteria2_venv/bin/activate
 pip install -r requirements.txt
 
+source /etc/hysteria/core/scripts/scheduler_setup.sh
+if ! check_scheduler_service; then
+    setup_hysteria_scheduler
+fi
+
 echo "Restarting hysteria-caddy service"
 systemctl restart hysteria-caddy.service
 
@@ -137,20 +127,6 @@ else
     echo "Upgrade failed: hysteria-server.service is not active"
 fi
 
-echo "Adding new Hysteria cronjobs..."
-if ! crontab -l 2>/dev/null | grep -q "python3 /etc/hysteria/core/cli.py traffic-status --no-gui"; then
-    echo "Adding traffic-status cronjob..."
-    (crontab -l ; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status --no-gui'") | crontab -
-else
-    echo "Traffic-status cronjob already exists. Skipping."
-fi
-
-if ! crontab -l 2>/dev/null | grep -q "python3 /etc/hysteria/core/cli.py backup-hysteria"; then
-    echo "Adding backup-hysteria cronjob..."
-    (crontab -l ; echo "0 */6 * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria' >/dev/null 2>&1") | crontab -
-else
-    echo "Backup-hysteria cronjob already exists. Skipping."
-fi
-
+sleep 10
 chmod +x menu.sh
 ./menu.sh

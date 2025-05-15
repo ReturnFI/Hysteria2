@@ -2,7 +2,7 @@
 
 source /etc/hysteria/core/scripts/path.sh
 source /etc/hysteria/core/scripts/utils.sh
-source /etc/hysteria/core/scripts/scheduler_setup.sh
+source /etc/hysteria/core/scripts/scheduler.sh
 define_colors
 
 install_hysteria() {

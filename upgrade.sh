@@ -105,7 +105,7 @@ python3 -m venv hysteria2_venv
 source /etc/hysteria/hysteria2_venv/bin/activate
 pip install -r requirements.txt
 
-source /etc/hysteria/core/scripts/scheduler_setup.sh
+source /etc/hysteria/core/scripts/scheduler.sh
 if ! check_scheduler_service; then
     setup_hysteria_scheduler
 fi

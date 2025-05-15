@@ -38,7 +38,7 @@ EOF
 
 check_scheduler_service() {
     if systemctl is-active --quiet hysteria-scheduler.service; then
-        echo "Hysteria scheduler service is already active."
+        # echo "Hysteria scheduler service is already active."
         return 0
     else
         return 1

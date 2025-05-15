@@ -99,6 +99,7 @@ else
 
     if systemctl is-active --quiet hysteria-server.service; then
         echo "Installation and configuration complete."
+        python3 $CLI_PATH add-user --username default --traffic-limit 30 --expiration-days 30
     else
         echo -e "${red}Error:${NC} Hysteria2 service is not active. Please check the logs for more details."
     fi

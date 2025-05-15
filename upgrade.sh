@@ -133,6 +133,6 @@ else
 fi
 
 # ========== Launch Menu ==========
-sleep 20
+sleep 10
 chmod +x menu.sh
 ./menu.sh

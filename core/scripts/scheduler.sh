@@ -34,19 +34,29 @@ EOF
     echo "Hysteria scheduler service has been installed and started."
     echo "You can check the status with: systemctl status hysteria-scheduler"
     echo "Logs are available at: journalctl -u hysteria-scheduler"
-
     return 0
 }
 
 check_scheduler_service() {
     if systemctl is-active --quiet hysteria-scheduler.service; then
-        # echo "Hysteria scheduler service is already active."
+        echo "Hysteria scheduler service is already active."
         return 0
     else
         return 1
     fi
 }
 
+verify_scheduler_service() {
+    if systemctl is-active --quiet hysteria-scheduler.service; then
+        echo "Verified: Hysteria scheduler service is running correctly."
+        return 0
+    else
+        echo "Error: Hysteria scheduler service failed to start properly."
+        return 1
+    fi
+}
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     setup_hysteria_scheduler
+    verify_scheduler_service
 fi

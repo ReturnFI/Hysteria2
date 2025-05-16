@@ -97,12 +97,13 @@ success "Python environment ready."
 
 # ========== Scheduler ==========
 info "Ensuring scheduler is set..."
-source "$HYSTERIA_INSTALL_DIR/core/scripts/scheduler.sh"
 if ! check_scheduler_service; then
+    info "Installing Hysteria scheduler service..."
     setup_hysteria_scheduler
-    success "Scheduler service configured."
-else
-    success "Scheduler already set."
+    
+    if ! verify_scheduler_service; then
+        error "Warning: Scheduler service installation may have issues"
+    fi
 fi
 
 # ========== Restart Services ==========

@@ -30,13 +30,13 @@ EOF
 
     (crontab -l | grep -v "hysteria2_venv.*traffic-status" | grep -v "hysteria2_venv.*backup-hysteria") | crontab -
 
+    return 0
+}
+
+check_scheduler_service() {
     if systemctl is-active --quiet hysteria-scheduler.service; then
-        echo "Hysteria scheduler service is running successfully."
         return 0
     else
-        echo "Failed to start Hysteria scheduler service."
         return 1
     fi
 }
-
-setup_hysteria_scheduler

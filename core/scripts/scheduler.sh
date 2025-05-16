@@ -34,6 +34,8 @@ EOF
     echo "Hysteria scheduler service has been installed and started."
     echo "You can check the status with: systemctl status hysteria-scheduler"
     echo "Logs are available at: journalctl -u hysteria-scheduler"
+
+    return 0
 }
 
 check_scheduler_service() {

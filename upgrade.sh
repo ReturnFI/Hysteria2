@@ -101,6 +101,8 @@ source "$HYSTERIA_INSTALL_DIR/core/scripts/scheduler.sh"
 if ! check_scheduler_service; then
     info "Installing Hysteria scheduler service..."
     setup_hysteria_scheduler
+else
+    error "Hysteria scheduler configuration failed critically. Upgrade cannot proceed."
 fi
 
 # ========== Restart Services ==========

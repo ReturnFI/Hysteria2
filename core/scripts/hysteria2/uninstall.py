@@ -12,6 +12,7 @@ SERVICES = [
     "hysteria-normal-sub.service",
     "hysteria-singbox.service",
     "hysteria-ip-limit.service",
+    "hysteria-scheduler.service",
 ]
 
 def run_command(command, error_message):

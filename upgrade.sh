@@ -1,156 +1,144 @@
 #!/bin/bash
 
-cd /root/
-TEMP_DIR=$(mktemp -d)
+set -euo pipefail
+trap 'echo -e "\n❌ An error occurred. Aborting."; exit 1' ERR
 
+# ========== Variables ==========
+HYSTERIA_INSTALL_DIR="/etc/hysteria"
+HYSTERIA_VENV_DIR="$HYSTERIA_INSTALL_DIR/hysteria2_venv"
+REPO_URL="https://github.com/ReturnFI/Blitz"
+REPO_BRANCH="main"
+GEOSITE_URL="https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat"
+GEOIP_URL="https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geoip.dat"
+
+# ========== Color Setup ==========
+GREEN=$(tput setaf 2)
+RED=$(tput setaf 1)
+YELLOW=$(tput setaf 3)
+BLUE=$(tput setaf 4)
+RESET=$(tput sgr0)
+
+info() { echo -e "${BLUE}[$(date '+%Y-%m-%d %H:%M:%S')] [INFO] - ${RESET} $1"; }
+success() { echo -e "${GREEN}[$(date '+%Y-%m-%d %H:%M:%S')] [OK] - ${RESET} $1"; }
+warn() { echo -e "${YELLOW}[$(date '+%Y-%m-%d %H:%M:%S')] [WARN] - ${RESET} $1"; }
+error() { echo -e "${RED}[$(date '+%Y-%m-%d %H:%M:%S')] [ERROR] - ${RESET} $1"; }
+
+# ========== Backup Files ==========
+cd /root
+TEMP_DIR=$(mktemp -d)
 FILES=(
-    "/etc/hysteria/ca.key"
-    "/etc/hysteria/ca.crt"
-    "/etc/hysteria/users.json"
-    "/etc/hysteria/config.json"
-    "/etc/hysteria/.configs.env"
-    "/etc/hysteria/core/scripts/telegrambot/.env"
-    "/etc/hysteria/core/scripts/singbox/.env"
-    "/etc/hysteria/core/scripts/normalsub/.env"
-    "/etc/hysteria/core/scripts/webpanel/.env"
-    "/etc/hysteria/core/scripts/webpanel/Caddyfile"
+    "$HYSTERIA_INSTALL_DIR/ca.key"
+    "$HYSTERIA_INSTALL_DIR/ca.crt"
+    "$HYSTERIA_INSTALL_DIR/users.json"
+    "$HYSTERIA_INSTALL_DIR/config.json"
+    "$HYSTERIA_INSTALL_DIR/.configs.env"
+    "$HYSTERIA_INSTALL_DIR/core/scripts/telegrambot/.env"
+    "$HYSTERIA_INSTALL_DIR/core/scripts/singbox/.env"
+    "$HYSTERIA_INSTALL_DIR/core/scripts/normalsub/.env"
+    "$HYSTERIA_INSTALL_DIR/core/scripts/webpanel/.env"
+    "$HYSTERIA_INSTALL_DIR/core/scripts/webpanel/Caddyfile"
 )
 
-if crontab -l 2>/dev/null | grep -q "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py" || \
-   crontab -l 2>/dev/null | grep -q "/etc/hysteria/core/scripts/hysteria2/kick.sh"; then
-    
-    echo "Removing existing Hysteria cronjobs..."
-    crontab -l | grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status" | \
-    grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py restart-hysteria2" | \
-    grep -v "source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria" | \
-    grep -v "/etc/hysteria/core/scripts/hysteria2/kick.sh" | \
-    crontab -
-    echo "Old Hysteria cronjobs removed successfully."
-else
-    echo "No existing Hysteria cronjobs found. Skipping removal."
-fi
-
-
-echo "Backing up files to $TEMP_DIR"
+info "Backing up configuration files to: $TEMP_DIR"
 for FILE in "${FILES[@]}"; do
-    mkdir -p "$TEMP_DIR/$(dirname "$FILE")"
-    cp "$FILE" "$TEMP_DIR/$FILE"
+    if [[ -f "$FILE" ]]; then
+        mkdir -p "$TEMP_DIR/$(dirname "$FILE")"
+        cp -p "$FILE" "$TEMP_DIR/$FILE"
+        success "Backed up: $FILE"
+    else
+        warn "File not found: $FILE"
+    fi
 done
 
-echo "Removing /etc/hysteria directory"
-rm -rf /etc/hysteria/
+# ========== Replace Installation ==========
+info "Removing old hysteria directory..."
+rm -rf "$HYSTERIA_INSTALL_DIR"
 
-echo "Cloning Blitz repository"
-git clone https://github.com/ReturnFI/Blitz /etc/hysteria
+info "Cloning Blitz repository (branch: $REPO_BRANCH)..."
+git clone -q -b "$REPO_BRANCH" "$REPO_URL" "$HYSTERIA_INSTALL_DIR"
 
-echo "Downloading geosite.dat and geoip.dat"
-wget -O /etc/hysteria/geosite.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geosite.dat >/dev/null 2>&1
-wget -O /etc/hysteria/geoip.dat https://raw.githubusercontent.com/Chocolate4U/Iran-v2ray-rules/release/geoip.dat >/dev/null 2>&1
+# ========== Download Geo Data ==========
+info "Downloading geosite.dat and geoip.dat..."
+wget -q -O "$HYSTERIA_INSTALL_DIR/geosite.dat" "$GEOSITE_URL"
+wget -q -O "$HYSTERIA_INSTALL_DIR/geoip.dat" "$GEOIP_URL"
+success "Geo data downloaded."
 
-echo "Restoring backup files"
+# ========== Restore Backup ==========
+info "Restoring configuration files..."
 for FILE in "${FILES[@]}"; do
-    cp "$TEMP_DIR/$FILE" "$FILE"
+    BACKUP="$TEMP_DIR/$FILE"
+    if [[ -f "$BACKUP" ]]; then
+        cp -p "$BACKUP" "$FILE"
+        success "Restored: $FILE"
+    else
+        warn "Missing backup file: $BACKUP"
+    fi
 done
 
-CONFIG_ENV="/etc/hysteria/.configs.env"
-if [ ! -f "$CONFIG_ENV" ]; then
-    echo ".configs.env not found, creating it with default values."
-    echo "SNI=bts.com" > "$CONFIG_ENV"
-fi
+# ========== Permissions ==========
+info "Setting ownership and permissions..."
+chown hysteria:hysteria "$HYSTERIA_INSTALL_DIR/ca.key" "$HYSTERIA_INSTALL_DIR/ca.crt"
+chmod 640 "$HYSTERIA_INSTALL_DIR/ca.key" "$HYSTERIA_INSTALL_DIR/ca.crt"
 
-export $(grep -v '^#' "$CONFIG_ENV" | xargs 2>/dev/null)
+chown -R hysteria:hysteria "$HYSTERIA_INSTALL_DIR/core/scripts/singbox"
+chown -R hysteria:hysteria "$HYSTERIA_INSTALL_DIR/core/scripts/telegrambot"
 
-if [[ -z "$IP4" ]]; then
-    echo "IP4 not found, fetching from ip.gs..."
-    IP4=$(curl -s -4 ip.gs || echo "")
-    echo "IP4=${IP4:-}" >> "$CONFIG_ENV"
-fi
+chmod +x "$HYSTERIA_INSTALL_DIR/core/scripts/hysteria2/user.sh"
+chmod +x "$HYSTERIA_INSTALL_DIR/core/scripts/hysteria2/kick.py"
 
-if [[ -z "$IP6" ]]; then
-    echo "IP6 not found, fetching from ip.gs..."
-    IP6=$(curl -s -6 ip.gs || echo "")
-    echo "IP6=${IP6:-}" >> "$CONFIG_ENV"
-fi
+# ========== Virtual Environment ==========
+info "Setting up virtual environment and installing dependencies..."
+cd "$HYSTERIA_INSTALL_DIR"
+python3 -m venv "$HYSTERIA_VENV_DIR"
+source "$HYSTERIA_VENV_DIR/bin/activate"
+pip install --upgrade pip >/dev/null
+pip install -r requirements.txt >/dev/null
+success "Python environment ready."
 
-NORMALSUB_ENV="/etc/hysteria/core/scripts/normalsub/.env"
-
-if [[ -f "$NORMALSUB_ENV" ]]; then
-    echo "Checking if SUBPATH exists in $NORMALSUB_ENV..."
-    
-    if ! grep -q '^SUBPATH=' "$NORMALSUB_ENV"; then
-        echo "SUBPATH not found, generating a new one..."
-        SUBPATH=$(pwgen -s 32 1)
-        echo -e "\nSUBPATH=$SUBPATH" >> "$NORMALSUB_ENV"
+# ========== Scheduler ==========
+info "Ensuring scheduler is set..."
+if source "$HYSTERIA_INSTALL_DIR/core/scripts/scheduler.sh"; then
+    if ! check_scheduler_service; then
+        if setup_hysteria_scheduler; then
+            success "Scheduler service configured."
+        else
+            warn "Scheduler setup failed, but continuing upgrade..."
+        fi
     else
-        echo "SUBPATH already exists, no changes made."
+        success "Scheduler already set."
     fi
 else
-    echo "$NORMALSUB_ENV not found. Skipping SUBPATH check."
+    warn "Failed to source scheduler.sh, continuing without scheduler setup..."
 fi
 
-CONFIG_FILE="/etc/hysteria/config.json"
-if [ -f "$CONFIG_FILE" ]; then
-    echo "Checking and converting pinSHA256 format in config.json"
-    
-    if grep -q "pinSHA256.*=" "$CONFIG_FILE"; then
-        echo "Converting pinSHA256 from base64 to hex format"
-        
-        HEX_FINGERPRINT=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in /etc/hysteria/ca.crt | sed 's/.*=//;s///g')
-        
-        sed -i "s|\"pinSHA256\": \"sha256/.*\"|\"pinSHA256\": \"$HEX_FINGERPRINT\"|" "$CONFIG_FILE"
-        
-        echo "pinSHA256 converted to hex format: $HEX_FINGERPRINT"
+# ========== Restart Services ==========
+SERVICES=(
+    hysteria-caddy.service
+    hysteria-server.service
+    hysteria-scheduler.service
+    hysteria-telegram-bot.service
+    hysteria-normal-sub.service
+    hysteria-webpanel.service
+    hysteria-ip-limit.service
+)
+
+info "Restarting available services..."
+for SERVICE in "${SERVICES[@]}"; do
+    if systemctl status "$SERVICE" &>/dev/null; then
+        systemctl restart "$SERVICE" && success "$SERVICE restarted." || warn "$SERVICE failed to restart."
     else
-        echo "pinSHA256 appears to already be in hex format or not present, no conversion needed"
+        warn "$SERVICE not found or not installed. Skipping..."
     fi
-fi
+done
 
-echo "Setting ownership and permissions"
-chown hysteria:hysteria /etc/hysteria/ca.key /etc/hysteria/ca.crt
-chmod 640 /etc/hysteria/ca.key /etc/hysteria/ca.crt
-chown -R hysteria:hysteria /etc/hysteria/core/scripts/singbox
-chown -R hysteria:hysteria /etc/hysteria/core/scripts/telegrambot
-
-echo "Setting execute permissions for user.sh and kick.py"
-chmod +x /etc/hysteria/core/scripts/hysteria2/user.sh
-chmod +x /etc/hysteria/core/scripts/hysteria2/kick.py
-
-cd /etc/hysteria
-python3 -m venv hysteria2_venv
-source /etc/hysteria/hysteria2_venv/bin/activate
-pip install -r requirements.txt
-
-echo "Restarting hysteria-caddy service"
-systemctl restart hysteria-caddy.service
-
-echo "Restarting other hysteria services"
-systemctl restart hysteria-server.service
-systemctl restart hysteria-telegram-bot.service
-systemctl restart hysteria-normal-sub.service
-systemctl restart hysteria-webpanel.service
-
-
-echo "Checking hysteria-server.service status"
+# ========== Final Check ==========
 if systemctl is-active --quiet hysteria-server.service; then
-    echo "Upgrade completed successfully"
+    success "🎉 Upgrade completed successfully!"
 else
-    echo "Upgrade failed: hysteria-server.service is not active"
+    warn "⚠️ hysteria-server.service is not active. Check logs if needed."
 fi
 
-echo "Adding new Hysteria cronjobs..."
-if ! crontab -l 2>/dev/null | grep -q "python3 /etc/hysteria/core/cli.py traffic-status --no-gui"; then
-    echo "Adding traffic-status cronjob..."
-    (crontab -l ; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status --no-gui'") | crontab -
-else
-    echo "Traffic-status cronjob already exists. Skipping."
-fi
-
-if ! crontab -l 2>/dev/null | grep -q "python3 /etc/hysteria/core/cli.py backup-hysteria"; then
-    echo "Adding backup-hysteria cronjob..."
-    (crontab -l ; echo "0 */6 * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria' >/dev/null 2>&1") | crontab -
-else
-    echo "Backup-hysteria cronjob already exists. Skipping."
-fi
-
+# ========== Launch Menu ==========
+sleep 10
 chmod +x menu.sh
 ./menu.sh

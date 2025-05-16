@@ -1,20 +1,25 @@
-# [1.9.2] - 2025-05-10
+# [1.9.3] - 2025-05-16
 
 ## ✨ Changed
 
-### ✨ Features
-🔄 feat: Merge traffic collection with user kicking for efficient enforcement
-🧪 feat(api): Add user existence validation to `add-user` endpoint
-🖥️ feat(frontend): Improve user management UI and error feedback in `users.html`
+### 🔧 System Improvements
 
-### 🧠 Refactors
-📦 refactor: Migrate Hysteria restore functionality to Python
-🌐 refactor: Implement SNI changer in Python
-🛠️ refactor: Port TCP Brutal installation to Python
-🎭 refactor: Rewrite masquerade management in Python3
-⚙️ refactor(cli): Enhance error propagation and handling in CLI scripts
+* 🕒 **feat:** Replace unreliable cron jobs with a systemd-based `HysteriaScheduler` service
+* 🔐 **feat:** Add file locking to prevent concurrent access issues with `users.json`
+* ⏱️ **feat:** Schedule:
 
-### 🛠️ System Enhancements
-🧩 update: Improve upgrade script with better cronjob management
-🛠️ enhance: Setup script with robust error handling and cleaner UX
-📦 update: Drop Debian 11 support to focus on supported OS versions
+  * Traffic updates every 1 minute
+  * Backups every 6 hours with isolated lock management
+* 📝 **feat:** Add detailed logging for easier troubleshooting and monitoring
+* 👤 **feat:** Automatically add a default user after fresh installation
+
+### 🛠️ Script Enhancements
+
+* 📦 **refactor:** Create shared scheduler install function (used in both `install.sh` & `upgrade.sh`)
+* ⚙️ **enhance:** Improve `upgrade.sh`:
+
+  * Add service checks
+  * Backup handling
+  * Color UI
+  * Robust error handling
+* 🧼 **fix:** Improve uninstall script to clean up `HysteriaScheduler` service completely

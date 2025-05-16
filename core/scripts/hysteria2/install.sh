@@ -2,6 +2,7 @@
 
 source /etc/hysteria/core/scripts/path.sh
 source /etc/hysteria/core/scripts/utils.sh
+source /etc/hysteria/core/scripts/scheduler.sh
 define_colors
 
 install_hysteria() {
@@ -82,11 +83,9 @@ install_hysteria() {
     chmod +x /etc/hysteria/core/scripts/hysteria2/user.sh
     chmod +x /etc/hysteria/core/scripts/hysteria2/kick.py
 
-    (crontab -l ; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py traffic-status --no-gui'") | crontab -
-    # (crontab -l ; echo "0 3 */3 * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py restart-hysteria2' >/dev/null 2>&1") | crontab -
-    (crontab -l ; echo "0 */6 * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/cli.py backup-hysteria' >/dev/null 2>&1") | crontab -
-    # (crontab -l ; echo "*/1 * * * * /bin/bash -c 'source /etc/hysteria/hysteria2_venv/bin/activate && python3 /etc/hysteria/core/scripts/hysteria2/kick.py' >/dev/null 2>&1") | crontab -
-
+    if ! check_scheduler_service; then
+        setup_hysteria_scheduler
+    fi
 }
 
 if systemctl is-active --quiet hysteria-server.service; then
@@ -100,6 +99,7 @@ else
 
     if systemctl is-active --quiet hysteria-server.service; then
         echo "Installation and configuration complete."
+        python3 $CLI_PATH add-user --username default --traffic-limit 30 --expiration-days 30
     else
         echo -e "${red}Error:${NC} Hysteria2 service is not active. Please check the logs for more details."
     fi

@@ -71,7 +71,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
 
 <br />
 <p align="center">
- <img src="https://github.com/user-attachments/assets/e9c6ab56-59b5-46a8-afcb-0e7f3e9f6330" width="1000" height="500">
+ <img src="https://github.com/user-attachments/assets/8b1e4a76-3deb-45f9-b65d-fdc67e2f5a69" width="800" height="500">
 </p>
 
 ---

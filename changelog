@@ -11,6 +11,7 @@
   * Traffic updates every 1 minute
   * Backups every 6 hours with isolated lock management
 * 📝 **feat:** Add detailed logging for easier troubleshooting and monitoring
+* 👤 **feat:** Automatically add a default user after fresh installation
 
 ### 🛠️ Script Enhancements
 

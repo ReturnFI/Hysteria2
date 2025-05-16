@@ -4,22 +4,27 @@
 
 ### 🔧 System Improvements
 
-* 🕒 **feat:** Replace unreliable cron jobs with a systemd-based `HysteriaScheduler` service
-* 🔐 **feat:** Add file locking to prevent concurrent access issues with `users.json`
-* ⏱️ **feat:** Schedule:
-
-  * Traffic updates every 1 minute
-  * Backups every 6 hours with isolated lock management
-* 📝 **feat:** Add detailed logging for easier troubleshooting and monitoring
-* 👤 **feat:** Automatically add a default user after fresh installation
+* 🕒 **feat:** Replace unreliable cron jobs with a systemd-based `HysteriaScheduler` service  
+* 🔐 **feat:** Add file locking to prevent concurrent access issues with `users.json`  
+* ⏱️ **feat:** Schedule:  
+  * Traffic updates every 1 minute  
+  * Backups every 6 hours with isolated lock management  
+* 📝 **feat:** Add detailed logging for easier troubleshooting and monitoring  
 
 ### 🛠️ Script Enhancements
 
-* 📦 **refactor:** Create shared scheduler install function (used in both `install.sh` & `upgrade.sh`)
-* ⚙️ **enhance:** Improve `upgrade.sh`:
+* 📦 **refactor:** Create shared scheduler install function (used in both `install.sh` & `upgrade.sh`)  
+* ⚙️ **enhance:** Improve `upgrade.sh`:  
+  * Add service checks  
+  * Backup handling  
+  * Color UI  
+  * Robust error handling  
+* 🧼 **fix:** Improve uninstall script to clean up `HysteriaScheduler` service completely  
+* 👤 **feat:** Add a default user after installation  
+* 🔁 **fix:** Automatically restart `normal-sub` service after changing its path  
 
-  * Add service checks
-  * Backup handling
-  * Color UI
-  * Robust error handling
-* 🧼 **fix:** Improve uninstall script to clean up `HysteriaScheduler` service completely
+### 🤖 Telegram Bot Improvements
+
+* ➕ **feat:** Show Normal-SUB link and QR code after adding user  
+* 🔁 If Normal-SUB is not available, fallback to Hysteria2 direct URI and QR  
+* 🧪 Improved input validation for username, traffic, and expiration  

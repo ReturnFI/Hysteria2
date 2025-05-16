@@ -254,7 +254,7 @@ RestartSec=5
 User=root
 
 [Install]
-WantedBy=multi-user.target.target
+WantedBy=multi-user.target
 EOF
     systemctl daemon-reload
     systemctl enable ${SERVICE_NAME}

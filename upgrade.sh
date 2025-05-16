@@ -97,12 +97,18 @@ success "Python environment ready."
 
 # ========== Scheduler ==========
 info "Ensuring scheduler is set..."
-source "$HYSTERIA_INSTALL_DIR/core/scripts/scheduler.sh"
-if ! check_scheduler_service; then
-    info "Installing Hysteria scheduler service..."
-    setup_hysteria_scheduler
+if source "$HYSTERIA_INSTALL_DIR/core/scripts/scheduler.sh"; then
+    if ! check_scheduler_service; then
+        if setup_hysteria_scheduler; then
+            success "Scheduler service configured."
+        else
+            warn "Scheduler setup failed, but continuing upgrade..."
+        fi
+    else
+        success "Scheduler already set."
+    fi
 else
-    error "Hysteria scheduler configuration failed critically. Upgrade cannot proceed."
+    warn "Failed to source scheduler.sh, continuing without scheduler setup..."
 fi
 
 # ========== Restart Services ==========

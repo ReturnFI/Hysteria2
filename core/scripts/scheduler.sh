@@ -27,7 +27,7 @@ EOF
     systemctl daemon-reload
     systemctl enable hysteria-scheduler.service
     systemctl start hysteria-scheduler.service
-    wait 2
+    # wait 2
     (crontab -l | grep -v "hysteria2_venv.*traffic-status" | grep -v "hysteria2_venv.*backup-hysteria") | crontab -
 
     # return 0

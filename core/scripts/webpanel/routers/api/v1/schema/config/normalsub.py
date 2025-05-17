@@ -1,9 +1,8 @@
-from pydantic import BaseModel
-
-# The StartInputBody is the same as in /hysteria/core/scripts/webpanel/routers/api/v1/schema/config/singbox.py but for /normalsub endpoint
-# I'm defining it separately because highly likely it'll be different
-
+from pydantic import BaseModel, Field
 
 class StartInputBody(BaseModel):
     domain: str
     port: int
+
+class EditSubPathInputBody(BaseModel):
+    subpath: str = Field(..., min_length=1, pattern=r"^[a-zA-Z0-9]+$", description="The new subpath, must be alphanumeric.")

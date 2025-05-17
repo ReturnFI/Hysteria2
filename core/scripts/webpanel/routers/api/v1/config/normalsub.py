@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from ..schema.response import DetailResponse
-from ..schema.config.normalsub import StartInputBody
+from ..schema.config.normalsub import StartInputBody, EditSubPathInputBody
 import cli_api
 
 router = APIRouter()
@@ -51,4 +51,27 @@ async def normal_sub_stop_api():
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
-# TODO: Maybe would be nice to have a status endpoint
+
+@router.put('/edit_subpath', response_model=DetailResponse, summary='Edit NormalSub Subpath')
+async def normal_sub_edit_subpath_api(body: EditSubPathInputBody):
+    """
+    Edits the subpath for the NormalSub service.
+
+    Args:
+        body (EditSubPathInputBody): The request body containing the new subpath.
+
+    Returns:
+        DetailResponse: A response object containing a success message indicating
+        that the NormalSub subpath has been updated successfully.
+
+    Raises:
+        HTTPException: If there is an error editing the NormalSub subpath, an
+        HTTPException with status code 400 and error details will be raised.
+    """
+    try:
+        cli_api.edit_normalsub_subpath(body.subpath)
+        return DetailResponse(detail=f'Normalsub subpath updated to {body.subpath} successfully.')
+    except cli_api.InvalidInputError as e:
+        raise HTTPException(status_code=422, detail=f'Validation Error: {str(e)}')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')

@@ -13,6 +13,8 @@ SCRIPT_DIR = '/etc/hysteria/core/scripts'
 CONFIG_FILE = '/etc/hysteria/config.json'
 CONFIG_ENV_FILE = '/etc/hysteria/.configs.env'
 WEBPANEL_ENV_FILE = '/etc/hysteria/core/scripts/webpanel/.env'
+NORMALSUB_ENV_FILE = '/etc/hysteria/core/scripts/normalsub/.env'
+
 
 class Command(Enum):
     '''Contains path to command's script'''
@@ -518,6 +520,18 @@ def edit_normalsub_subpath(new_subpath: str):
         raise InvalidInputError('Error: New subpath must contain only alphanumeric characters (a-z, A-Z, 0-9).')
     
     run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'edit_subpath', new_subpath])
+
+def get_normalsub_subpath() -> str | None:
+    '''Retrieves the current SUBPATH for the NormalSub service from its .env file.'''
+    try:
+        if not os.path.exists(NORMALSUB_ENV_FILE):
+            return None 
+        
+        env_vars = dotenv_values(NORMALSUB_ENV_FILE)
+        return env_vars.get('SUBPATH')
+    except Exception as e:
+        print(f"Error reading NormalSub .env file: {e}")
+        return None
 
 def stop_normalsub():
     '''Stops NormalSub.'''

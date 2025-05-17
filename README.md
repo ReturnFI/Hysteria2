@@ -22,15 +22,16 @@ A powerful and user-friendly management panel for Hysteria2 proxy server. Featur
 - 👤 User Management (Add, Edit, Reset, Remove)
 - ℹ️ Detailed User Information & Listing
 - 📊 Traffic Monitoring & Status
-- 🔗 User URI Generation (Singbox & Normal-Sub)
+- 🔗 User URI Generation (Normal-Sub)
 - 🛠️ Advanced Network Tools (TCP Brutal, WARP)
 - 🤖 Telegram Bot Integration
-- 🌐 Singbox & Normal-Sub Services Management
-- 🔒 Web Panel Management
+- 🌐 Normal-Sub(SUBPATH) Service Management
+- 🔒 Web Panel Management & API Access
 - 🔄 Port & SNI Configuration
 - 🛡️ Obfuscation Management
 - 🌍 Geo File Updates (Iran, China, Russia)
 - 🎭 Masquerade Configuration
+- 🛑 IP Limiter Service (Anti-Sharing)
 - 🚀 System Information & Service Status
 - ♻️ Hysteria2 Core Management (Restart, Update, Uninstall)
 - ✏️ IP Address Management (IPv4 and IPv6)

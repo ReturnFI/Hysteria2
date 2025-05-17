@@ -70,7 +70,6 @@ start_service() {
     systemctl daemon-reload
     systemctl enable hysteria-normal-sub.service > /dev/null 2>&1
     systemctl start hysteria-normal-sub.service > /dev/null 2>&1
-    # systemctl restart caddy.service > /dev/null 2>&1 # We stopped caddy service just after its installation
     systemctl daemon-reload > /dev/null 2>&1
 
     if systemctl is-active --quiet hysteria-normal-sub.service; then
@@ -85,12 +84,12 @@ stop_service() {
         source /etc/hysteria/core/scripts/normalsub/.env
     fi
 
-    # if [ -n "$HYSTERIA_DOMAIN" ]; then
-    #     echo -e "${yellow}Deleting SSL certificate for domain: $HYSTERIA_DOMAIN...${NC}"
-    #     certbot delete --cert-name "$HYSTERIA_DOMAIN" --non-interactive > /dev/null 2>&1
-    # else
-    #     echo -e "${red}HYSTERIA_DOMAIN not found in .env. Skipping certificate deletion.${NC}"
-    # fi
+    if [ -n "$HYSTERIA_DOMAIN" ]; then
+        echo -e "${yellow}Deleting SSL certificate for domain: $HYSTERIA_DOMAIN...${NC}"
+        certbot delete --cert-name "$HYSTERIA_DOMAIN" --non-interactive > /dev/null 2>&1
+    else
+        echo -e "${red}HYSTERIA_DOMAIN not found in .env. Skipping certificate deletion.${NC}"
+    fi
 
     systemctl stop hysteria-normal-sub.service > /dev/null 2>&1
     systemctl disable hysteria-normal-sub.service > /dev/null 2>&1
@@ -99,6 +98,38 @@ stop_service() {
     rm -f /etc/hysteria/core/scripts/normalsub/.env
 
     echo -e "${yellow}normalsub service stopped and disabled. .env file removed.${NC}"
+}
+
+edit_subpath() {
+    local new_path="$1"
+    local env_file="/etc/hysteria/core/scripts/normalsub/.env"
+
+    if [[ ! "$new_path" =~ ^[a-zA-Z0-9]+$ ]]; then
+        echo -e "${red}Error: New subpath must contain only alphanumeric characters (a-z, A-Z, 0-9) and cannot be empty.${NC}"
+        exit 1
+    fi
+
+    if [ ! -f "$env_file" ]; then
+        echo -e "${red}Error: .env file ($env_file) not found. Please run the start command first.${NC}"
+        exit 1
+    fi
+
+    if grep -q "^SUBPATH=" "$env_file"; then
+        sed -i "s|^SUBPATH=.*|SUBPATH=$new_path|" "$env_file"
+    else
+        echo "SUBPATH=$new_path" >> "$env_file"
+    fi
+    echo -e "${green}SUBPATH updated to $new_path in $env_file.${NC}"
+
+    echo -e "${yellow}Restarting hysteria-normal-sub service...${NC}"
+    systemctl daemon-reload
+    systemctl restart hysteria-normal-sub.service
+
+    if systemctl is-active --quiet hysteria-normal-sub.service; then
+        echo -e "${green}hysteria-normal-sub service restarted successfully.${NC}"
+    else
+        echo -e "${red}Error: hysteria-normal-sub service failed to restart. Please check logs.${NC}"
+    fi
 }
 
 case "$1" in
@@ -112,10 +143,15 @@ case "$1" in
     stop)
         stop_service
         ;;
+    edit_subpath)
+        if [ -z "$2" ]; then
+            echo -e "${red}Usage: $0 edit_subpath <NEW_SUBPATH> ${NC}"
+            exit 1
+        fi
+        edit_subpath "$2"
+        ;;
     *)
-        echo -e "${red}Usage: $0 {start|stop} <DOMAIN> <PORT> ${NC}"
+        echo -e "${red}Usage: $0 {start <DOMAIN> <PORT> | stop | edit_subpath <NEW_SUBPATH>} ${NC}"
         exit 1
         ;;
 esac
-
-define_colors

@@ -510,6 +510,14 @@ def start_normalsub(domain: str, port: int):
         raise InvalidInputError('Error: Both --domain and --port are required for the start action.')
     run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'start', domain, str(port)])
 
+def edit_normalsub_subpath(new_subpath: str):
+    '''Edits the subpath for NormalSub service.'''
+    if not new_subpath:
+        raise InvalidInputError('Error: New subpath cannot be empty.')
+    if not new_subpath.isalnum():
+        raise InvalidInputError('Error: New subpath must contain only alphanumeric characters (a-z, A-Z, 0-9).')
+    
+    run_cmd(['bash', Command.INSTALL_NORMALSUB.value, 'edit_subpath', new_subpath])
 
 def stop_normalsub():
     '''Stops NormalSub.'''

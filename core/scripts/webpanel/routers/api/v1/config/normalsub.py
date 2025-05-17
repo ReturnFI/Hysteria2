@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from ..schema.response import DetailResponse
-from ..schema.config.normalsub import StartInputBody, EditSubPathInputBody
+from ..schema.config.normalsub import StartInputBody, EditSubPathInputBody, GetSubPathResponse
 import cli_api
 
 router = APIRouter()
@@ -75,3 +75,14 @@ async def normal_sub_edit_subpath_api(body: EditSubPathInputBody):
         raise HTTPException(status_code=422, detail=f'Validation Error: {str(e)}')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+
+@router.get('/subpath', response_model=GetSubPathResponse, summary='Get Current NormalSub Subpath')
+async def normal_sub_get_subpath_api():
+    """
+    Retrieves the current subpath for the NormalSub service.
+    """
+    try:
+        current_subpath = cli_api.get_normalsub_subpath()
+        return GetSubPathResponse(subpath=current_subpath)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Error retrieving subpath: {str(e)}')

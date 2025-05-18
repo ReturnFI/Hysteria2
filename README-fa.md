@@ -41,18 +41,6 @@
 - ♻️ مدیریت هسته Hysteria2 (ری‌استارت، به‌روزرسانی، حذف)  
 - ✏️ مدیریت آدرس‌های IP (IPv4 و IPv6)  
 
----
-
-## 💎 حامی مالی
-<div align="center">
-  
-[![Petrosky Hosting](https://img.shields.io/badge/Recommended_Host-Petrosky-blue?logo=server&logoColor=white)](https://client.petrosky.io/aff.php?aff=344)
-
-[**هاستینگی برای تمام مسیر شما!**](https://client.petrosky.io/aff.php?aff=344) 👉 
-
-*سرورهای با کیفیت بهینه‌سازی شده برای Hysteria2 و اپلیکیشن‌های پروکسی*
-</div>
-
 
 
 ## 📋 راهنمای شروع سریع  
@@ -65,42 +53,21 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/install.sh)
 
 **نیازی به اجرای مجدد دستور نصب نیست.**  
 
-### به‌روزرسانی به آخرین نسخه  
-```bash
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
-```
-
----
-
-## 📚 مستندات  
-
-برای اطلاعات بیشتر و نحوه استفاده پیشرفته، به مستندات مراجعه کنید:  
-
- [مستندات Blitz](https://returnfi.github.io/Hys2-docs/)
 
 ---
 
 
-<br />
-<p align="center">
- <img src="https://github.com/user-attachments/assets/8b1e4a76-3deb-45f9-b65d-fdc67e2f5a69" width="800" height="500">
-</p>
 
----
+## 💎 حامی مالی
+<div align="center">
+  
+[![Petrosky Hosting](https://img.shields.io/badge/Recommended_Host-Petrosky-blue?logo=server&logoColor=white)](https://client.petrosky.io/aff.php?aff=344)
 
-## 🔄 سازگاری با کلاینت‌ها  
+[**هاستینگی برای تمام مسیر شما!**](https://client.petrosky.io/aff.php?aff=344) 👉 
 
-| کلاینت        | نسخه‌های پشتیبانی‌شده          | سیستم‌عامل‌های پشتیبانی‌شده                                             |
-|---------------|------------------------------|------------------------------------------------------------------------|
-| **v2rayN**    | آخرین نسخه                   | Windows, Linux, macOS                                                 |
-| **v2rayNG**   | آخرین نسخه                   | Android                                                               |
-| **SingBox**   | 1.10.5 (21 دسامبر 2024)      | Linux, macOS, iOS, Android                                            |
-| **Hiddify**   | آخرین نسخه                   | Windows, Linux, macOS, iOS, Android                                   |
-| **Sterisand** | آخرین نسخه                   | iOS                                                                   |
-| **Nekobox**   | آخرین نسخه                   | Android                                                               |
-| **Nekoray**   | آخرین نسخه                   | Windows, Linux                                                        |
+*سرورهای با کیفیت بهینه‌سازی شده برای Hysteria2 و اپلیکیشن‌های پروکسی*
+</div>
 
----
 
 ## 🤝 مشارکت  
 
@@ -110,7 +77,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
 
 از شما برای کمک به بهبود این پروژه سپاسگزاریم! 🙌  
 
----
+
 
 ## ⚠️ سلب مسئولیت  
 
@@ -121,7 +88,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
 - حفظ امنیت سرور  
 - محافظت از حریم خصوصی کاربران  
 
----
+
 
 ## 🙏 تقدیر و تشکر  
 
@@ -129,7 +96,7 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
 - اعضای جامعه  
 - [@Iam54r1n4](https://github.com/Iam54r1n4)
 
----
+
 
 <p align="center">ساخته شده با ❤️</p>
 </div>

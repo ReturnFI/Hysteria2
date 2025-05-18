@@ -421,10 +421,13 @@ def singbox(action: str, domain: str, port: int):
 
 
 @cli.command('normal-sub')
-@click.option('--action', '-a', required=True, help='Action to perform: start or stop', type=click.Choice(['start', 'stop'], case_sensitive=False))
-@click.option('--domain', '-d', required=False, help='Domain name for SSL', type=str)
-@click.option('--port', '-p', required=False, help='Port number for NormalSub service', type=int)
-def normalsub(action: str, domain: str, port: int):
+@click.option('--action', '-a', required=True, 
+              type=click.Choice(['start', 'stop', 'edit_subpath'], case_sensitive=False),
+              help='Action to perform: start, stop, or edit_subpath')
+@click.option('--domain', '-d', required=False, help='Domain name for SSL (for start action)', type=str)
+@click.option('--port', '-p', required=False, help='Port number for NormalSub service (for start action)', type=int)
+@click.option('--subpath', '-sp', required=False, help='New subpath (alphanumeric, for edit_subpath action)', type=str)
+def normalsub(action: str, domain: str, port: int, subpath: str):
     try:
         if action == 'start':
             if not domain or not port:
@@ -434,6 +437,11 @@ def normalsub(action: str, domain: str, port: int):
         elif action == 'stop':
             cli_api.stop_normalsub()
             click.echo(f'NormalSub stopped successfully.')
+        elif action == 'edit_subpath':
+            if not subpath:
+                raise click.UsageError('Error: --subpath is required for the edit_subpath action.')
+            cli_api.edit_normalsub_subpath(subpath)
+            click.echo(f'NormalSub subpath updated to {subpath} successfully.')
     except Exception as e:
         click.echo(f'{e}', err=True)
 

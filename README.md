@@ -36,7 +36,17 @@ A powerful and user-friendly management panel for Hysteria2 proxy server. Featur
 - ♻️ Hysteria2 Core Management (Restart, Update, Uninstall)
 - ✏️ IP Address Management (IPv4 and IPv6)
 
+## 💎 Sponsorship
 
+<div align="center">
+  
+[![Petrosky Hosting](https://img.shields.io/badge/Recommended_Host-Petrosky-blue?logo=server&logoColor=white)](https://client.petrosky.io/aff.php?aff=344)
+
+👉 [**A hosting for your entire journey!**](https://client.petrosky.io/aff.php?aff=344)
+
+*Quality servers optimized for Hysteria2 and proxy applications*
+
+</div>
 
 ## 📋 Quick Start Guide
 

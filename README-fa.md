@@ -43,6 +43,18 @@
 
 ---
 
+## 💎 حامی مالی
+<div align="center">
+  
+[![Petrosky Hosting](https://img.shields.io/badge/Recommended_Host-Petrosky-blue?logo=server&logoColor=white)](https://client.petrosky.io/aff.php?aff=344)
+
+[**هاستینگی برای تمام مسیر شما!**](https://client.petrosky.io/aff.php?aff=344) 👉 
+
+*سرورهای با کیفیت بهینه‌سازی شده برای Hysteria2 و اپلیکیشن‌های پروکسی*
+</div>
+
+
+
 ## 📋 راهنمای شروع سریع  
 
 ### نصب با یک کلیک  

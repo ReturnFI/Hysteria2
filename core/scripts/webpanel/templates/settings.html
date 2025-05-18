@@ -56,7 +56,7 @@
                                     aria-controls='ip-limit' aria-selected='false'><i class="fas fa-user-slash"></i>
                                     IP Limit</a>
                             </li>
-                            <li class='nav-item'>
+                             <li class='nav-item'>
                                 <a class='nav-link' id='decoy-tab' data-toggle='pill' href='#decoy' role='tab'
                                     aria-controls='decoy' aria-selected='false'><i class="fas fa-mask"></i>
                                     Decoy Site</a>
@@ -71,14 +71,18 @@
                                 <ul class='nav nav-tabs' id='subs-tabs' role='tablist'>
                                     <li class='nav-item'>
                                         <a class='nav-link active' id='normal-tab' data-toggle='tab' href='#normal' role='tab'
-                                            aria-controls='normal' aria-selected='false'><strong>Normal</strong></a>
+                                            aria-controls='normal' aria-selected='true'><strong>Normal</strong></a>
+                                    </li>
+                                    <li class='nav-item normal-sub-config-tab-li' style="display: none;"> <!-- Initially hidden -->
+                                        <a class='nav-link' id='normal-sub-config-link-tab' data-toggle='tab' href='#normal-sub-config-content' role='tab'
+                                            aria-controls='normal-sub-config-content' aria-selected='false'><strong>Configure</strong></a>
                                     </li>
                                 </ul>
                                 <div class='tab-content' id='subs-tabs-content'>
                                      <br>
-                                    <!-- Normal Sub Tab -->
+                                    <!-- Normal Sub Service Control Tab -->
                                     <div class='tab-pane fade show active' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
-                                        <form id="normal">
+                                        <form id="normal_sub_service_form">
                                             <div class='form-group'>
                                                 <label for='normal_domain'>Domain:</label>
                                                 <input type='text' class='form-control' id='normal_domain'
@@ -101,7 +105,23 @@
                                             </button>
                                             <button id="normal_stop" type='button' class='btn btn-danger'
                                                 style="display: none;">Stop</button>
-
+                                        </form>
+                                    </div>
+                                    <!-- Normal Sub Configuration Tab -->
+                                    <div class='tab-pane fade' id='normal-sub-config-content' role='tabpanel' aria-labelledby='normal-sub-config-link-tab'>
+                                        <form id="normal_sub_config_form">
+                                            <div class='form-group'>
+                                                <label for='normal_subpath_input'>Subpath:</label>
+                                                <input type='text' class='form-control' id='normal_subpath_input'
+                                                    placeholder='Enter subpath (e.g., mysub)'>
+                                                <div class="invalid-feedback">
+                                                    Please enter a valid subpath (alphanumeric characters only, e.g., mysub).
+                                                </div>
+                                            </div>
+                                            <button id="normal_subpath_save_btn" type='button' class='btn btn-primary'>
+                                               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                                Save Subpath
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
@@ -109,7 +129,7 @@
 
                             <!-- Telegram Bot Tab -->
                             <div class='tab-pane fade' id='telegram' role='tabpanel' aria-labelledby='telegram-tab'>
-                                <form id="telegram">
+                                <form id="telegram_form">
                                     <div class='form-group'>
                                         <label for='telegram_api_token'>API Token:</label>
                                         <input type='text' class='form-control' id='telegram_api_token'
@@ -135,7 +155,7 @@
 
                             <!-- Port Tab -->
                             <div class='tab-pane fade' id='port' role='tabpanel' aria-labelledby='port-tab'>
-                                <form id="port">
+                                <form id="port_form">
                                     <div class='form-group'>
                                         <label for='hysteria_port'>Port:</label>
                                         <input type='text' class='form-control' id='hysteria_port'
@@ -150,7 +170,7 @@
 
                             <!-- SNI Tab -->
                             <div class='tab-pane fade' id='sni' role='tabpanel' aria-labelledby='sni-tab'>
-                                <form id="sni">
+                                <form id="sni_form">
                                     <div class='form-group'>
                                         <label for='sni_domain'>Domain:</label>
                                         <input type='text' class='form-control' id='sni_domain'
@@ -165,7 +185,7 @@
 
                             <!-- Change IP Tab -->
                             <div class='tab-pane fade' id='change_ip' role='tabpanel' aria-labelledby='ip-tab'>
-                                <form id="change_ip">
+                                <form id="change_ip_form">
                                     <div class='form-group'>
                                         <label for='ipv4'>IPv4:</label>
                                         <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4 or Domain'
@@ -231,7 +251,7 @@
 
                                     <!-- IP Limit Configuration Sub Tab -->
                                     <div class='tab-pane fade' id='ip-limit-config-content' role='tabpanel' aria-labelledby='ip-limit-config-tab'>
-                                        <form id="ip_limit_config">
+                                        <form id="ip_limit_config_form">
                                             <div class='form-group'>
                                                 <label for='block_duration'>Block Duration (seconds):</label>
                                                 <input type='text' class='form-control' id='block_duration'
@@ -253,8 +273,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Decoy Site Tab -->
+                             <!-- Decoy Site Tab -->
                             <div class='tab-pane fade' id='decoy' role='tabpanel' aria-labelledby='decoy-tab'>
                                 <form id="decoy_form">
                                     <div class='form-group'>
@@ -328,6 +347,12 @@
             return /^[0-9]+$/.test(port) && parseInt(port) > 0 && parseInt(port) <= 65535;
         }
 
+        function isValidSubPath(subpath) {
+            if (!subpath) return false;
+            return /^[a-zA-Z0-9]+$/.test(subpath);
+        }
+
+
         function isValidIPorDomain(input) {
             if (!input) return true;
 
@@ -365,7 +390,7 @@
             });
         }
 
-        function sendRequest(url, type, data, successMessage, buttonSelector, showReload = true) {
+        function sendRequest(url, type, data, successMessage, buttonSelector, showReload = true, postSuccessCallback = null) {
             $.ajax({
                 url: url,
                 type: type,
@@ -378,13 +403,15 @@
                     }
                 },
                 success: function (response) {
-                    if (showReload) {
-                        Swal.fire("Success!", successMessage, "success").then(() => {
+                    Swal.fire("Success!", successMessage, "success").then(() => {
+                        if (showReload) {
                             location.reload();
-                        });
-                    } else {
-                        Swal.fire("Success!", successMessage, "success");
-                    }
+                        } else {
+                            if (postSuccessCallback) {
+                                postSuccessCallback(response);
+                            }
+                        }
+                    });
                     console.log("Success Response:", response);
                 },
                 error: function (xhr, status, error) {
@@ -393,7 +420,7 @@
                         errorMessage = xhr.responseJSON.detail;
                     }
                     Swal.fire("Error!", errorMessage, "error");
-                    console.error("AJAX Error:", status, error, xhr.responseText); 
+                    console.error("AJAX Error:", status, error, xhr.responseText);
                 },
                 complete: function() {
                     if (buttonSelector) {
@@ -411,10 +438,12 @@
                 const id = input.attr('id');
                 let fieldValid = true;
 
-                if (id.includes('domain')) {
+                if (id === 'normal_domain' || id === 'sni_domain' || id === 'decoy_domain') {
                     fieldValid = isValidDomain(input.val());
-                } else if (id.includes('port')) {
+                } else if (id === 'normal_port' || id === 'hysteria_port') {
                     fieldValid = isValidPort(input.val());
+                } else if (id === 'normal_subpath_input') {
+                    fieldValid = isValidSubPath(input.val());
                 } else if (id === 'ipv4' || id === 'ipv6') {
                     fieldValid = (input.val().trim() === '') ? true : isValidIPorDomain(input.val());
                 } else if (id === 'block_duration' || id === 'max_ips') {
@@ -427,13 +456,14 @@
 
                 if (!fieldValid) {
                     input.addClass('is-invalid');
-                    isValid = false; 
+                    isValid = false;
                 } else {
                     input.removeClass('is-invalid');
                 }
             });
-            return isValid; 
+            return isValid;
         }
+
 
         function initUI() {
             $.ajax({
@@ -481,47 +511,110 @@
                     console.error("Failed to fetch SNI domain:", error, xhr.responseText);
                 }
             });
-
-            }
+        }
 
         function updateServiceUI(data) {
              const servicesMap = {
-                "hysteria_telegram_bot": "#telegram",
-                "hysteria_normal_sub": "#normal",
-                "hysteria_iplimit": "#ip-limit-service" 
+                "hysteria_telegram_bot": "#telegram_form",
+                "hysteria_normal_sub": "#normal_sub_service_form",
+                "hysteria_iplimit": "#ip-limit-service"
             };
 
             Object.keys(servicesMap).forEach(service => {
-                let selector = servicesMap[service];
-                let isRunning = data[service]; 
+                let formSelector = servicesMap[service];
+                let isRunning = data[service];
 
-                if (isRunning) {
-                    $(selector + " .form-group").hide();
-                    $(selector + " .btn-success").hide();
-                    $(selector + " .btn-danger").show();
-                    if ($(selector + " .alert-info").length === 0) {
-                        $(selector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
+                if (service === "hysteria_normal_sub") {
+                    const $normalFormGroups = $("#normal_sub_service_form .form-group");
+                    const $normalStartBtn = $("#normal_start");
+                    const $normalStopBtn = $("#normal_stop");
+                    const $normalAlert = $("#normal_sub_service_form .alert-info");
+                    const $normalSubConfigTabLi = $(".normal-sub-config-tab-li");
+
+                    if (isRunning) {
+                        $normalFormGroups.hide();
+                        $normalStartBtn.hide();
+                        $normalStopBtn.show();
+                        if ($normalAlert.length === 0) {
+                            $("#normal_sub_service_form").prepend(`<div class='alert alert-info'>NormalSub service is running. You can stop it or configure its subpath.</div>`);
+                        }
+                        $normalSubConfigTabLi.show();
+                        fetchNormalSubPath();
+                    } else {
+                        $normalFormGroups.show();
+                        $normalStartBtn.show();
+                        $normalStopBtn.hide();
+                        $("#normal_sub_service_form .alert-info").remove();
+                        $normalSubConfigTabLi.hide();
+                        if ($('#normal-sub-config-link-tab').hasClass('active')) {
+                            $('#normal-tab').tab('show');
+                        }
+                        $("#normal_subpath_input").val(""); 
+                        $("#normal_subpath_input").removeClass('is-invalid');
                     }
-
-                    if(service === "hysteria_iplimit"){
+                } else if (service === "hysteria_iplimit") {
+                    if (isRunning) {
                        $("#ip_limit_start").hide();
                        $("#ip_limit_stop").show();
                        $(".ip-limit-config-tab-li").show();
-                    }
-
-                } else {
-                     $(selector + " .form-group").show(); 
-                    $(selector + " .btn-success").show(); 
-                    $(selector + " .btn-danger").hide(); 
-                    $(selector + " .alert-info").remove(); 
-
-                     if(service === "hysteria_iplimit"){
+                        // TODO: Fetch IP Limit Config and populate fields
+                    } else {
                        $("#ip_limit_start").show();
                        $("#ip_limit_stop").hide();
                        $(".ip-limit-config-tab-li").hide();
                        $('#ip-limit-service-tab').tab('show');
+                        // TODO: Clear IP Limit Config fields
+                    }
+                } else { 
+                    if (isRunning) {
+                        $(formSelector + " .form-group").hide();
+                        $(formSelector + " .btn-success").hide();
+                        $(formSelector + " .btn-danger").show();
+                        if ($(formSelector + " .alert-info").length === 0) { 
+                           $(formSelector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
+                        }
+                    } else {
+                        $(formSelector + " .form-group").show();
+                        $(formSelector + " .btn-success").show();
+                        $(formSelector + " .btn-danger").hide();
+                        $(formSelector + " .alert-info").remove();
                     }
                 }
+            });
+        }
+
+        function fetchNormalSubPath() {
+            $.ajax({
+                url: "{{ url_for('normal_sub_get_subpath_api') }}",
+                type: "GET",
+                success: function (data) {
+                    $("#normal_subpath_input").val(data.subpath || "");
+                    if (data.subpath) { 
+                        $("#normal_subpath_input").removeClass('is-invalid');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to fetch NormalSub subpath:", error, xhr.responseText);
+                    $("#normal_subpath_input").val("");
+                    // Swal.fire("Error!", "Could not fetch NormalSub subpath.", "error"); // Avoid too many popups during init
+                }
+            });
+        }
+
+        function editNormalSubPath() {
+            if (!validateForm('normal_sub_config_form')) return;
+            const subpath = $("#normal_subpath_input").val();
+
+            confirmAction("change the NormalSub subpath to '" + subpath + "'", function () {
+                sendRequest(
+                    "{{ url_for('normal_sub_edit_subpath_api') }}",
+                    "PUT",
+                    { subpath: subpath },
+                    "NormalSub subpath updated successfully!",
+                    "#normal_subpath_save_btn",
+                    false, 
+                    fetchNormalSubPath 
+                );
             });
         }
 
@@ -537,9 +630,9 @@
                     { domain: domain, decoy_path: path },
                     "Decoy site setup initiated successfully!",
                     "#decoy_setup",
-                    false
+                    false,
+                    function() { setTimeout(fetchDecoyStatus, 1000); }
                 );
-                setTimeout(fetchDecoyStatus, 2000);
             });
         }
 
@@ -547,13 +640,13 @@
             confirmAction("stop the decoy site", function () {
                 sendRequest(
                     "{{ url_for('stop_decoy_api') }}",
-                    "POST", 
+                    "POST",
                     null,
                     "Decoy site stop initiated successfully!",
-                    "#decoy_stop", 
-                    false 
+                    "#decoy_stop",
+                    false,
+                    function() { setTimeout(fetchDecoyStatus, 1000); } 
                 );
-                setTimeout(fetchDecoyStatus, 2000);
             });
         }
 
@@ -562,7 +655,7 @@
                 url: "{{ url_for('get_decoy_status_api') }}",
                 type: "GET",
                 success: function (data) {
-                    updateDecoyStatusUI(data); 
+                    updateDecoyStatusUI(data);
                 },
                 error: function (xhr, status, error) {
                     $("#decoy_status_message").html('<div class="alert alert-danger">Failed to fetch decoy status.</div>');
@@ -572,30 +665,37 @@
         }
 
         function updateDecoyStatusUI(data) {
+            const $form = $("#decoy_form");
+            const $formGroups = $form.find(".form-group");
+            const $setupBtn = $("#decoy_setup");
+            const $stopBtn = $("#decoy_stop");
+            const $alertInfo = $form.find(".alert-info");
+
             if (data.active) {
-                $("#decoy_form .form-group").hide(); 
-                $("#decoy_setup").hide();
-                $("#decoy_stop").show(); 
-                $("#decoy_form .alert-info").remove();
-                 if ($("#decoy_form .alert-info").length === 0) {
-                    $("#decoy_form").prepend(`<div class='alert alert-info'>Decoy site is running. You can stop it if needed.</div>`);
-                 }
+                $formGroups.hide();
+                $setupBtn.hide();
+                $stopBtn.show();
+                if ($alertInfo.length === 0) {
+                    $form.prepend(`<div class='alert alert-info'>Decoy site is running. You can stop it if needed.</div>`);
+                } else {
+                    $alertInfo.text('Decoy site is running. You can stop it if needed.');
+                }
                 $("#decoy_status_message").html(`
                     <strong>Status:</strong> <span class="text-success">Active</span><br>
                     <strong>Path:</strong> ${data.path || 'N/A'}
                 `);
             } else {
-                $("#decoy_form .form-group").show(); 
-                $("#decoy_setup").show();
-                $("#decoy_stop").hide();
-                $("#decoy_form .alert-info").remove();
+                $formGroups.show();
+                $setupBtn.show();
+                $stopBtn.hide();
+                $alertInfo.remove();
                 $("#decoy_status_message").html('<strong>Status:</strong> <span class="text-danger">Not Active</span>');
             }
         }
 
 
         function startTelegram() {
-            if (!validateForm('telegram')) return;
+            if (!validateForm('telegram_form')) return;
             const apiToken = $("#telegram_api_token").val();
             const adminId = $("#telegram_admin_id").val();
             confirmAction("start the Telegram bot", function () {
@@ -622,7 +722,7 @@
         }
 
         function startNormal() {
-            if (!validateForm('normal')) return;
+            if (!validateForm('normal_sub_service_form')) return;
             const domain = $("#normal_domain").val();
             const port = $("#normal_port").val();
             confirmAction("start the normal subscription", function () {
@@ -649,7 +749,7 @@
         }
 
         function changePort() {
-            if (!validateForm('port')) return;
+            if (!validateForm('port_form')) return;
             const port = $("#hysteria_port").val();
             const baseUrl = "{{ url_for('set_port_api', port='PORT_PLACEHOLDER') }}";
             const url = baseUrl.replace("PORT_PLACEHOLDER", port);
@@ -659,7 +759,7 @@
         }
 
         function changeSNI() {
-            if (!validateForm('sni')) return;
+            if (!validateForm('sni_form')) return;
             const domain = $("#sni_domain").val();
             const baseUrl = "{{ url_for('set_sni_api', sni='SNI_PLACEHOLDER') }}";
             const url = baseUrl.replace("SNI_PLACEHOLDER", domain);
@@ -669,8 +769,8 @@
         }
 
         function saveIP() {
-            if (!validateForm('change_ip')) return;
-            const ipv4 = $("#ipv4").val().trim() || null; 
+            if (!validateForm('change_ip_form')) return;
+            const ipv4 = $("#ipv4").val().trim() || null;
             const ipv6 = $("#ipv6").val().trim() || null;
             confirmAction("save the new IP settings", function () {
                 sendRequest(
@@ -713,7 +813,7 @@
                 progressBar.style.width = '0%';
                 progressBar.setAttribute('aria-valuenow', 0);
                 statusDiv.innerText = 'Uploading...';
-                statusDiv.className = 'mt-2'; 
+                statusDiv.className = 'mt-2';
 
                 $.ajax({
                     url: "{{ url_for('restore_api') }}",
@@ -783,14 +883,14 @@
         }
 
         function configIPLimit() {
-            if (!validateForm('ip_limit_config')) return;
+            if (!validateForm('ip_limit_config_form')) return; // Ensure correct form ID
             const blockDuration = $("#block_duration").val();
             const maxIps = $("#max_ips").val();
              confirmAction("save the IP Limit configuration", function () {
                 sendRequest(
                     "{{ url_for('config_ip_limit_api') }}",
                     "POST",
-                    { block_duration: parseInt(blockDuration), max_ips: parseInt(maxIps) }, 
+                    { block_duration: parseInt(blockDuration), max_ips: parseInt(maxIps) },
                     "IP Limit configuration saved successfully!",
                     "#ip_limit_change_config",
                     false 
@@ -804,6 +904,7 @@
         $("#telegram_stop").on("click", stopTelegram);
         $("#normal_start").on("click", startNormal);
         $("#normal_stop").on("click", stopNormal);
+        $("#normal_subpath_save_btn").on("click", editNormalSubPath);
         $("#port_change").on("click", changePort);
         $("#sni_change").on("click", changeSNI);
         $("#ip_change").on("click", saveIP);
@@ -814,7 +915,6 @@
         $("#ip_limit_change_config").on("click", configIPLimit);
         $("#decoy_setup").on("click", setupDecoy);
         $("#decoy_stop").on("click", stopDecoy);
-
 
 
         $('#normal_domain, #sni_domain, #decoy_domain').on('input', function () {
@@ -829,6 +929,16 @@
 
         $('#normal_port, #hysteria_port').on('input', function () {
              if (isValidPort($(this).val())) {
+                $(this).removeClass('is-invalid');
+            } else if ($(this).val().trim() !== "") {
+                $(this).addClass('is-invalid');
+            } else {
+                 $(this).removeClass('is-invalid');
+            }
+        });
+
+        $('#normal_subpath_input').on('input', function () {
+             if (isValidSubPath($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
@@ -852,8 +962,7 @@
                  $(this).addClass('is-invalid');
             }
         });
-
-        $('#block_duration, #max_ips').on('input', function () {
+         $('#block_duration, #max_ips').on('input', function () {
             if (isValidPositiveNumber($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else if ($(this).val().trim() !== "") {
@@ -869,10 +978,9 @@
             } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
             } else {
-                $(this).removeClass('is-invalid');
+                 $(this).removeClass('is-invalid');
             }
         });
-
 
     });
 </script>

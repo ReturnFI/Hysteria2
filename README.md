@@ -48,11 +48,6 @@ After installation, use `hys2` to launch the management panel.
 
 There is no need to execute the installation command again.
 
-### Upgrade to Latest Version
-```bash
-bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
-```
-
 ---
 
 ## 💎 Sponsorship

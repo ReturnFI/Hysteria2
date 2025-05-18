@@ -1,30 +1,23 @@
-# [1.9.3] - 2025-05-16
+# [1.10.0] - 2025-05-18
 
-## ✨ Changed
+## ✨ New Features
 
-### 🔧 System Improvements
+### ⚙️ NormalSub Configuration Enhancements
 
-* 🕒 **feat:** Replace unreliable cron jobs with a systemd-based `HysteriaScheduler` service  
-* 🔐 **feat:** Add file locking to prevent concurrent access issues with `users.json`  
-* ⏱️ **feat:** Schedule:  
-  * Traffic updates every 1 minute  
-  * Backups every 6 hours with isolated lock management  
-* 📝 **feat:** Add detailed logging for easier troubleshooting and monitoring  
+* 🛠️ **feat:** Add NormalSub subpath editing via Settings UI  
+  - New 'Configure' tab in the Settings panel (visible only if NormalSub is active)  
+  - Real-time client-side validation and live subpath editing  
 
-### 🛠️ Script Enhancements
+* 🔌 **feat:** Add API endpoints  
+  - `GET /api/v1/config/normalsub/subpath`: Fetch current subpath  
+  - `PUT /api/v1/config/normalsub/edit_subpath`: Update the subpath securely  
 
-* 📦 **refactor:** Create shared scheduler install function (used in both `install.sh` & `upgrade.sh`)  
-* ⚙️ **enhance:** Improve `upgrade.sh`:  
-  * Add service checks  
-  * Backup handling  
-  * Color UI  
-  * Robust error handling  
-* 🧼 **fix:** Improve uninstall script to clean up `HysteriaScheduler` service completely  
-* 👤 **feat:** Add a default user after installation  
-* 🔁 **fix:** Automatically restart `normal-sub` service after changing its path  
+* 🖥️ **feat:** Add CLI command support  
+  - `edit_subpath` option added to CLI and `normal-sub` command  
+  - Automatically restarts the service after applying changes  
 
-### 🤖 Telegram Bot Improvements
+* 🔧 **feat:** Add backend CLI + shell logic to update `.env` subpath for NormalSub  
 
-* ➕ **feat:** Show Normal-SUB link and QR code after adding user  
-* 🔁 If Normal-SUB is not available, fallback to Hysteria2 direct URI and QR  
-* 🧪 Improved input validation for username, traffic, and expiration  
+## 📄 Documentation
+
+* 📚 **docs:** Add sponsorship section with referral link to README  

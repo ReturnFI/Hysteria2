@@ -36,17 +36,7 @@ A powerful and user-friendly management panel for Hysteria2 proxy server. Featur
 - ♻️ Hysteria2 Core Management (Restart, Update, Uninstall)
 - ✏️ IP Address Management (IPv4 and IPv6)
 
-## 💎 Sponsorship
 
-<div align="center">
-  
-[![Petrosky Hosting](https://img.shields.io/badge/Recommended_Host-Petrosky-blue?logo=server&logoColor=white)](https://client.petrosky.io/aff.php?aff=344)
-
-👉 [**A hosting for your entire journey!**](https://client.petrosky.io/aff.php?aff=344)
-
-*Quality servers optimized for Hysteria2 and proxy applications*
-
-</div>
 
 ## 📋 Quick Start Guide
 
@@ -62,30 +52,20 @@ There is no need to execute the installation command again.
 ```bash
 bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/upgrade.sh)
 ```
-## 📚 Documentation
-
-For detailed information and advanced usage, refer to the documentation:
-
-[Blitz Documentation](https://returnfi.github.io/Hys2-docs/)
 
 ---
 
-<br />
-<p align="center">
- <img src="https://github.com/user-attachments/assets/8b1e4a76-3deb-45f9-b65d-fdc67e2f5a69" width="800" height="500">
-</p>
+## 💎 Sponsorship
 
-## 🔄 Client Compatibility
+<div align="center">
+  
+[![Petrosky Hosting](https://img.shields.io/badge/Recommended_Host-Petrosky-blue?logo=server&logoColor=white)](https://client.petrosky.io/aff.php?aff=344)
 
-| Client        | Supported Versions             | Supported OS                                                              |
-|---------------|--------------------------------|---------------------------------------------------------------------------|
-| **v2rayN**    | Latest                         | Windows, Linux, macOS                                                     |
-| **v2rayNG**   | Latest                         | Android                                                                   |
-| **SingBox**   | 1.10.5 (Dec 21, 2024)          | Linux, macOS, iOS, Android                                                |
-| **Hiddify**   | Latest                         | Windows, Linux, macOS, iOS, Android                                       |
-| **Sterisand** | Latest                         | iOS                                                                       |
-| **Nekobox**   | Latest                         | Android                                                                   |
-| **Nekoray**   | Latest                         | Windows, Linux                                                            |
+👉 [**A hosting for your entire journey!**](https://client.petrosky.io/aff.php?aff=344)
+
+*Quality servers optimized for Hysteria2 and proxy applications*
+
+</div>
 
 
 ## 🤝 Contributing

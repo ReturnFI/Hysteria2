@@ -46,19 +46,40 @@ After installation, use `hys2` to launch the management panel.
 
 There is no need to execute the installation command again.
 
----
 
-## 💎 Sponsorship
 
-<div align="center">
-  
-[![Petrosky Hosting](https://img.shields.io/badge/Recommended_Host-Petrosky-blue?logo=server&logoColor=white)](https://client.petrosky.io/aff.php?aff=344)
 
-👉 [**A hosting for your entire journey!**](https://client.petrosky.io/aff.php?aff=344)
+## 💎 Sponsorship & Support 💖
 
-*Quality servers optimized for Hysteria2 and proxy applications*
+| Sponsor                  | Description                                                    | Link                                                         |
+| ------------------------ | -------------------------------------------------------------- | ------------------------------------------------------------ |
+| 🖥️ [**Petrosky Hosting**](https://client.petrosky.io/aff.php?aff=344) | 👉 [A hosting for your entire journey!](https://client.petrosky.io/aff.php?aff=344) | [Visit Petrosky](https://client.petrosky.io/aff.php?aff=344) |
 
-</div>
+
+
+
+### 💰 Crypto Donations
+
+If you find this project helpful and want to support its development:
+
+| Cryptocurrency | Address                                              |
+| :------------- | :--------------------------------------------------- |
+| **TON** | `UQBJe1IzfLp4tk5nnhwT_saXmqlldNIzhSVPdPUKTq2YtmSh`   |
+| **TRX (Tron)** | `TER9F7kmNsbb8D3iCMXs2EddTYQU7cMXGn`                 |
+
+
+Your support means a lot and helps us improve the project continuously 💖
+
+### 🙏 Support Disclaimer
+
+We deeply appreciate your generosity! Please note:
+
+* All donations are voluntary and do not grant any privileges or guarantees.
+* This is an open-source project. We provide the tools and panel only — not VPN or proxy services.
+* You are responsible for setting up and managing your own infrastructure.
+* Always be cautious of scams. Only trust official channels.
+
+Thank you for keeping this project alive and thriving! ❤️
 
 
 ## 🤝 Contributing

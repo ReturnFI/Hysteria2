@@ -64,9 +64,9 @@ If you find this project helpful and want to support its development:
 
 | Cryptocurrency | Address                                              |
 | :------------- | :--------------------------------------------------- |
-| **TON** | `UQBJe1IzfLp4tk5nnhwT_saXmqlldNIzhSVPdPUKTq2YtmSh`   |
+| **TON**        | `UQBJe1IzfLp4tk5nnhwT_saXmqlldNIzhSVPdPUKTq2YtmSh`   |
 | **TRX (Tron)** | `TER9F7kmNsbb8D3iCMXs2EddTYQU7cMXGn`                 |
-
+| **USDT (TRC20)** | `TER9F7kmNsbb8D3iCMXs2EddTYQU7cMXGn`               |
 
 Your support means a lot and helps us improve the project continuously 💖
 

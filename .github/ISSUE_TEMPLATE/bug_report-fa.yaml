@@ -16,7 +16,6 @@ body:
       options:
         - اوبونتو 22.04
         - اوبونتو 24.04
-        - دبیان 11
         - دبیان 12
     validations:
       required: true

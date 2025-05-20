@@ -8,7 +8,7 @@ charset-normalizer==3.4.2
 click==8.1.8
 frozenlist==1.6.0
 idna==3.10
-multidict==6.4.3
+multidict==6.4.4
 pillow==11.2.1
 propcache==0.3.1
 psutil==7.0.0

@@ -12,6 +12,13 @@
 
 # 🚀 Hysteria2 Management Shell Script 🚀
 
+<div align=center>
+ <img src="https://github.com/user-attachments/assets/1cf2ec6b-4ffa-43d8-9c75-27a35bb9b45c" width="1000" height="400">
+</div>
+
+
+
+
 A powerful and user-friendly management panel for Hysteria2 proxy server. Features include complete user management, traffic monitoring, WARP integration, Telegram bot support, and multiple subscription formats. Simple installation with advanced configuration options for both beginners and experienced users.
 
 🛡️ **Key Features**

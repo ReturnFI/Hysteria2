@@ -10,7 +10,7 @@
 </div>
 
 
-# 🚀 Hysteria2 Management Panel 🚀
+# 🚀 Hysteria2 Panel 🚀
 
 <div align=center>
 

@@ -10,7 +10,7 @@
 </div>
 
 
-# 🚀 Hysteria2 Panel 🚀
+# 🚀 Blitz Panel 🚀
 
 <div align=center>
 

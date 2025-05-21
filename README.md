@@ -14,9 +14,8 @@
 
 <div align=center>
 
-![image](https://github.com/user-attachments/assets/1cf2ec6b-4ffa-43d8-9c75-27a35bb9b45c)
+![image](https://github.com/user-attachments/assets/6726e169-ecec-4a87-b744-6f9d8bc622c4)
 
- 
  </div>
 
 

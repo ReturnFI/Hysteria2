@@ -13,8 +13,11 @@
 # 🚀 Hysteria2 Management Shell Script 🚀
 
 <div align=center>
- <img src="https://github.com/user-attachments/assets/1cf2ec6b-4ffa-43d8-9c75-27a35bb9b45c" width="1000" height="400">
-</div>
+
+![image](https://github.com/user-attachments/assets/1cf2ec6b-4ffa-43d8-9c75-27a35bb9b45c)
+
+ 
+ </div>
 
 
 

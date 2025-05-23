@@ -523,6 +523,28 @@ def get_web_panel_api_token():
     except Exception as e:
         click.echo(f'{e}', err=True)
 
+@cli.command('reset-webpanel-creds')
+@click.option('--new-username', '-u', required=False, help='New admin username for WebPanel', type=str)
+@click.option('--new-password', '-p', required=False, help='New admin password for WebPanel', type=str)
+def reset_webpanel_creds(new_username: str | None, new_password: str | None):
+    """Resets the WebPanel admin username and/or password."""
+    try:
+        if not new_username and not new_password:
+            raise click.UsageError('Error: You must provide either --new-username or --new-password, or both.')
+        
+        cli_api.reset_webpanel_credentials(new_username, new_password)
+        
+        message_parts = []
+        if new_username:
+            message_parts.append(f"username to '{new_username}'")
+        if new_password:
+            message_parts.append("password")
+        
+        click.echo(f'WebPanel admin {" and ".join(message_parts)} updated successfully.')
+        click.echo('WebPanel service has been restarted.')
+    except Exception as e:
+        click.echo(f'{e}', err=True)
+
 
 @cli.command('get-webpanel-services-status')
 def get_web_panel_services_status():

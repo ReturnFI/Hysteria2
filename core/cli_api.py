@@ -630,4 +630,22 @@ def config_ip_limiter(block_duration: int = None, max_ips: int = None):
         cmd_args.append('')
 
     run_cmd(cmd_args)
+
+def get_ip_limiter_config() -> dict[str, int | None]:
+    '''Retrieves the current IP Limiter configuration from .configs.env.'''
+    try:
+        if not os.path.exists(CONFIG_ENV_FILE):
+            return {"block_duration": None, "max_ips": None}
+        
+        env_vars = dotenv_values(CONFIG_ENV_FILE)
+        block_duration_str = env_vars.get('BLOCK_DURATION')
+        max_ips_str = env_vars.get('MAX_IPS')
+        
+        block_duration = int(block_duration_str) if block_duration_str and block_duration_str.isdigit() else None
+        max_ips = int(max_ips_str) if max_ips_str and max_ips_str.isdigit() else None
+            
+        return {"block_duration": block_duration, "max_ips": max_ips}
+    except Exception as e:
+        print(f"Error reading IP Limiter config from .configs.env: {e}")
+        return {"block_duration": None, "max_ips": None}
 # endregion

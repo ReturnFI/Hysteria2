@@ -451,7 +451,9 @@
                 } else if (id === 'decoy_path') {
                     fieldValid = isValidPath(input.val());
                 } else {
-                    fieldValid = input.val().trim() !== "";
+                    if (input.attr('placeholder') && input.attr('placeholder').includes('Enter') && !input.attr('id').startsWith('ipv')) {
+                         fieldValid = input.val().trim() !== "";
+                    }
                 }
 
                 if (!fieldValid) {
@@ -521,22 +523,22 @@
             };
 
             Object.keys(servicesMap).forEach(service => {
-                let formSelector = servicesMap[service];
+                let targetSelector = servicesMap[service];
                 let isRunning = data[service];
 
                 if (service === "hysteria_normal_sub") {
-                    const $normalFormGroups = $("#normal_sub_service_form .form-group");
+                    const $normalForm = $("#normal_sub_service_form");
+                    const $normalFormGroups = $normalForm.find(".form-group");
                     const $normalStartBtn = $("#normal_start");
                     const $normalStopBtn = $("#normal_stop");
-                    const $normalAlert = $("#normal_sub_service_form .alert-info");
                     const $normalSubConfigTabLi = $(".normal-sub-config-tab-li");
 
                     if (isRunning) {
                         $normalFormGroups.hide();
                         $normalStartBtn.hide();
                         $normalStopBtn.show();
-                        if ($normalAlert.length === 0) {
-                            $("#normal_sub_service_form").prepend(`<div class='alert alert-info'>NormalSub service is running. You can stop it or configure its subpath.</div>`);
+                        if ($normalForm.find(".alert-info").length === 0) {
+                            $normalForm.prepend(`<div class='alert alert-info'>NormalSub service is running. You can stop it or configure its subpath.</div>`);
                         }
                         $normalSubConfigTabLi.show();
                         fetchNormalSubPath();
@@ -544,7 +546,7 @@
                         $normalFormGroups.show();
                         $normalStartBtn.show();
                         $normalStopBtn.hide();
-                        $("#normal_sub_service_form .alert-info").remove();
+                        $normalForm.find(".alert-info").remove();
                         $normalSubConfigTabLi.hide();
                         if ($('#normal-sub-config-link-tab').hasClass('active')) {
                             $('#normal-tab').tab('show');
@@ -553,31 +555,40 @@
                         $("#normal_subpath_input").removeClass('is-invalid');
                     }
                 } else if (service === "hysteria_iplimit") {
+                    const $ipLimitServiceForm = $("#ip_limit_service_form");
+                    const $configTabLi = $(".ip-limit-config-tab-li");
                     if (isRunning) {
                        $("#ip_limit_start").hide();
                        $("#ip_limit_stop").show();
-                       $(".ip-limit-config-tab-li").show();
-                        // TODO: Fetch IP Limit Config and populate fields
+                       $configTabLi.show();
+                       fetchIpLimitConfig();
+                       if ($ipLimitServiceForm.find(".alert-info").length === 0) {
+                           $ipLimitServiceForm.prepend(`<div class='alert alert-info'>IP-Limit service is running. You can stop it if needed.</div>`);
+                       }
                     } else {
                        $("#ip_limit_start").show();
                        $("#ip_limit_stop").hide();
-                       $(".ip-limit-config-tab-li").hide();
+                       $configTabLi.hide();
                        $('#ip-limit-service-tab').tab('show');
-                        // TODO: Clear IP Limit Config fields
+                       $ipLimitServiceForm.find(".alert-info").remove();
+                       $("#block_duration").val("");
+                       $("#max_ips").val("");
+                       $("#block_duration, #max_ips").removeClass('is-invalid');
                     }
                 } else { 
+                    const $formSelector = $(targetSelector);
                     if (isRunning) {
-                        $(formSelector + " .form-group").hide();
-                        $(formSelector + " .btn-success").hide();
-                        $(formSelector + " .btn-danger").show();
-                        if ($(formSelector + " .alert-info").length === 0) { 
-                           $(formSelector).prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
+                        $formSelector.find(".form-group").hide();
+                        $formSelector.find(".btn-success").hide();
+                        $formSelector.find(".btn-danger").show();
+                        if ($formSelector.find(".alert-info").length === 0) { 
+                           $formSelector.prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
                         }
                     } else {
-                        $(formSelector + " .form-group").show();
-                        $(formSelector + " .btn-success").show();
-                        $(formSelector + " .btn-danger").hide();
-                        $(formSelector + " .alert-info").remove();
+                        $formSelector.find(".form-group").show();
+                        $formSelector.find(".btn-success").show();
+                        $formSelector.find(".btn-danger").hide();
+                        $formSelector.find(".alert-info").remove();
                     }
                 }
             });
@@ -596,7 +607,24 @@
                 error: function (xhr, status, error) {
                     console.error("Failed to fetch NormalSub subpath:", error, xhr.responseText);
                     $("#normal_subpath_input").val("");
-                    // Swal.fire("Error!", "Could not fetch NormalSub subpath.", "error"); // Avoid too many popups during init
+                }
+            });
+        }
+        
+        function fetchIpLimitConfig() {
+            $.ajax({
+                url: "{{ url_for('get_ip_limit_config_api') }}",
+                type: "GET",
+                success: function (data) {
+                    $("#block_duration").val(data.block_duration || "");
+                    $("#max_ips").val(data.max_ips || "");
+                    if (data.block_duration) $("#block_duration").removeClass('is-invalid');
+                    if (data.max_ips) $("#max_ips").removeClass('is-invalid');
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to fetch IP Limit config:", error, xhr.responseText);
+                    $("#block_duration").val("");
+                    $("#max_ips").val("");
                 }
             });
         }
@@ -883,7 +911,7 @@
         }
 
         function configIPLimit() {
-            if (!validateForm('ip_limit_config_form')) return; // Ensure correct form ID
+            if (!validateForm('ip_limit_config_form')) return;
             const blockDuration = $("#block_duration").val();
             const maxIps = $("#max_ips").val();
              confirmAction("save the IP Limit configuration", function () {
@@ -893,7 +921,8 @@
                     { block_duration: parseInt(blockDuration), max_ips: parseInt(maxIps) },
                     "IP Limit configuration saved successfully!",
                     "#ip_limit_change_config",
-                    false 
+                    false,
+                    fetchIpLimitConfig
                 );
             });
         }
@@ -977,8 +1006,8 @@
                 $(this).removeClass('is-invalid');
             } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
-            } else {
-                 $(this).removeClass('is-invalid');
+            } else { 
+                 $(this).addClass('is-invalid');
             }
         });
 

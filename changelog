@@ -1,23 +1,15 @@
-# [1.10.0] - 2025-05-18
+# [1.10.1] - 2025-05-24
 
 ## ✨ New Features
 
-### ⚙️ NormalSub Configuration Enhancements
+* 🔐 **feat:** Add option to reset Web Panel admin credentials via CLI
+* 🧩 **feat:** Add "Reset Web Panel credentials" option to Bash menu
+* 🌐 **feat:** Add API endpoint to fetch IP Limiter configuration
 
-* 🛠️ **feat:** Add NormalSub subpath editing via Settings UI  
-  - New 'Configure' tab in the Settings panel (visible only if NormalSub is active)  
-  - Real-time client-side validation and live subpath editing  
+## 🖌️ UI Improvements
 
-* 🔌 **feat:** Add API endpoints  
-  - `GET /api/v1/config/normalsub/subpath`: Fetch current subpath  
-  - `PUT /api/v1/config/normalsub/edit_subpath`: Update the subpath securely  
+* 🧼 **clean:** Removed shield icons from footer for a cleaner look
 
-* 🖥️ **feat:** Add CLI command support  
-  - `edit_subpath` option added to CLI and `normal-sub` command  
-  - Automatically restarts the service after applying changes  
+## 🐛 Fixes
 
-* 🔧 **feat:** Add backend CLI + shell logic to update `.env` subpath for NormalSub  
-
-## 📄 Documentation
-
-* 📚 **docs:** Add sponsorship section with referral link to README  
+* 📊 **fix:** Align memory usage reporting with `free -m` in `server_info.py`

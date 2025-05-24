@@ -1,6 +1,6 @@
 from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile, File
 from ..schema.config.hysteria import ConfigFile, GetPortResponse, GetSniResponse
-from ..schema.response import DetailResponse, IPLimitConfig, SetupDecoyRequest, DecoyStatusResponse
+from ..schema.response import DetailResponse, IPLimitConfig, SetupDecoyRequest, DecoyStatusResponse, IPLimitConfigResponse
 from fastapi.responses import FileResponse
 import shutil
 import zipfile
@@ -335,6 +335,14 @@ async def config_ip_limit_api(config: IPLimitConfig):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error configuring IP Limiter: {str(e)}')
 
+@router.get('/ip-limit/config', response_model=IPLimitConfigResponse, summary='Get IP Limiter Configuration')
+async def get_ip_limit_config_api():
+    """Retrieves the current IP Limiter configuration."""
+    try:
+        config = cli_api.get_ip_limiter_config()
+        return IPLimitConfigResponse(**config)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Error retrieving IP Limiter configuration: {str(e)}')
 
 def run_setup_decoy_background(domain: str, decoy_path: str):
     """Function to run decoy setup in the background."""

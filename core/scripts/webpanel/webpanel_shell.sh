@@ -3,6 +3,7 @@ source /etc/hysteria/core/scripts/utils.sh
 define_colors
 
 CADDY_CONFIG_FILE="/etc/hysteria/core/scripts/webpanel/Caddyfile"
+WEBPANEL_ENV_FILE="/etc/hysteria/core/scripts/webpanel/.env"
 
 install_dependencies() {
     # Update system
@@ -365,6 +366,65 @@ EOL
     fi
 }
 
+reset_credentials() {
+    local new_username_val=""
+    local new_password_val=""
+    local changes_made=false
+
+    if [ ! -f "$WEBPANEL_ENV_FILE" ]; then
+        echo -e "${red}Error: Web panel .env file not found. Is the web panel configured?${NC}"
+        exit 1
+    fi
+
+    OPTIND=1 
+    while getopts ":u:p:" opt; do
+        case $opt in
+            u) new_username_val="$OPTARG" ;;
+            p) new_password_val="$OPTARG" ;;
+            \?) echo -e "${red}Invalid option: -$OPTARG${NC}" >&2; exit 1 ;;
+            :) echo -e "${red}Option -$OPTARG requires an argument.${NC}" >&2; exit 1 ;;
+        esac
+    done
+
+    if [ -z "$new_username_val" ] && [ -z "$new_password_val" ]; then
+        echo -e "${red}Error: At least one option (-u <new_username> or -p <new_password>) must be provided.${NC}"
+        echo -e "${yellow}Usage: $0 resetcreds [-u new_username] [-p new_password]${NC}"
+        exit 1
+    fi
+
+    if [ -n "$new_username_val" ]; then
+        echo "Updating username to: $new_username_val"
+        if sudo sed -i "s|^ADMIN_USERNAME=.*|ADMIN_USERNAME=$new_username_val|" "$WEBPANEL_ENV_FILE"; then
+            changes_made=true
+        else
+            echo -e "${red}Failed to update username in $WEBPANEL_ENV_FILE${NC}"
+            exit 1
+        fi
+    fi
+
+    if [ -n "$new_password_val" ]; then
+        echo "Updating password..."
+        local new_password_hash=$(echo -n "$new_password_val" | sha256sum | cut -d' ' -f1)
+        if sudo sed -i "s|^ADMIN_PASSWORD=.*|ADMIN_PASSWORD=$new_password_hash|" "$WEBPANEL_ENV_FILE"; then
+            changes_made=true
+        else
+             echo -e "${red}Failed to update password in $WEBPANEL_ENV_FILE${NC}"
+             exit 1
+        fi
+    fi
+
+    if [ "$changes_made" = true ]; then
+        echo "Restarting web panel service to apply changes..."
+        if systemctl restart hysteria-webpanel.service; then
+            echo -e "${green}Web panel credentials updated successfully.${NC}"
+        else
+            echo -e "${red}Failed to restart hysteria-webpanel service. Please restart it manually.${NC}"
+        fi
+    else
+        echo -e "${yellow}No changes were specified.${NC}"
+    fi
+}
+
 show_webpanel_url() {
     source /etc/hysteria/core/scripts/webpanel/.env
     local webpanel_url="https://$DOMAIN:$PORT/$ROOT_PATH/"
@@ -413,6 +473,10 @@ case "$1" in
     stopdecoy)
         stop_decoy_site
         ;;
+    resetcreds)
+        shift 
+        reset_credentials "$@"
+        ;;
     url)
         show_webpanel_url
         ;;
@@ -425,6 +489,7 @@ case "$1" in
         echo -e "${yellow}stop${NC}"
         echo -e "${yellow}decoy <DOMAIN> <PATH_TO_DECOY_SITE>${NC}"
         echo -e "${yellow}stopdecoy${NC}"
+        echo -e "${yellow}  resetcreds [-u new_username] [-p new_password]${NC}"
         echo -e "${yellow}url${NC}"
         echo -e "${yellow}api-token${NC}"
         exit 1

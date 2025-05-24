@@ -52,14 +52,39 @@ def get_cpu_usage(interval: float = 0.1) -> float:
 
 
 def get_memory_usage() -> tuple[int, int]:
-    with open("/proc/meminfo") as f:
-        lines = f.readlines()
+    mem_info = {}
+    try:
+        with open("/proc/meminfo", "r") as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) >= 2:
+                    key = parts[0].rstrip(':')
+                    if parts[1].isdigit():
+                        mem_info[key] = int(parts[1])
+    except FileNotFoundError:
+        print("Error: /proc/meminfo not found.", file=sys.stderr)
+        return 0, 0
+    except Exception as e:
+        print(f"Error reading /proc/meminfo: {e}", file=sys.stderr)
+        return 0, 0
 
-    mem_total = int(next(line for line in lines if "MemTotal" in line).split()[1]) // 1024
-    mem_available = int(next(line for line in lines if "MemAvailable" in line).split()[1]) // 1024
-    mem_used = mem_total - mem_available
+    mem_total_kb = mem_info.get("MemTotal", 0)
+    mem_free_kb = mem_info.get("MemFree", 0)
+    buffers_kb = mem_info.get("Buffers", 0)
+    cached_kb = mem_info.get("Cached", 0)
+    sreclaimable_kb = mem_info.get("SReclaimable", 0)
 
-    return mem_total, mem_used
+    used_kb = mem_total_kb - mem_free_kb - buffers_kb - cached_kb - sreclaimable_kb
+    
+    if used_kb < 0:
+        used_kb = mem_total_kb - mem_info.get("MemAvailable", mem_total_kb)
+        used_kb = max(0, used_kb)
+
+
+    total_mb = mem_total_kb // 1024
+    used_mb = used_kb // 1024
+    
+    return total_mb, used_mb
 
 
 

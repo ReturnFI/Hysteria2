@@ -6,8 +6,12 @@ class DetailResponse(BaseModel):
     detail: str
 
 class IPLimitConfig(BaseModel):
-    block_duration: Optional[int] = None
-    max_ips: Optional[int] = None
+    block_duration: Optional[int] = Field(None, example=60)
+    max_ips: Optional[int] = Field(None, example=1)
+
+class IPLimitConfigResponse(BaseModel):
+    block_duration: Optional[int] = Field(None, description="Current block duration in seconds for IP Limiter")
+    max_ips: Optional[int] = Field(None, description="Current maximum IPs per user for IP Limiter")
 
 class SetupDecoyRequest(BaseModel):
     domain: str = Field(..., description="Domain name associated with the web panel")

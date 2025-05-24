@@ -598,7 +598,7 @@ normalsub_handler() {
 }
 
 webpanel_handler() {
-    service_status=$(python3 $CLI_PATH get-webpanel-services-status)
+    service_status=$(python3 "$CLI_PATH" get-webpanel-services-status)
     echo -e "${cyan}Services Status:${NC}"
     echo "$service_status"
     echo ""
@@ -608,6 +608,7 @@ webpanel_handler() {
         echo -e "${red}2.${NC} Stop WebPanel service"
         echo -e "${cyan}3.${NC} Get WebPanel URL"
         echo -e "${cyan}4.${NC} Show API Token"
+        echo -e "${yellow}5.${NC} Reset WebPanel Credentials"
         echo "0. Back"
         read -p "Choose an option: " option
 
@@ -675,6 +676,34 @@ webpanel_handler() {
                 echo "-------------------------------"
                 echo "$api_token"
                 echo "-------------------------------"
+                ;;
+            5)
+                if ! systemctl is-active --quiet hysteria-webpanel.service; then
+                     echo -e "${red}WebPanel service is not running. Cannot reset credentials.${NC}"
+                else
+                    read -e -p "Enter new admin username (leave blank to keep current): " new_username
+                    read -e -p "Enter new admin password (leave blank to keep current): " new_password
+                    echo
+
+                    if [ -z "$new_username" ] && [ -z "$new_password" ]; then
+                        echo -e "${yellow}No changes specified. Aborting.${NC}"
+                    else
+                        local cmd_args=("-u" "$new_username")
+                        if [ -n "$new_password" ]; then
+                             cmd_args+=("-p" "$new_password")
+                        fi
+                        
+                        if [ -z "$new_username" ]; then
+                             cmd_args=()
+                             if [ -n "$new_password" ]; then
+                                cmd_args+=("-p" "$new_password")
+                             fi
+                        fi
+                        
+                        echo "Attempting to reset credentials..."
+                        python3 "$CLI_PATH" reset-webpanel-creds "${cmd_args[@]}"
+                    fi
+                fi
                 ;;
             0)
                 break

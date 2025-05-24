@@ -588,6 +588,18 @@ def get_webpanel_api_token() -> str | None:
     '''Gets the API token of WebPanel.'''
     return run_cmd(['bash', Command.SHELL_WEBPANEL.value, 'api-token'])
 
+def reset_webpanel_credentials(new_username: str | None = None, new_password: str | None = None):
+    '''Resets the WebPanel admin username and/or password.'''
+    if not new_username and not new_password:
+        raise InvalidInputError('Error: At least new username or new password must be provided.')
+
+    cmd_args = ['bash', Command.SHELL_WEBPANEL.value, 'resetcreds']
+    if new_username:
+        cmd_args.extend(['-u', new_username])
+    if new_password:
+        cmd_args.extend(['-p', new_password])
+    
+    run_cmd(cmd_args)
 
 def get_services_status() -> dict[str, bool] | None:
     '''Gets the status of all project services.'''
@@ -630,4 +642,22 @@ def config_ip_limiter(block_duration: int = None, max_ips: int = None):
         cmd_args.append('')
 
     run_cmd(cmd_args)
+
+def get_ip_limiter_config() -> dict[str, int | None]:
+    '''Retrieves the current IP Limiter configuration from .configs.env.'''
+    try:
+        if not os.path.exists(CONFIG_ENV_FILE):
+            return {"block_duration": None, "max_ips": None}
+        
+        env_vars = dotenv_values(CONFIG_ENV_FILE)
+        block_duration_str = env_vars.get('BLOCK_DURATION')
+        max_ips_str = env_vars.get('MAX_IPS')
+        
+        block_duration = int(block_duration_str) if block_duration_str and block_duration_str.isdigit() else None
+        max_ips = int(max_ips_str) if max_ips_str and max_ips_str.isdigit() else None
+            
+        return {"block_duration": block_duration, "max_ips": max_ips}
+    except Exception as e:
+        print(f"Error reading IP Limiter config from .configs.env: {e}")
+        return {"block_duration": None, "max_ips": None}
 # endregion

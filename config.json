@@ -35,22 +35,8 @@
   "udpIdleTimeout": "20s",
   "resolver": {
     "type": "tls",
-    "tcp": {
-      "addr": "8.8.8.8:53",
-      "timeout": "4s"
-    },
-    "udp": {
-      "addr": "8.8.4.4:53",
-      "timeout": "4s"
-    },
     "tls": {
-      "addr": "1.1.1.1:853",
-      "timeout": "10s",
-      "sni": "cloudflare-dns.com",
-      "insecure": false
-    },
-    "https": {
-      "addr": "1.1.1.1:443",
+      "addr": "1.1.1.3:853",
       "timeout": "10s",
       "sni": "cloudflare-dns.com",
       "insecure": false
@@ -77,6 +63,7 @@
       "reject(geosite:google@ads)",
       "reject(geosite:malware)",
       "reject(geosite:phishing)",
+      "reject(geosite:nsfw)",
       "reject(geosite:cryptominers)",
       "reject(geosite:speedtest)",
       "reject(10.0.0.0/8)",

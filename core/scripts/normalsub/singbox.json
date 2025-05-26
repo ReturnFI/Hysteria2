@@ -1,29 +1,25 @@
 {
   "log": {
-    "level": "info",
+    "level": "warn",
     "timestamp": true
   },
   "dns": {
     "servers": [
       {
         "tag": "proxyDns",
-        "address": "tls://8.8.8.8",
+        "address": "https://1.1.1.1/dns-query",
         "detour": "Proxy"
       },
       {
         "tag": "localDns",
-        "address": "udp://8.8.8.8",
+        "address": "local",
         "detour": "direct"
       }
     ],
     "rules": [
       {
-        "outbound": "any",
-        "server": "localDns"
-      },
-      {
         "rule_set": "geosite-ir",
-        "server": "proxyDns"
+        "server": "localDns"
       },
       {
         "clash_mode": "direct",
@@ -34,19 +30,20 @@
         "server": "proxyDns"
       }
     ],
-    "final": "localDns",
-    "strategy": "ipv4_only"
+    "final": "proxyDns",
+    "strategy": "prefer_ipv4"
   },
   "inbounds": [
     {
       "tag": "tun-in",
       "type": "tun",
       "address": [
-        "172.19.0.0/30"
+        "172.19.0.0/30",
+        "fdfe:dcba:9876::1/126"
       ],
       "mtu": 9000,
       "auto_route": true,
-      "strict_route": true,
+      "strict_route": false,
       "stack": "system",
       "platform": {
         "http_proxy": {
@@ -110,16 +107,7 @@
         "action": "sniff"
       },
       {
-        "type": "logical",
-        "mode": "or",
-        "rules": [
-          {
-            "port": 53
-          },
-          {
-            "protocol": "dns"
-          }
-        ],
+        "protocol": "dns",
         "action": "hijack-dns"
       },
       {

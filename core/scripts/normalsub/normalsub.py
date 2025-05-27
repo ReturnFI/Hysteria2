@@ -1,5 +1,4 @@
 import os
-import ssl
 import json
 import subprocess
 import re
@@ -22,10 +21,10 @@ load_dotenv()
 
 @dataclass
 class AppConfig:
-    domain: str
-    cert_file: str
-    key_file: str
-    port: int
+    domain: str 
+    external_port: int 
+    aiohttp_listen_address: str
+    aiohttp_listen_port: int
     sni_file: str
     singbox_template_path: str
     hysteria_cli_path: str
@@ -154,7 +153,6 @@ class Utils:
 
     @staticmethod
     def is_valid_url(url: str) -> bool:
-        """Checks if the given string is a valid URL."""
         try:
             result = urlparse(url)
             return all([result.scheme, result.netloc])
@@ -173,7 +171,7 @@ class HysteriaCLI:
             stdout, stderr = process.communicate()
             if process.returncode != 0:
                 if "User not found" in stderr:
-                    return None  # Indicate user not found
+                    return None 
                 else:
                     print(f"Hysteria CLI error: {stderr}")
                     raise subprocess.CalledProcessError(process.returncode, command, output=stdout, stderr=stderr)
@@ -185,7 +183,7 @@ class HysteriaCLI:
     def get_user_info(self, username: str) -> Optional[UserInfo]:
         raw_info_str = self._run_command(['get-user', '-u', username])
         if raw_info_str is None:
-            return None # User not found
+            return None 
         try:
             raw_info = json.loads(raw_info_str)
             return UserInfo(
@@ -394,22 +392,19 @@ class HysteriaServer:
         base_path = f'/{safe_subpath}'
         self.app.router.add_get(f'{base_path}/sub/normal/{{username}}', self.handle)
         self.app.router.add_get(f'{base_path}/robots.txt', self.robots_handler)
-
-        self.app.router.add_route('*', f'/{safe_subpath}/{{tail:.*}}', self.handle_404)
-
-        # This is handled by self._invalid_endpoint_middleware middleware
-        # self.app.router.add_route('*', '/{tail:.*}', self.handle_generic_404)
+        self.app.router.add_route('*', f'{base_path}/{{tail:.*}}', self.handle_404_subpath)
+        
 
     def _load_config(self) -> AppConfig:
         domain = os.getenv('HYSTERIA_DOMAIN', 'localhost')
-        cert_file = os.getenv('HYSTERIA_CERTFILE')
-        key_file = os.getenv('HYSTERIA_KEYFILE')
-        port = int(os.getenv('HYSTERIA_PORT', '3326'))
+        external_port = int(os.getenv('HYSTERIA_PORT', '443'))
+        aiohttp_listen_address = os.getenv('AIOHTTP_LISTEN_ADDRESS', '127.0.0.1')
+        aiohttp_listen_port = int(os.getenv('AIOHTTP_LISTEN_PORT', '28261'))
+        
         subpath = os.getenv('SUBPATH', '').strip().strip("/")
-
-        if not self.is_valid_subpath(subpath):
+        if not subpath or not self.is_valid_subpath(subpath):
             raise ValueError(
-                f"Invalid SUBPATH: '{subpath}'. Subpath must contain only alphanumeric characters, hyphens, and underscores.")
+                f"Invalid or empty SUBPATH: '{subpath}'. Subpath must be non-empty and contain only alphanumeric characters.")
 
         sni_file = '/etc/hysteria/.configs.env'
         singbox_template_path = '/etc/hysteria/core/scripts/normalsub/singbox.json'
@@ -419,9 +414,14 @@ class HysteriaServer:
         template_dir = os.path.dirname(__file__)
 
         sni = self._load_sni_from_env(sni_file)
-        return AppConfig(domain=domain, cert_file=cert_file, key_file=key_file, port=port, sni_file=sni_file,
-                         singbox_template_path=singbox_template_path, hysteria_cli_path=hysteria_cli_path,
-                         rate_limit=rate_limit, rate_limit_window=rate_limit_window, sni=sni, template_dir=template_dir,
+        return AppConfig(domain=domain, external_port=external_port, 
+                         aiohttp_listen_address=aiohttp_listen_address,
+                         aiohttp_listen_port=aiohttp_listen_port,
+                         sni_file=sni_file,
+                         singbox_template_path=singbox_template_path, 
+                         hysteria_cli_path=hysteria_cli_path,
+                         rate_limit=rate_limit, rate_limit_window=rate_limit_window, 
+                         sni=sni, template_dir=template_dir,
                          subpath=subpath)
 
     def _load_sni_from_env(self, sni_file: str) -> str:
@@ -435,26 +435,27 @@ class HysteriaServer:
         return "bts.com"
 
     def is_valid_subpath(self, subpath: str) -> bool:
-        """Validates the subpath using a regex."""
-        return bool(re.match(r"^[a-zA-Z0-9_-]+$", subpath))
+        return bool(re.match(r"^[a-zA-Z0-9]+$", subpath)) 
 
     def validate_and_escape_subpath(self, subpath: str) -> str:
-        """Validates the subpath and returns the escaped version."""
         if not self.is_valid_subpath(subpath):
             raise ValueError(f"Invalid subpath: {subpath}")
-        return re.escape(subpath)
+        return re.escape(subpath) 
 
     @middleware
     async def _rate_limit_middleware(self, request: web.Request, handler):
-        client_ip = request.headers.get('X-Forwarded-For', request.headers.get('X-Real-IP', request.remote))
-        if not self.rate_limiter.check_limit(client_ip):  # type: ignore
+        client_ip_hdr = request.headers.get('X-Forwarded-For', request.headers.get('X-Real-IP'))
+        client_ip = client_ip_hdr.split(',')[0].strip() if client_ip_hdr else request.remote
+        
+        if client_ip and not self.rate_limiter.check_limit(client_ip): 
             return web.Response(status=429, text="Rate limit exceeded.")
         return await handler(request)
 
     @middleware
     async def _invalid_endpoint_middleware(self, request: web.Request, handler):
-        path = f'/{self.config.subpath}/'
-        if not request.path.startswith(path):
+        expected_prefix = f'/{self.config.subpath}/'
+        if not request.path.startswith(expected_prefix):
+            print(f"Warning: Request {request.path} reached aiohttp outside expected subpath {expected_prefix}. Closing connection.")
             if request.transport is not None:
                 request.transport.close()  
             raise web.HTTPForbidden()
@@ -468,9 +469,11 @@ class HysteriaServer:
 
     async def handle(self, request: web.Request) -> web.Response:
         try:
-            username = Utils.sanitize_input(request.match_info.get('username', ''), r'^[a-zA-Z0-9_-]+$')
-            if not username:
-                return web.Response(status=400, text="Error: Missing 'username' parameter.")
+            username_raw = request.match_info.get('username', '')
+            if not username_raw: # Should not happen due to route def
+                 return web.Response(status=400, text="Error: Missing 'username' parameter.")
+            username = Utils.sanitize_input(username_raw, r'^[a-zA-Z0-9_-]+$')
+
             user_agent = request.headers.get('User-Agent', '').lower()
             user_info = self.hysteria_cli.get_user_info(username)
             if user_info is None:
@@ -509,10 +512,12 @@ class HysteriaServer:
 
     async def _get_template_context(self, username: str, user_info: UserInfo) -> TemplateContext:
         ipv4_uri, ipv6_uri = self.hysteria_cli.get_uris(username)
+        port_str = f":{self.config.external_port}" if self.config.external_port not in [80, 443, 0] else ""
+        base_url = f"https://{self.config.domain}{port_str}"
 
-        base_url = f"https://{self.config.domain}:{self.config.port}"
         if not Utils.is_valid_url(base_url):
-            raise ValueError(f"Invalid base URL constructed: {base_url}")
+            print(f"Warning: Constructed base URL '{base_url}' might be invalid. Check domain and port config.")
+        
         sub_link = f"{base_url}/{self.config.subpath}/sub/normal/{username}"
 
         ipv4_qrcode = Utils.generate_qrcode_base64(ipv4_uri)
@@ -535,21 +540,18 @@ class HysteriaServer:
     async def robots_handler(self, request: web.Request) -> web.Response:
         return web.Response(text="User-agent: *\nDisallow: /", content_type="text/plain")
 
-    async def handle_404(self, request: web.Request) -> web.Response:
-        """Handles 404 Not Found errors *within* the subpath."""
-        print(f"404 Not Found (within subpath): {request.path}")
+    async def handle_404_subpath(self, request: web.Request) -> web.Response:
+        print(f"404 Not Found (within subpath, unhandled by specific routes): {request.path}")
         return web.Response(status=404, text="Not Found within Subpath")
 
-    # async def handle_generic_404(self, request: web.Request) -> web.Response:
-    #     """Handles 404 Not Found errors *outside* the subpath."""
-    #     print(f"404 Not Found (generic): {request.path}")
-    #     return web.Response(status=404, text="Not Found")
-
     def run(self):
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        ssl_context.load_cert_chain(certfile=self.config.cert_file, keyfile=self.config.key_file)
-        ssl_context.set_ciphers('ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384')
-        web.run_app(self.app, port=self.config.port, ssl_context=ssl_context)
+        print(f"Starting Hysteria Normalsub server on {self.config.aiohttp_listen_address}:{self.config.aiohttp_listen_port}")
+        print(f"External access via Caddy should be at https://{self.config.domain}:{self.config.external_port}/{self.config.subpath}/")
+        web.run_app(
+            self.app, 
+            host=self.config.aiohttp_listen_address, 
+            port=self.config.aiohttp_listen_port
+        )
 
 
 if __name__ == '__main__':

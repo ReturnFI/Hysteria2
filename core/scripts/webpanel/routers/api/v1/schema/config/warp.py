@@ -10,7 +10,7 @@ class ConfigureInputBody(BaseModel):
 
 
 class StatusResponse(BaseModel):
-    all_traffic: bool
-    popular_sites: bool
-    domestic_sites: bool
-    block_adult_sites: bool
+    all_traffic_via_warp: bool
+    popular_sites_via_warp: bool
+    domestic_sites_via_warp: bool
+    block_adult_content: bool

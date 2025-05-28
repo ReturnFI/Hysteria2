@@ -119,6 +119,7 @@ SERVICES=(
     hysteria-scheduler.service
     hysteria-telegram-bot.service
     hysteria-normal-sub.service
+    hysteria-caddy-normalsub.service
     hysteria-webpanel.service
     hysteria-ip-limit.service
 )

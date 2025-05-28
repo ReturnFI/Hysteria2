@@ -1,15 +1,18 @@
-# [1.10.1] - 2025-05-24
+# [1.11.0] - 2025-05-28
 
-## ✨ New Features
 
-* 🔐 **feat:** Add option to reset Web Panel admin credentials via CLI
-* 🧩 **feat:** Add "Reset Web Panel credentials" option to Bash menu
-* 🌐 **feat:** Add API endpoint to fetch IP Limiter configuration
+#### ⚠️ Attention Required
 
-## 🖌️ UI Improvements
+🚨 **Important:** Due to changes in the `normalsub` system (now using passwords in links and routing through Caddy),
+you must **re-activate NormalSUB** from the settings panel after upgrading to **v1.11.0**.
 
-* 🧼 **clean:** Removed shield icons from footer for a cleaner look
+Failure to do so may result in broken subscription links.
 
-## 🐛 Fixes
+---
 
-* 📊 **fix:** Align memory usage reporting with `free -m` in `server_info.py`
+#### ✨ Features & Improvements
+
+* 🔐 **normalsub:** Use **user password** instead of username in subscription path for improved privacy (harder to enumerate users)
+* 🔁 **normalsub:** Now uses **Caddy** as a reverse proxy for better performance and flexibility
+* 🧩 **WARP API:** Adapted backend to support **JSON-based status output**
+* 🛠️ **Script Update:** WARP status script now outputs clean **JSON**, allowing easier parsing and integration

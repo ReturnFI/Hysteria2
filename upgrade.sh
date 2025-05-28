@@ -33,8 +33,9 @@ FILES=(
     "$HYSTERIA_INSTALL_DIR/config.json"
     "$HYSTERIA_INSTALL_DIR/.configs.env"
     "$HYSTERIA_INSTALL_DIR/core/scripts/telegrambot/.env"
-    "$HYSTERIA_INSTALL_DIR/core/scripts/singbox/.env"
+    # "$HYSTERIA_INSTALL_DIR/core/scripts/singbox/.env"
     "$HYSTERIA_INSTALL_DIR/core/scripts/normalsub/.env"
+    "$HYSTERIA_INSTALL_DIR/core/scripts/normalsub/Caddyfile.normalsub"
     "$HYSTERIA_INSTALL_DIR/core/scripts/webpanel/.env"
     "$HYSTERIA_INSTALL_DIR/core/scripts/webpanel/Caddyfile"
 )
@@ -80,7 +81,7 @@ info "Setting ownership and permissions..."
 chown hysteria:hysteria "$HYSTERIA_INSTALL_DIR/ca.key" "$HYSTERIA_INSTALL_DIR/ca.crt"
 chmod 640 "$HYSTERIA_INSTALL_DIR/ca.key" "$HYSTERIA_INSTALL_DIR/ca.crt"
 
-chown -R hysteria:hysteria "$HYSTERIA_INSTALL_DIR/core/scripts/singbox"
+# chown -R hysteria:hysteria "$HYSTERIA_INSTALL_DIR/core/scripts/singbox"
 chown -R hysteria:hysteria "$HYSTERIA_INSTALL_DIR/core/scripts/telegrambot"
 
 chmod +x "$HYSTERIA_INSTALL_DIR/core/scripts/hysteria2/user.sh"

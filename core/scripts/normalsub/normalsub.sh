@@ -193,25 +193,39 @@ edit_subpath() {
         exit 1
     fi
 
+    if ! systemctl is-active --quiet hysteria-normal-sub.service || ! systemctl is-active --quiet hysteria-caddy-normalsub.service; then
+        echo -e "${red}Error: One or more services are not running. Please start the services first.${NC}"
+        exit 1
+    fi
+
     source "$NORMALSUB_ENV_FILE"
     local old_subpath="$SUBPATH"
     
     sed -i "s|^SUBPATH=.*|SUBPATH=$new_path|" "$NORMALSUB_ENV_FILE"
-    echo -e "${green}SUBPATH updated to $new_path in $NORMALSUB_ENV_FILE.${NC}"
+    echo -e "${green}SUBPATH updated from '$old_subpath' to '$new_path' in $NORMALSUB_ENV_FILE.${NC}"
 
     update_caddy_file_normalsub "$HYSTERIA_DOMAIN" "$HYSTERIA_PORT" "$new_path" "$AIOHTTP_LISTEN_ADDRESS" "$AIOHTTP_LISTEN_PORT"
-    echo -e "${green}Caddyfile for Normalsub updated.${NC}"
+    echo -e "${green}Caddyfile for Normalsub updated with new subpath.${NC}"
 
-    echo -e "${yellow}Restarting hysteria-normal-sub service...${NC}"
+    echo -e "${yellow}Restarting hysteria-normal-sub service to reload environment...${NC}"
     systemctl restart hysteria-normal-sub.service
-    echo -e "${yellow}Reloading hysteria-caddy-normalsub service...${NC}"
-    systemctl restart hysteria-caddy-normalsub.service
+
+    echo -e "${yellow}Reloading Caddy configuration...${NC}"
+    if systemctl reload hysteria-caddy-normalsub.service 2>/dev/null; then
+        echo -e "${green}Caddy configuration reloaded successfully.${NC}"
+    else
+        echo -e "${yellow}Reload failed, restarting Caddy service...${NC}"
+        systemctl restart hysteria-caddy-normalsub.service
+    fi
 
     if systemctl is-active --quiet hysteria-normal-sub.service && systemctl is-active --quiet hysteria-caddy-normalsub.service; then
-        echo -e "${green}Services restarted/reloaded successfully.${NC}"
+        echo -e "${green}Services updated successfully.${NC}"
         echo -e "${green}New access base URL: https://$HYSTERIA_DOMAIN:$HYSTERIA_PORT/$new_path/sub/normal/{username}${NC}"
+        echo -e "${cyan}Old subpath '$old_subpath' is no longer accessible.${NC}"
     else
         echo -e "${red}Error: One or more services failed to restart/reload. Please check logs.${NC}"
+        systemctl status hysteria-normal-sub.service --no-pager
+        systemctl status hysteria-caddy-normalsub.service --no-pager
     fi
 }
 

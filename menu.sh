@@ -619,9 +619,8 @@ normalsub_handler() {
                     elif ! [[ "$subpath" =~ [A-Z] ]] || ! [[ "$subpath" =~ [a-z] ]] || ! [[ "$subpath" =~ [0-9] ]]; then
                         echo "Error: SUBPATH must include at least one uppercase letter, one lowercase letter, and one number."
                     else
-                        sed -i "s|^SUBPATH=.*|SUBPATH=${subpath}|" "$NORMALSUB_ENV"
-                        systemctl restart hysteria-normal-sub.service
-                        echo "SUBPATH updated successfully!"
+                        python3 $CLI_PATH normal-sub -a edit_subpath -sp "$subpath"
+                        # echo "SUBPATH updated successfully!"
                         break
                     fi
                 done

@@ -98,28 +98,28 @@
         "format": "binary",
         "tag": "geosite-ads",
         "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ads-all.srs"
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-category-ads-all.srs"
       },
       {
         "download_detour": "direct",
         "format": "binary",
-        "tag": "geosite-private",
+        "tag": "geoip-private",
         "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs"
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-private.srs"
       },
       {
         "download_detour": "direct",
         "format": "binary",
         "tag": "geosite-ir",
         "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ir.srs"
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-ir.srs"
       },
       {
         "download_detour": "direct",
         "format": "binary",
         "tag": "geoip-ir",
         "type": "remote",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/ir.srs"
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-ir.srs"
       }
     ],
     "rules": [
@@ -152,7 +152,7 @@
       {
         "action": "reject",
         "rule_set": [
-          "geosite-ads"
+          "geoip-ads"
         ]
       }
     ]

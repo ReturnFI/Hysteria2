@@ -56,18 +56,7 @@ After installation, use `hys2` to launch the management panel.
 There is no need to execute the installation command again.
 
 
-
-
-## 💎 Sponsorship & Support 💖
-
-| Sponsor                  | Description                                                    | Link                                                         |
-| ------------------------ | -------------------------------------------------------------- | ------------------------------------------------------------ |
-| 🖥️ [**Petrosky Hosting**](https://client.petrosky.io/aff.php?aff=344) | 👉 [A hosting for your entire journey!](https://client.petrosky.io/aff.php?aff=344) | [Visit Petrosky](https://client.petrosky.io/aff.php?aff=344) |
-
-
-
-
-### 💰 Crypto Donations
+## 💰 Crypto Donations
 
 If you find this project helpful and want to support its development:
 

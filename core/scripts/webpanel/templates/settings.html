@@ -41,6 +41,11 @@
                                     aria-controls='sni' aria-selected='false'><i class="fas fa-shield-alt"></i> Change
                                     SNI</a>
                             </li>
+                             <li class='nav-item'>
+                                <a class='nav-link' id='obfs-tab' data-toggle='pill' href='#obfs' role='tab'
+                                    aria-controls='obfs' aria-selected='false'><i class="fas fa-user-secret"></i>
+                                    OBFS</a>
+                            </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='ip-tab' data-toggle='pill' href='#change_ip' role='tab'
                                     aria-controls='change_ip' aria-selected='false'><i class="fas fa-network-wired"></i>
@@ -181,6 +186,24 @@
                                     </div>
                                     <button id="sni_change" type='button' class='btn btn-primary'>Save</button>
                                 </form>
+                            </div>
+
+                             <!-- OBFS Tab -->
+                            <div class='tab-pane fade' id='obfs' role='tabpanel' aria-labelledby='obfs-tab'>
+                                <div class="mb-3">
+                                    <h5>OBFS Status</h5>
+                                    <div id="obfs_status_container" class="p-3 border rounded">
+                                        <span id="obfs_status_message">Loading OBFS status...</span>
+                                    </div>
+                                </div>
+                                <button id="obfs_enable_btn" type='button' class='btn btn-success' style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                    Enable OBFS
+                                </button>
+                                <button id="obfs_disable_btn" type='button' class='btn btn-danger' style="display: none;">
+                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                    Disable OBFS
+                                </button>
                             </div>
 
                             <!-- Change IP Tab -->
@@ -330,6 +353,7 @@
 
         initUI();
         fetchDecoyStatus();
+        fetchObfsStatus();
 
         function isValidPath(path) {
             if (!path) return false;
@@ -722,6 +746,68 @@
         }
 
 
+        function fetchObfsStatus() {
+            $.ajax({
+                url: "{{ url_for('check_obfs') }}", 
+                type: "GET",
+                success: function (data) {
+                    updateObfsUI(data.obfs);
+                },
+                error: function (xhr, status, error) {
+                    $("#obfs_status_message").html('<span class="text-danger">Failed to fetch OBFS status.</span>');
+                    console.error("Failed to fetch OBFS status:", error, xhr.responseText);
+                     $("#obfs_enable_btn").hide();
+                    $("#obfs_disable_btn").hide();
+                }
+            });
+        }
+
+        function updateObfsUI(statusMessage) {
+            $("#obfs_status_message").text(statusMessage);
+            if (statusMessage === "OBFS is active.") {
+                $("#obfs_enable_btn").hide();
+                $("#obfs_disable_btn").show();
+                $("#obfs_status_container").removeClass("border-danger border-warning").addClass("border-success");
+            } else if (statusMessage === "OBFS is not active.") {
+                $("#obfs_enable_btn").show();
+                $("#obfs_disable_btn").hide();
+                $("#obfs_status_container").removeClass("border-success border-danger").addClass("border-warning");
+            } else {
+                $("#obfs_enable_btn").hide();
+                $("#obfs_disable_btn").hide();
+                $("#obfs_status_container").removeClass("border-success border-warning").addClass("border-danger");
+            }
+        }
+
+        function enableObfs() {
+            confirmAction("enable OBFS", function () {
+                sendRequest(
+                    "{{ url_for('enable_obfs') }}",
+                    "GET",
+                    null,
+                    "OBFS enabled successfully!",
+                    "#obfs_enable_btn",
+                    false, 
+                    fetchObfsStatus 
+                );
+            });
+        }
+
+        function disableObfs() {
+            confirmAction("disable OBFS", function () {
+                sendRequest(
+                    "{{ url_for('disable_obfs') }}",
+                    "GET",
+                    null,
+                    "OBFS disabled successfully!",
+                    "#obfs_disable_btn",
+                    false, 
+                    fetchObfsStatus 
+                );
+            });
+        }
+
+
         function startTelegram() {
             if (!validateForm('telegram_form')) return;
             const apiToken = $("#telegram_api_token").val();
@@ -944,6 +1030,8 @@
         $("#ip_limit_change_config").on("click", configIPLimit);
         $("#decoy_setup").on("click", setupDecoy);
         $("#decoy_stop").on("click", stopDecoy);
+        $("#obfs_enable_btn").on("click", enableObfs);
+        $("#obfs_disable_btn").on("click", disableObfs);
 
 
         $('#normal_domain, #sni_domain, #decoy_domain').on('input', function () {

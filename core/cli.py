@@ -250,19 +250,25 @@ def server_info():
 @cli.command('manage_obfs')
 @click.option('--remove', '-r', is_flag=True, help="Remove 'obfs' from config.json.")
 @click.option('--generate', '-g', is_flag=True, help="Generate new 'obfs' in config.json.")
-def manage_obfs(remove: bool, generate: bool):
+@click.option('--check', '-c', is_flag=True, help="Check 'obfs' status in config.json.")
+def manage_obfs(remove: bool, generate: bool, check: bool):
     try:
-        if not remove and not generate:
-            raise click.UsageError('Error: You must use either --remove or --generate')
-        if remove and generate:
-            raise click.UsageError('Error: You cannot use both --remove and --generate at the same time')
+        options_selected = sum([remove, generate, check])
+        if options_selected == 0:
+            raise click.UsageError('Error: You must use either --remove, --generate, or --check.')
+        if options_selected > 1:
+            raise click.UsageError('Error: You can only use one of --remove, --generate, or --check at a time.')
 
         if generate:
             cli_api.enable_hysteria2_obfs()
-            click.echo('Obfs enabled successfully.')
+            click.echo('OBFS enabled successfully.')
         elif remove:
             cli_api.disable_hysteria2_obfs()
-            click.echo('Obfs disabled successfully.')
+            click.echo('OBFS disabled successfully.')
+        elif check:
+            status_output = cli_api.check_hysteria2_obfs()
+            click.echo(status_output)
+            
     except Exception as e:
         click.echo(f'{e}', err=True)
 

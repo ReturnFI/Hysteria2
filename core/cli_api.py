@@ -218,6 +218,10 @@ def disable_hysteria2_obfs():
     '''Removes 'obfs' from Hysteria2 configuration.'''
     run_cmd(['python3', Command.MANAGE_OBFS.value, '--remove'])
 
+def check_hysteria2_obfs():
+    '''Removes 'obfs' from Hysteria2 configuration.'''
+    result = subprocess.run(["python3", Command.MANAGE_OBFS.value, "--check"], check=True, capture_output=True, text=True)
+    return result.stdout.strip()
 
 def enable_hysteria2_masquerade(domain: str):
     '''Enables masquerade for Hysteria2.'''

@@ -8,7 +8,7 @@ import cli_api
 router = APIRouter()
 
 
-@router.post('/install', response_model=DetailResponse, summary='Install WARP')
+@router.post('/install', response_model=DetailResponse, summary='Install WARP', name="install_warp")
 async def install():
     """
     Installs WARP.
@@ -27,7 +27,7 @@ async def install():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.delete('/uninstall', response_model=DetailResponse, summary='Uninstall WARP')
+@router.delete('/uninstall', response_model=DetailResponse, summary='Uninstall WARP', name="uninstall_warp")
 async def uninstall():
     """
     Uninstalls WARP.
@@ -45,7 +45,7 @@ async def uninstall():
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
 
-@router.post('/configure', response_model=DetailResponse, summary='Configure WARP')
+@router.post('/configure', response_model=DetailResponse, summary='Configure WARP', name="configure_warp")
 async def configure(body: ConfigureInputBody):
     """
     Configures WARP with the given options.
@@ -60,14 +60,23 @@ async def configure(body: ConfigureInputBody):
         HTTPException: If an error occurs during configuration, an HTTP 400 error is raised with the error details.
     """
     try:
-        cli_api.configure_warp(body.all, body.popular_sites, body.domestic_sites,
-                               body.block_adult_sites)
+        all_st = 'on' if body.all else 'off'
+        pop_sites_st = 'on' if body.popular_sites else 'off'
+        dom_sites_st = 'on' if body.domestic_sites else 'off'
+        block_adult_st = 'on' if body.block_adult_sites else 'off'
+        
+        cli_api.configure_warp(
+            all_state=all_st,
+            popular_sites_state=pop_sites_st,
+            domestic_sites_state=dom_sites_st,
+            block_adult_sites_state=block_adult_st
+        )
         return DetailResponse(detail='WARP configured successfully.')
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
+        raise HTTPException(status_code=404, detail=f'Error configuring WARP: {str(e)}')
 
 
-@router.get('/status', response_model=StatusResponse, summary='Get WARP Status')
+@router.get('/status', response_model=StatusResponse, summary='Get WARP Status', name="status_warp")
 async def status():
     try:
         status_json_str = cli_api.warp_status()

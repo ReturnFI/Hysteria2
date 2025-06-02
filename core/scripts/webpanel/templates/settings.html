@@ -66,6 +66,10 @@
                                     aria-controls='decoy' aria-selected='false'><i class="fas fa-mask"></i>
                                     Decoy Site</a>
                             </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' id='warp-tab-link' data-toggle='pill' href='#warp-content' role='tab'
+                                    aria-controls='warp-content' aria-selected='false'><i class="fas fa-cloud"></i> WARP</a>
+                            </li>
                         </ul>
                     </div>
                     <div class='card-body' style="margin-left: 25px;">
@@ -330,6 +334,63 @@
                                 </div>
                             </div>
 
+                            <!-- WARP Tab -->
+                            <div class='tab-pane fade' id='warp-content' role='tabpanel' aria-labelledby='warp-tab-link'>
+                                <div id="warp_initial_controls">
+                                    <div class='alert alert-info'>WARP service is not active.</div>
+                                    <button id="warp_start_btn" type='button' class='btn btn-success mt-3'>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                        Install & Start WARP
+                                    </button>
+                                </div>
+
+                                <div id="warp_active_controls" style="display: none;">
+                                     <div class='alert alert-success mb-3'>WARP service is active.</div>
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            <h3 class="card-title"><i class="fas fa-cogs"></i> WARP Configuration</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="warp_config_form">
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="warp_all_traffic">
+                                                        <label class="custom-control-label" for="warp_all_traffic">Route All Traffic through WARP</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="warp_popular_sites">
+                                                        <label class="custom-control-label" for="warp_popular_sites">Route Popular Sites through WARP</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="warp_domestic_sites">
+                                                        <label class="custom-control-label" for="warp_domestic_sites">Route Domestic Sites through WARP</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="warp_block_adult_sites">
+                                                        <label class="custom-control-label" for="warp_block_adult_sites">Block Adult Sites (WARP Family DNS)</label>
+                                                    </div>
+                                                </div>
+                                                <button id="warp_save_config_btn" type='button' class='btn btn-primary'>
+                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                                    Save Configuration
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <button id="warp_stop_btn" type='button' class='btn btn-danger mt-3'>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                        Stop & Uninstall WARP
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <!-- /.card -->
@@ -543,7 +604,8 @@
              const servicesMap = {
                 "hysteria_telegram_bot": "#telegram_form",
                 "hysteria_normal_sub": "#normal_sub_service_form",
-                "hysteria_iplimit": "#ip-limit-service"
+                "hysteria_iplimit": "#ip-limit-service",
+                "hysteria_warp": "warp_service"
             };
 
             Object.keys(servicesMap).forEach(service => {
@@ -599,7 +661,18 @@
                        $("#max_ips").val("");
                        $("#block_duration, #max_ips").removeClass('is-invalid');
                     }
-                } else { 
+                } else if (service === "hysteria_warp") {
+                    const isWarpServiceRunning = data[service];
+                    if (isWarpServiceRunning) {
+                        $("#warp_initial_controls").hide();
+                        $("#warp_active_controls").show();
+                        fetchWarpFullStatusAndConfig();
+                    } else {
+                        $("#warp_initial_controls").show();
+                        $("#warp_active_controls").hide();
+                        $("#warp_config_form")[0].reset();
+                    }
+                } else {
                     const $formSelector = $(targetSelector);
                     if (isRunning) {
                         $formSelector.find(".form-group").hide();
@@ -1013,6 +1086,84 @@
             });
         }
 
+        function fetchWarpFullStatusAndConfig() {
+            $.ajax({
+                url: "{{ url_for('status_warp') }}",
+                type: "GET",
+                success: function (data) {
+                    $("#warp_all_traffic").prop('checked', data.all_traffic_via_warp || false);
+                    $("#warp_popular_sites").prop('checked', data.popular_sites_via_warp || false);
+                    $("#warp_domestic_sites").prop('checked', data.domestic_sites_via_warp || false);
+                    $("#warp_block_adult_sites").prop('checked', data.block_adult_content || false);
+
+                    $("#warp_initial_controls").hide();
+                    $("#warp_active_controls").show();
+                },
+                error: function (xhr, status, error) {
+                    let errorMsg = "Failed to fetch WARP configuration.";
+                     if (xhr.responseJSON && xhr.responseJSON.detail) {
+                        errorMsg = xhr.responseJSON.detail;
+                    }
+                    console.error("Error fetching WARP config:", errorMsg, xhr.responseText);
+
+                    if (xhr.status === 404) { 
+                        $("#warp_initial_controls").show();
+                        $("#warp_active_controls").hide();
+                        $("#warp_config_form")[0].reset();
+                        Swal.fire("Info", "WARP service might not be fully configured. Please try reinstalling if issues persist.", "info");
+                    } else {
+                        $("#warp_config_form")[0].reset(); 
+                         Swal.fire("Warning", "Could not load current WARP configuration values. Please check manually or re-save.", "warning");
+                    }
+                }
+            });
+        }
+
+        $("#warp_start_btn").on("click", function() {
+            confirmAction("install and start WARP", function () {
+                sendRequest(
+                    "{{ url_for('install_warp') }}",
+                    "POST",
+                    null,
+                    "WARP installation request sent. The page will reload.",
+                    "#warp_start_btn",
+                    true
+                );
+            });
+        });
+
+        $("#warp_stop_btn").on("click", function() {
+            confirmAction("stop and uninstall WARP", function () {
+                sendRequest(
+                    "{{ url_for('uninstall_warp') }}",
+                    "DELETE",
+                    null,
+                    "WARP uninstallation request sent. The page will reload.",
+                    "#warp_stop_btn",
+                    true
+                );
+            });
+        });
+
+        $("#warp_save_config_btn").on("click", function() {
+            const configData = {
+                all: $("#warp_all_traffic").is(":checked"),
+                popular_sites: $("#warp_popular_sites").is(":checked"),
+                domestic_sites: $("#warp_domestic_sites").is(":checked"),
+                block_adult_sites: $("#warp_block_adult_sites").is(":checked")
+            };
+            confirmAction("save WARP configuration", function () {
+                sendRequest(
+                    "{{ url_for('configure_warp') }}",
+                    "POST",
+                    configData,
+                    "WARP configuration saved successfully!",
+                    "#warp_save_config_btn",
+                    false,
+                    fetchWarpFullStatusAndConfig
+                );
+            });
+        });
 
 
         $("#telegram_start").on("click", startTelegram);

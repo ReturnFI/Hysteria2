@@ -367,16 +367,29 @@ def uninstall_warp():
 
 
 @cli.command('configure-warp')
-@click.option('--all', '-a', is_flag=True, help='Use WARP for all connections')
-@click.option('--popular-sites', '-p', is_flag=True, help='Use WARP for popular sites like Google, OpenAI, etc')
-@click.option('--domestic-sites', '-d', is_flag=True, help='Use WARP for Iran domestic sites')
-@click.option('--block-adult-sites', '-x', is_flag=True, help='Block adult content (porn)')
-def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool):
+@click.option('--set-all', 'set_all_traffic', type=click.Choice(['on', 'off']), help='Set WARP for all connections (on/off)', required=False)
+@click.option('--set-popular-sites', type=click.Choice(['on', 'off']), help='Set WARP for popular sites (on/off)', required=False)
+@click.option('--set-domestic-sites', type=click.Choice(['on', 'off']), help='Set behavior for domestic sites (on=WARP, off=REJECT)', required=False)
+@click.option('--set-block-adult-sites', type=click.Choice(['on', 'off']), help='Set block adult content (on/off)', required=False)
+def configure_warp_cmd(set_all_traffic: str | None, 
+                       set_popular_sites: str | None, 
+                       set_domestic_sites: str | None, 
+                       set_block_adult_sites: str | None):
+    if not any([set_all_traffic, set_popular_sites, set_domestic_sites, set_block_adult_sites]):
+        click.echo("Error: At least one configuration option must be provided to configure-warp.", err=True)
+        click.echo("Use --help for more information.")
+        return
+
     try:
-        cli_api.configure_warp(all, popular_sites, domestic_sites, block_adult_sites)
-        click.echo('WARP configured successfully.')
+        cli_api.configure_warp(
+            all_state=set_all_traffic, 
+            popular_sites_state=set_popular_sites, 
+            domestic_sites_state=set_domestic_sites, 
+            block_adult_sites_state=set_block_adult_sites
+        )
+        click.echo('WARP configuration update process initiated.')
     except Exception as e:
-        click.echo(f'{e}', err=True)
+        click.echo(f'Error configuring WARP: {e}', err=True)
 
 @cli.command('warp-status')
 def warp_status():

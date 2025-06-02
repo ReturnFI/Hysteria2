@@ -80,22 +80,21 @@
                                 <ul class='nav nav-tabs' id='subs-tabs' role='tablist'>
                                     <li class='nav-item'>
                                         <a class='nav-link active' id='normal-tab' data-toggle='tab' href='#normal' role='tab'
-                                            aria-controls='normal' aria-selected='true'><strong>Normal</strong></a>
+                                            aria-controls='normal' aria-selected='true'><strong>Service Control</strong></a>
                                     </li>
-                                    <li class='nav-item normal-sub-config-tab-li' style="display: none;"> <!-- Initially hidden -->
+                                    <li class='nav-item normal-sub-config-tab-li' style="display: none;">
                                         <a class='nav-link' id='normal-sub-config-link-tab' data-toggle='tab' href='#normal-sub-config-content' role='tab'
-                                            aria-controls='normal-sub-config-content' aria-selected='false'><strong>Configure</strong></a>
+                                            aria-controls='normal-sub-config-content' aria-selected='false'><strong>Configure Link</strong></a>
                                     </li>
                                 </ul>
                                 <div class='tab-content' id='subs-tabs-content'>
                                      <br>
-                                    <!-- Normal Sub Service Control Tab -->
                                     <div class='tab-pane fade show active' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
                                         <form id="normal_sub_service_form">
                                             <div class='form-group'>
                                                 <label for='normal_domain'>Domain:</label>
                                                 <input type='text' class='form-control' id='normal_domain'
-                                                    placeholder='Enter Domain'>
+                                                    placeholder='sub.example.com'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid domain (without http:// or https://).
                                                 </div>
@@ -103,26 +102,25 @@
                                             <div class='form-group'>
                                                 <label for='normal_port'>Port:</label>
                                                 <input type='text' class='form-control' id='normal_port'
-                                                    placeholder='Enter Port'>
+                                                    placeholder='e.g., 8080'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid port number.
                                                 </div>
                                             </div>
                                             <button id="normal_start" type='button' class='btn btn-success'>
                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                                Start
+                                                Start Service
                                             </button>
                                             <button id="normal_stop" type='button' class='btn btn-danger'
-                                                style="display: none;">Stop</button>
+                                                style="display: none;">Stop Service</button>
                                         </form>
                                     </div>
-                                    <!-- Normal Sub Configuration Tab -->
                                     <div class='tab-pane fade' id='normal-sub-config-content' role='tabpanel' aria-labelledby='normal-sub-config-link-tab'>
                                         <form id="normal_sub_config_form">
                                             <div class='form-group'>
-                                                <label for='normal_subpath_input'>Subpath:</label>
+                                                <label for='normal_subpath_input'>Subscription Path Segment:</label>
                                                 <input type='text' class='form-control' id='normal_subpath_input'
-                                                    placeholder='Enter subpath (e.g., mysub)'>
+                                                    placeholder='e.g., mysub (becomes /mysub/...)'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid subpath (alphanumeric characters only, e.g., mysub).
                                                 </div>
@@ -235,18 +233,41 @@
 
                             <!-- Backup Tab -->
                             <div class='tab-pane fade' id='backup' role='tabpanel' aria-labelledby='backup-tab'>
-                                <div class="form-group">
-                                     <label for="backup_file">Upload Backup:</label>
-                                     <input type="file" class="form-control-file" id="backup_file" accept=".zip">
-                                 </div>
-                                <button id="upload_backup" type='button' class='btn btn-success'>Upload</button>
-                                <button id="download_backup" type='button' class='btn btn-primary'>Download Backup</button>
-
-                                <div class="progress mt-3" style="display: none;">
-                                  <div id="backup_progress_bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card card-outline card-success h-100">
+                                            <div class="card-header">
+                                                <h3 class="card-title"><i class="fas fa-upload"></i> Restore from Backup</h3>
+                                            </div>
+                                            <div class="card-body">
+                                                <p>Upload a previously downloaded .zip backup file to restore your panel settings and Hysteria configuration.</p>
+                                                <div class="form-group">
+                                                     <label for="backup_file">Select Backup File (.zip):</label>
+                                                     <input type="file" class="form-control-file" id="backup_file" accept=".zip">
+                                                </div>
+                                                <button id="upload_backup" type='button' class='btn btn-success btn-block'>
+                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                                    Upload and Restore
+                                                </button>
+                                                <div class="progress mt-3" style="display: none;">
+                                                  <div id="backup_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                                </div>
+                                               <div id="backup_status" class="mt-2 small"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card card-outline card-primary h-100">
+                                            <div class="card-header">
+                                                <h3 class="card-title"><i class="fas fa-download"></i> Create New Backup</h3>
+                                            </div>
+                                            <div class="card-body d-flex flex-column justify-content-center">
+                                                <p>Download a .zip file containing a full backup of your panel settings and Hysteria configuration.</p>
+                                                <button id="download_backup" type='button' class='btn btn-primary btn-block mt-auto'>Download Backup</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-
-                               <div id="backup_status" class="mt-2"></div>
                             </div>
 
                             <!-- IP Limit Tab -->
@@ -347,9 +368,9 @@
                                 <div id="warp_active_controls" style="display: none;">
                                      <div class='alert alert-success mb-3'>WARP service is active.</div>
 
-                                    <div class="card card-secondary">
+                                    <div class="card card-outline card-secondary">
                                         <div class="card-header">
-                                            <h3 class="card-title"><i class="fas fa-cogs"></i> WARP Configuration</h3>
+                                            <h3 class="card-title"><i class="fas fa-cogs"></i> WARP Routing Configuration</h3>
                                         </div>
                                         <div class="card-body">
                                             <form id="warp_config_form">
@@ -707,7 +728,7 @@
                 }
             });
         }
-        
+
         function fetchIpLimitConfig() {
             $.ajax({
                 url: "{{ url_for('get_ip_limit_config_api') }}",
@@ -840,15 +861,15 @@
             if (statusMessage === "OBFS is active.") {
                 $("#obfs_enable_btn").hide();
                 $("#obfs_disable_btn").show();
-                $("#obfs_status_container").removeClass("border-danger border-warning").addClass("border-success");
+                $("#obfs_status_container").removeClass("border-danger border-warning alert-danger alert-warning").addClass("border-success alert-success");
             } else if (statusMessage === "OBFS is not active.") {
                 $("#obfs_enable_btn").show();
                 $("#obfs_disable_btn").hide();
-                $("#obfs_status_container").removeClass("border-success border-danger").addClass("border-warning");
+                $("#obfs_status_container").removeClass("border-success border-danger alert-success alert-danger").addClass("border-warning alert-warning");
             } else {
                 $("#obfs_enable_btn").hide();
                 $("#obfs_disable_btn").hide();
-                $("#obfs_status_container").removeClass("border-success border-warning").addClass("border-danger");
+                $("#obfs_status_container").removeClass("border-success border-warning alert-success alert-warning").addClass("border-danger alert-danger");
             }
         }
 

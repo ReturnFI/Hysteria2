@@ -1,5 +1,5 @@
 from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile, File
-from ..schema.config.hysteria import ConfigFile, GetPortResponse, GetSniResponse
+from ..schema.config.hysteria import ConfigFile, GetPortResponse, GetSniResponse, GetObfsResponse
 from ..schema.response import DetailResponse, IPLimitConfig, SetupDecoyRequest, DecoyStatusResponse, IPLimitConfigResponse
 from fastapi.responses import FileResponse
 import shutil
@@ -222,6 +222,23 @@ async def disable_obfs():
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Error: {str(e)}')
 
+
+@router.get('/check-obfs', response_model=GetObfsResponse, summary='Check Hysteria2 OBFS Status')
+async def check_obfs():
+    """
+    Checks the current status of Hysteria2 OBFS.
+
+    Returns:
+        A GetObfsResponse containing the Hysteria2 OBFS status message (e.g., 'OBFS is active.').
+
+    Raises:
+        HTTPException: if an error occurs while checking the Hysteria2 OBFS status.
+    """
+    try:
+        obfs_status_message = cli_api.check_hysteria2_obfs()
+        return GetObfsResponse(obfs=obfs_status_message)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Error checking OBFS status: {str(e)}')
 
 @router.get('/enable-masquerade/{domain}', response_model=DetailResponse, summary='Enable Hysteria2 masquerade')
 async def enable_masquerade(domain: str):

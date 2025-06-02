@@ -218,6 +218,10 @@ def disable_hysteria2_obfs():
     '''Removes 'obfs' from Hysteria2 configuration.'''
     run_cmd(['python3', Command.MANAGE_OBFS.value, '--remove'])
 
+def check_hysteria2_obfs():
+    '''Removes 'obfs' from Hysteria2 configuration.'''
+    result = subprocess.run(["python3", Command.MANAGE_OBFS.value, "--check"], check=True, capture_output=True, text=True)
+    return result.stdout.strip()
 
 def enable_hysteria2_masquerade(domain: str):
     '''Enables masquerade for Hysteria2.'''
@@ -458,21 +462,28 @@ def uninstall_warp():
     run_cmd(['python3', Command.UNINSTALL_WARP.value])
 
 
-def configure_warp(all: bool, popular_sites: bool, domestic_sites: bool, block_adult_sites: bool):
+def configure_warp(all_state: str | None = None, 
+                   popular_sites_state: str | None = None, 
+                   domestic_sites_state: str | None = None, 
+                   block_adult_sites_state: str | None = None):
     '''
-    Configures WARP with various options.
+    Configures WARP with various options. States are 'on' or 'off'.
     '''
     cmd_args = [
         'python3', Command.CONFIGURE_WARP.value
     ]
-    if all:
-        cmd_args.append('--all')
-    if popular_sites:
-        cmd_args.append('--popular-sites')
-    if domestic_sites:
-        cmd_args.append('--domestic-sites')
-    if block_adult_sites:
-        cmd_args.append('--block-adult')
+    if all_state:
+        cmd_args.extend(['--set-all', all_state])
+    if popular_sites_state:
+        cmd_args.extend(['--set-popular-sites', popular_sites_state])
+    if domestic_sites_state:
+        cmd_args.extend(['--set-domestic-sites', domestic_sites_state])
+    if block_adult_sites_state:
+        cmd_args.extend(['--set-block-adult', block_adult_sites_state])
+
+    if len(cmd_args) == 2: 
+        print("No WARP configuration options provided to cli_api.configure_warp.")
+        return 
 
     run_cmd(cmd_args)
 

@@ -41,6 +41,11 @@
                                     aria-controls='sni' aria-selected='false'><i class="fas fa-shield-alt"></i> Change
                                     SNI</a>
                             </li>
+                             <li class='nav-item'>
+                                <a class='nav-link' id='obfs-tab' data-toggle='pill' href='#obfs' role='tab'
+                                    aria-controls='obfs' aria-selected='false'><i class="fas fa-user-secret"></i>
+                                    OBFS</a>
+                            </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='ip-tab' data-toggle='pill' href='#change_ip' role='tab'
                                     aria-controls='change_ip' aria-selected='false'><i class="fas fa-network-wired"></i>
@@ -61,6 +66,10 @@
                                     aria-controls='decoy' aria-selected='false'><i class="fas fa-mask"></i>
                                     Decoy Site</a>
                             </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' id='warp-tab-link' data-toggle='pill' href='#warp-content' role='tab'
+                                    aria-controls='warp-content' aria-selected='false'><i class="fas fa-cloud"></i> WARP</a>
+                            </li>
                         </ul>
                     </div>
                     <div class='card-body' style="margin-left: 25px;">
@@ -71,22 +80,21 @@
                                 <ul class='nav nav-tabs' id='subs-tabs' role='tablist'>
                                     <li class='nav-item'>
                                         <a class='nav-link active' id='normal-tab' data-toggle='tab' href='#normal' role='tab'
-                                            aria-controls='normal' aria-selected='true'><strong>Normal</strong></a>
+                                            aria-controls='normal' aria-selected='true'><strong>Service Control</strong></a>
                                     </li>
-                                    <li class='nav-item normal-sub-config-tab-li' style="display: none;"> <!-- Initially hidden -->
+                                    <li class='nav-item normal-sub-config-tab-li' style="display: none;">
                                         <a class='nav-link' id='normal-sub-config-link-tab' data-toggle='tab' href='#normal-sub-config-content' role='tab'
-                                            aria-controls='normal-sub-config-content' aria-selected='false'><strong>Configure</strong></a>
+                                            aria-controls='normal-sub-config-content' aria-selected='false'><strong>Configure Link</strong></a>
                                     </li>
                                 </ul>
                                 <div class='tab-content' id='subs-tabs-content'>
                                      <br>
-                                    <!-- Normal Sub Service Control Tab -->
                                     <div class='tab-pane fade show active' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
                                         <form id="normal_sub_service_form">
                                             <div class='form-group'>
                                                 <label for='normal_domain'>Domain:</label>
                                                 <input type='text' class='form-control' id='normal_domain'
-                                                    placeholder='Enter Domain'>
+                                                    placeholder='sub.example.com'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid domain (without http:// or https://).
                                                 </div>
@@ -94,26 +102,25 @@
                                             <div class='form-group'>
                                                 <label for='normal_port'>Port:</label>
                                                 <input type='text' class='form-control' id='normal_port'
-                                                    placeholder='Enter Port'>
+                                                    placeholder='e.g., 8080'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid port number.
                                                 </div>
                                             </div>
                                             <button id="normal_start" type='button' class='btn btn-success'>
                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                                Start
+                                                Start Service
                                             </button>
                                             <button id="normal_stop" type='button' class='btn btn-danger'
-                                                style="display: none;">Stop</button>
+                                                style="display: none;">Stop Service</button>
                                         </form>
                                     </div>
-                                    <!-- Normal Sub Configuration Tab -->
                                     <div class='tab-pane fade' id='normal-sub-config-content' role='tabpanel' aria-labelledby='normal-sub-config-link-tab'>
                                         <form id="normal_sub_config_form">
                                             <div class='form-group'>
-                                                <label for='normal_subpath_input'>Subpath:</label>
+                                                <label for='normal_subpath_input'>Subscription Path Segment:</label>
                                                 <input type='text' class='form-control' id='normal_subpath_input'
-                                                    placeholder='Enter subpath (e.g., mysub)'>
+                                                    placeholder='e.g., mysub (becomes /mysub/...)'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid subpath (alphanumeric characters only, e.g., mysub).
                                                 </div>
@@ -183,6 +190,24 @@
                                 </form>
                             </div>
 
+                             <!-- OBFS Tab -->
+                            <div class='tab-pane fade' id='obfs' role='tabpanel' aria-labelledby='obfs-tab'>
+                                <div class="mb-3">
+                                    <h5>OBFS Status</h5>
+                                    <div id="obfs_status_container" class="p-3 border rounded">
+                                        <span id="obfs_status_message">Loading OBFS status...</span>
+                                    </div>
+                                </div>
+                                <button id="obfs_enable_btn" type='button' class='btn btn-success' style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                    Enable OBFS
+                                </button>
+                                <button id="obfs_disable_btn" type='button' class='btn btn-danger' style="display: none;">
+                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                    Disable OBFS
+                                </button>
+                            </div>
+
                             <!-- Change IP Tab -->
                             <div class='tab-pane fade' id='change_ip' role='tabpanel' aria-labelledby='ip-tab'>
                                 <form id="change_ip_form">
@@ -208,18 +233,41 @@
 
                             <!-- Backup Tab -->
                             <div class='tab-pane fade' id='backup' role='tabpanel' aria-labelledby='backup-tab'>
-                                <div class="form-group">
-                                     <label for="backup_file">Upload Backup:</label>
-                                     <input type="file" class="form-control-file" id="backup_file" accept=".zip">
-                                 </div>
-                                <button id="upload_backup" type='button' class='btn btn-success'>Upload</button>
-                                <button id="download_backup" type='button' class='btn btn-primary'>Download Backup</button>
-
-                                <div class="progress mt-3" style="display: none;">
-                                  <div id="backup_progress_bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card card-outline card-success h-100">
+                                            <div class="card-header">
+                                                <h3 class="card-title"><i class="fas fa-upload"></i> Restore from Backup</h3>
+                                            </div>
+                                            <div class="card-body">
+                                                <p>Upload a previously downloaded .zip backup file to restore your panel settings and Hysteria configuration.</p>
+                                                <div class="form-group">
+                                                     <label for="backup_file">Select Backup File (.zip):</label>
+                                                     <input type="file" class="form-control-file" id="backup_file" accept=".zip">
+                                                </div>
+                                                <button id="upload_backup" type='button' class='btn btn-success btn-block'>
+                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                                    Upload and Restore
+                                                </button>
+                                                <div class="progress mt-3" style="display: none;">
+                                                  <div id="backup_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                                </div>
+                                               <div id="backup_status" class="mt-2 small"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card card-outline card-primary h-100">
+                                            <div class="card-header">
+                                                <h3 class="card-title"><i class="fas fa-download"></i> Create New Backup</h3>
+                                            </div>
+                                            <div class="card-body d-flex flex-column justify-content-center">
+                                                <p>Download a .zip file containing a full backup of your panel settings and Hysteria configuration.</p>
+                                                <button id="download_backup" type='button' class='btn btn-primary btn-block mt-auto'>Download Backup</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-
-                               <div id="backup_status" class="mt-2"></div>
                             </div>
 
                             <!-- IP Limit Tab -->
@@ -307,6 +355,63 @@
                                 </div>
                             </div>
 
+                            <!-- WARP Tab -->
+                            <div class='tab-pane fade' id='warp-content' role='tabpanel' aria-labelledby='warp-tab-link'>
+                                <div id="warp_initial_controls">
+                                    <div class='alert alert-info'>WARP service is not active.</div>
+                                    <button id="warp_start_btn" type='button' class='btn btn-success mt-3'>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                        Install & Start WARP
+                                    </button>
+                                </div>
+
+                                <div id="warp_active_controls" style="display: none;">
+                                     <div class='alert alert-success mb-3'>WARP service is active.</div>
+
+                                    <div class="card card-outline card-secondary">
+                                        <div class="card-header">
+                                            <h3 class="card-title"><i class="fas fa-cogs"></i> WARP Routing Configuration</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="warp_config_form">
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="warp_all_traffic">
+                                                        <label class="custom-control-label" for="warp_all_traffic">Route All Traffic through WARP</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="warp_popular_sites">
+                                                        <label class="custom-control-label" for="warp_popular_sites">Route Popular Sites through WARP</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="warp_domestic_sites">
+                                                        <label class="custom-control-label" for="warp_domestic_sites">Route Domestic Sites through WARP</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="warp_block_adult_sites">
+                                                        <label class="custom-control-label" for="warp_block_adult_sites">Block Adult Sites (WARP Family DNS)</label>
+                                                    </div>
+                                                </div>
+                                                <button id="warp_save_config_btn" type='button' class='btn btn-primary'>
+                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                                    Save Configuration
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <button id="warp_stop_btn" type='button' class='btn btn-danger mt-3'>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                        Stop & Uninstall WARP
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <!-- /.card -->
@@ -330,6 +435,7 @@
 
         initUI();
         fetchDecoyStatus();
+        fetchObfsStatus();
 
         function isValidPath(path) {
             if (!path) return false;
@@ -519,7 +625,8 @@
              const servicesMap = {
                 "hysteria_telegram_bot": "#telegram_form",
                 "hysteria_normal_sub": "#normal_sub_service_form",
-                "hysteria_iplimit": "#ip-limit-service"
+                "hysteria_iplimit": "#ip-limit-service",
+                "hysteria_warp": "warp_service"
             };
 
             Object.keys(servicesMap).forEach(service => {
@@ -575,7 +682,18 @@
                        $("#max_ips").val("");
                        $("#block_duration, #max_ips").removeClass('is-invalid');
                     }
-                } else { 
+                } else if (service === "hysteria_warp") {
+                    const isWarpServiceRunning = data[service];
+                    if (isWarpServiceRunning) {
+                        $("#warp_initial_controls").hide();
+                        $("#warp_active_controls").show();
+                        fetchWarpFullStatusAndConfig();
+                    } else {
+                        $("#warp_initial_controls").show();
+                        $("#warp_active_controls").hide();
+                        $("#warp_config_form")[0].reset();
+                    }
+                } else {
                     const $formSelector = $(targetSelector);
                     if (isRunning) {
                         $formSelector.find(".form-group").hide();
@@ -610,7 +728,7 @@
                 }
             });
         }
-        
+
         function fetchIpLimitConfig() {
             $.ajax({
                 url: "{{ url_for('get_ip_limit_config_api') }}",
@@ -719,6 +837,68 @@
                 $alertInfo.remove();
                 $("#decoy_status_message").html('<strong>Status:</strong> <span class="text-danger">Not Active</span>');
             }
+        }
+
+
+        function fetchObfsStatus() {
+            $.ajax({
+                url: "{{ url_for('check_obfs') }}", 
+                type: "GET",
+                success: function (data) {
+                    updateObfsUI(data.obfs);
+                },
+                error: function (xhr, status, error) {
+                    $("#obfs_status_message").html('<span class="text-danger">Failed to fetch OBFS status.</span>');
+                    console.error("Failed to fetch OBFS status:", error, xhr.responseText);
+                     $("#obfs_enable_btn").hide();
+                    $("#obfs_disable_btn").hide();
+                }
+            });
+        }
+
+        function updateObfsUI(statusMessage) {
+            $("#obfs_status_message").text(statusMessage);
+            if (statusMessage === "OBFS is active.") {
+                $("#obfs_enable_btn").hide();
+                $("#obfs_disable_btn").show();
+                $("#obfs_status_container").removeClass("border-danger border-warning alert-danger alert-warning").addClass("border-success alert-success");
+            } else if (statusMessage === "OBFS is not active.") {
+                $("#obfs_enable_btn").show();
+                $("#obfs_disable_btn").hide();
+                $("#obfs_status_container").removeClass("border-success border-danger alert-success alert-danger").addClass("border-warning alert-warning");
+            } else {
+                $("#obfs_enable_btn").hide();
+                $("#obfs_disable_btn").hide();
+                $("#obfs_status_container").removeClass("border-success border-warning alert-success alert-warning").addClass("border-danger alert-danger");
+            }
+        }
+
+        function enableObfs() {
+            confirmAction("enable OBFS", function () {
+                sendRequest(
+                    "{{ url_for('enable_obfs') }}",
+                    "GET",
+                    null,
+                    "OBFS enabled successfully!",
+                    "#obfs_enable_btn",
+                    false, 
+                    fetchObfsStatus 
+                );
+            });
+        }
+
+        function disableObfs() {
+            confirmAction("disable OBFS", function () {
+                sendRequest(
+                    "{{ url_for('disable_obfs') }}",
+                    "GET",
+                    null,
+                    "OBFS disabled successfully!",
+                    "#obfs_disable_btn",
+                    false, 
+                    fetchObfsStatus 
+                );
+            });
         }
 
 
@@ -927,6 +1107,84 @@
             });
         }
 
+        function fetchWarpFullStatusAndConfig() {
+            $.ajax({
+                url: "{{ url_for('status_warp') }}",
+                type: "GET",
+                success: function (data) {
+                    $("#warp_all_traffic").prop('checked', data.all_traffic_via_warp || false);
+                    $("#warp_popular_sites").prop('checked', data.popular_sites_via_warp || false);
+                    $("#warp_domestic_sites").prop('checked', data.domestic_sites_via_warp || false);
+                    $("#warp_block_adult_sites").prop('checked', data.block_adult_content || false);
+
+                    $("#warp_initial_controls").hide();
+                    $("#warp_active_controls").show();
+                },
+                error: function (xhr, status, error) {
+                    let errorMsg = "Failed to fetch WARP configuration.";
+                     if (xhr.responseJSON && xhr.responseJSON.detail) {
+                        errorMsg = xhr.responseJSON.detail;
+                    }
+                    console.error("Error fetching WARP config:", errorMsg, xhr.responseText);
+
+                    if (xhr.status === 404) { 
+                        $("#warp_initial_controls").show();
+                        $("#warp_active_controls").hide();
+                        $("#warp_config_form")[0].reset();
+                        Swal.fire("Info", "WARP service might not be fully configured. Please try reinstalling if issues persist.", "info");
+                    } else {
+                        $("#warp_config_form")[0].reset(); 
+                         Swal.fire("Warning", "Could not load current WARP configuration values. Please check manually or re-save.", "warning");
+                    }
+                }
+            });
+        }
+
+        $("#warp_start_btn").on("click", function() {
+            confirmAction("install and start WARP", function () {
+                sendRequest(
+                    "{{ url_for('install_warp') }}",
+                    "POST",
+                    null,
+                    "WARP installation request sent. The page will reload.",
+                    "#warp_start_btn",
+                    true
+                );
+            });
+        });
+
+        $("#warp_stop_btn").on("click", function() {
+            confirmAction("stop and uninstall WARP", function () {
+                sendRequest(
+                    "{{ url_for('uninstall_warp') }}",
+                    "DELETE",
+                    null,
+                    "WARP uninstallation request sent. The page will reload.",
+                    "#warp_stop_btn",
+                    true
+                );
+            });
+        });
+
+        $("#warp_save_config_btn").on("click", function() {
+            const configData = {
+                all: $("#warp_all_traffic").is(":checked"),
+                popular_sites: $("#warp_popular_sites").is(":checked"),
+                domestic_sites: $("#warp_domestic_sites").is(":checked"),
+                block_adult_sites: $("#warp_block_adult_sites").is(":checked")
+            };
+            confirmAction("save WARP configuration", function () {
+                sendRequest(
+                    "{{ url_for('configure_warp') }}",
+                    "POST",
+                    configData,
+                    "WARP configuration saved successfully!",
+                    "#warp_save_config_btn",
+                    false,
+                    fetchWarpFullStatusAndConfig
+                );
+            });
+        });
 
 
         $("#telegram_start").on("click", startTelegram);
@@ -944,6 +1202,8 @@
         $("#ip_limit_change_config").on("click", configIPLimit);
         $("#decoy_setup").on("click", setupDecoy);
         $("#decoy_stop").on("click", stopDecoy);
+        $("#obfs_enable_btn").on("click", enableObfs);
+        $("#obfs_disable_btn").on("click", disableObfs);
 
 
         $('#normal_domain, #sni_domain, #decoy_domain').on('input', function () {

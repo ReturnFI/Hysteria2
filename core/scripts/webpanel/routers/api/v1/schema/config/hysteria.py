@@ -18,3 +18,6 @@ class GetPortResponse(BaseModel):
 
 class GetSniResponse(BaseModel):
     sni: str
+
+class GetObfsResponse(BaseModel):
+    obfs: str

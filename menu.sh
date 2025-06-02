@@ -384,18 +384,17 @@ warp_configure_handler() {
 
     if systemctl is-active --quiet "$service_name"; then
         echo -e "${cyan}=== WARP Status ===${NC}"
-        
         status_json=$(python3 $CLI_PATH warp-status)
         
         all_traffic=$(echo "$status_json" | grep -o '"all_traffic_via_warp": *[^,}]*' | cut -d':' -f2 | tr -d ' "')
         popular_sites=$(echo "$status_json" | grep -o '"popular_sites_via_warp": *[^,}]*' | cut -d':' -f2 | tr -d ' "')
-        domestic_sites=$(echo "$status_json" | grep -o '"domestic_sites_via_warp": *[^,}]*' | cut -d':' -f2 | tr -d ' "')
+        domestic_sites_via_warp=$(echo "$status_json" | grep -o '"domestic_sites_via_warp": *[^,}]*' | cut -d':' -f2 | tr -d ' "')
         block_adult=$(echo "$status_json" | grep -o '"block_adult_content": *[^,}]*' | cut -d':' -f2 | tr -d ' "')
         
         display_status() {
             local label="$1"
-            local status="$2"
-            if [ "$status" = "true" ]; then
+            local status_val="$2"
+            if [ "$status_val" = "true" ]; then
                 echo -e "  ${green}✓${NC} $label: ${green}Enabled${NC}"
             else
                 echo -e "  ${red}✗${NC} $label: ${red}Disabled${NC}"
@@ -404,38 +403,49 @@ warp_configure_handler() {
         
         display_status "All Traffic via WARP" "$all_traffic"
         display_status "Popular Sites via WARP" "$popular_sites"
-        display_status "Domestic Sites via WARP" "$domestic_sites"
+        display_status "Domestic Sites via WARP" "$domestic_sites_via_warp"
         display_status "Block Adult Content" "$block_adult"
         
         echo -e "${cyan}==================${NC}"
         echo
         
-        echo "Configure WARP Options:"
-        echo "1. Use WARP for all traffic"
-        echo "2. Use WARP for popular sites"
-        echo "3. Use WARP for domestic sites"
+        echo "Configure WARP Options (Toggle):"
+        echo "1. All traffic via WARP"
+        echo "2. Popular sites via WARP"
+        echo "3. Domestic sites (WARP/Reject)"
         echo "4. Block adult content"
-        echo "5. WARP Status Profile"
-        echo "6. Change IP address"
+        echo "5. WARP Status Profile (IP etc.)"
+        echo "6. Change WARP IP address"
         echo "0. Cancel"
 
-        read -p "Select an option: " option
+        read -p "Select an option to toggle: " option
 
         case $option in
-            1) python3 $CLI_PATH configure-warp --all ;;
-            2) python3 $CLI_PATH configure-warp --popular-sites ;;
-            3) python3 $CLI_PATH configure-warp --domestic-sites ;;
-            4) python3 $CLI_PATH configure-warp --block-adult-sites ;;
+            1) 
+                target_state=$([ "$all_traffic" = "true" ] && echo "off" || echo "on")
+                python3 $CLI_PATH configure-warp --set-all "$target_state" ;;
+            2) 
+                target_state=$([ "$popular_sites" = "true" ] && echo "off" || echo "on")
+                python3 $CLI_PATH configure-warp --set-popular-sites "$target_state" ;;
+            3) 
+                target_state=$([ "$domestic_sites_via_warp" = "true" ] && echo "off" || echo "on")
+                python3 $CLI_PATH configure-warp --set-domestic-sites "$target_state" ;;
+            4) 
+                target_state=$([ "$block_adult" = "true" ] && echo "off" || echo "on")
+                python3 $CLI_PATH configure-warp --set-block-adult-sites "$target_state" ;;
             5) 
-                ip=$(curl -s --interface wgcf --connect-timeout 0.5 http://v4.ident.me)
+                current_ip=$(python3 $CLI_PATH warp-status | grep -o '"ip": *"[^"]*"' | cut -d':' -f2- | tr -d '" ')
+                if [ -z "$current_ip" ]; then 
+                    current_ip=$(curl -s --interface wgcf --connect-timeout 1 http://v4.ident.me || echo "N/A")
+                fi
                 cd /etc/warp/ && wgcf status
                 echo
-                echo -e "${yellow}Warp IP:${NC} ${cyan}$ip${NC}" 
+                echo -e "${yellow}Warp IP:${NC} ${cyan}${current_ip}${NC}" 
                 ;;
             6)
-                old_ip=$(curl -s --interface wgcf --connect-timeout 0.5 http://v4.ident.me)
+                old_ip=$(curl -s --interface wgcf --connect-timeout 1 http://v4.ident.me || echo "N/A")
                 echo -e "${yellow}Current IP:${NC} ${cyan}$old_ip${NC}"
-                echo "Restarting $service_name..."
+                echo "Restarting $service_name to attempt IP change..."
                 systemctl restart "$service_name"
                 
                 echo -n "Waiting for service to restart"
@@ -445,18 +455,22 @@ warp_configure_handler() {
                 done
                 echo
                 
-                new_ip=$(curl -s --interface wgcf --connect-timeout 0.5 http://v4.ident.me)
+                new_ip=$(curl -s --interface wgcf --connect-timeout 1 http://v4.ident.me || echo "N/A")
                 echo -e "${yellow}New IP:${NC} ${green}$new_ip${NC}"
                 
-                if [ "$old_ip" != "$new_ip" ]; then
+                if [ "$old_ip" != "N/A" ] && [ "$new_ip" != "N/A" ] && [ "$old_ip" != "$new_ip" ]; then
                     echo -e "${green}✓ IP address changed successfully${NC}"
-                else
+                elif [ "$old_ip" = "$new_ip" ] && [ "$old_ip" != "N/A" ]; then
                     echo -e "${yellow}⚠ IP address remained the same${NC}"
+                else
+                    echo -e "${red}✗ Could not verify IP change.${NC}"
                 fi
                 ;;
             0) echo "WARP configuration canceled." ;;
             *) echo -e "${red}Invalid option. Please try again.${NC}" ;;
         esac
+        # echo "Command sent. Check status again to see changes."
+
     else
         echo -e "${red}$service_name is not active. Please start the service before configuring WARP.${NC}"
     fi

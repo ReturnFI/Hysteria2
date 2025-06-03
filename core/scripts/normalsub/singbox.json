@@ -24,12 +24,11 @@
       {
         "type": "https",
         "server": "1.1.1.1",
-        "address_resolver": "local-dns",
         "detour": "proxy",
         "tag": "proxy-dns"
       },
       {
-        "address": "local",
+        "type": "local",
         "detour": "direct",
         "tag": "local-dns"
       }
@@ -146,13 +145,13 @@
         "rule_set": [
           "geosite-ir",
           "geoip-ir",
-          "geosite-private"
+          "geoip-private"
         ]
       },
       {
         "action": "reject",
         "rule_set": [
-          "geoip-ads"
+          "geosite-ads"
         ]
       }
     ]

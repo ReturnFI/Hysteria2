@@ -1,158 +1,154 @@
 {
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
   "dns": {
-    "final": "local-dns",
-    "rules": [
-      {
-        "action": "route",
-        "clash_mode": "Global",
-        "server": "proxy-dns",
-        "source_ip_cidr": [
-          "172.19.0.0/30",
-          "fdfe:dcba:9876::1/126"
-        ]
-      },
-      {
-        "action": "route",
-        "server": "proxy-dns",
-        "source_ip_cidr": [
-          "172.19.0.0/30",
-          "fdfe:dcba:9876::1/126"
-        ]
-      }
-    ],
     "servers": [
       {
-        "type": "https",
-        "server": "1.1.1.1",
-        "detour": "proxy",
-        "tag": "proxy-dns"
+        "tag": "proxyDns",
+        "address": "tls://8.8.8.8",
+        "detour": "Proxy"
       },
       {
-        "type": "local",
-        "detour": "direct",
-        "tag": "local-dns"
+        "tag": "localDns",
+        "address": "8.8.8.8",
+        "detour": "direct"
       }
     ],
-    "strategy": "prefer_ipv4"
+    "rules": [
+      {
+        "outbound": "any",
+        "server": "localDns"
+      },
+      {
+        "rule_set": "geosite-ir",
+        "server": "proxyDns"
+      },
+      {
+        "clash_mode": "direct",
+        "server": "localDns"
+      },
+      {
+        "clash_mode": "global",
+        "server": "proxyDns"
+      }
+    ],
+    "final": "localDns",
+    "strategy": "ipv4_only"
   },
   "inbounds": [
     {
-      "address": [
-        "172.19.0.1/30",
-        "fdfe:dcba:9876::1/126"
-      ],
+      "type": "tun",
+      "tag": "tun-in",
+      "address": "172.19.0.1/30",
       "auto_route": true,
-      "endpoint_independent_nat": false,
-      "mtu": 9000,
-      "platform": {
-        "http_proxy": {
-          "enabled": true,
-          "server": "127.0.0.1",
-          "server_port": 2080
-        }
-      },
-      "stack": "system",
-      "strict_route": false,
-      "type": "tun"
-    },
-    {
-      "listen": "127.0.0.1",
-      "listen_port": 2080,
-      "type": "mixed",
-      "users": []
+      "strict_route": true
     }
   ],
-  "log": {
-    "level": "warn",
-    "timestamp": true
-  },
   "outbounds": [
     {
+      "tag": "Proxy",
+      "type": "selector",
       "outbounds": [
         "auto",
         "direct"
-      ],
-      "tag": "proxy",
-      "type": "selector"
+      ]
     },
     {
-      "interval": "10m",
-      "outbounds": [],
+      "tag": "Global",
+      "type": "selector",
+      "outbounds": [
+        "direct"
+      ]
+    },
+    {
       "tag": "auto",
-      "tolerance": 50,
       "type": "urltest",
-      "url": "http://www.gstatic.com/generate_204"
+      "outbounds": [
+        "Proxy"
+      ],
+      "url": "http://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "tolerance": 50
     },
     {
-      "tag": "direct",
-      "type": "direct"
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "direct",
+      "tag": "local"
     }
   ],
   "route": {
     "auto_detect_interface": true,
-    "final": "proxy",
-    "rule_set": [
-      {
-        "download_detour": "direct",
-        "format": "binary",
-        "tag": "geosite-ads",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-category-ads-all.srs"
-      },
-      {
-        "download_detour": "direct",
-        "format": "binary",
-        "tag": "geoip-private",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-private.srs"
-      },
-      {
-        "download_detour": "direct",
-        "format": "binary",
-        "tag": "geosite-ir",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-ir.srs"
-      },
-      {
-        "download_detour": "direct",
-        "format": "binary",
-        "tag": "geoip-ir",
-        "type": "remote",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-ir.srs"
-      }
-    ],
+    "final": "Proxy",
     "rules": [
       {
+        "inbound": [
+          "tun-in",
+          "mixed-in"
+        ],
         "action": "sniff"
       },
       {
-        "action": "route",
-        "clash_mode": "Direct",
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 53
+          },
+          {
+            "protocol": "dns"
+          }
+        ],
+        "action": "hijack-dns"
+      },
+      {
+        "rule_set": "geosite-category-ads-all",
+        "action": "reject"
+      },
+      {
+        "rule_set": "geosite-category-ads-all",
+        "outbound": "Proxy"
+      },
+      {
+        "ip_is_private": true,
         "outbound": "direct"
       },
       {
         "action": "route",
-        "clash_mode": "Global",
-        "outbound": "proxy"
-      },
-      {
-        "action": "hijack-dns",
-        "protocol": "dns"
+        "rule_set": "geosite-ir",
+        "outbound": "direct"
       },
       {
         "action": "route",
-        "outbound": "direct",
-        "rule_set": [
-          "geosite-ir",
-          "geoip-ir",
-          "geoip-private"
-        ]
+        "rule_set": "geoip-ir",
+        "outbound": "direct"
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": "geosite-category-ads-all",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-category-ads-all.srs",
+        "download_detour": "direct"
       },
       {
-        "action": "reject",
-        "rule_set": [
-          "geosite-ads"
-        ]
+        "type": "remote",
+        "tag": "geoip-ir",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-ir.srs",
+        "update_interval": "120h0m0s"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-ir",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-ir.srs",
+        "update_interval": "120h0m0s"
       }
     ]
   }

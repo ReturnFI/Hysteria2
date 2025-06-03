@@ -626,14 +626,15 @@
                 "hysteria_telegram_bot": "#telegram_form",
                 "hysteria_normal_sub": "#normal_sub_service_form",
                 "hysteria_iplimit": "#ip-limit-service",
-                "hysteria_warp": "warp_service"
+                "hysteria_warp": "#warp_service" 
             };
 
-            Object.keys(servicesMap).forEach(service => {
-                let targetSelector = servicesMap[service];
-                let isRunning = data[service];
+            Object.keys(servicesMap).forEach(serviceKey => {
+                let targetSelector = servicesMap[serviceKey];
+                let isRunning = data[serviceKey];
 
-                if (service === "hysteria_normal_sub") {
+
+                if (serviceKey === "hysteria_normal_sub") {
                     const $normalForm = $("#normal_sub_service_form");
                     const $normalFormGroups = $normalForm.find(".form-group");
                     const $normalStartBtn = $("#normal_start");
@@ -661,7 +662,7 @@
                         $("#normal_subpath_input").val(""); 
                         $("#normal_subpath_input").removeClass('is-invalid');
                     }
-                } else if (service === "hysteria_iplimit") {
+                } else if (serviceKey === "hysteria_iplimit") {
                     const $ipLimitServiceForm = $("#ip_limit_service_form");
                     const $configTabLi = $(".ip-limit-config-tab-li");
                     if (isRunning) {
@@ -676,14 +677,16 @@
                        $("#ip_limit_start").show();
                        $("#ip_limit_stop").hide();
                        $configTabLi.hide();
-                       $('#ip-limit-service-tab').tab('show');
+                       if ($('#ip-limit-config-tab').hasClass('active')) {
+                           $('#ip-limit-service-tab').tab('show');
+                       }
                        $ipLimitServiceForm.find(".alert-info").remove();
                        $("#block_duration").val("");
                        $("#max_ips").val("");
                        $("#block_duration, #max_ips").removeClass('is-invalid');
                     }
-                } else if (service === "hysteria_warp") {
-                    const isWarpServiceRunning = data[service];
+                } else if (serviceKey === "hysteria_warp") {
+                    const isWarpServiceRunning = data[serviceKey]; 
                     if (isWarpServiceRunning) {
                         $("#warp_initial_controls").hide();
                         $("#warp_active_controls").show();
@@ -691,22 +694,26 @@
                     } else {
                         $("#warp_initial_controls").show();
                         $("#warp_active_controls").hide();
-                        $("#warp_config_form")[0].reset();
+                        if ($("#warp_config_form").length > 0) {
+                           $("#warp_config_form")[0].reset();
+                        }
                     }
                 } else {
                     const $formSelector = $(targetSelector);
-                    if (isRunning) {
-                        $formSelector.find(".form-group").hide();
-                        $formSelector.find(".btn-success").hide();
-                        $formSelector.find(".btn-danger").show();
-                        if ($formSelector.find(".alert-info").length === 0) { 
-                           $formSelector.prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
+                    if ($formSelector.length > 0) {
+                        if (isRunning) {
+                            $formSelector.find(".form-group").hide();
+                            $formSelector.find(".btn-success").hide();
+                            $formSelector.find(".btn-danger").show();
+                            if ($formSelector.find(".alert-info").length === 0) { 
+                               $formSelector.prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
+                            }
+                        } else {
+                            $formSelector.find(".form-group").show();
+                            $formSelector.find(".btn-success").show();
+                            $formSelector.find(".btn-danger").hide();
+                            $formSelector.find(".alert-info").remove();
                         }
-                    } else {
-                        $formSelector.find(".form-group").show();
-                        $formSelector.find(".btn-success").show();
-                        $formSelector.find(".btn-danger").hide();
-                        $formSelector.find(".alert-info").remove();
                     }
                 }
             });
@@ -1130,10 +1137,14 @@
                     if (xhr.status === 404) { 
                         $("#warp_initial_controls").show();
                         $("#warp_active_controls").hide();
-                        $("#warp_config_form")[0].reset();
+                        if ($("#warp_config_form").length > 0) {
+                           $("#warp_config_form")[0].reset();
+                        }
                         Swal.fire("Info", "WARP service might not be fully configured. Please try reinstalling if issues persist.", "info");
                     } else {
-                        $("#warp_config_form")[0].reset(); 
+                         if ($("#warp_config_form").length > 0) {
+                           $("#warp_config_form")[0].reset();
+                        }
                          Swal.fire("Warning", "Could not load current WARP configuration values. Please check manually or re-save.", "warning");
                     }
                 }

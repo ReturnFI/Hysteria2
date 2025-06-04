@@ -61,7 +61,6 @@ bash <(curl https://raw.githubusercontent.com/ReturnFI/Blitz/main/install.sh)
 
 
 ---
-Add commentMore actions
 
 
 ## 💎 حامی مالی

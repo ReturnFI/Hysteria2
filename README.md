@@ -55,12 +55,6 @@ After installation, use `hys2` to launch the management panel.
 
 There is no need to execute the installation command again.
 
-Add commentMore actions
-
-
-
-
-
 
 
 

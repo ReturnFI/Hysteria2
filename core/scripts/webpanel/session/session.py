@@ -6,6 +6,7 @@ from pydantic import BaseModel
 class SessionData(BaseModel):
     '''Pydantic model for representing session data.'''
     username: str
+    lang: str
     created_at: datetime
     expires_at: datetime
 
@@ -40,7 +41,12 @@ class SessionManager:
     def set_session(self, username: str) -> str:
         '''Generates a session ID and stores user data in the session.'''
         session_id = secrets.token_hex(32)
-        session_data = SessionData(username=username, created_at=datetime.now(timezone.utc), expires_at=datetime.now(timezone.utc) + self.expiration)
+        
+        # TODO: make this configurable
+        default_lang = 'en'
+
+        session_data = SessionData(username=username, lang=default_lang, created_at=datetime.now(timezone.utc),
+                                   expires_at=datetime.now(timezone.utc) + self.expiration)
 
         self.storage.set(session_id, session_data)
 

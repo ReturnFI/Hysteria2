@@ -25,3 +25,8 @@ def set_lang_api(lang: str, request: Request, session_manager: SessionManager = 
     session.lang = lang
 
     return DetailResponse(detail='Language changed successfully.')
+
+
+@router.get('/get-langs', response_model=list[str])
+def get_langs_api():
+    return get_langs()

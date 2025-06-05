@@ -1,9 +1,12 @@
 from fastapi.templating import Jinja2Templates
 
 from session import SessionStorage, SessionManager
+from jinja2 import pass_context  # type ignore
 from config import CONFIGS
+from translations import translator
 
 __TEMPLATES = Jinja2Templates(directory='templates')
+
 
 # This was a custom url_for function for Jinja2 to add a prefix to the generated URL but we fix the url generation by setting the root path
 # @pass_context
@@ -19,6 +22,20 @@ __TEMPLATES = Jinja2Templates(directory='templates')
 
 
 # __TEMPLATES.env.globals['url_for'] = url_for  # type: ignore
+@pass_context
+def _T(ctx, key: str) -> str:
+    request = ctx['request']
+    session_id = request.cookies.get('session_id')
+    session = get_session_manager().get_session(session_id)
+    if not session:
+        return key
+
+    lang = session.lang
+
+    return translator(key, lang)
+
+
+__TEMPLATES.env.globals['_T'] = _T
 
 
 def get_templates() -> Jinja2Templates:

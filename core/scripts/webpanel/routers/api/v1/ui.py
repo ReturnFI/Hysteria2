@@ -9,9 +9,24 @@ from translations import get_langs
 router = APIRouter()
 
 
-@router.get('/set-lang/{lang}', response_model=DetailResponse)
-def set_lang_api(lang: str, request: Request, session_manager: SessionManager = Depends(get_session_manager)):
-    """Set user prefered language on the website in session storage"""
+@router.get('/set-lang/{lang}', response_model=DetailResponse, summary='Set user language')
+def set_lang_api(
+    lang: str,
+    request: Request,
+    session_manager: SessionManager = Depends(get_session_manager)
+):
+    """
+    Set user prefered language on the website in session storage.
+
+    Args:
+        lang (str): The language to set. Must be one of the languages whitelisted in the `langs_whitelist` list.
+
+    Raises:
+        HTTPException: if the session is invalid or the language is not whitelisted.
+
+    Returns:
+        DetailResponse: The response containing the result of the action.
+    """
     session_id = request.cookies.get('session_id')
     session = session_manager.get_session(session_id)  # type: ignore
     if not session:
@@ -27,6 +42,12 @@ def set_lang_api(lang: str, request: Request, session_manager: SessionManager = 
     return DetailResponse(detail='Language changed successfully.')
 
 
-@router.get('/get-langs', response_model=list[str])
+@router.get('/get-langs', response_model=list[str], summary='Get whitelisted languages')
 def get_langs_api():
+    """
+    Get a list of whitelisted languages.
+
+    Returns:
+        list[str]: A list of whitelisted languages.
+    """
     return get_langs()

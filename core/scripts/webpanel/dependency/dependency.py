@@ -24,6 +24,19 @@ __TEMPLATES = Jinja2Templates(directory='templates')
 # __TEMPLATES.env.globals['url_for'] = url_for  # type: ignore
 @pass_context
 def _T(ctx, key: str) -> str:
+    """
+    Translate function for Jinja2 templates.
+
+    This function takes a key and translates it using the translator
+    from the translation module. If the session is invalid or the language
+    is not whitelisted, it returns the key.
+
+    Usage in Jinja2 templates:
+
+    {{ _T('KEY') }}
+
+    Where KEY is the key to translate.
+    """
     request = ctx['request']
     session_id = request.cookies.get('session_id')
     session = get_session_manager().get_session(session_id)

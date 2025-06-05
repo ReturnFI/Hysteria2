@@ -11,6 +11,7 @@ class Configs(BaseSettings):
     EXPIRATION_MINUTES: int
     ROOT_PATH: str
     DECOY_PATH: str | None = None
+    DEFAULT_LANG: str
 
     class Config:
         env_file = '.env'

@@ -2,6 +2,8 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel
 
+from config import CONFIGS
+
 
 class SessionData(BaseModel):
     '''Pydantic model for representing session data.'''
@@ -41,9 +43,8 @@ class SessionManager:
     def set_session(self, username: str) -> str:
         '''Generates a session ID and stores user data in the session.'''
         session_id = secrets.token_hex(32)
-        
-        # TODO: make this configurable
-        default_lang = 'en'
+
+        default_lang = CONFIGS.DEFAULT_LANG
 
         session_data = SessionData(username=username, lang=default_lang, created_at=datetime.now(timezone.utc),
                                    expires_at=datetime.now(timezone.utc) + self.expiration)

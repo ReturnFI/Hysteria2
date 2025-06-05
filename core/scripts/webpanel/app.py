@@ -43,7 +43,6 @@ def create_app() -> FastAPI:
     setup_exception_handler(app)
 
     # Set up authentication middleware
-
     app.add_middleware(AuthMiddleware, session_manager=get_session_manager(), api_token=CONFIGS.API_TOKEN)
     # Set up after request middleware
     app.add_middleware(AfterRequestMiddleware)

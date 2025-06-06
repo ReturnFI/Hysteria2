@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Users{% endblock %}
+{% block title %}{{_T('users')}}{% endblock %}
 
 {% block content %}
 <div class="content-header">
@@ -17,7 +17,7 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">User List {% if users %}({{ users|length }}){% endif %}</h3>
+                <h3 class="card-title">{{_T('users_list')}} {% if users %}({{ users|length }}){% endif %}</h3>
                 <div class="card-tools d-flex align-items-center flex-wrap">
 
                     <div class="mr-2 mb-2">
@@ -42,7 +42,8 @@
                     </div>
 
                     <div class="input-group input-group-sm" style="width: 200px;">
-                        <input type="text" id="searchInput" class="form-control float-right" placeholder="Search">
+                        <input type="text" id="searchInput" class="form-control float-right"
+                            placeholder="{{_T('search')}}">
                         <div class="input-group-append">
                             <button type="button" class="btn btn-default" id="searchButton">
                                 <i class="fas fa-search"></i>
@@ -76,7 +77,7 @@
                             <th>{{_T('traffic_usage')}}</th>
                             <th class="text-nowrap">{{_T('expiry_date')}}</th>
                             <th class="text-nowrap">{{_T('expiry_days')}}</th>
-                            <th>{{-T('enable')}}</th>
+                            <th>{{_T('enable')}}</th>
                             <th class="text-nowrap">{{_T('configs')}}</th>
                             <th class="text-nowrap">{{_T('actions')}}</th>
                         </tr>

@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.get('/set-lang/{lang}', response_model=DetailResponse, summary='Set user language')
-def set_lang_api(
+async def set_lang_api(
     lang: str,
     request: Request,
     session_manager: SessionManager = Depends(get_session_manager)
@@ -43,7 +43,7 @@ def set_lang_api(
 
 
 @router.get('/get-langs', response_model=list[str], summary='Get whitelisted languages')
-def get_langs_api():
+async def get_langs_api():
     """
     Get a list of whitelisted languages.
 
@@ -51,3 +51,23 @@ def get_langs_api():
         list[str]: A list of whitelisted languages.
     """
     return get_langs()
+
+
+@router.get('/get-current-lang', response_model=str, summary='Get current language')
+async def get_current_lang_api(
+    request: Request,
+    session_manager: SessionManager = Depends(get_session_manager)
+):
+    """
+    Get the current language of the user.
+
+    Returns:
+        str: The current language of the user.
+    """
+    session_id = request.cookies.get('session_id')
+    session = session_manager.get_session(session_id)  # type: ignore
+    if not session:
+        # It's not possible to the user to get here unless the session is valid
+        raise HTTPException(status_code=404, detail='The session was not found.')
+
+    return session.lang

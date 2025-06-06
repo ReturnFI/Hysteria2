@@ -40,10 +40,10 @@ def _T(ctx, key: str) -> str:
     request = ctx['request']
     session_id = request.cookies.get('session_id')
     session = get_session_manager().get_session(session_id)
-    if not session:
-        return key
-
-    lang = session.lang
+    if session:
+        lang = session.lang
+    else:
+        lang = CONFIGS.DEFAULT_LANG
 
     return translator(key, lang)
 

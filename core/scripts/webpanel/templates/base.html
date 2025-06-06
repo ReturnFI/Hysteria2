@@ -37,6 +37,10 @@
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
+                    <select id="langSelector" class="form-control form-control-sm">
+                    </select>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" id="darkModeToggle" href="#">
                         <i id="darkModeIcon" class="fas fa-moon"></i>
                     </a>
@@ -230,6 +234,55 @@
                 }
             });
 
+        });
+
+        // Language selector
+        const langSelector = $("#langSelector");
+
+        // Set the current language in the selector on page load
+        $.get("{{ url_for('get_current_lang_api') }}", function (currentLang) {
+            if (currentLang) {
+                langSelector.val(currentLang);
+            }
+        });
+
+        // Load available languages
+        $.get("{{ url_for('get_langs_api') }}", function (langs) {
+            langs.forEach(lang => {
+                const option = $('<option>')
+                    .val(lang)
+                    .text(lang)
+                    .appendTo(langSelector);
+            });
+        });
+
+        // On change language
+        langSelector.on('change', function () {
+            const selectedLang = $(this).val();
+            if (!selectedLang) return;
+
+            const setLangBaseUrl = "{{ url_for('set_lang_api', lang='LANG_PLACEHOLDER') }}";
+            const setLangUrl = setLangBaseUrl.replace('LANG_PLACEHOLDER', selectedLang);
+
+            $.get(setLangUrl, function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Language changed successfully!',
+                    text: 'The page will now reload.',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                });
+            }).fail(function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Failed to change language.'
+                });
+            });
         });
     </script>
     {% block javascripts %}{% endblock %}

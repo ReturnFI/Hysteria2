@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Config Editor{% endblock %}
+{% block title %}{{_T('config_editor')}}{% endblock %}
 
 {% block content %}
 <br>
 <div class="" style="margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
     <div class="flex justify mb-4 space-x-2">
-        <button id="restore-button" onclick="restoreJson()" class="px-4 py-2 bg-blue text-black rounded-lg">Restore JSON</button>
-        <button id="save-button" onclick="saveJson()" class="px-4 py-2 bg-green text-black rounded-lg duration-200">Save JSON</button>
+        <button id="restore-button" onclick="restoreJson()"
+            class="px-4 py-2 bg-blue text-black rounded-lg">{{_T('restore') _T('json')}}</button>
+        <button id="save-button" onclick="saveJson()"
+            class="px-4 py-2 bg-green text-black rounded-lg duration-200">{{_T('save') _T('json')}}</button>
     </div>
 
     <div id="jsoneditor" class="border rounded-lg shadow-lg" style="height: 750px; width: 100%;"></div>

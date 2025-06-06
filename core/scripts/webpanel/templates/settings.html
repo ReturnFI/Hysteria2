@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Settings{% endblock %}
+{% block title %}{{_T('settings')}}{% endblock %}
 
 {% block content %}
 <div class='content-header'>
     <div class='container-fluid'>
         <div class='row mb-2'>
             <div class='col-sm-6'>
-                <h1 class='m-0'>Settings</h1>
+                <h1 class='m-0'>{{_T('settings')}}</h1>
             </div>
         </div>
     </div>
@@ -24,51 +24,52 @@
                             <li class='nav-item'>
                                 <a class='nav-link active' id='subs-tab' data-toggle='pill' href='#subs' role='tab'
                                     aria-controls='subs' aria-selected='false'><i class="fas fa-link"></i>
-                                    Subscriptions</a>
+                                    {{_T('subscriptions')}}</a>
                             </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='telegram-tab' data-toggle='pill' href='#telegram' role='tab'
                                     aria-controls='telegram' aria-selected='true'><i class="fab fa-telegram"></i>
-                                    Telegram Bot</a>
+                                    {{_T('telegram_bot')}}</a>
                             </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='port-tab' data-toggle='pill' href='#port' role='tab'
-                                    aria-controls='port' aria-selected='false'><i class="fas fa-server"></i> Change
-                                    Port</a>
+                                    aria-controls='port' aria-selected='false'><i
+                                        class="fas fa-server"></i>{{_T('change_port')}}</a>
                             </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='sni-tab' data-toggle='pill' href='#sni' role='tab'
-                                    aria-controls='sni' aria-selected='false'><i class="fas fa-shield-alt"></i> Change
-                                    SNI</a>
+                                    aria-controls='sni' aria-selected='false'><i
+                                        class="fas fa-shield-alt"></i>{{_T('change_sni')}}</a>
                             </li>
-                             <li class='nav-item'>
+                            <li class='nav-item'>
                                 <a class='nav-link' id='obfs-tab' data-toggle='pill' href='#obfs' role='tab'
-                                    aria-controls='obfs' aria-selected='false'><i class="fas fa-user-secret"></i>
-                                    OBFS</a>
+                                    aria-controls='obfs' aria-selected='false'><i
+                                        class="fas fa-user-secret"></i>{{_T('obfs')}}</a>
                             </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='ip-tab' data-toggle='pill' href='#change_ip' role='tab'
-                                    aria-controls='change_ip' aria-selected='false'><i class="fas fa-network-wired"></i>
-                                    Change IP</a>
+                                    aria-controls='change_ip' aria-selected='false'><i
+                                        class="fas fa-network-wired"></i>{{_T('change_ip')}}</a>
                             </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='backup-tab' data-toggle='pill' href='#backup' role='tab'
-                                    aria-controls='backup' aria-selected='false'><i class="fas fa-download"></i>
-                                    Backup</a>
+                                    aria-controls='backup' aria-selected='false'><i
+                                        class="fas fa-download"></i>{{_T('backup')}}</a>
                             </li>
                             <li class='nav-item'>
                                 <a class='nav-link' id='ip-limit-tab' data-toggle='pill' href='#ip-limit' role='tab'
-                                    aria-controls='ip-limit' aria-selected='false'><i class="fas fa-user-slash"></i>
-                                    IP Limit</a>
-                            </li>
-                             <li class='nav-item'>
-                                <a class='nav-link' id='decoy-tab' data-toggle='pill' href='#decoy' role='tab'
-                                    aria-controls='decoy' aria-selected='false'><i class="fas fa-mask"></i>
-                                    Decoy Site</a>
+                                    aria-controls='ip-limit' aria-selected='false'><i
+                                        class="fas fa-user-slash"></i>{{_T('ip_limit')}}</a>
                             </li>
                             <li class='nav-item'>
-                                <a class='nav-link' id='warp-tab-link' data-toggle='pill' href='#warp-content' role='tab'
-                                    aria-controls='warp-content' aria-selected='false'><i class="fas fa-cloud"></i> WARP</a>
+                                <a class='nav-link' id='decoy-tab' data-toggle='pill' href='#decoy' role='tab'
+                                    aria-controls='decoy' aria-selected='false'><i
+                                        class="fas fa-mask"></i>{{_T('decoy_site')}}</a>
+                            </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' id='warp-tab-link' data-toggle='pill' href='#warp-content'
+                                    role='tab' aria-controls='warp-content' aria-selected='false'><i
+                                        class="fas fa-cloud"></i>{{_T('warp')}}</a>
                             </li>
                         </ul>
                     </div>
@@ -79,24 +80,28 @@
                             <div class='tab-pane fade show active' id='subs' role='tabpanel' aria-labelledby='subs-tab'>
                                 <ul class='nav nav-tabs' id='subs-tabs' role='tablist'>
                                     <li class='nav-item'>
-                                        <a class='nav-link active' id='normal-tab' data-toggle='tab' href='#normal' role='tab'
-                                            aria-controls='normal' aria-selected='true'><strong>Service Control</strong></a>
+                                        <a class='nav-link active' id='normal-tab' data-toggle='tab' href='#normal'
+                                            role='tab' aria-controls='normal'
+                                            aria-selected='true'><strong>{{_T('service_control')}}</strong></a>
                                     </li>
                                     <li class='nav-item normal-sub-config-tab-li' style="display: none;">
-                                        <a class='nav-link' id='normal-sub-config-link-tab' data-toggle='tab' href='#normal-sub-config-content' role='tab'
-                                            aria-controls='normal-sub-config-content' aria-selected='false'><strong>Configure Link</strong></a>
+                                        <a class='nav-link' id='normal-sub-config-link-tab' data-toggle='tab'
+                                            href='#normal-sub-config-content' role='tab'
+                                            aria-controls='normal-sub-config-content'
+                                            aria-selected='false'><strong>{{_T('configure_link')}}</strong></a>
                                     </li>
                                 </ul>
                                 <div class='tab-content' id='subs-tabs-content'>
-                                     <br>
-                                    <div class='tab-pane fade show active' id='normal' role='tabpanel' aria-labelledby='normal-tab'>
+                                    <br>
+                                    <div class='tab-pane fade show active' id='normal' role='tabpanel'
+                                        aria-labelledby='normal-tab'>
                                         <form id="normal_sub_service_form">
                                             <div class='form-group'>
-                                                <label for='normal_domain'>Domain:</label>
+                                                <label for='normal_domain'>{{_T('domain')}}:</label>
                                                 <input type='text' class='form-control' id='normal_domain'
                                                     placeholder='sub.example.com'>
                                                 <div class="invalid-feedback">
-                                                    Please enter a valid domain (without http:// or https://).
+                                                    {{_T('please_enter_valid_domain')}}
                                                 </div>
                                             </div>
                                             <div class='form-group'>
@@ -104,30 +109,33 @@
                                                 <input type='text' class='form-control' id='normal_port'
                                                     placeholder='e.g., 8080'>
                                                 <div class="invalid-feedback">
-                                                    Please enter a valid port number.
+                                                    {{_T('please_enter_valid_port_number')}}
                                                 </div>
                                             </div>
                                             <button id="normal_start" type='button' class='btn btn-success'>
-                                               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                                Start Service
+                                                <span class="spinner-border spinner-border-sm" role="status"
+                                                    aria-hidden="true" style="display: none;"></span>
+                                                {{_T('start_service')}}
                                             </button>
                                             <button id="normal_stop" type='button' class='btn btn-danger'
-                                                style="display: none;">Stop Service</button>
+                                                style="display: none;">{{_T('stop_service')}}</button>
                                         </form>
                                     </div>
-                                    <div class='tab-pane fade' id='normal-sub-config-content' role='tabpanel' aria-labelledby='normal-sub-config-link-tab'>
+                                    <div class='tab-pane fade' id='normal-sub-config-content' role='tabpanel'
+                                        aria-labelledby='normal-sub-config-link-tab'>
                                         <form id="normal_sub_config_form">
                                             <div class='form-group'>
                                                 <label for='normal_subpath_input'>Subscription Path Segment:</label>
                                                 <input type='text' class='form-control' id='normal_subpath_input'
-                                                    placeholder='e.g., mysub (becomes /mysub/...)'>
+                                                    placeholder='{{_T(' subpath_placeholder')}}'>
                                                 <div class="invalid-feedback">
-                                                    Please enter a valid subpath (alphanumeric characters only, e.g., mysub).
+                                                    {{_T('please_enter_valid_subpath')}}
                                                 </div>
                                             </div>
                                             <button id="normal_subpath_save_btn" type='button' class='btn btn-primary'>
-                                               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                                Save Subpath
+                                                <span class="spinner-border spinner-border-sm" role="status"
+                                                    aria-hidden="true" style="display: none;"></span>
+                                                {{_T('save_subpath')}}
                                             </button>
                                         </form>
                                     </div>
@@ -140,23 +148,24 @@
                                     <div class='form-group'>
                                         <label for='telegram_api_token'>API Token:</label>
                                         <input type='text' class='form-control' id='telegram_api_token'
-                                            placeholder='Enter API Token'>
+                                            placeholder="{{_T('api_token_placeholder')}}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid API Token.
+                                            {{_T('please_enter_valid_api_token')}}
                                         </div>
                                     </div>
                                     <div class='form-group'>
-                                        <label for='telegram_admin_id'>Admin ID:</label>
+                                        <label for='telegram_admin_id'>{{_T('admin_id')}}:</label>
                                         <input type='text' class='form-control' id='telegram_admin_id'
-                                            placeholder='Enter Admin ID'>
+                                            placeholder="{{_T(' admin_id_placeholder')}}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid Admin ID.
+                                            {{_T('please_enter_valid_admin_id')}}
                                         </div>
                                     </div>
                                     <button id="telegram_start" type='button' class='btn btn-success'>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>Start</button>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                            style="display: none;"></span>{{_T('start')}}</button>
                                     <button id="telegram_stop" type='button' class='btn btn-danger'
-                                        style="display: none;">Stop</button>
+                                        style="display: none;">{{_T('stop')}}</button>
                                 </form>
                             </div>
 
@@ -164,14 +173,15 @@
                             <div class='tab-pane fade' id='port' role='tabpanel' aria-labelledby='port-tab'>
                                 <form id="port_form">
                                     <div class='form-group'>
-                                        <label for='hysteria_port'>Port:</label>
+                                        <label for='hysteria_port'>{{_T('port')}}:</label>
                                         <input type='text' class='form-control' id='hysteria_port'
-                                            placeholder='Enter Port'>
+                                            placeholder="{{_T('port_placeholder')}}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid port number.
+                                            {{_T('please_enter_valid_port_number')}}
                                         </div>
                                     </div>
-                                    <button id="port_change" type='button' class='btn btn-primary'>Save</button>
+                                    <button id="port_change" type='button'
+                                        class='btn btn-primary'>{{_T('save')}}</button>
                                 </form>
                             </div>
 
@@ -179,32 +189,37 @@
                             <div class='tab-pane fade' id='sni' role='tabpanel' aria-labelledby='sni-tab'>
                                 <form id="sni_form">
                                     <div class='form-group'>
-                                        <label for='sni_domain'>Domain:</label>
+                                        <label for='sni_domain'>{{_T('domain')}}:</label>
                                         <input type='text' class='form-control' id='sni_domain'
-                                            placeholder='Enter Domain'>
+                                            placeholder="{{_T('domain_placeholder')}}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid domain (without http:// or https://).
+                                            {{_T('please_enter_valid_domain')}}
                                         </div>
                                     </div>
-                                    <button id="sni_change" type='button' class='btn btn-primary'>Save</button>
+                                    <button id="sni_change" type='button'
+                                        class='btn btn-primary'>{{_T('save')}}</button>
                                 </form>
                             </div>
 
-                             <!-- OBFS Tab -->
+                            <!-- OBFS Tab -->
                             <div class='tab-pane fade' id='obfs' role='tabpanel' aria-labelledby='obfs-tab'>
                                 <div class="mb-3">
-                                    <h5>OBFS Status</h5>
+                                    <h5>{{_T('obfs_status')}}</h5>
                                     <div id="obfs_status_container" class="p-3 border rounded">
-                                        <span id="obfs_status_message">Loading OBFS status...</span>
+                                        <span id="obfs_status_message">{{_T('loading_obfs_status')}}</span>
                                     </div>
                                 </div>
-                                <button id="obfs_enable_btn" type='button' class='btn btn-success' style="display: none;">
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                    Enable OBFS
+                                <button id="obfs_enable_btn" type='button' class='btn btn-success'
+                                    style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                        style="display: none;"></span>
+                                    {{_T('enable_obfs')}}
                                 </button>
-                                <button id="obfs_disable_btn" type='button' class='btn btn-danger' style="display: none;">
-                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                    Disable OBFS
+                                <button id="obfs_disable_btn" type='button' class='btn btn-danger'
+                                    style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                        style="display: none;"></span>
+                                    {{_T('disable_obfs')}}
                                 </button>
                             </div>
 
@@ -212,22 +227,22 @@
                             <div class='tab-pane fade' id='change_ip' role='tabpanel' aria-labelledby='ip-tab'>
                                 <form id="change_ip_form">
                                     <div class='form-group'>
-                                        <label for='ipv4'>IPv4:</label>
-                                        <input type='text' class='form-control' id='ipv4' placeholder='Enter IPv4 or Domain'
-                                            value="{{ ipv4 or '' }}">
+                                        <label for='ipv4'>{{_T('ipv4')}}:</label>
+                                        <input type='text' class='form-control' id='ipv4'
+                                            placeholder="{{_T('ipv4_or_domain_placeholder')}}" value="{{ ipv4 or '' }}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid IPv4 address or Domain.
+                                            {{_T('please_enter_valid_ipv4_or_domain')}}
                                         </div>
                                     </div>
                                     <div class='form-group'>
                                         <label for='ipv6'>IPv6:</label>
-                                        <input type='text' class='form-control' id='ipv6' placeholder='Enter IPv6 or Domain'
-                                            value="{{ ipv6 or '' }}">
+                                        <input type='text' class='form-control' id='ipv6'
+                                            placeholder="{{_T('ipv6_or_domain_placeholder')}}" value="{{ ipv6 or '' }}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid IPv6 address or Domain.
+                                            {{_T('please_enter_valid_ipv6_or_domain')}}
                                         </div>
                                     </div>
-                                    <button id="ip_change" type='button' class='btn btn-primary'>Save</button>
+                                    <button id="ip_change" type='button' class='btn btn-primary'>{{_T('save')}}</button>
                                 </form>
                             </div>
 
@@ -237,33 +252,44 @@
                                     <div class="col-md-6">
                                         <div class="card card-outline card-success h-100">
                                             <div class="card-header">
-                                                <h3 class="card-title"><i class="fas fa-upload"></i> Restore from Backup</h3>
+                                                <h3 class="card-title"><i class="fas fa-upload"></i>
+                                                    {{_T('restore_from_backup')}}
+                                                </h3>
                                             </div>
                                             <div class="card-body">
-                                                <p>Upload a previously downloaded .zip backup file to restore your panel settings and Hysteria configuration.</p>
+                                                <p>{{_T('upload_backup_help')}}</p>
                                                 <div class="form-group">
-                                                     <label for="backup_file">Select Backup File (.zip):</label>
-                                                     <input type="file" class="form-control-file" id="backup_file" accept=".zip">
+                                                    <label for="backup_file">{{_T('select_backup_file')}}:</label>
+                                                    <input type="file" class="form-control-file" id="backup_file"
+                                                        accept=".zip">
                                                 </div>
-                                                <button id="upload_backup" type='button' class='btn btn-success btn-block'>
-                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                                    Upload and Restore
+                                                <button id="upload_backup" type='button'
+                                                    class='btn btn-success btn-block'>
+                                                    <span class="spinner-border spinner-border-sm" role="status"
+                                                        aria-hidden="true" style="display: none;"></span>
+                                                    {{_T('upload_and_restore')}}
                                                 </button>
                                                 <div class="progress mt-3" style="display: none;">
-                                                  <div id="backup_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                                    <div id="backup_progress_bar"
+                                                        class="progress-bar progress-bar-striped progress-bar-animated"
+                                                        role="progressbar" style="width: 0%;" aria-valuenow="0"
+                                                        aria-valuemin="0" aria-valuemax="100">0%</div>
                                                 </div>
-                                               <div id="backup_status" class="mt-2 small"></div>
+                                                <div id="backup_status" class="mt-2 small"></div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="card card-outline card-primary h-100">
                                             <div class="card-header">
-                                                <h3 class="card-title"><i class="fas fa-download"></i> Create New Backup</h3>
+                                                <h3 class="card-title"><i class="fas fa-download"></i>
+                                                    {{_T('create_new_backup')}}
+                                                </h3>
                                             </div>
                                             <div class="card-body d-flex flex-column justify-content-center">
-                                                <p>Download a .zip file containing a full backup of your panel settings and Hysteria configuration.</p>
-                                                <button id="download_backup" type='button' class='btn btn-primary btn-block mt-auto'>Download Backup</button>
+                                                <p>{{_T('download_backup_help')}}</p>
+                                                <button id="download_backup" type='button'
+                                                    class='btn btn-primary btn-block mt-auto'>{{_T('download_backup')}}</button>
                                             </div>
                                         </div>
                                     </div>
@@ -274,13 +300,15 @@
                             <div class='tab-pane fade' id='ip-limit' role='tabpanel' aria-labelledby='ip-limit-tab'>
                                 <ul class='nav nav-tabs' id='ip-limit-tabs' role='tablist'>
                                     <li class='nav-item'>
-                                        <a class='nav-link active' id='ip-limit-service-tab' data-toggle='tab' href='#ip-limit-service'
-                                            role='tab' aria-controls='ip-limit-service'
-                                            aria-selected='true'><strong>Service Control</strong></a>
+                                        <a class='nav-link active' id='ip-limit-service-tab' data-toggle='tab'
+                                            href='#ip-limit-service' role='tab' aria-controls='ip-limit-service'
+                                            aria-selected='true'><strong>{{_T('service_control')}}</strong></a>
                                     </li>
                                     <li class='nav-item ip-limit-config-tab-li' style="display: none;">
-                                        <a class='nav-link' id='ip-limit-config-tab' data-toggle='tab' href='#ip-limit-config-content' role='tab'
-                                            aria-controls='ip-limit-config-content' aria-selected='false'><strong>Configuration</strong></a>
+                                        <a class='nav-link' id='ip-limit-config-tab' data-toggle='tab'
+                                            href='#ip-limit-config-content' role='tab'
+                                            aria-controls='ip-limit-config-content'
+                                            aria-selected='false'><strong>{{_T('configuration')}}</strong></a>
                                     </li>
                                 </ul>
                                 <div class='tab-content' id='ip-limit-tabs-content'>
@@ -290,124 +318,143 @@
                                         aria-labelledby='ip-limit-service-tab'>
                                         <form id="ip_limit_service_form">
                                             <button id="ip_limit_start" type='button' class='btn btn-success'>
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                                Start
+                                                <span class="spinner-border spinner-border-sm" role="status"
+                                                    aria-hidden="true" style="display: none;"></span>
+                                                {{_T('start')}}
                                             </button>
-                                            <button id="ip_limit_stop" type='button' class='btn btn-danger' style="display: none;">Stop</button>
+                                            <button id="ip_limit_stop" type='button' class='btn btn-danger'
+                                                style="display: none;">{{_T('stop')}}</button>
                                         </form>
                                     </div>
 
                                     <!-- IP Limit Configuration Sub Tab -->
-                                    <div class='tab-pane fade' id='ip-limit-config-content' role='tabpanel' aria-labelledby='ip-limit-config-tab'>
+                                    <div class='tab-pane fade' id='ip-limit-config-content' role='tabpanel'
+                                        aria-labelledby='ip-limit-config-tab'>
                                         <form id="ip_limit_config_form">
                                             <div class='form-group'>
-                                                <label for='block_duration'>Block Duration (seconds):</label>
+                                                <label for='block_duration'>{{_T('block_duration')}}:</label>
                                                 <input type='text' class='form-control' id='block_duration'
                                                     placeholder='Enter Block Duration' value="">
                                                 <div class="invalid-feedback">
-                                                    Please enter a valid positive number for block duration.
+                                                    {{_T('please_enter_valid_block_duration')}}
                                                 </div>
                                             </div>
                                             <div class='form-group'>
-                                                <label for='max_ips'>Max IPs per User:</label>
+                                                <label for='max_ips'>{{_T('max_ip_per_user')}}:</label>
                                                 <input type='text' class='form-control' id='max_ips'
-                                                    placeholder='Enter Max IPs per User' value="">
+                                                    placeholder="{{_T('max_ip_per_user_placeholder')}}" value="">
                                                 <div class="invalid-feedback">
-                                                    Please enter a valid positive number for max IPs.
+                                                    {{_T('please_enter_valid_max_ip_per_user')}}
                                                 </div>
                                             </div>
-                                            <button id="ip_limit_change_config" type='button' class='btn btn-primary'>Save Configuration</button>
+                                            <button id="ip_limit_change_config" type='button'
+                                                class='btn btn-primary'>{{_T('save')}} {{_T('configuration')}}</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                             <!-- Decoy Site Tab -->
+                            <!-- Decoy Site Tab -->
                             <div class='tab-pane fade' id='decoy' role='tabpanel' aria-labelledby='decoy-tab'>
                                 <form id="decoy_form">
                                     <div class='form-group'>
-                                        <label for='decoy_domain'>Domain:</label>
+                                        <label for='decoy_domain'>{{_T('domain')}}:</label>
                                         <input type='text' class='form-control' id='decoy_domain'
-                                            placeholder='Enter Domain'>
+                                            placeholder="{{_T('domain_placeholder')}}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid domain (without http:// or https://).
+                                            {{_T('please_enter_valid_domain')}}
                                         </div>
                                     </div>
                                     <div class='form-group'>
-                                        <label for='decoy_path'>Decoy Site Path:</label>
+                                        <label for='decoy_path'>{{_T('decoy_site_path')}}:</label>
                                         <input type='text' class='form-control' id='decoy_path'
-                                            placeholder='Enter Path to Decoy Site Files'>
+                                            placeholder="{{_T('decoy_site_path_placeholder')}}">
                                         <div class="invalid-feedback">
-                                            Please enter a valid directory path.
+                                            {{_T('please_enter_valid_directory_path')}}
                                         </div>
                                     </div>
                                     <button id="decoy_setup" type='button' class='btn btn-success'>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                        Setup Decoy
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                            style="display: none;"></span>
+                                        {{_T('setup_decoy')}}
                                     </button>
-                                    <button id="decoy_stop" type='button' class='btn btn-danger' style="display: none;">Stop Decoy</button>
+                                    <button id="decoy_stop" type='button' class='btn btn-danger'
+                                        style="display: none;">{{_T('stop_decoy')}}</button>
                                 </form>
 
                                 <div class="mt-4">
                                     <h5>Decoy Status</h5>
                                     <div id="decoy_status_container" class="p-3 border rounded">
-                                        <div id="decoy_status_message">Loading status...</div>
+                                        <div id="decoy_status_message">{{_T('loading_status')}}</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- WARP Tab -->
-                            <div class='tab-pane fade' id='warp-content' role='tabpanel' aria-labelledby='warp-tab-link'>
+                            <div class='tab-pane fade' id='warp-content' role='tabpanel'
+                                aria-labelledby='warp-tab-link'>
                                 <div id="warp_initial_controls">
-                                    <div class='alert alert-info'>WARP service is not active.</div>
+                                    <div class='alert alert-info'>{{_T('warp_is_not_active')}}</div>
                                     <button id="warp_start_btn" type='button' class='btn btn-success mt-3'>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                        Install & Start WARP
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                            style="display: none;"></span>
+                                        {{_T('warp_install_and_start')}}
                                     </button>
                                 </div>
 
                                 <div id="warp_active_controls" style="display: none;">
-                                     <div class='alert alert-success mb-3'>WARP service is active.</div>
+                                    <div class='alert alert-success mb-3'>{{_T('warp_is_active')}}</div>
 
                                     <div class="card card-outline card-secondary">
                                         <div class="card-header">
-                                            <h3 class="card-title"><i class="fas fa-cogs"></i> WARP Routing Configuration</h3>
+                                            <h3 class="card-title"><i class="fas fa-cogs"></i>
+                                                {{_T('warp_routing_configuration')}}</h3>
                                         </div>
                                         <div class="card-body">
                                             <form id="warp_config_form">
                                                 <div class="form-group">
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input" id="warp_all_traffic">
-                                                        <label class="custom-control-label" for="warp_all_traffic">Route All Traffic through WARP</label>
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="warp_all_traffic">
+                                                        <label class="custom-control-label"
+                                                            for="warp_all_traffic">{{_T('warp_route_all_traffic')}}</label>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input" id="warp_popular_sites">
-                                                        <label class="custom-control-label" for="warp_popular_sites">Route Popular Sites through WARP</label>
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="warp_popular_sites">
+                                                        <label class="custom-control-label"
+                                                            for="warp_popular_sites">{{_T('warp_route_popular_sites')}}</label>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input" id="warp_domestic_sites">
-                                                        <label class="custom-control-label" for="warp_domestic_sites">Route Domestic Sites through WARP</label>
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="warp_domestic_sites">
+                                                        <label class="custom-control-label"
+                                                            for="warp_domestic_sites">{{_T('warp_route_domestic_sites')}}</label>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input" id="warp_block_adult_sites">
-                                                        <label class="custom-control-label" for="warp_block_adult_sites">Block Adult Sites (WARP Family DNS)</label>
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="warp_block_adult_sites">
+                                                        <label class="custom-control-label"
+                                                            for="warp_block_adult_sites">{{_T('warp_block_adult_sites')}}</label>
                                                     </div>
                                                 </div>
                                                 <button id="warp_save_config_btn" type='button' class='btn btn-primary'>
-                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                                    Save Configuration
+                                                    <span class="spinner-border spinner-border-sm" role="status"
+                                                        aria-hidden="true" style="display: none;"></span>
+                                                    {{_T('save')}} {{_T('configuration')}}
                                                 </button>
                                             </form>
                                         </div>
                                     </div>
                                     <button id="warp_stop_btn" type='button' class='btn btn-danger mt-3'>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                                        Stop & Uninstall WARP
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                            style="display: none;"></span>
+                                        {{_T('warp_uninstall_and_stop')}}
                                     </button>
                                 </div>
                             </div>
@@ -502,10 +549,10 @@
                 type: type,
                 contentType: "application/json",
                 data: data ? JSON.stringify(data) : null,
-                beforeSend: function() {
+                beforeSend: function () {
                     if (buttonSelector) {
                         $(buttonSelector).prop('disabled', true);
-                         $(buttonSelector + ' .spinner-border').show();
+                        $(buttonSelector + ' .spinner-border').show();
                     }
                 },
                 success: function (response) {
@@ -528,7 +575,7 @@
                     Swal.fire("Error!", errorMessage, "error");
                     console.error("AJAX Error:", status, error, xhr.responseText);
                 },
-                complete: function() {
+                complete: function () {
                     if (buttonSelector) {
                         $(buttonSelector).prop('disabled', false);
                         $(buttonSelector + ' .spinner-border').hide();
@@ -558,7 +605,7 @@
                     fieldValid = isValidPath(input.val());
                 } else {
                     if (input.attr('placeholder') && input.attr('placeholder').includes('Enter') && !input.attr('id').startsWith('ipv')) {
-                         fieldValid = input.val().trim() !== "";
+                        fieldValid = input.val().trim() !== "";
                     }
                 }
 
@@ -582,11 +629,11 @@
                 },
                 error: function (xhr, status, error) {
                     console.error("Failed to fetch service status:", error, xhr.responseText);
-                     Swal.fire("Error!", "Could not fetch service statuses.", "error");
+                    Swal.fire("Error!", "Could not fetch service statuses.", "error");
                 }
             });
 
-             $.ajax({
+            $.ajax({
                 url: "{{ url_for('get_ip_api') }}",
                 type: "GET",
                 success: function (data) {
@@ -622,11 +669,11 @@
         }
 
         function updateServiceUI(data) {
-             const servicesMap = {
+            const servicesMap = {
                 "hysteria_telegram_bot": "#telegram_form",
                 "hysteria_normal_sub": "#normal_sub_service_form",
                 "hysteria_iplimit": "#ip-limit-service",
-                "hysteria_warp": "#warp_service" 
+                "hysteria_warp": "#warp_service"
             };
 
             Object.keys(servicesMap).forEach(serviceKey => {
@@ -659,34 +706,34 @@
                         if ($('#normal-sub-config-link-tab').hasClass('active')) {
                             $('#normal-tab').tab('show');
                         }
-                        $("#normal_subpath_input").val(""); 
+                        $("#normal_subpath_input").val("");
                         $("#normal_subpath_input").removeClass('is-invalid');
                     }
                 } else if (serviceKey === "hysteria_iplimit") {
                     const $ipLimitServiceForm = $("#ip_limit_service_form");
                     const $configTabLi = $(".ip-limit-config-tab-li");
                     if (isRunning) {
-                       $("#ip_limit_start").hide();
-                       $("#ip_limit_stop").show();
-                       $configTabLi.show();
-                       fetchIpLimitConfig();
-                       if ($ipLimitServiceForm.find(".alert-info").length === 0) {
-                           $ipLimitServiceForm.prepend(`<div class='alert alert-info'>IP-Limit service is running. You can stop it if needed.</div>`);
-                       }
+                        $("#ip_limit_start").hide();
+                        $("#ip_limit_stop").show();
+                        $configTabLi.show();
+                        fetchIpLimitConfig();
+                        if ($ipLimitServiceForm.find(".alert-info").length === 0) {
+                            $ipLimitServiceForm.prepend(`<div class='alert alert-info'>IP-Limit service is running. You can stop it if needed.</div>`);
+                        }
                     } else {
-                       $("#ip_limit_start").show();
-                       $("#ip_limit_stop").hide();
-                       $configTabLi.hide();
-                       if ($('#ip-limit-config-tab').hasClass('active')) {
-                           $('#ip-limit-service-tab').tab('show');
-                       }
-                       $ipLimitServiceForm.find(".alert-info").remove();
-                       $("#block_duration").val("");
-                       $("#max_ips").val("");
-                       $("#block_duration, #max_ips").removeClass('is-invalid');
+                        $("#ip_limit_start").show();
+                        $("#ip_limit_stop").hide();
+                        $configTabLi.hide();
+                        if ($('#ip-limit-config-tab').hasClass('active')) {
+                            $('#ip-limit-service-tab').tab('show');
+                        }
+                        $ipLimitServiceForm.find(".alert-info").remove();
+                        $("#block_duration").val("");
+                        $("#max_ips").val("");
+                        $("#block_duration, #max_ips").removeClass('is-invalid');
                     }
                 } else if (serviceKey === "hysteria_warp") {
-                    const isWarpServiceRunning = data[serviceKey]; 
+                    const isWarpServiceRunning = data[serviceKey];
                     if (isWarpServiceRunning) {
                         $("#warp_initial_controls").hide();
                         $("#warp_active_controls").show();
@@ -695,7 +742,7 @@
                         $("#warp_initial_controls").show();
                         $("#warp_active_controls").hide();
                         if ($("#warp_config_form").length > 0) {
-                           $("#warp_config_form")[0].reset();
+                            $("#warp_config_form")[0].reset();
                         }
                     }
                 } else {
@@ -705,8 +752,8 @@
                             $formSelector.find(".form-group").hide();
                             $formSelector.find(".btn-success").hide();
                             $formSelector.find(".btn-danger").show();
-                            if ($formSelector.find(".alert-info").length === 0) { 
-                               $formSelector.prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
+                            if ($formSelector.find(".alert-info").length === 0) {
+                                $formSelector.prepend(`<div class='alert alert-info'>Service is running. You can stop it if needed.</div>`);
                             }
                         } else {
                             $formSelector.find(".form-group").show();
@@ -725,7 +772,7 @@
                 type: "GET",
                 success: function (data) {
                     $("#normal_subpath_input").val(data.subpath || "");
-                    if (data.subpath) { 
+                    if (data.subpath) {
                         $("#normal_subpath_input").removeClass('is-invalid');
                     }
                 },
@@ -765,8 +812,8 @@
                     { subpath: subpath },
                     "NormalSub subpath updated successfully!",
                     "#normal_subpath_save_btn",
-                    false, 
-                    fetchNormalSubPath 
+                    false,
+                    fetchNormalSubPath
                 );
             });
         }
@@ -784,7 +831,7 @@
                     "Decoy site setup initiated successfully!",
                     "#decoy_setup",
                     false,
-                    function() { setTimeout(fetchDecoyStatus, 1000); }
+                    function () { setTimeout(fetchDecoyStatus, 1000); }
                 );
             });
         }
@@ -798,7 +845,7 @@
                     "Decoy site stop initiated successfully!",
                     "#decoy_stop",
                     false,
-                    function() { setTimeout(fetchDecoyStatus, 1000); } 
+                    function () { setTimeout(fetchDecoyStatus, 1000); }
                 );
             });
         }
@@ -849,7 +896,7 @@
 
         function fetchObfsStatus() {
             $.ajax({
-                url: "{{ url_for('check_obfs') }}", 
+                url: "{{ url_for('check_obfs') }}",
                 type: "GET",
                 success: function (data) {
                     updateObfsUI(data.obfs);
@@ -857,7 +904,7 @@
                 error: function (xhr, status, error) {
                     $("#obfs_status_message").html('<span class="text-danger">Failed to fetch OBFS status.</span>');
                     console.error("Failed to fetch OBFS status:", error, xhr.responseText);
-                     $("#obfs_enable_btn").hide();
+                    $("#obfs_enable_btn").hide();
                     $("#obfs_disable_btn").hide();
                 }
             });
@@ -888,8 +935,8 @@
                     null,
                     "OBFS enabled successfully!",
                     "#obfs_enable_btn",
-                    false, 
-                    fetchObfsStatus 
+                    false,
+                    fetchObfsStatus
                 );
             });
         }
@@ -902,8 +949,8 @@
                     null,
                     "OBFS disabled successfully!",
                     "#obfs_disable_btn",
-                    false, 
-                    fetchObfsStatus 
+                    false,
+                    fetchObfsStatus
                 );
             });
         }
@@ -1000,7 +1047,7 @@
 
         function downloadBackup() {
             window.location.href = "{{ url_for('backup_api') }}";
-             Swal.fire("Starting Download", "Your backup download should start shortly.", "info");
+            Swal.fire("Starting Download", "Your backup download should start shortly.", "info");
         }
 
         function uploadBackup() {
@@ -1012,11 +1059,11 @@
                 return;
             }
             if (!file.name.toLowerCase().endsWith('.zip')) {
-               Swal.fire("Error!", "Only .zip files are allowed for restore.", "error");
-               return;
+                Swal.fire("Error!", "Only .zip files are allowed for restore.", "error");
+                return;
             }
 
-            confirmAction(`restore the system from the selected backup file (${file.name})`, function() {
+            confirmAction(`restore the system from the selected backup file (${file.name})`, function () {
                 var formData = new FormData();
                 formData.append('file', file);
 
@@ -1036,9 +1083,9 @@
                     data: formData,
                     processData: false,
                     contentType: false,
-                    xhr: function() {
+                    xhr: function () {
                         var xhr = new window.XMLHttpRequest();
-                        xhr.upload.addEventListener("progress", function(evt) {
+                        xhr.upload.addEventListener("progress", function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = Math.round((evt.loaded / evt.total) * 100);
                                 progressBar.style.width = percentComplete + '%';
@@ -1048,17 +1095,17 @@
                         }, false);
                         return xhr;
                     },
-                    success: function(response) {
+                    success: function (response) {
                         progressBar.style.width = '100%';
                         progressBar.classList.add('bg-success');
                         statusDiv.innerText = 'Backup restored successfully! Reloading page...';
                         statusDiv.className = 'mt-2 text-success';
                         Swal.fire("Success!", "Backup restored successfully!", "success").then(() => {
-                                location.reload();
+                            location.reload();
                         });
                         console.log("Restore Success:", response);
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         progressBar.classList.add('bg-danger');
                         let detail = (xhr.responseJSON && xhr.responseJSON.detail) ? xhr.responseJSON.detail : 'Check console for details.';
                         statusDiv.innerText = `Error restoring backup: ${detail}`;
@@ -1066,15 +1113,15 @@
                         Swal.fire("Error!", `Failed to restore backup. ${detail}`, "error");
                         console.error("Restore Error:", status, error, xhr.responseText);
                     },
-                    complete: function() {
-                       fileInput.value = '';
+                    complete: function () {
+                        fileInput.value = '';
                     }
                 });
             });
         }
 
         function startIPLimit() {
-             confirmAction("start the IP Limit service", function () {
+            confirmAction("start the IP Limit service", function () {
                 sendRequest(
                     "{{ url_for('start_ip_limit_api') }}",
                     "POST",
@@ -1086,7 +1133,7 @@
         }
 
         function stopIPLimit() {
-             confirmAction("stop the IP Limit service", function () {
+            confirmAction("stop the IP Limit service", function () {
                 sendRequest(
                     "{{ url_for('stop_ip_limit_api') }}",
                     "POST",
@@ -1101,7 +1148,7 @@
             if (!validateForm('ip_limit_config_form')) return;
             const blockDuration = $("#block_duration").val();
             const maxIps = $("#max_ips").val();
-             confirmAction("save the IP Limit configuration", function () {
+            confirmAction("save the IP Limit configuration", function () {
                 sendRequest(
                     "{{ url_for('config_ip_limit_api') }}",
                     "POST",
@@ -1129,29 +1176,29 @@
                 },
                 error: function (xhr, status, error) {
                     let errorMsg = "Failed to fetch WARP configuration.";
-                     if (xhr.responseJSON && xhr.responseJSON.detail) {
+                    if (xhr.responseJSON && xhr.responseJSON.detail) {
                         errorMsg = xhr.responseJSON.detail;
                     }
                     console.error("Error fetching WARP config:", errorMsg, xhr.responseText);
 
-                    if (xhr.status === 404) { 
+                    if (xhr.status === 404) {
                         $("#warp_initial_controls").show();
                         $("#warp_active_controls").hide();
                         if ($("#warp_config_form").length > 0) {
-                           $("#warp_config_form")[0].reset();
+                            $("#warp_config_form")[0].reset();
                         }
                         Swal.fire("Info", "WARP service might not be fully configured. Please try reinstalling if issues persist.", "info");
                     } else {
-                         if ($("#warp_config_form").length > 0) {
-                           $("#warp_config_form")[0].reset();
+                        if ($("#warp_config_form").length > 0) {
+                            $("#warp_config_form")[0].reset();
                         }
-                         Swal.fire("Warning", "Could not load current WARP configuration values. Please check manually or re-save.", "warning");
+                        Swal.fire("Warning", "Could not load current WARP configuration values. Please check manually or re-save.", "warning");
                     }
                 }
             });
         }
 
-        $("#warp_start_btn").on("click", function() {
+        $("#warp_start_btn").on("click", function () {
             confirmAction("install and start WARP", function () {
                 sendRequest(
                     "{{ url_for('install_warp') }}",
@@ -1164,7 +1211,7 @@
             });
         });
 
-        $("#warp_stop_btn").on("click", function() {
+        $("#warp_stop_btn").on("click", function () {
             confirmAction("stop and uninstall WARP", function () {
                 sendRequest(
                     "{{ url_for('uninstall_warp') }}",
@@ -1177,7 +1224,7 @@
             });
         });
 
-        $("#warp_save_config_btn").on("click", function() {
+        $("#warp_save_config_btn").on("click", function () {
             const configData = {
                 all: $("#warp_all_traffic").is(":checked"),
                 popular_sites: $("#warp_popular_sites").is(":checked"),
@@ -1223,33 +1270,33 @@
             } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
             } else {
-                 $(this).removeClass('is-invalid');
+                $(this).removeClass('is-invalid');
             }
         });
 
         $('#normal_port, #hysteria_port').on('input', function () {
-             if (isValidPort($(this).val())) {
+            if (isValidPort($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
             } else {
-                 $(this).removeClass('is-invalid');
+                $(this).removeClass('is-invalid');
             }
         });
 
         $('#normal_subpath_input').on('input', function () {
-             if (isValidSubPath($(this).val())) {
+            if (isValidSubPath($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
             } else {
-                 $(this).removeClass('is-invalid');
+                $(this).removeClass('is-invalid');
             }
         });
 
         $('#ipv4, #ipv6').on('input', function () {
-             if (isValidIPorDomain($(this).val()) || $(this).val().trim() === '') {
-                 $(this).removeClass('is-invalid');
+            if (isValidIPorDomain($(this).val()) || $(this).val().trim() === '') {
+                $(this).removeClass('is-invalid');
             } else {
                 $(this).addClass('is-invalid');
             }
@@ -1259,16 +1306,16 @@
             if ($(this).val().trim() !== "") {
                 $(this).removeClass('is-invalid');
             } else {
-                 $(this).addClass('is-invalid');
+                $(this).addClass('is-invalid');
             }
         });
-         $('#block_duration, #max_ips').on('input', function () {
+        $('#block_duration, #max_ips').on('input', function () {
             if (isValidPositiveNumber($(this).val())) {
                 $(this).removeClass('is-invalid');
             } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
             } else {
-                 $(this).removeClass('is-invalid');
+                $(this).removeClass('is-invalid');
             }
         });
 
@@ -1277,8 +1324,8 @@
                 $(this).removeClass('is-invalid');
             } else if ($(this).val().trim() !== "") {
                 $(this).addClass('is-invalid');
-            } else { 
-                 $(this).addClass('is-invalid');
+            } else {
+                $(this).addClass('is-invalid');
             }
         });
 

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}{{_T('dashboard')}}{% endblock %}
 
 {% block content %}
 <div class="content-header">
@@ -21,7 +21,7 @@
                 <div class="small-box bg-info">
                     <div class="inner">
                         <h3 id="cpu-usage">--<sup style="font-size: 20px">%</sup></h3>
-                        <p>CPU Usage</p>
+                        <p>{{_T('cpu_usage')}}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-microchip"></i>
@@ -33,7 +33,7 @@
                 <div class="small-box bg-warning">
                     <div class="inner">
                         <h3 id="ram-usage">--</h3>
-                        <p>RAM Usage</p>
+                        <p>{{_T('ram_usage')}}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-memory"></i>
@@ -45,7 +45,7 @@
                 <div class="small-box bg-secondary">
                     <div class="inner">
                         <h3 id="total-traffic">--</h3>
-                        <p>Total Traffic</p>
+                        <p>{{_T('total_traffic')}}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-network-wired"></i>
@@ -57,7 +57,7 @@
                 <div class="small-box bg-success">
                     <div class="inner">
                         <h3 id="online-users">--</h3>
-                        <p>Online Users</p>
+                        <p>{{_T('online_users')}}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-users"></i>
@@ -71,7 +71,7 @@
                 <div class="small-box" id="hysteria2-status-box">
                     <div class="inner">
                         <h3 id="hysteria2-status">--</h3>
-                        <p>Hysteria2</p>
+                        <p>{{_T('hysteria2')}}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-bolt"></i>
@@ -82,7 +82,7 @@
                 <div class="small-box" id="telegrambot-status-box">
                     <div class="inner">
                         <h3 id="telegrambot-status">--</h3>
-                        <p>Telegram Bot</p>
+                        <p>{{_T('telegram_bot')}}</p>
                     </div>
                     <div class="icon">
                         <i class="fab fa-telegram"></i>
@@ -93,7 +93,7 @@
                 <div class="small-box" id="iplimit-status-box">
                     <div class="inner">
                         <h3 id="iplimit-status">--</h3>
-                        <p>IP Limit</p>
+                        <p>{{_T('ip_limit')}}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-box"></i>
@@ -104,7 +104,7 @@
                 <div class="small-box" id="normalsub-status-box">
                     <div class="inner">
                         <h3 id="normalsub-status">--</h3>
-                        <p>Normal Subscription</p>
+                        <p>{{_T('normal_subscription')}}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-rss"></i>

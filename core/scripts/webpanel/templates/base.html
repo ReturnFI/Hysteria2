@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="{{ url_for('assets', path='img/favicon.ico') }}">
-    <title>Blitz Panel | {% block title %}{% endblock %}</title>
+    <title>{{_T('blitz_panel')}} | {% block title %}{% endblock %}</title>
 
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Theme style -->
@@ -54,43 +55,48 @@
             <a href="{{ url_for('index') }}" class="brand-link">
                 <img src="{{ url_for('assets', path='img/logo.png') }}" alt="Blitz Logo"
                     class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">Blitz Dashboard</span>
+                <span class="brand-text font-weight-light">{{_T('blitz_panel') _T('dashboard)}}</span>
             </a>
 
             <!-- Sidebar -->
             <div class="sidebar">
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
                         <li class="nav-item">
-                            <a href="{{ url_for('index') }}" class="nav-link {% if request.path == url_for('index') %}active{% endif %}">
+                            <a href="{{ url_for('index') }}"
+                                class="nav-link {% if request.path == url_for('index') %}active{% endif %}">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>Dashboard</p>
+                                <p>{{_T('dashboard')}}</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('users') }}" class="nav-link {% if request.path == url_for('users') %}active{% endif %}">
+                            <a href="{{ url_for('users') }}"
+                                class="nav-link {% if request.path == url_for('users') %}active{% endif %}">
                                 <i class="nav-icon fas fa-users"></i>
-                                <p>Users</p>
+                                <p>{{_T('users')}}</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('settings') }}" class="nav-link {% if request.path == url_for('settings') %}active{% endif %}">
+                            <a href="{{ url_for('settings') }}"
+                                class="nav-link {% if request.path == url_for('settings') %}active{% endif %}">
                                 <i class="nav-icon fas fa-tools"></i>
-                                <p>Settings</p>
+                                <p>{{_T('settings')}}</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url_for('config') }}" class="nav-link {% if request.path == url_for('config') %}active{% endif %}">
+                            <a href="{{ url_for('config') }}"
+                                class="nav-link {% if request.path == url_for('config') %}active{% endif %}">
                                 <i class="nav-icon fas fa-cog"></i>
-                                <p>Config</p>
+                                <p>{{_T('config')}}</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-book"></i>
                                 <p>
-                                    Documentation
+                                    {{_T('documentation')}}
                                     <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
@@ -98,13 +104,14 @@
                                 <li class="nav-item">
                                     <a href="{{ url_for('index') }}docs" class="nav-link">
                                         <i class="nav-icon fas fa-network-wired"></i>
-                                        <p>API Documentation</p>
+                                        <p>{{_T('api_documentation')}}</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="https://returnfi.github.io/Hys2-docs/" target="_blank" rel="noopener noreferrer" class="nav-link">
+                                    <a href="https://returnfi.github.io/Hys2-docs/" target="_blank"
+                                        rel="noopener noreferrer" class="nav-link">
                                         <i class="nav-icon fas fa-lightbulb"></i>
-                                        <p>Guides & Tutorials</p>
+                                        <p>{{_T('guides_and_tutorials')}}</p>
                                     </a>
                                 </li>
                             </ul>
@@ -122,23 +129,26 @@
         <!-- Footer -->
         <footer class="main-footer">
             <div class="d-flex align-items-center">
-                <a href="https://github.com/ReturnFI/Blitz" target="_blank" rel="noopener noreferrer" class="text-decoration-none mr-3">
-                    <i class="fab fa-github"></i> GitHub
+                <a href="https://github.com/ReturnFI/Blitz" target="_blank" rel="noopener noreferrer"
+                    class="text-decoration-none mr-3">
+                    <i class="fab fa-github"></i> {{_T('github')}}
                 </a>
-                <a href="https://t.me/hysteria2_panel" target="_blank" rel="noopener noreferrer" class="text-decoration-none mr-3">
-                    <i class="fab fa-telegram-plane"></i> Telegram
+                <a href="https://t.me/hysteria2_panel" target="_blank" rel="noopener noreferrer"
+                    class="text-decoration-none mr-3">
+                    <i class="fab fa-telegram-plane"></i> {{_T('telegram')}}
                 </a>
                 <!-- <a href="https://github.com/ReturnFI/Blitz/releases" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
                     <i class="fas fa-code-branch"></i> <span id="panel-version">Loading version...</span>
                 </a> -->
                 <div class="ml-auto">
-                    <a href="https://github.com/ReturnFI/Blitz/releases" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
-                        <i class="fas fa-code-branch"></i> <span id="panel-version">Loading version...</span>
+                    <a href="https://github.com/ReturnFI/Blitz/releases" target="_blank" rel="noopener noreferrer"
+                        class="text-decoration-none">
+                        <i class="fas fa-code-branch"></i> <span id="panel-version">{{_T('loading_version')}}</span>
                     </a>
                 </div>
             </div>
         </footer>
-    </div> 
+    </div>
 
     <!-- REQUIRED SCRIPTS -->
     <!-- jQuery -->
@@ -178,7 +188,7 @@
                     $(".card").removeClass("bg-dark");
                 }
             }
-    
+
             function updateIcon(enabled) {
                 darkModeIcon.removeClass("fa-moon fa-sun")
                     .addClass(enabled ? "fa-sun" : "fa-moon");
@@ -189,7 +199,7 @@
                 url: versionUrl,
                 type: 'GET',
                 success: function (response) {
-                     $('#panel-version').text(`Version: ${response.current_version || 'N/A'}`);
+                    $('#panel-version').text(`Version: ${response.current_version || 'N/A'}`);
                 },
                 error: function (error) {
                     console.error("Error fetching version:", error);
@@ -197,7 +207,7 @@
                 }
             });
 
-            const checkVersionUrl = "{{ url_for('check_version_info') }}"; 
+            const checkVersionUrl = "{{ url_for('check_version_info') }}";
             $.ajax({
                 url: checkVersionUrl,
                 type: 'GET',

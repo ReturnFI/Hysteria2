@@ -22,22 +22,22 @@
 
                     <div class="mr-2 mb-2">
                         <button type="button" class="btn btn-sm btn-default filter-button" data-filter="all">
-                            <i class="fas fa-list"></i> All
+                            <i class="fas fa-list"></i> {{_T('all')}}
                         </button>
                     </div>
                     <div class="mr-2 mb-2">
                         <button type="button" class="btn btn-sm btn-default filter-button" data-filter="not-active">
-                            <i class="fas fa-exclamation-triangle"></i> NA
+                            <i class="fas fa-exclamation-triangle"></i> {{_T('na')}}
                         </button>
                     </div>
                     <div class="mr-2 mb-2">
                         <button type="button" class="btn btn-sm btn-success filter-button" data-filter="enable">
-                            <i class="fas fa-check"></i> Enable
+                            <i class="fas fa-check"></i> {{_T('enable')}}
                         </button>
                     </div>
                     <div class="mr-2 mb-2">
                         <button type="button" class="btn btn-sm btn-danger filter-button" data-filter="disable">
-                            <i class="fas fa-ban"></i> Disable
+                            <i class="fas fa-ban"></i> {{_T('disable')}}
                         </button>
                     </div>
 
@@ -49,7 +49,8 @@
                             </button>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-sm btn-primary ml-2" data-toggle="modal" data-target="#addUserModal">
+                    <button type="button" class="btn btn-sm btn-primary ml-2" data-toggle="modal"
+                        data-target="#addUserModal">
                         <i class="fas fa-plus"></i>
                     </button>
                     <button type="button" class="btn btn-sm btn-danger ml-2" id="deleteSelected">
@@ -60,7 +61,7 @@
             <div class="card-body table-responsive p-0">
                 {% if users|length == 0 %}
                 <div class="alert alert-warning" role="alert" style="margin: 20px;">
-                    No users found.
+                    {{_T('no_users_found')}}
                 </div>
                 {% else %}
                 <table class="table table-bordered table-hover" id="userTable">
@@ -70,14 +71,14 @@
                                 <input type="checkbox" id="selectAll">
                             </th>
                             <th>#</th>
-                            <th>Status</th>
-                            <th>Username</th>
-                            <th>Traffic Usage</th>
-                            <th class="text-nowrap">Expiry Date</th>
-                            <th class="text-nowrap">Expiry Days</th>
-                            <th>Enable</th>
-                            <th class="text-nowrap">Configs</th>
-                            <th class="text-nowrap">Actions</th>
+                            <th>{{_T('status')}}</th>
+                            <th>{{_T('username')}}</th>
+                            <th>{{_T('traffic_usage')}}</th>
+                            <th class="text-nowrap">{{_T('expiry_date')}}</th>
+                            <th class="text-nowrap">{{_T('expiry_days')}}</th>
+                            <th>{{-T('enable')}}</th>
+                            <th class="text-nowrap">{{_T('configs')}}</th>
+                            <th class="text-nowrap">{{_T('actions')}}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,9 +90,9 @@
                             <td>{{ loop.index }}</td>
                             <td>
                                 {% if user['status'] == "Online" %}
-                                <i class="fas fa-circle text-success"></i> Online
+                                <i class="fas fa-circle text-success"></i> {{_T('online')}}
                                 {% elif user['status'] == "Offline" %}
-                                <i class="fas fa-circle text-secondary"></i> Offline
+                                <i class="fas fa-circle text-secondary"></i> {{_T('offline')}}
                                 {% else %}
                                 <i class="fas fa-circle text-danger"></i> {{ user['status'] }}
                                 {% endif %}
@@ -115,8 +116,7 @@
                             </td>
                             <td class="text-nowrap">
                                 <button type="button" class="btn btn-sm btn-info edit-user"
-                                    data-user='{{ user.username }}' data-toggle="modal"
-                                    data-target="#editUserModal">
+                                    data-user='{{ user.username }}' data-toggle="modal" data-target="#editUserModal">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-warning reset-user"
@@ -152,7 +152,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                <h5 class="modal-title" id="addUserModalLabel">{{_T('add_user')}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -160,20 +160,20 @@
             <div class="modal-body">
                 <form id="addUserForm">
                     <div class="form-group">
-                        <label for="addUsername">Username</label>
+                        <label for="addUsername">{{_T('username')}}</label>
                         <input type="text" class="form-control" id="addUsername" name="username" required>
                         <small class="form-text text-danger" id="addUsernameError"></small>
                     </div>
                     <div class="form-group">
-                        <label for="addTrafficLimit">Traffic Limit (GB)</label>
+                        <label for="addTrafficLimit">{{_T('traffic_limit')}}</label>
                         <input type="number" class="form-control" id="addTrafficLimit" name="traffic_limit" required>
                     </div>
                     <div class="form-group">
-                        <label for="addExpirationDays">Expiration Days</label>
+                        <label for="addExpirationDays">{{_T('expiry_days')}}</label>
                         <input type="number" class="form-control" id="addExpirationDays" name="expiration_days"
                             required>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="addSubmitButton">Add User</button>
+                    <button type="submit" class="btn btn-primary" id="addSubmitButton">{{_T('add_user')}}</button>
                 </form>
             </div>
         </div>
@@ -193,24 +193,24 @@
             <div class="modal-body">
                 <form id="editUserForm">
                     <div class="form-group">
-                        <label for="editUsername">Username</label>
+                        <label for="editUsername">{{_T('username')}}</label>
                         <input type="text" class="form-control" id="editUsername" name="new_username">
                         <small class="form-text text-danger" id="editUsernameError"></small>
                     </div>
                     <div class="form-group">
-                        <label for="editTrafficLimit">Traffic Limit (GB)</label>
+                        <label for="editTrafficLimit">{{_T('traffic_limit')}}</label>
                         <input type="number" class="form-control" id="editTrafficLimit" name="new_traffic_limit">
                     </div>
                     <div class="form-group">
-                        <label for="editExpirationDays">Expiration Days</label>
+                        <label for="editExpirationDays">{{_T('expiry_days')}}</label>
                         <input type="number" class="form-control" id="editExpirationDays" name="new_expiration_days">
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="editBlocked" name="blocked" value="true">
-                        <label class="form-check-label" for="editBlocked">Blocked</label>
+                        <label class="form-check-label" for="editBlocked">{{_T('blocked')}}</label>
                     </div>
                     <input type="hidden" id="originalUsername" name="username">
-                    <button type="submit" class="btn btn-primary" id="editSubmitButton">Save Changes</button>
+                    <button type="submit" class="btn btn-primary" id="editSubmitButton">{{_T('save')}}</button>
                 </form>
             </div>
         </div>
@@ -222,7 +222,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="qrcodeModalLabel">QR Codes</h5>
+                <h5 class="modal-title" id="qrcodeModalLabel">{{_T('qr_codes')}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -422,7 +422,7 @@
                         errorMessage = jqXHR.responseJSON.detail;
                     } else if (jqXHR.status === 409) {
                         errorMessage = "User '" + jsonData.username + "' already exists.";
-                         $("#addUsernameError").text(errorMessage);
+                        $("#addUsernameError").text(errorMessage);
                     } else if (jqXHR.status === 422) {
                         errorMessage = jqXHR.responseJSON.detail || "Invalid input provided.";
                     }
@@ -441,8 +441,8 @@
         $(document).on("click", ".edit-user", function () {
             const username = $(this).data("user");
             const row = $(this).closest("tr");
-            const quota = row.find("td:eq(4)").text().trim(); 
-            const expiry_days = row.find("td:eq(6)").text().trim(); 
+            const quota = row.find("td:eq(4)").text().trim();
+            const expiry_days = row.find("td:eq(6)").text().trim();
             const blocked = row.find("td:eq(7) i").hasClass("text-danger");
 
             const quotaMatch = quota.match(/\/\s*([\d.]+)/);
@@ -621,7 +621,7 @@
                                     text: response.error || "Failed to delete user",
                                     icon: "error",
                                     confirmButtonText: "OK",
-                            });
+                                });
                             }
                         },
                         error: function () {

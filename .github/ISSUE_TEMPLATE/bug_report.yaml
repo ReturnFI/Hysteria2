@@ -1,7 +1,7 @@
 name: 🐛 Report a Problem
 description: Let us know about an issue you're experiencing
 title: "[Bug]: "
-labels: ["bug"]
+labels: ["🐞 bug"]
 assignees: []
 body:
   - type: markdown

@@ -1,7 +1,7 @@
 name: 💡 پیشنهاد ویژگی جدید
 description: ایده خود را برای بهبود این پروژه با ما به اشتراک بگذارید
 title: "[ویژگی]: "
-labels: ["enhancement"]
+labels: ["🤩 enhancement"]
 assignees: []
 body:
   - type: markdown

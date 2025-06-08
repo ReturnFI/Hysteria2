@@ -1,7 +1,7 @@
 name: 💡 Suggest a New Feature
 description: Share your idea to make this project better
 title: "[Feature]: "
-labels: ["enhancement"]
+labels: ["🤩 enhancement"]
 assignees: []
 body:
   - type: markdown

@@ -416,6 +416,8 @@ warp_configure_handler() {
         echo "4. Block adult content"
         echo "5. WARP Status Profile (IP etc.)"
         echo "6. Change WARP IP address"
+        echo "7. Switch to WARP Plus"
+        echo "8. Switch to Normal WARP"
         echo "0. Cancel"
 
         read -p "Select an option to toggle: " option
@@ -466,10 +468,63 @@ warp_configure_handler() {
                     echo -e "${red}✗ Could not verify IP change.${NC}"
                 fi
                 ;;
+            7)
+                echo -e "${yellow}Switching to WARP Plus...${NC}"
+                read -p "Enter your WARP Plus license key: " warp_key
+                
+                if [ -z "$warp_key" ]; then
+                    echo -e "${red}Error: WARP Plus key is required.${NC}"
+                else
+                    echo "Stopping WARP service..."
+                    systemctl stop "$service_name" 2>/dev/null
+                    
+                    cd /etc/warp/ || { echo -e "${red}Failed to change directory to /etc/warp/${NC}"; return 1; }
+                    
+                    echo "Updating WARP Plus configuration..."
+                    WGCF_LICENSE_KEY="$warp_key" wgcf update
+                    
+                    if [ $? -eq 0 ]; then
+                        echo "Starting WARP service..."
+                        systemctl start "$service_name"
+                        echo -e "${green}✓ Successfully switched to WARP Plus${NC}"
+                        python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
+                    else
+                        echo -e "${red}✗ Failed to update WARP Plus configuration${NC}"
+                        systemctl start "$service_name"
+                    fi
+                fi
+                ;;
+            8)
+                echo -e "${yellow}Switching to Normal WARP...${NC}"
+                echo "This will create a new WARP account. Continue? (y/N)"
+                read -p "" confirm
+                
+                if [[ "$confirm" =~ ^[Yy]$ ]]; then
+                    echo "Stopping WARP service..."
+                    systemctl stop "$service_name" 2>/dev/null
+                    
+                    cd /etc/warp/ || { echo -e "${red}Failed to change directory to /etc/warp/${NC}"; return 1; }
+                    
+                    echo "Creating new WARP account..."
+                    rm -f wgcf-account.toml
+                    yes | wgcf register
+                    
+                    if [ $? -eq 0 ]; then
+                        echo "Starting WARP service..."
+                        systemctl start "$service_name"
+                        echo -e "${green}✓ Successfully switched to Normal WARP with new account${NC}"
+                        python3 "$CLI_PATH" restart-hysteria2 > /dev/null 2>&1
+                    else
+                        echo -e "${red}✗ Failed to register new WARP account${NC}"
+                        systemctl start "$service_name"
+                    fi
+                else
+                    echo -e "${yellow}Operation canceled${NC}"
+                fi
+                ;;
             0) echo "WARP configuration canceled." ;;
             *) echo -e "${red}Invalid option. Please try again.${NC}" ;;
         esac
-        # echo "Command sent. Check status again to see changes."
 
     else
         echo -e "${red}$service_name is not active. Please start the service before configuring WARP.${NC}"

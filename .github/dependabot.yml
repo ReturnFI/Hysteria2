@@ -1,4 +1,3 @@
-#I hate this bullshit
 version: 2
 updates:
   - package-ecosystem: "pip"

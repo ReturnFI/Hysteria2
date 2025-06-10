@@ -10,5 +10,5 @@ updates:
       include: "scope"
     labels:
       - "📦 dependencies"
-      - "🐍python"
+      - "🐍 python"
 

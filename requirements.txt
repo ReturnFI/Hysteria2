@@ -40,4 +40,4 @@ hypercorn==0.17.3
 pydantic-settings==2.9.1
 
 # subs
-certbot==4.0.0
+certbot==4.1.1

@@ -17,7 +17,7 @@ pyTelegramBotAPI==4.27.0
 python-dotenv==1.1.0
 qrcode==8.2
 requests==2.32.4
-typing_extensions==4.13.2
+typing_extensions==4.14.0
 urllib3==2.4.0
 yarl==1.20.1
 hysteria2-api==0.1.3
